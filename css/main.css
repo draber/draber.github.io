@@ -87,9 +87,27 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+body {
+  font: 16px 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+}
+
+h1, h2 {
+  font-family: 'Franklin Gothic Medium', 'Franklin Gothic', 'ITC Franklin Gothic', Arial, sans-serif;
+}
+
 .wrapper {
-    margin: 0 auto;
-    max-width: 1280px;
+  margin: 0 auto;
+  max-width: 1040px;
+}
+
+.bookmarklet {
+  background: #f8cd05;
+  padding: 8px 16px;
+  text-decoration: none;
+  color: currentColor;
+  display: inline-block;
+  margin-left: 10px;
+  border-radius: 3px;
 }
 
 /* ==========================================================================
