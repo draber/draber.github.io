@@ -1,0 +1,1 @@
+# spelling-bee-assistant
