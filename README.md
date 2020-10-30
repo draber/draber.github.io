@@ -18,14 +18,14 @@ The second panel is initially closed for a good reason - it hides a button that 
 Open `index.html` in your web browser and drag and drop the bookmarklet into the bookmark menu.
 
 
-## Does it work anywhere?
+## Does it work everywhere?
 
 The panel is not suitable for the mobile version of the game and has only been tested on desktop computers. It requires a relatively recent modern browser and won't work in Internet Explorer.
 
 
-## Does this not spoil the game?
+## Does it not spoil the game?
 
-According to [this article](https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html) other people have been doing similar things and the Spelling Bee fans seem to like them. Displaying the stats is fine but you should make a serious effort to solve the game before you click on the magic button. The button is meant to be a last resort, when you eventually run out of ideas and frustration hits.
+According to [this article](https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html) other people have been doing similar tools, which the Spelling Bee seem to like. Start the game without the extra panels, then at some point you can display the stats. Do yourself the favor and make a serious effort to solve the game before you click on the magic button. The button is meant to be a last resort, when you eventually run out of ideas and frustration hits.
 
 
 ## Isn't this hacking and is it legal?
