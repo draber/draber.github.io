@@ -9,7 +9,7 @@ When you click on the bookmarklet it adds two new panels to the game. The first 
 
 ![Game stats](/media/stats.png)
 
-The second panel is initially closed for a good reason - it hides a button that will, upon confirmation, solve the game with a few mouse clicks., though it won't make you Queen Bee 😞.
+The second panel is initially closed for a good reason - it hides a button that will, upon confirmation, solve the game with a few mouse clicks., though it won't make you Queen Bee 😞. As a bonus, all the words you didn't find yourself will displayed as links to the respective terms in Google. Maybe this helps you next time.
 
 ![Auto-solve the game](/media/solution.png)
 
@@ -38,6 +38,6 @@ While this could certainly be called a _hack_ it's not the sort of hacking where
 The full source code is available under the [MIT license](LICENSE.md) at [code/source.js](code/source.js). The compressed version has been created with [Andrew Chilton's JavaScript Minifier](https://javascript-minifier.com/) and the bookmarklet itself with [Peter Coles’ Bookmarklet Creator](https://mrcoles.com/bookmarklet/).
 
 
-## I discovered a bug / I would like to have a new feature
+## I discovered a bug / I would like to ask for a new feature
 
-Sorry to disappoint you, this was a fun weekend project and chances that it's ever going to be picked up again are slim. You can fork the code, modify it and republish it as long as you respect the license. You can make a PR and I will probably look at it, but I don't wan't this to be a duty. 
+Sorry to disappoint you, this was a fun weekend project and chances that it's ever going to be picked up again are rather slim. You can fork the code, modify it and republish it as long as you respect the license. You can make a PR and I will probably look at it, but I don't wan't this to be a duty. 
