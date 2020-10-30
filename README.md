@@ -9,18 +9,18 @@ When you click on the bookmarklet it adds two new panels to the game. The first 
 
 ![Game stats](/media/stats.png)
 
-The second panel is initially closed for a good reason - it hides a button that will, upon confirmation, solve the game with a few mouse clicks., though it won't make you Queen Bee 😞. As a bonus, all the words you didn't find yourself will displayed as links to the respective terms in Google. Maybe this helps you next time.
+The second panel is initially closed for a good reason - it hides a button that will, upon confirmation, solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find yourself will displayed as links to the respective terms in Google. Maybe this helps you next time.
 
 ![Auto-solve the game](/media/solution.png)
 
 ## How do I install it?
 
-Open `index.html` in your web browser and drag and drop the bookmarklet into the bookmark menu.
+Open [index.html](index.html) in your web browser and drag and drop the bookmarklet into the bookmark menu.
 
 
 ## Does it work everywhere?
 
-The panel is not suitable for the mobile version of the game and has only been tested on desktop computers. It requires a relatively recent modern browser and won't work in Internet Explorer.
+The panel is not suitable for the mobile version of the game and has only been tested on desktop computers. It requires a relatively recent browser and won't work in Internet Explorer.
 
 
 ## Does it not spoil the game?
@@ -35,7 +35,7 @@ While this could certainly be called a _hack_ it's not the sort of hacking where
 
 ## How did you do this?
 
-The full source code is available under the [MIT license](LICENSE.md) at [code/source.js](code/source.js). The compressed version has been created with [Andrew Chilton's JavaScript Minifier](https://javascript-minifier.com/) and the bookmarklet itself with [Peter Coles’ Bookmarklet Creator](https://mrcoles.com/bookmarklet/).
+The full source code is available under the [MIT license](LICENSE.md) at [code/source.js](code/source.js). The [compressed version](code/source-compressed.js) has been created with [Andrew Chilton's JavaScript Minifier](https://javascript-minifier.com/) and the bookmarklet itself with [Peter Coles’ Bookmarklet Creator](https://mrcoles.com/bookmarklet/).
 
 
 ## I discovered a bug / I would like to ask for a new feature
