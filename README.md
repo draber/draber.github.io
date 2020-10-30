@@ -37,7 +37,7 @@ While this could certainly be called a _hack_ it's not the sort of hacking where
 
 ## How did you do this?
 
-The full source code is available under the [MIT license](LICENSE.md) at [code/source.js](code/source.js). The source has been [compressed](code/source-compressed.js) with Andrew Chilton's [JavaScript Minifier](https://javascript-minifier.com/), then the bookmarklet has been created from the compressed version with Peter Coles’ [Bookmarklet Creator](https://mrcoles.com/bookmarklet/).
+The full source code is available under the [MIT license](LICENSE.md) at [code/source.js](code/source.js). First, the source has been [compressed](code/source-compressed.js) with Andrew Chilton's [JavaScript Minifier](https://javascript-minifier.com/), then the bookmarklet has been created from the compressed version with Peter Coles’ [Bookmarklet Creator](https://mrcoles.com/bookmarklet/).
 
 
 ## I discovered a bug / I would like to ask for a new feature
