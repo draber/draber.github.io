@@ -9,7 +9,7 @@ When you click on the bookmarklet it adds two new panels to the game. The first 
 
 ![Game stats](img/stats.png)
 
-The second panel is initially closed for a good reason - it hides a button that will, upon confirmation, solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find yourself will displayed as links to the respective terms in Google. Maybe this helps you next time.
+The second panel is initially closed for a good reason - it hides a button that will, upon confirmation, solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find yourself will linked to the respective terms in Google. Maybe this helps you next time.
 
 ![Auto-solve the game](img/solution.png)
 

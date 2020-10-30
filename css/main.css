@@ -88,12 +88,9 @@ textarea {
    ========================================================================== */
 
 body {
-  font: 16px 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+  font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
-h1, h2 {
-  font-family: 'Franklin Gothic Medium', 'Franklin Gothic', 'ITC Franklin Gothic', Arial, sans-serif;
-}
 
 .wrapper {
   margin: 0 auto;
