@@ -25,7 +25,7 @@ The panel is not suitable for the mobile version of the game and has only been t
 
 ## Does it not spoil the game?
 
-According to [this article](https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html) other people have been creating similar tools, which the Spelling Bee seem to be fond of.
+According to [this article](https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html) other people have been creating similar tools, which the Spelling Bee community seems to be fond of.
 
 Start the game without the extra panels, then at some point you can display the stats. Do yourself the favor and make a serious effort to solve the game before you click on the magic button. The button is meant to be a last resort, when you eventually run out of ideas and frustration hits.
 
