@@ -23,7 +23,7 @@ The third panel hides a button that - upon confirmation - will solve the game wi
 
 ## How do I install it?
 
-Download and unpack the [zip file](https://github.com/draber/spelling-bee-assistant/archive/main.zip) and open `index.html` in your web browser. Drag and drop the bookmarklet into the bookmark menu.
+Download and unpack the [zip file](https://github.com/draber/spelling-bee-assistant/archive/main.zip) and open `index.html` in your web browser. Drag and drop the bookmarklet into the bookmark menu. If you already have an older version of the bookmark you should it first.
 
 
 ## Does it work everywhere?
