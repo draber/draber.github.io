@@ -40,7 +40,7 @@ Start the game without the extra panels, then at some point you can display the 
 
 ## Isn't this hacking and is it legal?
 
-While this could certainly be called a _hack_ it's not the sort of hacking where you intrude into someone's computer system to do all sorts of evil things. At no point the code communicates with the NYT or any other server, everything happens in the browser. It only uses resources that are already available in the source code of the game, i.e. they have been downloaded by your browser anyway. It's hard to imagine that this could be illegal anywhere but obviously there is no guarantee.
+While this could certainly be called a _hack_ it's not the type of hacking where you intrude into someone's computer system to do all sorts of evil things. At no point the code communicates with the NYT or any other server, everything happens in the browser. It only uses resources that are already available in the source code of the game, i.e. they have been downloaded by your browser anyway. It's hard to imagine that this could be illegal anywhere but obviously there is no guarantee.
 
 
 ## How did you do this?
