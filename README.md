@@ -4,7 +4,7 @@
 
 In case you haven’t heard of bookmarklets before, they are small pieces of code that can add new funtionality to a website. They reside, just like regular bookmarks in your browser's bookmark menu. 
 
-![Bookmarks](img/spoilers.png)
+![Bookmarks](img/bookmarklet.png)
 
 The Spelling Bee Assistant three new panels to the [Spelling Bee](https://www.nytimes.com/puzzles/spelling-bee), the New York Times' popular word puzzle.
 
