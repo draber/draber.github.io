@@ -52,4 +52,4 @@ The CSS code is written using SASS, you can [find it here](code/scss/styles.scss
 
 ## I discovered a bug / I would like to ask for a new feature
 
-Sorry to disappoint you, this was a fun weekend project and chances that it's ever going to be picked up again are rather slim. The code is available under the [MIT license](LICENSE.md) and you can fork it, modify it and republish it as long as you respect the terms of the license. You can make a PR and I will probably look at it, but I don't want this to be a duty.
+Sorry to disappoint you, this was a fun weekend project and chances that it's ever going to be picked up again are rather slim. The code is available under the [MIT license](LICENSE.md) and you can fork, modify and republish it as long as you respect the terms of the license. You can make a PR and I will probably look at it, but I don't want this to be a duty.
