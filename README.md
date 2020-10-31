@@ -8,7 +8,7 @@ In case you haven’t heard of bookmarklets before, they are small pieces of cod
 
 ![Bookmarks](img/bookmarklet.png)
 
-The Spelling Bee Assistant three new panels to Spelling Bee.
+This one, _Spelling Bee Assistant_ adds three new panels to the game.
 
 
 ### Stats 
