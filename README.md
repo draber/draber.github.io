@@ -1,11 +1,13 @@
 # Spelling Bee Assistant
 
-> JavaScript bookmarklet to add functionality to [Spelling Bee](https://www.nytimes.com/puzzles/spelling-bee), the New York Times' popular word puzzle.
+## What is this and what is it good for?
 
+In case you haven’t heard of bookmarklets before, they are small pieces of code that can add new funtionality to a website. They reside, just like regular bookmarks in your browser's bookmark menu. 
 
-## What does this thing do?
+![Bookmarks](img/spoilers.png)
 
-When you click on the bookmarklet it adds three new panels to the game.
+The Spelling Bee Assistant three new panels to the [Spelling Bee](https://www.nytimes.com/puzzles/spelling-bee), the New York Times' popular word puzzle.
+
 
 ### Stats 
 
@@ -29,7 +31,7 @@ The third panel hides a button that - upon confirmation - will solve the game wi
 
 ## How do I install it?
 
-Download and unpack the [zip file](https://github.com/draber/spelling-bee-assistant/archive/main.zip) and open `index.html` in your web browser. Drag and drop the bookmarklet into the bookmark menu. If you already have an older version of the bookmark you should it first.
+Download and unpack the [zip file](https://github.com/draber/spelling-bee-assistant/archive/main.zip) and open `index.html` in your web browser. Drag and drop the bookmarklet into the bookmark menu. If you already have an older version of the bookmark you should delete it first.
 
 
 ## Does it work everywhere?
