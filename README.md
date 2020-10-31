@@ -57,7 +57,7 @@ While this could certainly be called a _hack_ it's not the type of hacking where
 
 You can study the JavaScript source code which is [right here](code/source.js). I used the Chrome console for development, then [compressed](code/source-compressed.js) the code with Andrew Chilton's [JavaScript Minifier](https://javascript-minifier.com/) and eventually created the bookmarklet from this compressed version with Peter Coles’ [Bookmarklet Creator](https://mrcoles.com/bookmarklet/).
 
-The CSS code is written using SASS, you can [find it here](code/scss/styles.scss). The CSS has been manually copied to `appendStyles()` in the JavaScript source file. Not the most elegant way, but it does what it should.
+The CSS code is written using SASS, you can [find it here](code/styles/scss/styles.scss). The CSS has been manually copied to `appendStyles()` in the JavaScript source file. Not the most elegant way, but it does what it should.
 
 
 ## I discovered a bug / I would like to ask for a new feature
