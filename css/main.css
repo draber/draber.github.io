@@ -105,6 +105,14 @@ body {
   display: inline-block;
   margin-left: 10px;
   border-radius: 3px;
+  cursor: move;
+}
+
+.panels {
+  display: grid;
+  justify-content: space-between; 
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 80px;
 }
 
 /* ==========================================================================

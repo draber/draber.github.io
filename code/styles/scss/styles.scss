@@ -1,0 +1,70 @@
+$colorHighlight: rgb(248, 205, 5);
+$colorBorder: rgb(220, 220, 220);
+$colorPaleText: #888;
+
+.sb-content-box {
+	position: relative;
+}
+
+.sb-wordlist-items {
+	.sb-pangram {
+		border-bottom: 2px $colorHighlight solid;
+	}
+}
+
+.spelling-bee-assistant {
+	position: absolute; 
+	width: 200px; 
+	right: -210px; 
+	top: 20px;
+
+	* {
+		box-sizing: border-box;
+	}
+
+	.pale {
+		color: $colorPaleText
+	}
+
+	details {
+		font-size: 90%; 
+		margin-bottom: 10px;
+	}
+
+	summary {
+		padding: 10px 15px; 
+		background: $colorHighlight; 
+		cursor: pointer;
+	}
+
+	.solution-content {
+		padding: 10px 15px
+	}
+
+	table {
+		border: 1px solid $colorBorder; 
+		border-collapse: collapse; 
+		width: 100%; 
+		font-size: 85%;
+	}
+
+	th, td {
+		border: 1px solid $colorBorder; 
+		padding: 3px;
+	}
+
+	thead {
+		th {
+			text-align: center;
+		}
+	}
+
+	tbody {
+		th {
+			text-align: right;
+		}
+		td {
+			text-align: center;
+		}
+	}
+}

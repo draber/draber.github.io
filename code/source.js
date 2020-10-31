@@ -1,19 +1,65 @@
 (function() {
+    'use strict'; 
 
     const resultContainer = document.querySelector('.sb-wordlist-items');
-    let allPoints         = 0;
+    const statListings    = {};
     let foundTerms        = [];
     let foundPangrams     = [];
     let remainders        = [];
-    let statListing;
+    let allPoints         = 0;
     let observer;
 
-    // helper
-    const createElement = (tagName, styles = {}) => {
+
+    // helper to create elements convieniently
+    const createElement = (tagName, {
+          text = '',
+          classNames = [],
+          attributes = {}
+      } = {}) => {
         const element = document.createElement(tagName);
-        Object.assign(element.style, styles);
+        if(classNames.length) {            
+            element.classList.add(...classNames);
+        }
+        if(text !== '') {            
+            element.textContent = text;
+        }
+        for (const [key, value] of Object.entries(attributes)) {
+            if(value) {                
+                element.setAttribute(key, value);
+            } 
+        }
         return element;
     }
+
+    // Add stylesheet
+    const appendStyles = () => {
+        const style = createElement('style', {
+            // Paste compressed CSS here
+            text: `.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.spelling-bee-assistant{position:absolute;width:200px;right:-210px;top:20px}.spelling-bee-assistant *{box-sizing:border-box}.spelling-bee-assistant .pale{color:#888}.spelling-bee-assistant details{font-size:90%;margin-bottom:10px}.spelling-bee-assistant summary{padding:10px 15px;background:#f8cd05;cursor:pointer}.spelling-bee-assistant .solution-content{padding:10px 15px}.spelling-bee-assistant table{border:1px solid #dcdcdc;border-collapse:collapse;width:100%;font-size:85%}.spelling-bee-assistant th,.spelling-bee-assistant td{border:1px solid #dcdcdc;padding:3px}.spelling-bee-assistant thead th{text-align:center}.spelling-bee-assistant tbody th{text-align:right}.spelling-bee-assistant tbody td{text-align:center}`
+        });
+        document.querySelector('head').append(style);
+    }
+
+    // count how many words exist for each length
+    const countLetters = () => {
+        const letterCount = {};
+        gameData.today.answers.forEach(term => {
+            letterCount[term.length] = letterCount[term.length] || {
+                found: 0,
+                missing: 0,
+                total: 0
+            };
+            if (foundTerms.includes(term)) {
+                letterCount[term.length].found++;
+            }
+            else {
+                letterCount[term.length].missing++;
+            }
+            letterCount[term.length].total++;
+        });
+        return letterCount;
+    };
+
 
     // count the points from an array of words
     const countPoints = data => {
@@ -34,6 +80,45 @@
 
     allPoints = countPoints(gameData.today.answers);
 
+    const calculateUpdates = () => {
+        const letterCount = countLetters();
+        const letterKeys = Object.keys(letterCount);
+        letterKeys.sort((a, b) => a - b);
+        const updates = {
+            Stats: [
+                [
+                    'Words', 
+                    foundTerms.length, 
+                    remainders.length, 
+                    gameData.today.answers.length
+                ],
+                [
+                    'Points', 
+                    countPoints(foundTerms), 
+                    countPoints(remainders), 
+                    allPoints
+                ]
+            ],
+            Spoilers: [
+                [
+                    'Pangrams', 
+                    foundPangrams.length, 
+                    gameData.today.pangrams.length - foundPangrams.length, 
+                    gameData.today.pangrams.length
+                ]
+            ]
+        }
+        letterKeys.forEach(count => {
+            updates.Spoilers.push([
+                count + ' ' + (count > 1 ? 'letters' : 'letter'), 
+                letterCount[count].found, 
+                letterCount[count].missing, 
+                letterCount[count].total
+            ]);
+        });
+        return updates;
+    }
+
     // calculate the stats and populate the panel
     const updateStats = () => {
         foundTerms = [];
@@ -44,40 +129,37 @@
             foundTerms.push(term);
             if (gameData.today.pangrams.includes(term)) {
                 foundPangrams.push(term);
-                // a bit dirty in this context but convenient
-                node.style.borderBottom = '2px #f8cd05 solid';
+                node.classList.add('sb-pangram');
             }
         });
         remainders = gameData.today.answers.filter(term => !foundTerms.includes(term));
 
-        statListing.innerHTML = '';
+        const updates = calculateUpdates();
 
-        [
-            `Words: ${foundTerms.length}/${gameData.today.answers.length}, ${remainders.length} missing`,
-            `Pangrams: ${foundPangrams.length}/${gameData.today.pangrams.length}, ${gameData.today.pangrams.length - foundPangrams.length} missing`,
-            `Points: ${countPoints(foundTerms)}/${allPoints}, ${countPoints(remainders)} missing`
-        ].forEach(entry => {
-            const entryElement = createElement('li', {
-                paddingBottom: '5px'
-            });
-            entryElement.textContent = entry;
-            statListing.append(entryElement);
-        })
+        for (const [key, statListing] of Object.entries(statListings)) {
+            if(updates[key].length) {       
+                statListing.innerHTML = '';   
+                updates[key].forEach(entry => {
+                    statListing.append(buildTableRow('td', entry));
+                })
+            } 
+        }
     };
 
     // build a single entry in the term list
     const buildWordListItem = term => {
         const entry = createElement('li', {
-            borderBottom: gameData.today.pangrams.includes(term) ? '2px #f8cd05 solid' : '1px solid #dcdcdc',
-            color: '#888',
+            classNames: gameData.today.pangrams.includes(term) 
+                ? ['sb-anagram','sb-pangram','pale'] 
+                : ['sb-anagram','pale']
         });
-        entry.classList.add('sb-anagram');
-
-        const link = createElement('a');
-        link.href = `https://www.google.com/search?q=${term}`;
-        link.target = '_blank';
-        link.textContent = term;
-        entry.append(link);
+        entry.append(createElement('a', {
+            text: term,
+            attributes: {
+                href: `https://www.google.com/search?q=${term}`,
+                target: '_blank'
+            }
+        }));
         return entry;
     };
 
@@ -91,57 +173,60 @@
         }
     };
 
+    const buildTableRow = (type, data) => {
+        const row = createElement('tr');
+        data.forEach((entry, i) => {
+            row.append(createElement(i === 0 ? 'th' : type, {
+                text: entry
+            }));
+        });
+        return row;
+    }
+
     // build the additional panels
     const buildPanels = () => {
         const gameContainer = document.querySelector('.sb-content-box');
-        const types = ['Stats', 'Solution'];
+        const types = ['Stats', 'Spoilers', 'Solution'];
         const container = createElement('div', {
-            position: 'absolute',
-            width: '200px',
-            right: '-210px',
-            top: '20px'
+            classNames: ['spelling-bee-assistant']
         });
-
-        gameContainer.style.position = 'relative';
 
         types.forEach(type => {
             const panel = createElement('details', {
-                fontSize: '90%',
-                marginBottom: '10px'
+                attributes: {
+                    open: type === 'Stats' ? 'open' : false
+                }
             });
-
-            if (type === 'Stats') {
-                panel.setAttribute('open', 'open');
-            }
 
             const summary = createElement('summary', {
-                padding: '10px 15px',
-                background: '#f8cd05',
-                cursor: 'pointer'
+                text: type
             });
-            summary.textContent = type;
 
-            const content = createElement('div', {
-                padding: '10px 15px'
-            });
+            let content;
 
             if (type === 'Solution') {
-                const button = createElement('button', {
-                    boxSizing: 'border-box'
+                content = createElement('div', {
+                    classNames: ['solution-content']
                 });
-                button.classList.add('pz-modal__button', 'white');
-                button.type = 'button';
-                button.textContent = 'Display answers';
-                button.addEventListener('click', (event) => {
+                const button = createElement('button', {
+                    classNames: ['pz-modal__button', 'white'],
+                    text: 'Display answers',
+                    attributes: {
+                        type: 'button'
+                    }
+                });
+                button.addEventListener('pointerup', (event) => {
                     resolveGame();
                 });
                 content.append(button);
             }
             else {
-                statListing = createElement('ul', {
-                    fontSize: '85%',
-                });
-                content.append(statListing);
+                content = createElement('table');
+                const thead = createElement('thead');
+                thead.append(buildTableRow('th', ['', 'Found', 'Missing', 'Total']));
+                statListings[type] = createElement('tbody');
+                content.append(thead);
+                content.append(statListings[type]);
                 updateStats();
             }
 
@@ -154,14 +239,13 @@
     };
 
 
-
-    // listen to the result container and update the panels
+    // listen to the result container and update the panels when adding a new term
     observer = new MutationObserver((mutationsList, observer) => {
     	// we're only interested in the very last mutation
     	const mutation = mutationsList.pop();
     	const node = mutation.addedNodes[0];
     	if(gameData.today.pangrams.includes(node.textContent)) {
-			node.style.borderBottom = '2px #f8cd05 solid';
+			node.classList.add('sb-pangram');
     	}
     	updateStats();
     });
@@ -169,6 +253,7 @@
         childList: true
     });
 
+    appendStyles();
     buildPanels();
     updateStats();
 }());
