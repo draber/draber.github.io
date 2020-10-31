@@ -1,32 +1,32 @@
 (function() {
-    'use strict'; 
+    'use strict';
 
     const resultContainer = document.querySelector('.sb-wordlist-items');
-    const statListings    = {};
-    let foundTerms        = [];
-    let foundPangrams     = [];
-    let remainders        = [];
-    let allPoints         = 0;
+    const statListings = {};
+    let foundTerms = [];
+    let foundPangrams = [];
+    let remainders = [];
+    let allPoints = 0;
     let observer;
 
 
     // helper to create elements convieniently
     const createElement = (tagName, {
-          text = '',
-          classNames = [],
-          attributes = {}
-      } = {}) => {
+        text = '',
+        classNames = [],
+        attributes = {}
+    } = {}) => {
         const element = document.createElement(tagName);
-        if(classNames.length) {            
+        if (classNames.length) {
             element.classList.add(...classNames);
         }
-        if(text !== '') {            
+        if (text !== '') {
             element.textContent = text;
         }
         for (const [key, value] of Object.entries(attributes)) {
-            if(value) {                
+            if (value) {
                 element.setAttribute(key, value);
-            } 
+            }
         }
         return element;
     }
@@ -51,8 +51,7 @@
             };
             if (foundTerms.includes(term)) {
                 letterCount[term.length].found++;
-            }
-            else {
+            } else {
                 letterCount[term.length].missing++;
             }
             letterCount[term.length].total++;
@@ -67,11 +66,9 @@
         data.forEach(term => {
             if (gameData.today.pangrams.includes(term)) {
                 points += 15;
-            }
-            else if (term.length > 4) {
+            } else if (term.length > 4) {
                 points += term.length;
-            }
-            else {
+            } else {
                 points += 1;
             }
         });
@@ -87,32 +84,32 @@
         const updates = {
             Stats: [
                 [
-                    'Words', 
-                    foundTerms.length, 
-                    remainders.length, 
+                    'Words',
+                    foundTerms.length,
+                    remainders.length,
                     gameData.today.answers.length
                 ],
                 [
-                    'Points', 
-                    countPoints(foundTerms), 
-                    countPoints(remainders), 
+                    'Points',
+                    countPoints(foundTerms),
+                    countPoints(remainders),
                     allPoints
                 ]
             ],
             Spoilers: [
                 [
-                    'Pangrams', 
-                    foundPangrams.length, 
-                    gameData.today.pangrams.length - foundPangrams.length, 
+                    'Pangrams',
+                    foundPangrams.length,
+                    gameData.today.pangrams.length - foundPangrams.length,
                     gameData.today.pangrams.length
                 ]
             ]
         }
         letterKeys.forEach(count => {
             updates.Spoilers.push([
-                count + ' ' + (count > 1 ? 'letters' : 'letter'), 
-                letterCount[count].found, 
-                letterCount[count].missing, 
+                count + ' ' + (count > 1 ? 'letters' : 'letter'),
+                letterCount[count].found,
+                letterCount[count].missing,
                 letterCount[count].total
             ]);
         });
@@ -137,21 +134,21 @@
         const updates = calculateUpdates();
 
         for (const [key, statListing] of Object.entries(statListings)) {
-            if(updates[key].length) {       
-                statListing.innerHTML = '';   
+            if (updates[key].length) {
+                statListing.innerHTML = '';
                 updates[key].forEach(entry => {
                     statListing.append(buildTableRow('td', entry));
                 })
-            } 
+            }
         }
     };
 
     // build a single entry in the term list
     const buildWordListItem = term => {
         const entry = createElement('li', {
-            classNames: gameData.today.pangrams.includes(term) 
-                ? ['sb-anagram','sb-pangram'] 
-                : ['sb-anagram']
+            classNames: gameData.today.pangrams.includes(term) ?
+                ['sb-anagram', 'sb-pangram'] :
+                ['sb-anagram']
         });
         entry.append(createElement('a', {
             text: term,
@@ -166,7 +163,7 @@
     // display the solution after confirmation
     const resolveGame = () => {
         if (confirm('Are you sure you want to display all answers?')) {
-        	observer.disconnect();
+            observer.disconnect();
             remainders.forEach(term => {
                 resultContainer.append(buildWordListItem(term));
             });
@@ -219,8 +216,7 @@
                     resolveGame();
                 });
                 content.append(button);
-            }
-            else {
+            } else {
                 content = createElement('table');
                 const thead = createElement('thead');
                 thead.append(buildTableRow('th', ['', 'Found', 'Missing', 'Total']));
@@ -241,13 +237,13 @@
 
     // listen to the result container and update the panels when adding a new term
     observer = new MutationObserver((mutationsList, observer) => {
-    	// we're only interested in the very last mutation
-    	const mutation = mutationsList.pop();
-    	const node = mutation.addedNodes[0];
-    	if(gameData.today.pangrams.includes(node.textContent)) {
-			node.classList.add('sb-pangram');
-    	}
-    	updateStats();
+        // we're only interested in the very last mutation
+        const mutation = mutationsList.pop();
+        const node = mutation.addedNodes[0];
+        if (gameData.today.pangrams.includes(node.textContent)) {
+            node.classList.add('sb-pangram');
+        }
+        updateStats();
     });
     observer.observe(resultContainer, {
         childList: true
