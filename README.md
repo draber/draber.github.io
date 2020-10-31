@@ -8,14 +8,17 @@
 When you click on the bookmarklet it adds two new panels to the game. 
 
 ![Game stats](img/stats.png)
+
 The first panel shows some statistics but contains no spoilers. The table will be updated as you progress in the game.
 
 
 ![Spoilers](img/spoilers.png)
+
 The second panel is similar to the first one but it gives away information that you probably don’t want to know early on.
 
 
 ![Auto-solve the game](img/solution.png)
+
 The third panel hides a button that - upon confirmation - will solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find yourself will be linked to the respective terms in Google. Maybe this will help you next time!
 
 ## How do I install it?
