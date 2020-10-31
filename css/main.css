@@ -112,7 +112,7 @@ body {
   display: grid;
   justify-content: space-between; 
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  column-gap: 80px;
+  column-gap: 60px;
 }
 
 /* ==========================================================================

@@ -10,20 +10,22 @@ $colorPaleText: #888;
 	.sb-pangram {
 		border-bottom: 2px $colorHighlight solid;
 	}
+	
+	.sb-anagram {
+		a {
+			color: $colorPaleText;
+		}
+	}
 }
 
-.spelling-bee-assistant {
+.sb-assistant {
 	position: absolute; 
 	width: 200px; 
 	right: -210px; 
-	top: 20px;
+	top: 16px;
 
 	* {
 		box-sizing: border-box;
-	}
-
-	.pale {
-		color: $colorPaleText
 	}
 
 	details {
@@ -32,7 +34,7 @@ $colorPaleText: #888;
 	}
 
 	summary {
-		padding: 10px 15px; 
+		padding: 9px 15px; 
 		background: $colorHighlight; 
 		cursor: pointer;
 	}

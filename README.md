@@ -5,7 +5,7 @@
 
 ## What does this thing do?
 
-When you click on the bookmarklet it adds two new panels to the game. 
+When you click on the bookmarklet it adds three new panels to the game. 
 
 ![Game stats](img/stats.png)
 
