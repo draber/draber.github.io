@@ -95,6 +95,7 @@ body {
 .wrapper {
   margin: 0 auto;
   max-width: 1040px;
+  padding: 20px;  
 }
 
 .bookmarklet {
@@ -113,6 +114,12 @@ body {
   justify-content: space-between; 
   grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: 60px;
+}
+
+@media screen and (max-width: 1024px){
+  .panels {
+    display: block;
+  }
 }
 
 /* ==========================================================================
