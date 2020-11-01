@@ -67,7 +67,7 @@
         let points = 0;
         data.forEach(term => {
             if (gameData.today.pangrams.includes(term)) {
-                points += 15;
+                points += term.length + 7;
             } else if (term.length > 4) {
                 points += term.length;
             } else {
