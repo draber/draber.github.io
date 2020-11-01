@@ -249,7 +249,19 @@
         childList: true
     });
 
-    appendStyles();
-    buildPanels();
-    updateStats();
+
+    const init = () => {
+        if(window.location.href !== 'https://www.nytimes.com/puzzles/spelling-bee') {
+            return false;
+        }
+        if(observer) {
+            return false;
+        }
+        appendStyles();
+        buildPanels();
+        updateStats();
+        return true;
+    }
+
+    init();
 }());
