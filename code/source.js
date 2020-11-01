@@ -251,9 +251,9 @@
 
 
     const init = () => {
-        if(window.location.href !== 'https://www.nytimes.com/puzzles/spelling-bee') {
+        if(window.location.pathname !== '/puzzles/spelling-bee') {
             return false;
-        }
+        }        
         if(window.gameData.assistant) {
             return false;
         }
