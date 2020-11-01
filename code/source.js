@@ -254,12 +254,13 @@
         if(window.location.href !== 'https://www.nytimes.com/puzzles/spelling-bee') {
             return false;
         }
-        if(observer) {
+        if(window.gameData.assistant) {
             return false;
         }
         appendStyles();
         buildPanels();
         updateStats();
+        window.gameData.assistant = true;
         return true;
     }
 
