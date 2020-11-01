@@ -23,9 +23,31 @@ $colorPaleText: #888;
 	width: 200px; 
 	right: -210px; 
 	top: 16px;
+	background: white;
+	z-index: 3;
+	border: 1px solid $colorBorder; 
+	border-radius: 6px; 
+	padding: 0 10px;
 
 	* {
 		box-sizing: border-box;
+	}
+
+	.dragger {
+		font-weight: bold;
+		cursor: move;
+		line-height: 32px;
+	}
+
+	.closer {
+		font-size: 20px;
+		font-weight: bold;
+		position: absolute;
+		top: 0;
+		right: 0;
+		line-height: 32px;
+		padding: 0 10px;
+		cursor: pointer;
 	}
 
 	details {

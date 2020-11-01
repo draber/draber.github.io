@@ -8,6 +8,8 @@
     let remainders = [];
     let allPoints = 0;
     let observer;
+    let dragger;
+    let styles;
 
 
     // helper to create elements convieniently
@@ -33,11 +35,11 @@
 
     // Add stylesheet
     const appendStyles = () => {
-        const style = createElement('style', {
+        styles = createElement('style', {
             // Paste compressed CSS here
-            text: `.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sb-assistant{position:absolute;width:200px;right:-210px;top:16px}.sb-assistant *{box-sizing:border-box}.sb-assistant details{font-size:90%;margin-bottom:10px}.sb-assistant summary{padding:9px 15px;background:#f8cd05;cursor:pointer}.sb-assistant .solution-content{padding:10px 15px}.sb-assistant table{border:1px solid #dcdcdc;border-collapse:collapse;width:100%;font-size:85%}.sb-assistant th,.sb-assistant td{border:1px solid #dcdcdc;padding:3px}.sb-assistant thead th{text-align:center}.sb-assistant tbody th{text-align:right}.sb-assistant tbody td{text-align:center}`
+            text: `.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sb-assistant{position:absolute;width:200px;right:-210px;top:16px;background:white;z-index:3;border:1px solid #dcdcdc;border-radius:6px;padding:0 10px}.sb-assistant *{box-sizing:border-box}.sb-assistant .dragger{font-weight:bold;cursor:move;line-height:32px}.sb-assistant .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sb-assistant details{font-size:90%;margin-bottom:10px}.sb-assistant summary{padding:9px 15px;background:#f8cd05;cursor:pointer}.sb-assistant .solution-content{padding:10px 15px}.sb-assistant table{border:1px solid #dcdcdc;border-collapse:collapse;width:100%;font-size:85%}.sb-assistant th,.sb-assistant td{border:1px solid #dcdcdc;padding:3px}.sb-assistant thead th{text-align:center}.sb-assistant tbody th{text-align:right}.sb-assistant tbody td{text-align:center}`
         });
-        document.querySelector('head').append(style);
+        document.querySelector('head').append(styles);
     }
 
     // count how many words exist for each length
@@ -180,13 +182,65 @@
         return row;
     }
 
+    // the little x in the top right corner
+    const buildCloser = () => {
+        const closer = createElement('span', {
+            classNames: ['closer'],
+            text: '×',
+            attributes: {
+                title: 'Close assistant'
+            }
+        });
+        closer.addEventListener('click', function(event) {
+            window.gameData.assistant = false;
+            styles.remove();
+            observer.disconnect();
+            this.parentNode.remove();
+        });
+        return closer;
+    }
+
+    const buildDragger = (container) => {
+        container.draggable = true;
+        const dragger = createElement('div', {
+            classNames: ['dragger'],
+            text: 'Assistant',
+            attributes: {
+                title: 'Hold the mouse down to drag assistant'
+            }
+        });
+
+        container.addEventListener('dragstart', function(event) {
+            event.stopPropagation();
+            const style = getComputedStyle(this);
+            this.dataset.right = style.getPropertyValue('right');
+            this.dataset.top  = style.getPropertyValue('top');
+            this.dataset.mouseX = event.clientX;
+            this.dataset.mouseY = event.clientY;
+            event.dataTransfer.effectAllowed = 'move';
+        }, false);
+
+        container.addEventListener('dragend', function(event) {
+            event.stopPropagation();
+            const mouseDiffX = event.clientX - this.dataset.mouseX;
+            const mouseDiffY = event.clientY - this.dataset.mouseY;
+            this.style.right = parseInt(this.dataset.right) - mouseDiffX + 'px';
+            this.style.top = parseInt(this.dataset.top) + mouseDiffY + 'px';
+        }, false);
+
+        return dragger;
+    }
+
     // build the additional panels
     const buildPanels = () => {
         const gameContainer = document.querySelector('.sb-content-box');
         const types = ['Stats', 'Spoilers', 'Solution'];
         const container = createElement('div', {
             classNames: ['sb-assistant']
-        });
+        });    
+
+        container.append(buildDragger(container));
+        container.append(buildCloser());
 
         types.forEach(type => {
             const panel = createElement('details', {
