@@ -103,7 +103,7 @@ body {
   text-decoration: none;
   color: currentColor;
   display: inline-block;
-  margin-left: 10px;
+  margin-top: 10px;
   border-radius: 3px;
   cursor: move;
 }

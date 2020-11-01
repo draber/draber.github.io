@@ -1,56 +1,6 @@
 # Spelling Bee Assistant
 
-> JavaScript bookmarklet to add functionality to [Spelling Bee](https://www.nytimes.com/puzzles/spelling-bee), the New York Times' popular word puzzle.
-
-## What is this and what is it good for?
-
-In case you haven’t heard of bookmarklets before, they are small pieces of code that can add new funtionality to a website. They reside, just like regular bookmarks in your browser's bookmark menu. 
-
-![Bookmarks](img/bookmarklet.png)
-
-This one, _Spelling Bee Assistant_ adds three new panels to the game.
-
-
-### Stats 
-
-![Game stats](img/stats.png)
-
-The first panel shows some statistics but contains no spoilers. The table will be updated as you progress in the game.
-
-
-### Spoilers 
-
-![Spoilers](img/spoilers.png)
-
-The second panel is similar to the first one but it gives away information that you probably don’t want to know early on.
-
-
-### Solution 
-
-![Solution](img/solution.png)
-
-The third panel hides a button that - upon confirmation - will solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find yourself will be linked to the respective terms in Google. Maybe this will help you next time!
-
-## How do I install it?
-
-Download and unpack the [zip file](https://github.com/draber/spelling-bee-assistant/archive/main.zip) and open `index.html` in your web browser. Drag and drop the bookmarklet into the bookmark menu. If you already have an older version of the bookmark you should delete it first.
-
-
-## Does it work everywhere?
-
-The panel is not suitable for the mobile version of the game and has only been tested in the desktop version. It requires a [modern browser](https://caniuse.com/details) and won't work in Internet Explorer.
-
-
-## Does it not spoil the game?
-
-According to [this article](https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html) other people have been creating similar tools, which the Spelling Bee community seems to be fond of.
-
-Start the game without the extra panels, then at some point you can display the stats. Do yourself the favor and make a serious effort to solve the game before you click on the magic button. The button is meant to be a last resort, when you eventually run out of ideas and frustration hits.
-
-
-## Isn't this hacking and is it legal?
-
-While this could certainly be called a _hack_ it's not the type of hacking where you intrude into someone's computer system to do all sorts of evil things. At no point the code communicates with the NYT or any other server, everything happens in the browser. It only uses resources that are already available in the source code of the game, i.e. they have been downloaded by your browser anyway. It's hard to imagine that this could be illegal anywhere but obviously there is no guarantee.
+__Spelling Bee Assistant__ is a JavaScript bookmarklet for [Spelling Bee](https://www.nytimes.com/puzzles/spelling-bee), the New York Times’ popular word puzzle. Visit the [project’s homepage](https://draber.github.io/) to learn more.
 
 
 ## How did you do this?
