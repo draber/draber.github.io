@@ -250,7 +250,7 @@
             event.dataTransfer.dropEffect = "move"
         });
 
-        gameContainer.addEventListener('ondragover', function (event) {
+        gameContainer.addEventListener('dragover', function (event) {
             event.preventDefault();
         });
 
