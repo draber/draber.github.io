@@ -3,92 +3,135 @@ $colorBorder: rgb(220, 220, 220);
 $colorPaleText: #888;
 
 .sb-content-box {
-	position: relative;
+    position: relative;
 }
 
 .sb-wordlist-items {
-	.sb-pangram {
-		border-bottom: 2px $colorHighlight solid;
-	}
-	
-	.sb-anagram {
-		a {
-			color: $colorPaleText;
-		}
-	}
+    .sb-pangram {
+        border-bottom: 2px $colorHighlight solid;
+    }
+
+    .sb-anagram {
+        a {
+            color: $colorPaleText;
+        }
+    }
 }
 
-.sb-assistant {
-	position: absolute; 
-	width: 200px; 
-	right: -210px; 
-	top: 16px;
-	background: white;
-	z-index: 3;
-	border: 1px solid $colorBorder; 
-	border-radius: 6px; 
-	padding: 0 10px;
+.sba {
+    position: absolute;
+    width: 200px;
+    right: -210px;
+    top: 16px;
+    background: white;
+    z-index: 3;
+    border: 1px solid $colorBorder;
+    border-radius: 6px;
+    padding: 0 10px 5px;
 
-	* {
-		box-sizing: border-box;
-	}
+    * {
+        box-sizing: border-box;
+        &:focus {
+            outline-color: transparent;
+        }
+    }
 
-	.dragger {
-		font-weight: bold;
-		cursor: move;
-		line-height: 32px;
-	}
+    .dragger {
+        font-weight: bold;
+        cursor: move;
+        line-height: 32px;
+    }
 
-	.closer {
-		font-size: 20px;
-		font-weight: bold;
-		position: absolute;
-		top: 0;
-		right: 0;
-		line-height: 32px;
-		padding: 0 10px;
-		cursor: pointer;
-	}
+    &.dragging {
+        opacity: .5;
+        border-style: dashed;
+    }
 
-	details {
-		font-size: 90%; 
-		margin-bottom: 10px;
-	}
+    .closer {
+        font-size: 20px;
+        font-weight: bold;
+        position: absolute;
+        top: 0;
+        right: 0;
+        line-height: 32px;
+        padding: 0 10px;
+        cursor: pointer;
+    }
 
-	summary {
-		padding: 9px 15px; 
-		background: $colorHighlight; 
-		cursor: pointer;
-	}
+    details {
+        font-size: 90%;
+        margin-bottom: 5px;
+        &[open] {
+            summary {
+                &:before {
+                    content: '－';
+                }
+            }
+        }
+    }
 
-	.solution-content {
-		padding: 10px 15px
-	}
+    summary {
+        line-height: 32px;
+        padding: 0 15px 0 25px;
+        background: $colorHighlight;
+        cursor: pointer;
+        list-style: none;
+        position: relative;
+        &::-webkit-details-marker {
+            display: none
+        }
+        &:before {
+            content: '＋';
+            position: absolute;
+            left: 8px;
+        }
+    }
 
-	table {
-		border: 1px solid $colorBorder; 
-		border-collapse: collapse; 
-		width: 100%; 
-		font-size: 85%;
-	}
+    button {
+        margin: 10px auto;
+        width: 80%;
+        display: block;
+    }
 
-	th, td {
-		border: 1px solid $colorBorder; 
-		padding: 3px;
-	}
+    table {
+        border: 1px solid $colorBorder;
+        border-top: none;
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 85%;
+    }
 
-	thead {
-		th {
-			text-align: center;
-		}
-	}
+    th, td {
+        border: 1px solid $colorBorder;
+        padding: 3px;
+    }
 
-	tbody {
-		th {
-			text-align: right;
-		}
-		td {
-			text-align: center;
-		}
-	}
+    thead {
+        th {
+            text-align: center;
+        }
+    }
+
+    tbody {
+        th {
+            text-align: right;
+        }
+
+        td {
+            text-align: center;
+        }
+    }
+
+    .link {
+        color: currentColor;
+        opacity: .6;
+        font-size: 10px;
+        text-align: right;
+        display: block;
+        padding-top: 3px;
+        &:hover {
+            opacity: .8;
+            text-decoration: underline
+        }
+    }
 }

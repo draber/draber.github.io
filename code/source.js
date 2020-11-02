@@ -1,18 +1,24 @@
-(function() {
+(function () {
     'use strict';
 
-    const resultContainer = document.querySelector('.sb-wordlist-items');
+    const gameContainer = document.querySelector('.sb-content-box');
+    const resultContainer = gameContainer.querySelector('.sb-wordlist-items');
     const statListings = {};
     let foundTerms = [];
     let foundPangrams = [];
     let remainders = [];
     let allPoints = 0;
     let observer;
-    let dragger;
     let styles;
 
-
-    // helper to create elements convieniently
+    /**
+     * Create elements conveniently
+     * @param tagName
+     * @param text
+     * @param classNames
+     * @param attributes
+     * @returns {*}
+     */
     const createElement = (tagName, {
         text = '',
         classNames = [],
@@ -33,16 +39,22 @@
         return element;
     }
 
-    // Add stylesheet
+    /**
+     * Add stylesheet
+     */
     const appendStyles = () => {
         styles = createElement('style', {
             // Paste compressed CSS here
-            text: `.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sb-assistant{position:absolute;width:200px;right:-210px;top:16px;background:white;z-index:3;border:1px solid #dcdcdc;border-radius:6px;padding:0 10px}.sb-assistant *{box-sizing:border-box}.sb-assistant .dragger{font-weight:bold;cursor:move;line-height:32px}.sb-assistant .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sb-assistant details{font-size:90%;margin-bottom:10px}.sb-assistant summary{padding:9px 15px;background:#f8cd05;cursor:pointer}.sb-assistant .solution-content{padding:10px 15px}.sb-assistant table{border:1px solid #dcdcdc;border-collapse:collapse;width:100%;font-size:85%}.sb-assistant th,.sb-assistant td{border:1px solid #dcdcdc;padding:3px}.sb-assistant thead th{text-align:center}.sb-assistant tbody th{text-align:right}.sb-assistant tbody td{text-align:center}`
+            text: `@charset "UTF-8";.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba{position:absolute;width:200px;right:-210px;top:16px;background:white;z-index:3;border:1px solid gainsboro;border-radius:6px;padding:0 10px 5px}.sba *{-webkit-box-sizing:border-box;box-sizing:border-box}.sba :focus{outline-color:transparent}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:0.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:5px}.sba details[open] summary:before{content:"－"}.sba summary{line-height:32px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:"＋";position:absolute;left:8px}.sba button{margin:10px auto;width:80%;display:block}.sba table{border:1px solid gainsboro;border-top:none;border-collapse:collapse;width:100%;font-size:85%}.sba td,.sba th{border:1px solid gainsboro;padding:3px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba .link{color:currentColor;opacity:0.6;font-size:10px;text-align:right;display:block;padding-top:3px}.sba .link:hover{opacity:0.8;text-decoration:underline}`
         });
         document.querySelector('head').append(styles);
     }
 
-    // count how many words exist for each length
+    /**
+     * Count how many words exist for each length
+     *
+     * @returns {{}}
+     */
     const countLetters = () => {
         const letterCount = {};
         gameData.today.answers.forEach(term => {
@@ -53,7 +65,8 @@
             };
             if (foundTerms.includes(term)) {
                 letterCount[term.length].found++;
-            } else {
+            }
+            else {
                 letterCount[term.length].missing++;
             }
             letterCount[term.length].total++;
@@ -61,16 +74,21 @@
         return letterCount;
     };
 
-
-    // count the points from an array of words
+    /**
+     * Count the points from an array of words
+     * @param data
+     * @returns {number}
+     */
     const countPoints = data => {
         let points = 0;
         data.forEach(term => {
             if (gameData.today.pangrams.includes(term)) {
                 points += term.length + 7;
-            } else if (term.length > 4) {
+            }
+            else if (term.length > 4) {
                 points += term.length;
-            } else {
+            }
+            else {
                 points += 1;
             }
         });
@@ -79,6 +97,11 @@
 
     allPoints = countPoints(gameData.today.answers);
 
+    /**
+     * Calculates points at launch and after adding a new word
+     *
+     * @returns {{Stats: [[string, number, number, *], [string, number, number, number]], Spoilers: (string|number|*)[][]}}
+     */
     const calculateUpdates = () => {
         const letterCount = countLetters();
         const letterKeys = Object.keys(letterCount);
@@ -118,7 +141,9 @@
         return updates;
     }
 
-    // calculate the stats and populate the panel
+    /**
+     * Update and populate statistic panels
+     */
     const updateStats = () => {
         foundTerms = [];
         foundPangrams = [];
@@ -145,7 +170,12 @@
         }
     };
 
-    // build a single entry in the term list
+    /**
+     * Build a single entry for the term list
+     *
+     * @param term
+     * @returns {*}
+     */
     const buildWordListItem = term => {
         const entry = createElement('li', {
             classNames: gameData.today.pangrams.includes(term) ?
@@ -162,7 +192,9 @@
         return entry;
     };
 
-    // display the solution after confirmation
+    /**
+     * Display the solution after confirmation
+     */
     const resolveGame = () => {
         if (confirm('Are you sure you want to display all answers?')) {
             observer.disconnect();
@@ -172,6 +204,13 @@
         }
     };
 
+    /**
+     * Create a single table row with an update record
+     *
+     * @param type
+     * @param data
+     * @returns {*}
+     */
     const buildTableRow = (type, data) => {
         const row = createElement('tr');
         data.forEach((entry, i) => {
@@ -182,7 +221,11 @@
         return row;
     }
 
-    // the little x in the top right corner
+    /**
+     * Build app closer (the little x in the top right corner)
+     *
+     * @returns {*}
+     */
     const buildCloser = () => {
         const closer = createElement('span', {
             classNames: ['closer'],
@@ -191,7 +234,7 @@
                 title: 'Close assistant'
             }
         });
-        closer.addEventListener('click', function(event) {
+        closer.addEventListener('click', function () {
             window.gameData.assistant = false;
             styles.remove();
             observer.disconnect();
@@ -200,7 +243,17 @@
         return closer;
     }
 
-    const buildDragger = (container) => {
+    const buildDragMechanism = (container) => {
+
+        gameContainer.addEventListener('dragstart', function (event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move"
+        });
+
+        gameContainer.addEventListener('ondragover', function (event) {
+            event.preventDefault();
+        });
+
         container.draggable = true;
         const dragger = createElement('div', {
             classNames: ['dragger'],
@@ -210,36 +263,38 @@
             }
         });
 
-        container.addEventListener('dragstart', function(event) {
+        container.addEventListener('dragstart', function (event) {
             event.stopPropagation();
             const style = getComputedStyle(this);
+            container.classList.add('dragging');
             this.dataset.right = style.getPropertyValue('right');
-            this.dataset.top  = style.getPropertyValue('top');
+            this.dataset.top = style.getPropertyValue('top');
             this.dataset.mouseX = event.clientX;
             this.dataset.mouseY = event.clientY;
-            event.dataTransfer.effectAllowed = 'move';
         }, false);
 
-        container.addEventListener('dragend', function(event) {
+        container.addEventListener('dragend', function (event) {
             event.stopPropagation();
             const mouseDiffX = event.clientX - this.dataset.mouseX;
             const mouseDiffY = event.clientY - this.dataset.mouseY;
             this.style.right = parseInt(this.dataset.right) - mouseDiffX + 'px';
             this.style.top = parseInt(this.dataset.top) + mouseDiffY + 'px';
+            container.classList.remove('dragging');
         }, false);
 
         return dragger;
     }
 
-    // build the additional panels
+    /**
+     * Build panels
+     */
     const buildPanels = () => {
-        const gameContainer = document.querySelector('.sb-content-box');
         const types = ['Stats', 'Spoilers', 'Solution'];
         const container = createElement('div', {
-            classNames: ['sb-assistant']
-        });    
+            classNames: ['sba']
+        });
 
-        container.append(buildDragger(container));
+        container.append(buildDragMechanism(container));
         container.append(buildCloser());
 
         types.forEach(type => {
@@ -256,9 +311,7 @@
             let content;
 
             if (type === 'Solution') {
-                content = createElement('div', {
-                    classNames: ['solution-content']
-                });
+                content = createElement('div');
                 const button = createElement('button', {
                     classNames: ['pz-modal__button', 'white'],
                     text: 'Display answers',
@@ -266,11 +319,12 @@
                         type: 'button'
                     }
                 });
-                button.addEventListener('pointerup', (event) => {
+                button.addEventListener('pointerup', () => {
                     resolveGame();
                 });
                 content.append(button);
-            } else {
+            }
+            else {
                 content = createElement('table');
                 const thead = createElement('thead');
                 thead.append(buildTableRow('th', ['', 'Found', 'Missing', 'Total']));
@@ -283,14 +337,31 @@
             panel.append(summary);
             panel.append(content);
 
+
             container.append(panel);
         });
+        const siteLinkBox = createElement('div',{
+            classNames: ['link']
+
+        })
+        const siteLink = createElement('a', {
+            text: 'Spelling Bee Assistant',
+            attributes: {
+                href: 'https://draber.github.io',
+                target: '_blank'
+            }
+        });
+        siteLinkBox.append(siteLink);
+        container.append(siteLinkBox);
         gameContainer.append(container);
     };
 
-
-    // listen to the result container and update the panels when adding a new term
-    observer = new MutationObserver((mutationsList, observer) => {
+    /**
+     * listen to the result container and update the panels when adding a new term
+     *
+     * @type {MutationObserver}
+     */
+    observer = new MutationObserver((mutationsList) => {
         // we're only interested in the very last mutation
         const mutation = mutationsList.pop();
         const node = mutation.addedNodes[0];
@@ -303,12 +374,16 @@
         childList: true
     });
 
-
+    /**
+     * Initialize app
+     *
+     * @returns {boolean}
+     */
     const init = () => {
-        if(window.location.pathname !== '/puzzles/spelling-bee') {
+        if (window.location.pathname !== '/puzzles/spelling-bee') {
             return false;
-        }        
-        if(window.gameData.assistant) {
+        }
+        if (window.gameData.assistant) {
             return false;
         }
         appendStyles();
@@ -317,6 +392,5 @@
         window.gameData.assistant = true;
         return true;
     }
-
     init();
 }());
