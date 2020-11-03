@@ -5,7 +5,7 @@ __Spelling Bee Assistant__ is a JavaScript bookmarklet for [Spelling Bee](https:
 
 ## How did you do this?
 
-You can study the JavaScript source code which is [right here](code/source.js). I used the Chrome console for development, then [compressed](code/compressed.js) the code with [terser](https://www.npmjs.com/package/terser) and eventually created the [bookmarklet](code/bookmarklet.js) from this compressed version with [bookmarklet](https://www.npmjs.com/package/bookmarklet).
+You can study the JavaScript source code which is [right here](src/js/source.js). I used the Chrome console for development, then [compressed](code/compressed.js) the code with [terser](https://www.npmjs.com/package/terser) and eventually created the [bookmarklet](code/bookmarklet.js) from this compressed version with [bookmarklet](https://www.npmjs.com/package/bookmarklet).
 
 The CSS code is written using SASS, you can [find it here](code/styles/scss/styles.scss). The CSS has been manually copied to `appendStyles()` in the JavaScript source file. Not the most elegant way, but it does what it should.
 

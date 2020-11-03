@@ -243,6 +243,11 @@
         return closer;
     }
 
+    /**
+     * Implement drag/drop
+     * @param container
+     * @returns {*}
+     */
     const buildDragMechanism = (container) => {
 
         gameContainer.addEventListener('dragstart', function (event) {
@@ -340,7 +345,7 @@
 
             container.append(panel);
         });
-        const siteLinkBox = createElement('div',{
+        const siteLinkBox = createElement('div', {
             classNames: ['link']
 
         })
