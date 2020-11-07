@@ -1,8 +1,30 @@
 {
-  "name": "prepros-project",
+  "name": "spelling-bee",
   "version": "1.0.0",
-  "description": "This is a dummy package.json file created by Prepros to manage packages with NPM. You can edit this file to add your own information.",
+  "description": "Assistant for NYT's Spelling Bee",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/draber/draber.github.io.git"
+  },
+  "author": "Dieter Raber",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/draber/draber.github.io/issues"
+  },
+  "homepage": "https://github.com/draber/draber.github.io#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  },
   "dependencies": {
-    "bookmarklet": "^1.0.4"
+    "bookmarklet": "^1.0.4",
+    "bookmarklet-styler": "file:tasks/bookmarklet-styler",
+    "commander": "^6.2.0",
+    "pugmarklet": "file:tasks/pugmarklet",
+    "pugsass": "file:tasks/pugsass",
+    "sass": "^1.29.0"
   }
 }

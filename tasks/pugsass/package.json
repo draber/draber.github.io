@@ -1,0 +1,20 @@
+{
+  "name": "pugsass",
+  "version": "1.0.0",
+  "description": "Converts SASS to CSS and wraps it in a pug <style> element",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sass",
+    "scss",
+    "pug"
+  ],
+  "author": "Dieter Raber",
+  "license": "MIT",
+  "dependencies": {
+    "sass": "^1.29.0",
+    "commander": "^6.2.0"
+  }
+}

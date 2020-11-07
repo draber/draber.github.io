@@ -1,6 +1,7 @@
-(function () {
+(function (w) {
     'use strict';
 
+    const gData = w.gameData.today;
     const gameContainer = document.querySelector('.sb-content-box');
     const resultContainer = gameContainer.querySelector('.sb-wordlist-items');
     const statListings = {};
@@ -40,12 +41,28 @@
     }
 
     /**
+     * Check if a confirmation is required before resolving the game
+     * @param value none = read, false = set to required, any other value = not required
+     */
+    const handleConfirmation = (value) => {
+    	const key = 'requireConfimation';
+    	switch(value) {
+    		case undefined:
+    			return !!localStorage.getItem(key);
+    		case false:
+    			return localStorage.removeItem(key);
+    		default:
+    			return localStorage.setItem(key, value);
+    	}		
+    }
+
+    /**
      * Add stylesheet
      */
     const appendStyles = () => {
         styles = createElement('style', {
-            // Paste compressed CSS here
-            text: `@charset "UTF-8";.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba{position:absolute;width:200px;right:-210px;top:16px;background:white;z-index:3;border:1px solid gainsboro;border-radius:6px;padding:0 10px 5px}.sba *{-webkit-box-sizing:border-box;box-sizing:border-box}.sba :focus{outline-color:transparent}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:0.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:5px}.sba details[open] summary:before{content:"－"}.sba summary{line-height:32px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:"＋";position:absolute;left:8px}.sba button{margin:10px auto;width:80%;display:block}.sba table{border:1px solid gainsboro;border-top:none;border-collapse:collapse;width:100%;font-size:85%}.sba td,.sba th{border:1px solid gainsboro;padding:3px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba .link{color:currentColor;opacity:0.6;font-size:10px;text-align:right;display:block;padding-top:3px}.sba .link:hover{opacity:0.8;text-decoration:underline}`
+            // will be replaced by task
+            text: `{{bookmarkletCss}}`
         });
         document.querySelector('head').append(styles);
     }
@@ -57,7 +74,7 @@
      */
     const countLetters = () => {
         const letterCount = {};
-        gameData.today.answers.forEach(term => {
+        gData.answers.forEach(term => {
             letterCount[term.length] = letterCount[term.length] || {
                 found: 0,
                 missing: 0,
@@ -82,7 +99,7 @@
     const countPoints = data => {
         let points = 0;
         data.forEach(term => {
-            if (gameData.today.pangrams.includes(term)) {
+            if (gData.pangrams.includes(term)) {
                 points += term.length + 7;
             }
             else if (term.length > 4) {
@@ -95,7 +112,7 @@
         return points;
     }
 
-    allPoints = countPoints(gameData.today.answers);
+    allPoints = countPoints(gData.answers);
 
     /**
      * Calculates points at launch and after adding a new word
@@ -112,7 +129,7 @@
                     'Words',
                     foundTerms.length,
                     remainders.length,
-                    gameData.today.answers.length
+                    gData.answers.length
                 ],
                 [
                     'Points',
@@ -125,8 +142,8 @@
                 [
                     'Pangrams',
                     foundPangrams.length,
-                    gameData.today.pangrams.length - foundPangrams.length,
-                    gameData.today.pangrams.length
+                    gData.pangrams.length - foundPangrams.length,
+                    gData.pangrams.length
                 ]
             ]
         }
@@ -151,12 +168,12 @@
         resultContainer.querySelectorAll('li').forEach(node => {
             const term = node.textContent;
             foundTerms.push(term);
-            if (gameData.today.pangrams.includes(term)) {
+            if (gData.pangrams.includes(term)) {
                 foundPangrams.push(term);
                 node.classList.add('sb-pangram');
             }
         });
-        remainders = gameData.today.answers.filter(term => !foundTerms.includes(term));
+        remainders = gData.answers.filter(term => !foundTerms.includes(term));
 
         const updates = calculateUpdates();
 
@@ -178,7 +195,7 @@
      */
     const buildWordListItem = term => {
         const entry = createElement('li', {
-            classNames: gameData.today.pangrams.includes(term) ?
+            classNames: gData.pangrams.includes(term) ?
                 ['sb-anagram', 'sb-pangram'] :
                 ['sb-anagram']
         });
@@ -328,6 +345,19 @@
                     resolveGame();
                 });
                 content.append(button);
+                const confirmationLabel = createElement('label', {
+                    text: 'Ask for confirmation'
+                });
+                const confirmationInput = createElement('label', {
+                    attributes: {
+                    	type: 'checkbox'
+                    }
+                });
+                confirmationInput.checked = handleConfirmation();
+                confirmationInput.addEventListener('click', function(event) {
+                	handleConfirmation(this.checked);
+                })
+
             }
             else {
                 content = createElement('table');
@@ -370,7 +400,7 @@
         // we're only interested in the very last mutation
         const mutation = mutationsList.pop();
         const node = mutation.addedNodes[0];
-        if (gameData.today.pangrams.includes(node.textContent)) {
+        if (gData.pangrams.includes(node.textContent)) {
             node.classList.add('sb-pangram');
         }
         updateStats();
@@ -398,4 +428,4 @@
         return true;
     }
     init();
-}());
+}(window));

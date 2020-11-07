@@ -1,0 +1,19 @@
+{
+  "name": "pugmarklet",
+  "version": "1.0.0",
+  "description": "Convert JavaScript code to a Pug snippet with a bookmarklet link",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bookmarklet",
+    "pug"
+  ],
+  "author": "Dieter Raber",
+  "license": "MIT",
+  "dependencies": {
+    "bookmarklet": "^1.0.4",
+    "commander": "^6.2.0"
+  }
+}

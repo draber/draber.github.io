@@ -1,0 +1,19 @@
+{
+  "name": "bookmarklet-styler",
+  "version": "1.0.0",
+  "description": "Inject CSS code into JavaScript code to create a version that can be tested in the browser console",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bookmarklet",
+    "css"
+  ],
+  "author": "Dieter Raber",
+  "license": "MIT",
+  "dependencies": {
+    "sass": "^1.29.0",
+    "minimist": "^1.2.5"
+  }
+}
