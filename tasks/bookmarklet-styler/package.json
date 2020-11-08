@@ -1,10 +1,13 @@
 {
   "name": "bookmarklet-styler",
   "version": "1.0.0",
-  "description": "Inject CSS code into JavaScript code to create a version that can be tested in the browser console",
-  "main": "index.js",
+  "description": "Create a copy of the bookmarklet source that contains the CSS code and can be tested in the browser console.",
+  "main": "bookmarklet-styler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "bookmarklet-styler": "bin/cli.js"
   },
   "keywords": [
     "bookmarklet",

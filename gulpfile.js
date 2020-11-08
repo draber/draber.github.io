@@ -1,4 +1,4 @@
-const pugsass = require('pugmarklet');
+const pugsass = require('bookmarklet-styler');
 
 function defaultTask(cb) {
   console.log('works')

@@ -22,7 +22,6 @@
   "dependencies": {
     "bookmarklet": "^1.0.4",
     "bookmarklet-styler": "file:tasks/bookmarklet-styler",
-    "commander": "^6.2.0",
     "pugmarklet": "file:tasks/pugmarklet",
     "pugsass": "file:tasks/pugsass",
     "sass": "^1.29.0"

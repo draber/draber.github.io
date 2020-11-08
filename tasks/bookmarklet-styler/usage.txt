@@ -1,15 +1,17 @@
-usage: bookmarklet-styler <source> <target> <stylesheet> [options]
+usage: bookmarklet-styler source stylesheet target [options]
 
-  Inject CSS code into JavaScript code to create a version that can be tested in the browser console.  
-  Stylesheets can be any be in CSS, SCSS or SASS format.
+  source                    Source code of the bookmarklet
+  stylesheet                CSS, SCSS or SASS file
+  target                    Combined file
 
 Options:
 
-  -m, --marker              Marker in source that should be replaced with CSS, default: bookmarkletCss
-  -s, --style               Output style. Can be nested (default), compact, compressed, or expanded.
+  -m, --marker              Marker in source that should be replaced with CSS, default: bookmarkletCss. 
+                            Inside the source the marker must be enclosed by '{{' and '}}'
+  -s, --style               Output style, can be nested (default), compact, compressed, or expanded. Used for SCSS or SASS only
   -h, --help                Display this help message
   -v, --version             Display the version
 
 Example: 
 
-  bookmarklet-styler js/source.js js/bookmarklet-base.js css/widget.scss -m cssMarker
+  bookmarklet-styler js/bookmarklet-source.js css/bookmarklet.scss js/bookmarklet-console.js -m cssMarker -s compact

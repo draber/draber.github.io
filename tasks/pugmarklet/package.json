@@ -2,9 +2,12 @@
   "name": "pugmarklet",
   "version": "1.0.0",
   "description": "Convert JavaScript code to a Pug snippet with a bookmarklet link",
-  "main": "index.js",
+  "main": "pugmarklet.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "pugmarklet": "bin/cli.js"
   },
   "keywords": [
     "bookmarklet",
@@ -14,6 +17,6 @@
   "license": "MIT",
   "dependencies": {
     "bookmarklet": "^1.0.4",
-    "commander": "^6.2.0"
+    "minimist": "^1.2.5"
   }
 }

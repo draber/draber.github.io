@@ -1,0 +1,16 @@
+usage: pugmarklet source target [options]
+
+  source                    Source code of the bookmarklet, already including the CSS
+                            This is the source code after applying bookmarklet-styler
+  target                    PUG file
+
+Options:
+
+  -s, --style               Output style, can be nested (default), compact, compressed, or expanded
+  -h, --help                Display this help message
+  -v, --version             Display the version
+
+Example: 
+
+  pugmarklet pugsass scss/style.scss pug/style.pug -s compressed
+  

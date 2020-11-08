@@ -61,7 +61,7 @@
      */
     const appendStyles = () => {
         styles = createElement('style', {
-            // will be replaced by task
+            // will be replaced by task CSS by task `bookmarklet-styler`
             text: `{{bookmarkletCss}}`
         });
         document.querySelector('head').append(styles);
