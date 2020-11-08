@@ -96,5 +96,20 @@ The source code is available under the MIT License from
 <p>No.</p>
 </section>
 </main>
+<script>
+document.querySelector('.bookmarklet').addEventListener('dragstart', e => {
+    const params = {
+        v: 1,
+        tid: 'UA-182372232-1',
+        cid: Date.now(),
+        t: 'event',
+        aip: '1',
+        ec: 'SBA Download',
+        ea: e.type,
+        el: '1.0.0'
+    }
+    window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams(params).toString());
+}, false);
+</script>
 </body>
 </html>
