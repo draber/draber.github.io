@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <title>Spelling Bee Assistant</title>
 <style>
-html{line-height:1.15;-webkit-text-size-adjust:100%;color:#222;font-size:62.5%;-webkit-box-sizing:border-box;box-sizing:border-box}*,:after,:before{-webkit-box-sizing:inherit;box-sizing:inherit}body{margin:0;font:1.6rem -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"}main.wrapper{padding-top:10rem}h1{margin:0}a{background-color:transparent}strong{font-weight:bolder}img{border-style:none;vertical-align:middle}::-moz-selection{background:#f8cd05}::selection{background:#f8cd05}header{position:fixed;border-bottom:1px solid gainsboro;width:100%;background:white;padding:2rem 0;top:0;z-index:1}.twitter-share-button{position:absolute!important;bottom:0.5rem;right:0}.wrapper{margin:0 auto;max-width:1040px;padding:0 2rem;position:relative}.bookmarklet{background:#f8cd05;padding:8px 16px;text-decoration:none;color:currentColor;display:inline-block;margin-top:10px;border-radius:3px;cursor:move}.panels{display:-ms-grid;display:grid;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-ms-grid-columns:minmax(0,1fr) 60px minmax(0,1fr) 60px minmax(0,1fr);grid-template-columns:repeat(3,minmax(0,1fr));-webkit-column-gap:60px;-moz-column-gap:60px;column-gap:60px}.hidden{display:none!important}@media screen and (max-width:1024px){.panels{display:block}}@media print{*{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}:before{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}:after{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}a{text-decoration:underline}a:visited{text-decoration:underline}a[href]:after{content:" (" attr(href) ")"}abbr[title]:after{content:" (" attr(title) ")"}a[href^="#"]:after{content:""}a[href^="javascript:"]:after{content:""}p{orphans:3;widows:3}h2{orphans:3;widows:3;page-break-after:avoid}h3{orphans:3;widows:3;page-break-after:avoid}}
+html{line-height:1.15;-webkit-text-size-adjust:100%;color:#222;font-size:62.5%;-webkit-box-sizing:border-box;box-sizing:border-box}*,:after,:before{-webkit-box-sizing:inherit;box-sizing:inherit}body{margin:0;font:1.6rem -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"}main.wrapper{padding-top:10rem}h1{margin:0}a{background-color:transparent}strong{font-weight:bolder}img{border-style:none;vertical-align:middle;max-width:100%}::-moz-selection{background:#f8cd05}::selection{background:#f8cd05}header{position:fixed;border-bottom:1px solid gainsboro;width:100%;background:white;padding:2rem 0;top:0;z-index:1}.twitter-share-button{position:absolute!important;bottom:0.5rem;right:0}.wrapper{margin:0 auto;max-width:1040px;padding:0 2rem;position:relative}.bookmarklet{background:#f8cd05;padding:8px 16px;text-decoration:none;color:currentColor;display:inline-block;margin-top:10px;border-radius:3px;cursor:move}.panels{display:-ms-grid;display:grid;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-ms-grid-columns:minmax(0,1fr) 60px minmax(0,1fr) 60px minmax(0,1fr);grid-template-columns:repeat(3,minmax(0,1fr));-webkit-column-gap:60px;-moz-column-gap:60px;column-gap:60px}.hidden{display:none!important}@media screen and (max-width:1024px){.panels{display:block}}@media print{*{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}:before{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}:after{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}a{text-decoration:underline}a:visited{text-decoration:underline}a[href]:after{content:" (" attr(href) ")"}abbr[title]:after{content:" (" attr(title) ")"}a[href^="#"]:after{content:""}a[href^="javascript:"]:after{content:""}p{orphans:3;widows:3}h2{orphans:3;widows:3;page-break-after:avoid}h3{orphans:3;widows:3;page-break-after:avoid}}
 
 </style>
 <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -17,6 +17,7 @@ html{line-height:1.15;-webkit-text-size-adjust:100%;color:#222;font-size:62.5%;-
 <meta content="@d_raber" name="twitter:site">
 <meta content="Spelling Bee Assistant" property="og:site_name">
 <meta content="Spelling Bee Assistant" name="twitter:image:alt">
+<link rel="icon" href="img/favicon.png" type="image/png">
 </head>
 <body>
 <header>
@@ -36,14 +37,14 @@ is a JavaScript bookmarklet for
 </p>
 <p>In case you haven’t heard of bookmarklets before, they are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks in your browser’s bookmark menu.</p>
 <p>
-<img alt="Bookmarks" src="img/bookmarklet.png">
+<img alt="Bookmarks" src="img/bookmarklet.png"><br />
 </p>
-<p>This bookmarklet adds three new panels to the game, data will be updated as you progress.</p>
+<p>This bookmarklet adds a new panel with three sections to the game, data will be updated as you progress.</p>
 <div class="panels">
 <div>
 <h3>Stats</h3>
 <img alt="Game stats" src="img/stats.png">
-<p>This one shows some statistics but contains no spoilers.</p>
+<p>This one shows some statistics but contains - apart from total number of points - no spoilers.</p>
 </div>
 <div>
 <h3>Spoilers</h3>
@@ -53,14 +54,14 @@ is a JavaScript bookmarklet for
 <div>
 <h3>Solution</h3>
 <img alt="Solution" src="img/solution.png">
-<p>The third panel hides a button that - upon confirmation - will solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find yourself will be linked to the respective terms in Google. Maybe this will help you next time!</p>
+<p>The third panel hides a button that - upon confirmation - will solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
 </div>
 </div>
 </section>
 <section>
 <h2>Installation</h2>
 <p>
-<em>Note: If you already have an older version of the bookmarklet you should delete it first, otherwise it might be difficult to tell both versions apart.</em>
+<em>Note: If you already have an older version of the bookmarklet you should delete it first (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em>
 </p>
 <p>
 Drag and drop the bookmarklet below into your browser’s bookmark menu
@@ -84,17 +85,42 @@ and won’t work in Internet Explorer.
 <p>
 According to
 <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html">this article</a>
-other people have been creating similar tools, which the Spelling Bee community seems to be fond of.
+other people have been creating 
+<a href="https://www.shunn.net/bee/">tools with a similar purpose</a>,
+which the Spelling Bee community seems to be fond of.
 </p>
-<p>Start the game without the extra panels, then at some point you can display the stats. Do yourself the favor and make a serious effort to solve the game before you click on the magic button. The button is meant to be a last resort, when you eventually run out of ideas and frustration hits.</p>
-<h2>How did you do this? | I discovered a bug | I would like to ask for a new feature</h2>
+<p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the 
+<em>Spoilers</em>
+panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
+<h2>How did you do this?</h2>
 <p>
 The source code is available under the MIT License from
 <a href="https://github.com/draber/draber.github.io">this repository</a>.
 </p>
+<h2>I discovered a bug | I would like to ask for a new feature</h2>
+<p>
+You can report bugs or request features 
+<a href="https://github.com/draber/draber.github.io/issues">here</a>.
+Keep in mind that this is as a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.
+</p> 
 <h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
 <p>No.</p>
 </section>
 </main>
+<script>
+document.querySelector('.bookmarklet').addEventListener('dragstart', e => {
+    const params = {
+        v: 1,
+        tid: 'UA-182372232-1',
+        cid: Date.now(),
+        t: 'event',
+        aip: '1',
+        ec: 'SBA Download',
+        ea: e.type,
+        el: '1.0.0'
+    }
+    window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams(params).toString());
+}, false);
+</script>
 </body>
 </html>
