@@ -65,7 +65,7 @@ $colorPaleText: #888;
         &[open] {
             summary {
                 &:before {
-                    content: '\FF0D';
+                    content: "\ff0d";
                 }
             }
         }
@@ -82,7 +82,7 @@ $colorPaleText: #888;
             display: none
         }
         &:before {
-            content: '\FF0B';
+            content: "\ff0b";
             position: absolute;
             left: 8px;
         }

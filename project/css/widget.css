@@ -58,7 +58,7 @@
 }
 
 .sba details[open] summary:before {
-  content: '\FF0D';
+  content: "\ff0d";
 }
 
 .sba summary {
@@ -75,7 +75,7 @@
 }
 
 .sba summary:before {
-  content: '\FF0B';
+  content: "\ff0b";
   position: absolute;
   left: 8px;
 }

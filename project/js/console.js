@@ -39,13 +39,14 @@
         return element;
     }
 
+    
     /**
      * Add stylesheet
      */
     const appendStyles = () => {
         styles = createElement('style', {
             // This will be replaced by the actual CSS
-            text: `.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px solid #f8cd05}.sb-wordlist-items .sb-anagram a{color:#888}.sba{position:absolute;width:200px;right:-210px;top:16px;background:#fff;z-index:3;border:1px solid #dcdcdc;border-radius:6px;padding:0 10px 5px}.sba *{box-sizing:border-box}.sba :focus{outline-color:transparent}.sba .dragger{font-weight:700;cursor:move;line-height:32px}.sba.dragging{opacity:.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:700;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:5px}.sba details[open] summary:before{content:"\FF0D"}.sba summary{line-height:32px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:"\FF0B";position:absolute;left:8px}.sba button{margin:10px auto;width:80%;display:block}.sba table{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%}.sba td,.sba th{border:1px solid #dcdcdc;padding:3px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba .link{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:3px}.sba .link:hover{opacity:.8;text-decoration:underline}`
+            text: `.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px solid #f8cd05}.sb-wordlist-items .sb-anagram a{color:#888}.sba{position:absolute;width:200px;right:-210px;top:16px;background:#fff;z-index:3;border:1px solid #dcdcdc;border-radius:6px;padding:0 10px 5px}.sba *{box-sizing:border-box}.sba :focus{outline-color:transparent}.sba .dragger{font-weight:700;cursor:move;line-height:32px}.sba.dragging{opacity:.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:700;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:5px}.sba details[open] summary:before{content:"\ff0d"}.sba summary{line-height:32px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:"\ff0b";position:absolute;left:8px}.sba button{margin:10px auto;width:80%;display:block}.sba table{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%}.sba td,.sba th{border:1px solid #dcdcdc;padding:3px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba .link{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:3px}.sba .link:hover{opacity:.8;text-decoration:underline}`
         });
         document.querySelector('head').append(styles);
     }
@@ -352,7 +353,7 @@
 
         })
         const siteLink = createElement('a', {
-            text: 'Spelling Bee Assistant ',
+            text: 'Spelling Bee Assistant 1.3.0',
             attributes: {
                 href: 'https://draber.github.io',
                 target: '_blank'
