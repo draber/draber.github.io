@@ -1,123 +1,87 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-<meta charset="utf-8">
-<title>Spelling Bee Assistant</title>
-<style>
-html{line-height:1.15;-webkit-text-size-adjust:100%;color:#222;font-size:62.5%;-webkit-box-sizing:border-box;box-sizing:border-box}*,:after,:before{-webkit-box-sizing:inherit;box-sizing:inherit}body{margin:0;font:1.6rem -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"}main.wrapper{padding-top:10rem}h1{margin:0}a{background-color:transparent}strong{font-weight:bolder}img{border-style:none;vertical-align:middle;max-width:100%}::-moz-selection{background:#f8cd05}::selection{background:#f8cd05}header{position:fixed;border-bottom:1px solid gainsboro;width:100%;background:white;padding:2rem 0;top:0;z-index:1}.twitter-share-button{position:absolute!important;bottom:0.5rem;right:0}.wrapper{margin:0 auto;max-width:1040px;padding:0 2rem;position:relative}.bookmarklet{background:#f8cd05;padding:8px 16px;text-decoration:none;color:currentColor;display:inline-block;margin-top:10px;border-radius:3px;cursor:move}.panels{display:-ms-grid;display:grid;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-ms-grid-columns:minmax(0,1fr) 60px minmax(0,1fr) 60px minmax(0,1fr);grid-template-columns:repeat(3,minmax(0,1fr));-webkit-column-gap:60px;-moz-column-gap:60px;column-gap:60px}.hidden{display:none!important}@media screen and (max-width:1024px){.panels{display:block}}@media print{*{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}:before{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}:after{background:#fff!important;color:#000!important;-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}a{text-decoration:underline}a:visited{text-decoration:underline}a[href]:after{content:" (" attr(href) ")"}abbr[title]:after{content:" (" attr(title) ")"}a[href^="#"]:after{content:""}a[href^="javascript:"]:after{content:""}p{orphans:3;widows:3}h2{orphans:3;widows:3;page-break-after:avoid}h3{orphans:3;widows:3;page-break-after:avoid}}
-
-</style>
-<meta content="width=device-width, initial-scale=1" name="viewport">
-<meta content="Spelling Bee Assistant" property="og:title">
-<meta content="Assistant for Spelling Bee, the New York Times’ popular word puzzle." property="og:description">
-<meta content="https://draber.github.io/img/social.png" property="og:image">
-<meta content="https://draber.github.io/" property="og:url">
-<meta content="summary_large_image" name="twitter:card">
-<meta content="@d_raber" name="twitter:site">
-<meta content="Spelling Bee Assistant" property="og:site_name">
-<meta content="Spelling Bee Assistant" name="twitter:image:alt">
-<link rel="icon" href="img/favicon.png" type="image/png">
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta charset="utf-8">
+    <title>Spelling Bee Assistant</title>
+    <style>html{line-height:1.15;-webkit-text-size-adjust:100%;color:#222;font-size:62.5%;box-sizing:border-box}*,:after,:before{box-sizing:inherit}body{margin:0;font:1.6rem -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji}main.wrapper{padding-top:10rem}h1{margin:0}h2{margin:2rem 0 1rem}a{background-color:transparent}strong{font-weight:bolder}img{border-style:none;vertical-align:middle;max-width:100%}::-moz-selection{background:#f8cd05}::selection{background:#f8cd05}header{position:fixed;border-bottom:1px solid #dcdcdc;width:100%;background:#fff;padding:2rem 0;top:0;z-index:1}.twitter-share-button{position:absolute!important;bottom:.5rem;right:0}.wrapper{margin:0 auto;max-width:1040px;padding:0 2rem;position:relative}.bookmarklet{background:#f8cd05;padding:8px 16px;text-decoration:none;color:currentColor;display:inline-block;margin-top:10px;border-radius:3px;cursor:move}.panels{display:grid;justify-content:space-between;grid-template-columns:repeat(3,minmax(0,1fr));-moz-column-gap:60px;column-gap:60px}.hidden{display:none!important}@media screen and (max-width:1024px){.panels{display:block}}@media print{*,:after,:before{background:#fff!important;color:#000!important;box-shadow:none!important;text-shadow:none!important}a,a:visited{text-decoration:underline}a[href]:after{content:" (" attr(href) ")"}abbr[title]:after{content:" (" attr(title) ")"}a[href^="#"]:after,a[href^="javascript:"]:after{content:""}p{orphans:3;widows:3}h2,h3{orphans:3;widows:3;page-break-after:avoid}}</style>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="Spelling Bee Assistant" property="og:title">
+    <meta content="Assistant for Spelling Bee, the New York Times’ popular word puzzle." property="og:description">
+    <meta content="https://draber.github.io/img/social.png" property="og:image">
+    <meta content="https://draber.github.io/" property="og:url">
+    <meta content="summary_large_image" name="twitter:card">
+    <meta content="@d_raber" name="twitter:site">
+    <meta content="Spelling Bee Assistant" property="og:site_name">
+    <meta content="Spelling Bee Assistant" name="twitter:image:alt">
+    <link rel="icon" href="data:image/png;base64,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" type="image/png">
 </head>
-<header>
-  <div class="wrapper">
-    <h1>Spelling Bee Assistant</h1><a class="twitter-share-button" data-show-count="false" href="https://twitter.com/share?ref_src=twsrc%5Etfw">Tweet</a>
-    <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
-  </div>
-</header>
-<main class="wrapper">
-<section>
-<h2>What is this?</h2>
-<p>
-<strong>Spelling Bee Assistant</strong>
-is a JavaScript bookmarklet for
-<a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.
-</p>
-<p>In case you haven’t heard of bookmarklets before, they are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks in your browser’s bookmark menu.</p>
-<p>
-<img alt="Bookmarks" src="img/bookmarklet.png"><br />
-</p>
-<p>This bookmarklet adds a new panel with three sections to the game, data will be updated as you progress.</p>
-<div class="panels">
-<div>
-<h3>Stats</h3>
-<img alt="Game stats" src="img/stats.png">
-<p>This one shows some statistics but contains - apart from total number of points - no spoilers.</p>
-</div>
-<div>
-<h3>Spoilers</h3>
-<img alt="Spoilers" src="img/spoilers.png">
-<p>This one is similar but it gives away information that you probably don’t want to know early on.</p>
-</div>
-<div>
-<h3>Solution</h3>
-<img alt="Solution" src="img/solution.png">
-<p>The third panel hides a button that - upon confirmation - will solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
-</div>
-</div>
-</section>
-<section>
-<h2>Installation</h2>
-<p>
-<em>Note: If you already have an older version of the bookmarklet you should delete it first (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em>
-</p>
-<p>
-Drag and drop the bookmarklet below into your browser’s bookmark menu
-<br>
-<a class="bookmarklet" href="javascript:(function()%7B%22use%20strict%22%3Bvar%20_slicedToArray%3Dfunction(t%2Ce)%7Bif(Array.isArray(t))return%20t%3Bif(Symbol.iterator%20in%20Object(t))return%20function(t%2Ce)%7Bvar%20a%3D%5B%5D%2Cn%3D!0%2Cr%3D!1%2Co%3Dvoid%200%3Btry%7Bfor(var%20s%2Ci%3Dt%5BSymbol.iterator%5D()%3B!(n%3D(s%3Di.next()).done)%26%26(a.push(s.value)%2C!e%7C%7Ca.length!%3D%3De)%3Bn%3D!0)%3B%7Dcatch(t)%7Br%3D!0%2Co%3Dt%7Dfinally%7Btry%7B!n%26%26i.return%26%26i.return()%7Dfinally%7Bif(r)throw%20o%7D%7Dreturn%20a%7D(t%2Ce)%3Bthrow%20new%20TypeError(%22Invalid%20attempt%20to%20destructure%20non-iterable%20instance%22)%7D%3Bfunction%20_toConsumableArray(t)%7Bif(Array.isArray(t))%7Bfor(var%20e%3D0%2Ca%3DArray(t.length)%3Be%3Ct.length%3Be%2B%2B)a%5Be%5D%3Dt%5Be%5D%3Breturn%20a%7Dreturn%20Array.from(t)%7D!function()%7Bfunction%20s(t%2Ce)%7Bvar%20a%3D1%3Carguments.length%26%26void%200!%3D%3De%3Fe%3A%7B%7D%2Ce%3Dvoid%200%3D%3D%3D(n%3Da.text)%3F%22%22%3An%2Cn%3Dvoid%200%3D%3D%3D(n%3Da.classNames)%3F%5B%5D%3An%2Cr%3Dvoid%200%3D%3D%3D(a%3Da.attributes)%3F%7B%7D%3Aa%2Co%3Ddocument.createElement(t)%3Bn.length%26%26(t%3Do.classList).add.apply(t%2C_toConsumableArray(n))%2C%22%22!%3D%3De%26%26(o.textContent%3De)%3Bvar%20s%3D!0%2Ci%3D!1%2Cd%3Dvoid%200%3Btry%7Bfor(var%20l%3DObject.entries(r)%5BSymbol.iterator%5D()%3B!(s%3D(u%3Dl.next()).done)%3Bs%3D!0)%7Bvar%20p%3Du.value%2Cu%3D_slicedToArray(p%2C2)%2Cp%3Du%5B0%5D%2Cu%3Du%5B1%5D%3Bu%26%26o.setAttribute(p%2Cu)%7D%7Dcatch(t)%7Bi%3D!0%2Cd%3Dt%7Dfinally%7Btry%7B!s%26%26l.return%26%26l.return()%7Dfinally%7Bif(i)throw%20d%7D%7Dreturn%20o%7Dfunction%20i(t)%7Bvar%20e%3D0%3Breturn%20t.forEach(function(t)%7BgameData.today.pangrams.includes(t)%3Fe%2B%3Dt.length%2B7%3A4%3Ct.length%3Fe%2B%3Dt.length%3Ae%2B%3D1%7D)%2Ce%7Dfunction%20d()%7Bc%3D%5B%5D%2Cg%3D%5B%5D%2Cp.querySelectorAll(%22li%22).forEach(function(t)%7Bvar%20e%3Dt.textContent%3Bc.push(e)%2CgameData.today.pangrams.includes(e)%26%26(g.push(e)%2Ct.classList.add(%22sb-pangram%22))%7D)%2Cb%3DgameData.today.answers.filter(function(t)%7Breturn!c.includes(t)%7D)%3Bvar%20a%3Dfunction()%7Bvar%20e%2Ca%3D(e%3D%7B%7D%2CgameData.today.answers.forEach(function(t)%7Be%5Bt.length%5D%3De%5Bt.length%5D%7C%7C%7Bfound%3A0%2Cmissing%3A0%2Ctotal%3A0%7D%2Cc.includes(t)%3Fe%5Bt.length%5D.found%2B%2B%3Ae%5Bt.length%5D.missing%2B%2B%2Ce%5Bt.length%5D.total%2B%2B%7D)%2Ce)%2Ct%3DObject.keys(a)%3Bt.sort(function(t%2Ce)%7Breturn%20t-e%7D)%3Bvar%20n%3D%7BStats%3A%5B%5B%22Words%22%2Cc.length%2Cb.length%2CgameData.today.answers.length%5D%2C%5B%22Points%22%2Ci(c)%2Ci(b)%2Ch%5D%5D%2CSpoilers%3A%5B%5B%22Pangrams%22%2Cg.length%2CgameData.today.pangrams.length-g.length%2CgameData.today.pangrams.length%5D%5D%7D%3Breturn%20t.forEach(function(t)%7Bn.Spoilers.push(%5Bt%2B%22%20%22%2B(1%3Ct%3F%22letters%22%3A%22letter%22)%2Ca%5Bt%5D.found%2Ca%5Bt%5D.missing%2Ca%5Bt%5D.total%5D)%7D)%2Cn%7D()%2Ct%3D!0%2Ce%3D!1%2Cn%3Dvoid%200%3Btry%7Bfor(var%20r%3DObject.entries(u)%5BSymbol.iterator%5D()%3B!(t%3D(o%3Dr.next()).done)%3Bt%3D!0)%7Bvar%20o%3Do.value%2Co%3D_slicedToArray(o%2C2)%3B!function(t%2Ce)%7Ba%5Bt%5D.length%26%26(e.innerHTML%3D%22%22%2Ca%5Bt%5D.forEach(function(t)%7Be.append(m(%22td%22%2Ct))%7D))%7D(o%5B0%5D%2Co%5B1%5D)%7D%7Dcatch(t)%7Be%3D!0%2Cn%3Dt%7Dfinally%7Btry%7B!t%26%26r.return%26%26r.return()%7Dfinally%7Bif(e)throw%20n%7D%7D%7Dfunction%20l()%7Bconfirm(%22Are%20you%20sure%20you%20want%20to%20display%20all%20answers%3F%22)%26%26(a.disconnect()%2Cb.forEach(function(t)%7Bvar%20e%3Bp.append((e%3Dt%2C(t%3Ds(%22li%22%2C%7BclassNames%3AgameData.today.pangrams.includes(e)%3F%5B%22sb-anagram%22%2C%22sb-pangram%22%5D%3A%5B%22sb-anagram%22%5D%7D)).append(s(%22a%22%2C%7Btext%3Ae%2Cattributes%3A%7Bhref%3A%22https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3D%22%2Be%2Ctarget%3A%22_blank%22%7D%7D))%2Ct))%7D))%7Dvar%20n%3Ddocument.querySelector(%22.sb-content-box%22)%2Cp%3Dn.querySelector(%22.sb-wordlist-items%22)%2Cu%3D%7B%7D%2Ca%3Dvoid%200%2Cr%3Dvoid%200%2Cc%3D%5B%5D%2Cg%3D%5B%5D%2Cb%3D%5B%5D%2Ch%3Di(gameData.today.answers)%2Cm%3Dfunction(a%2Ct)%7Bvar%20n%3Ds(%22tr%22)%3Breturn%20t.forEach(function(t%2Ce)%7Bn.append(s(0%3D%3D%3De%3F%22th%22%3Aa%2C%7Btext%3At%7D))%7D)%2Cn%7D%3B(a%3Dnew%20MutationObserver(function(t)%7Bt%3Dt.pop().addedNodes%5B0%5D%3BgameData.today.pangrams.includes(t.textContent)%26%26t.classList.add(%22sb-pangram%22)%2Cd()%7D)).observe(p%2C%7BchildList%3A!0%7D)%2C%22%2Fpuzzles%2Fspelling-bee%22!%3D%3Dwindow.location.pathname%7C%7Cwindow.gameData.assistant%7C%7C(r%3Ds(%22style%22%2C%7Btext%3A&#39;%40charset%20%22UTF-8%22%3B.sb-content-box%7Bposition%3Arelative%7D.sb-wordlist-items%20.sb-pangram%7Bborder-bottom%3A2px%20%23f8cd05%20solid%7D.sb-wordlist-items%20.sb-anagram%20a%7Bcolor%3A%23888%7D.sba%7Bposition%3Aabsolute%3Bwidth%3A200px%3Bright%3A-210px%3Btop%3A16px%3Bbackground%3Awhite%3Bz-index%3A3%3Bborder%3A1px%20solid%20gainsboro%3Bborder-radius%3A6px%3Bpadding%3A0%2010px%205px%7D.sba%20*%7B-webkit-box-sizing%3Aborder-box%3Bbox-sizing%3Aborder-box%7D.sba%20%3Afocus%7Boutline-color%3Atransparent%7D.sba%20.dragger%7Bfont-weight%3Abold%3Bcursor%3Amove%3Bline-height%3A32px%7D.sba.dragging%7Bopacity%3A0.5%3Bborder-style%3Adashed%7D.sba%20.closer%7Bfont-size%3A20px%3Bfont-weight%3Abold%3Bposition%3Aabsolute%3Btop%3A0%3Bright%3A0%3Bline-height%3A32px%3Bpadding%3A0%2010px%3Bcursor%3Apointer%7D.sba%20details%7Bfont-size%3A90%25%3Bmargin-bottom%3A5px%7D.sba%20details%5Bopen%5D%20summary%3Abefore%7Bcontent%3A%22%EF%BC%8D%22%7D.sba%20summary%7Bline-height%3A32px%3Bpadding%3A0%2015px%200%2025px%3Bbackground%3A%23f8cd05%3Bcursor%3Apointer%3Blist-style%3Anone%3Bposition%3Arelative%7D.sba%20summary%3A%3A-webkit-details-marker%7Bdisplay%3Anone%7D.sba%20summary%3Abefore%7Bcontent%3A%22%EF%BC%8B%22%3Bposition%3Aabsolute%3Bleft%3A8px%7D.sba%20button%7Bmargin%3A10px%20auto%3Bwidth%3A80%25%3Bdisplay%3Ablock%7D.sba%20table%7Bborder%3A1px%20solid%20gainsboro%3Bborder-top%3Anone%3Bborder-collapse%3Acollapse%3Bwidth%3A100%25%3Bfont-size%3A85%25%7D.sba%20td%2C.sba%20th%7Bborder%3A1px%20solid%20gainsboro%3Bpadding%3A3px%7D.sba%20thead%20th%7Btext-align%3Acenter%7D.sba%20tbody%20th%7Btext-align%3Aright%7D.sba%20tbody%20td%7Btext-align%3Acenter%7D.sba%20.link%7Bcolor%3AcurrentColor%3Bopacity%3A0.6%3Bfont-size%3A10px%3Btext-align%3Aright%3Bdisplay%3Ablock%3Bpadding-top%3A3px%7D.sba%20.link%3Ahover%7Bopacity%3A0.8%3Btext-decoration%3Aunderline%7D&#39;%7D)%2Cdocument.querySelector(%22head%22).append(r)%2Cfunction()%7Bvar%20o%3Ds(%22div%22%2C%7BclassNames%3A%5B%22sba%22%5D%7D)%3Bo.append(function(a)%7Bn.addEventListener(%22dragstart%22%2Cfunction(t)%7Bt.preventDefault()%2Ct.dataTransfer.dropEffect%3D%22move%22%7D)%2Cn.addEventListener(%22dragover%22%2Cfunction(t)%7Bt.preventDefault()%7D)%2Ca.draggable%3D!0%3Bvar%20t%3Ds(%22div%22%2C%7BclassNames%3A%5B%22dragger%22%5D%2Ctext%3A%22Assistant%22%2Cattributes%3A%7Btitle%3A%22Hold%20the%20mouse%20down%20to%20drag%20assistant%22%7D%7D)%3Breturn%20a.addEventListener(%22dragstart%22%2Cfunction(t)%7Bt.stopPropagation()%3Bvar%20e%3DgetComputedStyle(this)%3Ba.classList.add(%22dragging%22)%2Cthis.dataset.right%3De.getPropertyValue(%22right%22)%2Cthis.dataset.top%3De.getPropertyValue(%22top%22)%2Cthis.dataset.mouseX%3Dt.clientX%2Cthis.dataset.mouseY%3Dt.clientY%7D%2C!1)%2Ca.addEventListener(%22dragend%22%2Cfunction(t)%7Bt.stopPropagation()%3Bvar%20e%3Dt.clientX-this.dataset.mouseX%2Ct%3Dt.clientY-this.dataset.mouseY%3Bthis.style.right%3DparseInt(this.dataset.right)-e%2B%22px%22%2Cthis.style.top%3DparseInt(this.dataset.top)%2Bt%2B%22px%22%2Ca.classList.remove(%22dragging%22)%7D%2C!1)%2Ct%7D(o))%2Co.append(((e%3Ds(%22span%22%2C%7BclassNames%3A%5B%22closer%22%5D%2Ctext%3A%22%C3%97%22%2Cattributes%3A%7Btitle%3A%22Close%20assistant%22%7D%7D)).addEventListener(%22click%22%2Cfunction()%7Bwindow.gameData.assistant%3D!1%2Cr.remove()%2Ca.disconnect()%2Cthis.parentNode.remove()%7D)%2Ce))%2C%5B%22Stats%22%2C%22Spoilers%22%2C%22Solution%22%5D.forEach(function(t)%7Bvar%20e%2Ca%3Ds(%22details%22%2C%7Battributes%3A%7Bopen%3A%22Stats%22%3D%3D%3Dt%26%26%22open%22%7D%7D)%2Cn%3Ds(%22summary%22%2C%7Btext%3At%7D)%2Cr%3Dvoid%200%3B%22Solution%22%3D%3D%3Dt%3F(r%3Ds(%22div%22)%2C(e%3Ds(%22button%22%2C%7BclassNames%3A%5B%22pz-modal__button%22%2C%22white%22%5D%2Ctext%3A%22Display%20answers%22%2Cattributes%3A%7Btype%3A%22button%22%7D%7D)).addEventListener(%22pointerup%22%2Cfunction()%7Bl()%7D)%2Cr.append(e))%3A(r%3Ds(%22table%22)%2C(e%3Ds(%22thead%22)).append(m(%22th%22%2C%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D))%2Cu%5Bt%5D%3Ds(%22tbody%22)%2Cr.append(e)%2Cr.append(u%5Bt%5D)%2Cd())%2Ca.append(n)%2Ca.append(r)%2Co.append(a)%7D)%3Bvar%20t%3Ds(%22div%22%2C%7BclassNames%3A%5B%22link%22%5D%7D)%2Ce%3Ds(%22a%22%2C%7Btext%3A%22Spelling%20Bee%20Assistant%22%2Cattributes%3A%7Bhref%3A%22https%3A%2F%2Fdraber.github.io%22%2Ctarget%3A%22_blank%22%7D%7D)%3Bt.append(e)%2Co.append(t)%2Cn.append(o)%7D()%2Cd()%2Cwindow.gameData.assistant%3D!0)%7D()%3B%7D)()" title="Hold the mouse key down and drag this into your bookmark menu">Spelling Bee Assistant</a>
-</p>
-<p>
-Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant. You can drag it anywhere on the page by grabbing it at the top and close it by clicking on the
-<b>×</b>
-symbol.
-</p>
-</section>
-<section>
-<h2>Does it work everywhere?</h2>
-<p>
-The assistant is not suitable for the mobile version of the game and has only been tested in the desktop version. It requires a
-<a href="https://caniuse.com/details">modern browser</a>
-and won’t work in Internet Explorer.
-</p>
-<h2>Does it not spoil the game?</h2>
-<p>
-According to
-<a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html">this article</a>
-other people have been creating 
-<a href="https://www.shunn.net/bee/">tools with a similar purpose</a>,
-which the Spelling Bee community seems to be fond of.
-</p>
-<p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the 
-<em>Spoilers</em>
-panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
-<h2>How did you do this?</h2>
-<p>
-The source code is available under the MIT License from
-<a href="https://github.com/draber/draber.github.io">this repository</a>.
-</p>
-<h2>I discovered a bug | I would like to ask for a new feature</h2>
-<p>
-You can report bugs or request features 
-<a href="https://github.com/draber/draber.github.io/issues">here</a>.
-Keep in mind that this is as a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.
-</p> 
-<h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
-<p>No.</p>
-</section>
-</main>
-<script>
-document.querySelector('.bookmarklet').addEventListener('dragstart', e => {
-    const params = {
-        v: 1,
-        tid: 'UA-182372232-1',
-        cid: Date.now(),
-        t: 'event',
-        aip: '1',
-        ec: 'SBA Download',
-        ea: e.type,
-        el: '1.0.0'
-    }
-    window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams(params).toString());
-}, false);
-</script>
+<body>
+    <header>
+        <div class="wrapper">
+            <h1>Spelling Bee Assistant</h1>
+            <a class="twitter-share-button" data-show-count="false" href="https://twitter.com/share?ref_src=twsrc%5Etfw">Tweet</a>
+            <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
+        </div>
+    </header>
+    <main class="wrapper">
+        <section>
+            <h2>What is this?</h2>
+            <p><strong>Spelling Bee Assistant</strong> is a JavaScript bookmarklet for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
+            <p>In case you haven’t heard of bookmarklets before, they are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks in your browser’s bookmark menu.</p>
+            <p><img alt="Bookmarks" src="img/bookmarklet.png"><br /></p>
+            <p>This bookmarklet adds a new panel with three sections to the game, data will be updated as you progress.</p>
+            <div class="panels">
+                <div>
+                    <h3>Stats</h3>
+                    <img alt="Game stats" src="img/stats.png">
+                    <p>This one shows some statistics but contains - apart from total number of points - no spoilers.</p>
+                </div>
+                <div>
+                    <h3>Spoilers</h3>
+                    <img alt="Spoilers" src="img/spoilers.png">
+                    <p>This one is similar but it gives away information that you probably don’t want to know early on.</p>
+                </div>
+                <div>
+                    <h3>Solution</h3>
+                    <img alt="Solution" src="img/solution.png">
+                    <p>The third panel hides a button that - upon confirmation - will solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h2>Installation</h2>
+            <p><em>Note: The current version of Spelling Bee Assistant is 1.2.1. If you already have an older version, you may want to delete it first (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
+            <p>Drag and drop the bookmarklet below into your browser’s bookmark menu <br /><a class="bookmarklet" href="javascript:(function()%7B%22use%20strict%22%3Bvar%20_slicedToArray%3Dfunction(t%2Ce)%7Bif(Array.isArray(t))return%20t%3Bif(Symbol.iterator%20in%20Object(t))return%20function(t%2Ce)%7Bvar%20a%3D%5B%5D%2Cn%3D!0%2Cr%3D!1%2Cs%3Dvoid%200%3Btry%7Bfor(var%20o%2Ci%3Dt%5BSymbol.iterator%5D()%3B!(n%3D(o%3Di.next()).done)%26%26(a.push(o.value)%2C!e%7C%7Ca.length!%3D%3De)%3Bn%3D!0)%3B%7Dcatch(t)%7Br%3D!0%2Cs%3Dt%7Dfinally%7Btry%7B!n%26%26i.return%26%26i.return()%7Dfinally%7Bif(r)throw%20s%7D%7Dreturn%20a%7D(t%2Ce)%3Bthrow%20new%20TypeError(%22Invalid%20attempt%20to%20destructure%20non-iterable%20instance%22)%7D%3Bfunction%20_toConsumableArray(t)%7Bif(Array.isArray(t))%7Bfor(var%20e%3D0%2Ca%3DArray(t.length)%3Be%3Ct.length%3Be%2B%2B)a%5Be%5D%3Dt%5Be%5D%3Breturn%20a%7Dreturn%20Array.from(t)%7D!function()%7Bfunction%20o(t%2Ce)%7Bvar%20a%3D1%3Carguments.length%26%26void%200!%3D%3De%3Fe%3A%7B%7D%2Ce%3Dvoid%200%3D%3D%3D(n%3Da.text)%3F%22%22%3An%2Cn%3Dvoid%200%3D%3D%3D(n%3Da.classNames)%3F%5B%5D%3An%2Cr%3Dvoid%200%3D%3D%3D(a%3Da.attributes)%3F%7B%7D%3Aa%2Cs%3Ddocument.createElement(t)%3Bn.length%26%26(t%3Ds.classList).add.apply(t%2C_toConsumableArray(n))%2C%22%22!%3D%3De%26%26(s.textContent%3De)%3Bvar%20o%3D!0%2Ci%3D!1%2Cd%3Dvoid%200%3Btry%7Bfor(var%20l%3DObject.entries(r)%5BSymbol.iterator%5D()%3B!(o%3D(c%3Dl.next()).done)%3Bo%3D!0)%7Bvar%20p%3Dc.value%2Cc%3D_slicedToArray(p%2C2)%2Cp%3Dc%5B0%5D%2Cc%3Dc%5B1%5D%3Bc%26%26s.setAttribute(p%2Cc)%7D%7Dcatch(t)%7Bi%3D!0%2Cd%3Dt%7Dfinally%7Btry%7B!o%26%26l.return%26%26l.return()%7Dfinally%7Bif(i)throw%20d%7D%7Dreturn%20s%7Dfunction%20r(t)%7Bvar%20e%3D0%3Breturn%20t.forEach(function(t)%7BgameData.today.pangrams.includes(t)%3Fe%2B%3Dt.length%2B7%3A4%3Ct.length%3Fe%2B%3Dt.length%3Ae%2B%3D1%7D)%2Ce%7Dfunction%20i()%7Bvar%20e%2Ca%3D(e%3D%7B%7D%2CgameData.today.answers.forEach(function(t)%7Be%5Bt.length%5D%3De%5Bt.length%5D%7C%7C%7Bfound%3A0%2Cmissing%3A0%2Ctotal%3A0%7D%2Cu.includes(t)%3Fe%5Bt.length%5D.found%2B%2B%3Ae%5Bt.length%5D.missing%2B%2B%2Ce%5Bt.length%5D.total%2B%2B%7D)%2Ce)%2Ct%3DObject.keys(a)%3Bt.sort(function(t%2Ce)%7Breturn%20t-e%7D)%3Bvar%20n%3D%7BStats%3A%5B%5B%22Words%22%2Cu.length%2Cb.length%2CgameData.today.answers.length%5D%2C%5B%22Points%22%2Cr(u)%2Cr(b)%2Cs%5D%5D%2CSpoilers%3A%5B%5B%22Pangrams%22%2Cg.length%2CgameData.today.pangrams.length-g.length%2CgameData.today.pangrams.length%5D%5D%7D%3Breturn%20t.forEach(function(t)%7Bn.Spoilers.push(%5Bt%2B%22%20%22%2B(1%3Ct%3F%22letters%22%3A%22letter%22)%2Ca%5Bt%5D.found%2Ca%5Bt%5D.missing%2Ca%5Bt%5D.total%5D)%7D)%2Cn%7Dfunction%20d()%7Bu%3D%5B%5D%2Cg%3D%5B%5D%2Cp.querySelectorAll(%22li%22).forEach(function(t)%7Bvar%20e%3Dt.textContent%3Bu.push(e)%2CgameData.today.pangrams.includes(e)%26%26(g.push(e)%2Ct.classList.add(%22sb-pangram%22))%7D)%2Cb%3DgameData.today.answers.filter(function(t)%7Breturn!u.includes(t)%7D)%3Bvar%20a%3Di()%2Ct%3D!0%2Ce%3D!1%2Cn%3Dvoid%200%3Btry%7Bfor(var%20r%3DObject.entries(c)%5BSymbol.iterator%5D()%3B!(t%3D(s%3Dr.next()).done)%3Bt%3D!0)%7Bvar%20s%3Ds.value%2Cs%3D_slicedToArray(s%2C2)%3B!function(t%2Ce)%7Ba%5Bt%5D.length%26%26(e.innerHTML%3D%22%22%2Ca%5Bt%5D.forEach(function(t)%7Be.append(f(%22td%22%2Ct))%7D))%7D(s%5B0%5D%2Cs%5B1%5D)%7D%7Dcatch(t)%7Be%3D!0%2Cn%3Dt%7Dfinally%7Btry%7B!t%26%26r.return%26%26r.return()%7Dfinally%7Bif(e)throw%20n%7D%7D%7Dfunction%20l()%7Bconfirm(%22Are%20you%20sure%20you%20want%20to%20display%20all%20answers%3F%22)%26%26(a.disconnect()%2Cb.forEach(function(t)%7Bvar%20e%3Bp.append((e%3Dt%2C(t%3Do(%22li%22%2C%7BclassNames%3AgameData.today.pangrams.includes(e)%3F%5B%22sb-anagram%22%2C%22sb-pangram%22%5D%3A%5B%22sb-anagram%22%5D%7D)).append(o(%22a%22%2C%7Btext%3Ae%2Cattributes%3A%7Bhref%3A%22https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3D%22%2Be%2Ctarget%3A%22_blank%22%7D%7D))%2Ct))%7D))%7Dfunction%20t()%7Bvar%20s%3Do(%22div%22%2C%7BclassNames%3A%5B%22sba%22%5D%7D)%3Bs.append(function(a)%7Bn.addEventListener(%22dragstart%22%2Cfunction(t)%7Bt.preventDefault()%2Ct.dataTransfer.dropEffect%3D%22move%22%7D)%2Cn.addEventListener(%22dragover%22%2Cfunction(t)%7Bt.preventDefault()%7D)%2Ca.draggable%3D!0%3Bvar%20t%3Do(%22div%22%2C%7BclassNames%3A%5B%22dragger%22%5D%2Ctext%3A%22Assistant%22%2Cattributes%3A%7Btitle%3A%22Hold%20the%20mouse%20down%20to%20drag%20assistant%22%7D%7D)%3Breturn%20a.addEventListener(%22dragstart%22%2Cfunction(t)%7Bt.stopPropagation()%3Bvar%20e%3DgetComputedStyle(this)%3Ba.classList.add(%22dragging%22)%2Cthis.dataset.right%3De.getPropertyValue(%22right%22)%2Cthis.dataset.top%3De.getPropertyValue(%22top%22)%2Cthis.dataset.mouseX%3Dt.clientX%2Cthis.dataset.mouseY%3Dt.clientY%7D%2C!1)%2Ca.addEventListener(%22dragend%22%2Cfunction(t)%7Bt.stopPropagation()%3Bvar%20e%3Dt.clientX-this.dataset.mouseX%2Ct%3Dt.clientY-this.dataset.mouseY%3Bthis.style.right%3DparseInt(this.dataset.right)-e%2B%22px%22%2Cthis.style.top%3DparseInt(this.dataset.top)%2Bt%2B%22px%22%2Ca.classList.remove(%22dragging%22)%7D%2C!1)%2Ct%7D(s))%2Cs.append(((e%3Do(%22span%22%2C%7BclassNames%3A%5B%22closer%22%5D%2Ctext%3A%22%C3%97%22%2Cattributes%3A%7Btitle%3A%22Close%20assistant%22%7D%7D)).addEventListener(%22click%22%2Cfunction()%7Bwindow.gameData.assistant%3D!1%2Ch.remove()%2Ca.disconnect()%2Cthis.parentNode.remove()%7D)%2Ce))%2C%5B%22Stats%22%2C%22Spoilers%22%2C%22Solution%22%5D.forEach(function(t)%7Bvar%20e%2Ca%3Do(%22details%22%2C%7Battributes%3A%7Bopen%3A%22Stats%22%3D%3D%3Dt%26%26%22open%22%7D%7D)%2Cn%3Do(%22summary%22%2C%7Btext%3At%7D)%2Cr%3Dvoid%200%3B%22Solution%22%3D%3D%3Dt%3F(r%3Do(%22div%22)%2C(e%3Do(%22button%22%2C%7BclassNames%3A%5B%22pz-modal__button%22%2C%22white%22%5D%2Ctext%3A%22Display%20answers%22%2Cattributes%3A%7Btype%3A%22button%22%7D%7D)).addEventListener(%22pointerup%22%2Cfunction()%7Bl()%7D)%2Cr.append(e))%3A(r%3Do(%22table%22)%2C(e%3Do(%22thead%22)).append(f(%22th%22%2C%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D))%2Cc%5Bt%5D%3Do(%22tbody%22)%2Cr.append(e)%2Cr.append(c%5Bt%5D)%2Cd())%2Ca.append(n)%2Ca.append(r)%2Cs.append(a)%7D)%3Bvar%20t%3Do(%22div%22%2C%7BclassNames%3A%5B%22link%22%5D%7D)%2Ce%3Do(%22a%22%2C%7Btext%3A%22Spelling%20Bee%20Assistant%201.2.1%22%2Cattributes%3A%7Bhref%3A%22https%3A%2F%2Fdraber.github.io%22%2Ctarget%3A%22_blank%22%7D%7D)%3Bt.append(e)%2Cs.append(t)%2Cn.append(s)%7Dvar%20n%3Ddocument.querySelector(%22.sb-content-box%22)%2Cp%3Dn.querySelector(%22.sb-wordlist-items%22)%2Cc%3D%7B%7D%2Cu%3D%5B%5D%2Cg%3D%5B%5D%2Cb%3D%5B%5D%2Ca%3Dvoid%200%2Ch%3Dvoid%200%2Cs%3Dr(gameData.today.answers)%2Cf%3Dfunction(a%2Ct)%7Bvar%20n%3Do(%22tr%22)%3Breturn%20t.forEach(function(t%2Ce)%7Bn.append(o(0%3D%3D%3De%3F%22th%22%3Aa%2C%7Btext%3At%7D))%7D)%2Cn%7D%3B(a%3Dnew%20MutationObserver(function(t)%7Bt%3Dt.pop().addedNodes%5B0%5D%3BgameData.today.pangrams.includes(t.textContent)%26%26t.classList.add(%22sb-pangram%22)%2Cd()%7D)).observe(p%2C%7BchildList%3A!0%7D)%3B%22%2Fpuzzles%2Fspelling-bee%22%3D%3D%3Dwindow.location.pathname%26%26(window.gameData.assistant%7C%7C(h%3Do(%22style%22%2C%7Btext%3A'.sb-content-box%7Bposition%3Arelative%7D.sb-wordlist-items%20.sb-pangram%7Bborder-bottom%3A2px%20solid%20%23f8cd05%7D.sb-wordlist-items%20.sb-anagram%20a%7Bcolor%3A%23888%7D.sba%7Bposition%3Aabsolute%3Bwidth%3A200px%3Bright%3A-210px%3Btop%3A16px%3Bbackground%3A%23fff%3Bz-index%3A3%3Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-radius%3A6px%3Bpadding%3A0%2010px%205px%7D.sba%20*%7Bbox-sizing%3Aborder-box%7D.sba%20%3Afocus%7Boutline-color%3Atransparent%7D.sba%20.dragger%7Bfont-weight%3A700%3Bcursor%3Amove%3Bline-height%3A32px%7D.sba.dragging%7Bopacity%3A.5%3Bborder-style%3Adashed%7D.sba%20.closer%7Bfont-size%3A20px%3Bfont-weight%3A700%3Bposition%3Aabsolute%3Btop%3A0%3Bright%3A0%3Bline-height%3A32px%3Bpadding%3A0%2010px%3Bcursor%3Apointer%7D.sba%20details%7Bfont-size%3A90%25%3Bmargin-bottom%3A5px%7D.sba%20details%5Bopen%5D%20summary%3Abefore%7Bcontent%3A%22FF0D%22%7D.sba%20summary%7Bline-height%3A32px%3Bpadding%3A0%2015px%200%2025px%3Bbackground%3A%23f8cd05%3Bcursor%3Apointer%3Blist-style%3Anone%3Bposition%3Arelative%7D.sba%20summary%3A%3A-webkit-details-marker%7Bdisplay%3Anone%7D.sba%20summary%3Abefore%7Bcontent%3A%22FF0B%22%3Bposition%3Aabsolute%3Bleft%3A8px%7D.sba%20button%7Bmargin%3A10px%20auto%3Bwidth%3A80%25%3Bdisplay%3Ablock%7D.sba%20table%7Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-top%3Anone%3Bborder-collapse%3Acollapse%3Bwidth%3A100%25%3Bfont-size%3A85%25%7D.sba%20td%2C.sba%20th%7Bborder%3A1px%20solid%20%23dcdcdc%3Bpadding%3A3px%7D.sba%20thead%20th%7Btext-align%3Acenter%7D.sba%20tbody%20th%7Btext-align%3Aright%7D.sba%20tbody%20td%7Btext-align%3Acenter%7D.sba%20.link%7Bcolor%3AcurrentColor%3Bopacity%3A.6%3Bfont-size%3A10px%3Btext-align%3Aright%3Bdisplay%3Ablock%3Bpadding-top%3A3px%7D.sba%20.link%3Ahover%7Bopacity%3A.8%3Btext-decoration%3Aunderline%7D'%7D)%2Cdocument.querySelector(%22head%22).append(h)%2Ct()%2Cd()%2Cwindow.gameData.assistant%3D!0))%7D()%3B%7D)()">Spelling Bee Assistant</a></p>
+            <p>Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant. You can drag it anywhere on the page by grabbing it at the top and close it by clicking on the <b>×</b> symbol.</p>
+        </section>
+        <section>
+            <h2>Does it work everywhere?</h2>
+            <p>The assistant is not suitable for the mobile version of the game and has only been tested in the desktop version. It requires a <a href="https://caniuse.com/details">modern browser</a> and won’t work in Internet Explorer.</p>
+            <h2>Does it not spoil the game?</h2>
+            <p>Other people have been creating <a href="https://www.shunn.net/bee/">tools with a similar purpose</a> which - according to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html">this article</a> - the Spelling Bee community seems to like well.</p>
+            <p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the <em>Spoilers</em> panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
+            <h2>How did you do this?</h2>
+            <p>The source code is available under the MIT License from <a href="https://github.com/draber/draber.github.io">this repository</a>.</p>
+            <h2>I discovered a bug | I would like to ask for a new feature</h2>
+            <p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is as a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
+            <h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
+            <p>No.</p>
+        </section>
+    </main>
+    <script>
+        document.querySelector('.bookmarklet').addEventListener('dragstart', e => {
+            window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams({
+                v: 1,
+                tid: 'UA-182372232-1',
+                cid: Date.now(),
+                t: 'event',
+                aip: '1',
+                ec: 'SBA Download',
+                ea: e.type,
+                el: '1.2.1'
+            }).toString());
+        }, false);
+    </script>
 </body>
 </html>

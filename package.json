@@ -1,8 +1,33 @@
 {
-  "name": "spelling-bee",
-  "version": "1.0.0",
-  "description": "Assistant for NYT's Spelling Bee",
+  "name": "spelling-bee-assistant",
+  "version": "1.2.1",
+  "description": "Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle",
   "main": "index.js",
+  "dependencies": {
+    "autoprefixer": "^10.0.2",
+    "bookmarklet": "^1.0.4",
+    "convert-source-map": "^1.7.0",
+    "cssnano": "^4.1.10",
+    "detect-indent": "^4.0.0",
+    "is-image": "^3.0.0",
+    "postcss": "^8.1.7",
+    "regexpu-core": "^2.0.0",
+    "regjsparser": "^0.1.5",
+    "repeating": "^2.0.1",
+    "semver": "^5.7.1",
+    "slash": "^1.0.0"
+  },
+  "devDependencies": {
+    "datauri": "^3.0.0",
+    "gulp": "^4.0.2",
+    "gulp-sass": "^4.1.0",
+    "node-sass": "^5.0.0",
+    "node-version-compare": "^1.0.3",
+    "gulp-postcss": "^9.0.0",
+    "gulp-rename": "^2.0.0",
+    "resource-compiler": "file:project/modules/resource-compiler",
+    "file-includer": "file:project/modules/file-includer"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,19 +36,5 @@
     "url": "git+https://github.com/draber/draber.github.io.git"
   },
   "author": "Dieter Raber",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/draber/draber.github.io/issues"
-  },
-  "homepage": "https://github.com/draber/draber.github.io#readme",
-  "devDependencies": {
-    "gulp": "^4.0.2"
-  },
-  "dependencies": {
-    "bookmarklet": "^1.0.4",
-    "bookmarklet-styler": "file:tasks/bookmarklet-styler",
-    "pugmarklet": "file:tasks/pugmarklet",
-    "pugsass": "file:tasks/pugsass",
-    "sass": "^1.29.0"
-  }
+  "license": "ISC"
 }

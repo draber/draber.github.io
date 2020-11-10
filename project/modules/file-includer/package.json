@@ -1,0 +1,18 @@
+{
+  "name": "file-includer",
+  "version": "1.0.0",
+  "description": "Include files in other files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "file-includer"
+  ],
+  "author": "Dieter Raber",
+  "license": "MIT",
+  "dependencies": {  
+    "is-image": "^3.0.0",
+    "datauri": "^3.0.0"
+  }
+}
