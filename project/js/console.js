@@ -352,7 +352,7 @@
 
         })
         const siteLink = createElement('a', {
-            text: 'Spelling Bee Assistant 1.2.1',
+            text: 'Spelling Bee Assistant ',
             attributes: {
                 href: 'https://draber.github.io',
                 target: '_blank'
