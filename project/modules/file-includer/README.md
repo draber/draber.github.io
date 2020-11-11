@@ -15,8 +15,8 @@ $ npm install path/to/file-includer
 
 ```js
 const fileIncluder = require('file-includer');
-
-const updatedContent = fileIncluder('source/content-with-markers.txt');
+const oldContents = fs.readFileSync('source/content-with-markers.txt', 'utf8');
+const newContents = fileIncluder(oldContents);
 ```
 
 ## License

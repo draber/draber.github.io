@@ -45,7 +45,7 @@
     const appendStyles = () => {
         styles = createElement('style', {
             // This will be replaced by the actual CSS
-            text: `{{include(project/css/widget.min.css)}}`
+            text: `{{include(project/css/widget.css)}}`
         });
         document.querySelector('head').append(styles);
     }
@@ -96,8 +96,7 @@
         return points;
     }
 
-    allPoints = countPoints(gameData.today.answers);
-    
+    allPoints = countPoints(gameData.today.answers);    
 
     /**
      * Calculates points at launch and after adding a new word
@@ -142,7 +141,7 @@
         });
         return updates;
     }
-
+    
     /**
      * Update and populate statistic panels
      */
@@ -352,7 +351,7 @@
 
         })
         const siteLink = createElement('a', {
-            text: 'Spelling Bee Assistant {{include(project/version.txt)}}',
+            text: 'Spelling Bee Assistant {{config(version)}}',
             attributes: {
                 href: 'https://draber.github.io',
                 target: '_blank'

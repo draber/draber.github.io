@@ -3,23 +3,24 @@
 <head>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <meta charset="utf-8">
-    <title>Spelling Bee Assistant</title>
-    <style>{{include(project/css/site.min.css)}}</style>
+    <title>{{config(label)}}</title>
+    <style>{{include(project/css/site.css)}}</style>
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <meta content="Spelling Bee Assistant" property="og:title">
-    <meta content="Assistant for Spelling Bee, the New York Times’ popular word puzzle." property="og:description">
-    <meta content="https://draber.github.io/img/social.png" property="og:image">
-    <meta content="https://draber.github.io/" property="og:url">
+    <meta content="{{config(label)}}" property="og:title">
+    <meta content="{{config(description)}}" property="og:description">
+    <meta content="{{config(url)}}img/social.png" property="og:image">
+    <meta content="{{config(url)}}" property="og:url">
     <meta content="summary_large_image" name="twitter:card">
-    <meta content="@d_raber" name="twitter:site">
-    <meta content="Spelling Bee Assistant" property="og:site_name">
-    <meta content="Spelling Bee Assistant" name="twitter:image:alt">
+    <meta content="{{config(twitter)}}" name="twitter:site">
+    <meta content="{{config(label)}}" property="og:site_name">
+    <meta content="{{config(label)}}" name="twitter:image:alt">
     <link rel="icon" href="{{include(project/img/favicon.png)}}" type="image/png">
 </head>
+
 <body>
     <header>
         <div class="wrapper">
-            <h1>Spelling Bee Assistant</h1>
+            <h1>{{config(label)}}</h1>
             <a class="twitter-share-button" data-show-count="false" href="https://twitter.com/share?ref_src=twsrc%5Etfw">Tweet</a>
             <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
         </div>
@@ -51,8 +52,8 @@
         </section>
         <section>
             <h2>Installation</h2>
-            <p><em>Note: The current version of Spelling Bee Assistant is {{include(project/version.txt)}}. If you already have an older version, you may want to delete it first (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
-            <p>Drag and drop the bookmarklet below into your browser’s bookmark menu <br /><a class="bookmarklet" href="{{include(project/bookmarklet/bookmarklet.href)}}">Spelling Bee Assistant</a></p>
+            <p><em>Note: The current version of Spelling Bee Assistant is {{config(version)}}. If you already have an older version, you may want to delete it first (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
+            <p>Drag and drop the bookmarklet below into your browser’s bookmark menu <br /><a class="bookmarklet" href="{{config(bookmarklet)}}">Spelling Bee Assistant</a></p>
             <p>Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant. You can drag it anywhere on the page by grabbing it at the top and close it by clicking on the <b>×</b> symbol.</p>
         </section>
         <section>
@@ -73,13 +74,13 @@
         document.querySelector('.bookmarklet').addEventListener('dragstart', e => {
             window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams({
                 v: 1,
-                tid: 'UA-182372232-1',
+                tid: '{{config(ga.tid)}}',
                 cid: Date.now(),
                 t: 'event',
                 aip: '1',
-                ec: 'SBA Download',
+                ec: '{{config(ga.ec)}}',
                 ea: e.type,
-                el: '{{include(project/version.txt)}}'
+                el: '{{config(version)}}'
             }).toString());
         }, false);
     </script>
