@@ -1,6 +1,6 @@
 {
   "name": "spelling-bee-assistant",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle",
   "main": "index.js",
   "keywords": [
