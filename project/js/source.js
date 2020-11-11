@@ -197,7 +197,8 @@
      * Display the solution after confirmation
      */
     const resolveGame = () => {
-        if (confirm('Are you sure you want to display all answers?')) {
+        if (Number(localStorage.getItem('no-check-before-reveal')) 
+        || confirm('Are you sure you want to display all answers?')) {
             observer.disconnect();
             remainders.forEach(term => {
                 resultContainer.append(buildWordListItem(term));
@@ -325,10 +326,27 @@
                         type: 'button'
                     }
                 });
-                button.addEventListener('pointerup', () => {
+                button.addEventListener('click', () => {
                     resolveGame();
                 });
                 content.append(button);
+
+                // Make confirmation optional
+                const checkbox = createElement('input', {
+                    attributes: {
+                        type: 'checkbox',
+                        checked: !!Number(localStorage.getItem('no-check-before-reveal'))
+                    }
+                });
+                checkbox.addEventListener('click', function() {
+                    localStorage.setItem('no-check-before-reveal', Number(this.checked));
+                })
+                const label = createElement('label', {
+                    text: 'Never require confirmation',
+                    classNames: ['no-confirmation']
+                });
+                label.prepend(checkbox);
+                content.append(label);
             }
             else {
                 content = createElement('table');
