@@ -1,8 +1,42 @@
 {
-  "name": "prepros-project",
-  "version": "1.0.0",
-  "description": "This is a dummy package.json file created by Prepros to manage packages with NPM. You can edit this file to add your own information.",
-  "dependencies": {
-    "bookmarklet": "^1.0.4"
-  }
+  "name": "spelling-bee-assistant",
+  "version": "1.3.0",
+  "description": "Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle",
+  "main": "index.js",
+  "keywords": [
+    "bookmarklet"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^10.0.2",
+    "bookmarklet": "^1.0.4",
+    "config-includer": "file:project/modules/config-includer",
+    "convert-source-map": "^1.7.0",
+    "datauri": "^3.0.0",
+    "detect-indent": "^4.0.0",
+    "file-includer": "file:project/modules/file-includer",
+    "gulp": "^4.0.2",
+    "gulp-dart-sass": "^1.0.2",
+    "gulp-postcss": "^9.0.0",
+    "is-image": "^3.0.0",
+    "postcss": "^8.1.7",
+    "regexpu-core": "^2.0.0",
+    "regjsparser": "^0.1.5",
+    "repeating": "^2.0.1",
+    "semver": "^5.7.1",
+    "slash": "^1.0.0"
+  },
+  "homepage": "https://github.com/draber/draber.github.io.git#readme",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/draber/draber.github.io.git"
+  },
+  "bugs": {
+    "url": "https://github.com/draber/draber.github.io.git/issues"
+  },
+  "author": "Dieter Raber",
+  "license": "MIT"
 }

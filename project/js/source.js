@@ -44,8 +44,8 @@
      */
     const appendStyles = () => {
         styles = createElement('style', {
-            // Paste compressed CSS here
-            text: `@charset "UTF-8";.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba{position:absolute;width:200px;right:-210px;top:16px;background:white;z-index:3;border:1px solid gainsboro;border-radius:6px;padding:0 10px 5px}.sba *{-webkit-box-sizing:border-box;box-sizing:border-box}.sba :focus{outline-color:transparent}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:0.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:5px}.sba details[open] summary:before{content:"－"}.sba summary{line-height:32px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:"＋";position:absolute;left:8px}.sba button{margin:10px auto;width:80%;display:block}.sba table{border:1px solid gainsboro;border-top:none;border-collapse:collapse;width:100%;font-size:85%}.sba td,.sba th{border:1px solid gainsboro;padding:3px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba .link{color:currentColor;opacity:0.6;font-size:10px;text-align:right;display:block;padding-top:3px}.sba .link:hover{opacity:0.8;text-decoration:underline}`
+            // This will be replaced by the actual CSS
+            text: `{{include(project/css/widget.css)}}`
         });
         document.querySelector('head').append(styles);
     }
@@ -76,6 +76,7 @@
 
     /**
      * Count the points from an array of words
+     * 
      * @param data
      * @returns {number}
      */
@@ -95,7 +96,7 @@
         return points;
     }
 
-    allPoints = countPoints(gameData.today.answers);
+    allPoints = countPoints(gameData.today.answers);    
 
     /**
      * Calculates points at launch and after adding a new word
@@ -140,7 +141,7 @@
         });
         return updates;
     }
-
+    
     /**
      * Update and populate statistic panels
      */
@@ -350,7 +351,7 @@
 
         })
         const siteLink = createElement('a', {
-            text: 'Spelling Bee Assistant',
+            text: 'Spelling Bee Assistant {{config(version)}}',
             attributes: {
                 href: 'https://draber.github.io',
                 target: '_blank'
@@ -362,7 +363,7 @@
     };
 
     /**
-     * listen to the result container and update the panels when adding a new term
+     * Listen to the result container and update the panels when adding a new term
      *
      * @type {MutationObserver}
      */
