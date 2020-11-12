@@ -46,7 +46,7 @@
                 <div>
                     <h3>Solution</h3>
                     <img alt="Solution" src="img/solution.png">
-                    <p>The third panel hides a button that - upon confirmation - will solve the game with a few mouse clicks. However, it won't make you Queen Bee 😞. All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
+                    <p>The third panel hides a button that will solve the game with a few mouse clicks, though without making you Queen Bee 😞. All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
                 </div>
             </div>
         </section>
