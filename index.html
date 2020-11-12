@@ -64,7 +64,7 @@
             <p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the <em>Spoilers</em> panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
             <h2>How did you do this?</h2>
             <p>The source code is available under the MIT License from <a href="https://github.com/draber/draber.github.io">this repository</a>.</p>
-            <h2>I discovered a bug | I would like to ask for a new feature</h2>
+            <h2>I discovered a bug | I’d like to ask for a new feature</h2>
             <p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is as a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
             <h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
             <p>No.</p>
