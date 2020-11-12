@@ -29,14 +29,14 @@
         <section>
             <h2>What is this?</h2>
             <p><strong>Spelling Bee Assistant</strong> is a JavaScript bookmarklet for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
-            <p>In case you haven’t heard of bookmarklets before, they are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks in your browser’s bookmark menu.</p>
+            <p>In case you haven’t heard of bookmarklets before, they are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks, in your browser’s bookmark menu.</p>
             <p><img alt="Bookmarks" src="img/bookmarklet.png?{{config(version)}}"><br /></p>
             <p>This bookmarklet adds a new panel with three sections to the game, data will be updated as you progress.</p>
             <div class="panels">
                 <div>
                     <h3>Stats</h3>
                     <img alt="Game stats" src="img/stats.png?{{config(version)}}">
-                    <p>This panel shows some statistics but contains - apart from the total number of points - no spoilers.</p>
+                    <p>This section shows some statistics but contains - apart from the total number of points - no spoilers.</p>
                 </div>
                 <div>
                     <h3>Spoilers</h3>
@@ -54,7 +54,7 @@
             <h2>Installation</h2>
             <p><em>Note: The current version of Spelling Bee Assistant is {{config(version)}}. If you already have an older version, you may want to delete it first (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
             <p>Drag and drop the bookmarklet below into your browser’s bookmark menu <br /><a class="bookmarklet" href="{{config(bookmarklet)}}">Spelling Bee Assistant</a></p>
-            <p>Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant. You can drag it anywhere on the page by grabbing it at the top and close it by clicking on the <b>×</b> symbol.</p>
+            <p>Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant. You can drag the assistant anywhere on the page by grabbing it at the top and close it by clicking on the <b>×</b> symbol.</p>
         </section>
         <section>
             <h2>Does it work everywhere?</h2>
@@ -65,7 +65,7 @@
             <h2>How did you do this?</h2>
             <p>The source code is available under the MIT License from <a href="https://github.com/draber/draber.github.io">this repository</a>.</p>
             <h2>I discovered a bug | I’d like to ask for a new feature</h2>
-            <p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is as a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
+            <p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
             <h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
             <p>No.</p>
         </section>
