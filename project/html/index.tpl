@@ -14,7 +14,7 @@
     <meta content="{{config(twitter)}}" name="twitter:site">
     <meta content="{{config(label)}}" property="og:site_name">
     <meta content="{{config(label)}}" name="twitter:image:alt">
-    <link rel="icon" href="{{include(project/img/favicon.png)}}" type="image/png">
+    <link rel="icon" href="img/favicon.png?{{config(version)}}" type="image/png">
 </head>
 
 <body>
