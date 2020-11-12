@@ -36,7 +36,7 @@
                 <div>
                     <h3>Stats</h3>
                     <img alt="Game stats" src="img/stats.png?{{config(version)}}">
-                    <p>This one shows some statistics but contains - apart from total number of points - no spoilers.</p>
+                    <p>This panel shows some statistics but contains - apart from the total number of points - no spoilers.</p>
                 </div>
                 <div>
                     <h3>Spoilers</h3>
@@ -46,7 +46,7 @@
                 <div>
                     <h3>Solution</h3>
                     <img alt="Solution" src="img/solution.png?{{config(version)}}">
-                    <p>The third panel hides a button that will solve the game with a few mouse clicks, though without making you Queen Bee 😞. All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
+                    <p>The third section hides a button that will solve the game with a few mouse clicks, though without making you Queen Bee 😞. All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
                 </div>
             </div>
         </section>
