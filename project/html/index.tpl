@@ -8,7 +8,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta content="{{config(label)}}" property="og:title">
     <meta content="{{config(description)}}" property="og:description">
-    <meta content="{{config(url)}}img/social.png" property="og:image">
+    <meta content="{{config(url)}}img/social.png?{{config(version)}}" property="og:image">
     <meta content="{{config(url)}}" property="og:url">
     <meta content="summary_large_image" name="twitter:card">
     <meta content="{{config(twitter)}}" name="twitter:site">
