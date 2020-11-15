@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <meta charset="utf-8">
     <title>{{config(label)}}</title>
-    <style>{{include(project/css/site.css)}}</style>
+    <meta name="description" content="{{config(description)}}">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>{{include(project/css/site.css)}}</style>
     <meta property="og:title" content="{{config(label)}}" />
     <meta property="og:description" content="{{config(description)}}" />
     <meta property="og:image" content="{{config(url)}}img/social.png?{{config(version)}}" />
@@ -13,7 +13,7 @@
     <meta property="og:site_name" content="{{config(label)}}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="{{config(twitter)}}" />
-	<meta name="twitter:image" content="{{config(url)}}img/social.png?{{config(version)}}" />
+    <meta name="twitter:image" content="{{config(url)}}img/social.png?{{config(version)}}" />
     <meta name="twitter:image:alt" content="{{config(label)}}" />
     <link rel="icon" href="img/favicon.png?{{config(version)}}" type="image/png" />
 </head>
