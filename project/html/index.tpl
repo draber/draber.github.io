@@ -15,6 +15,7 @@
     <meta name="twitter:site" content="{{config(twitter)}}" />
     <meta name="twitter:image" content="{{config(url)}}img/social.png?{{config(version)}}" />
     <meta name="twitter:image:alt" content="{{config(label)}}" />
+    <meta name="google-site-verification" content="xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU" />
     <link rel="icon" href="img/favicon.png?{{config(version)}}" type="image/png" />
 </head>
 
