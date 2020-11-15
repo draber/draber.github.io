@@ -5,16 +5,17 @@
     <meta charset="utf-8">
     <title>{{config(label)}}</title>
     <style>{{include(project/css/site.css)}}</style>
-    <meta content="width=device-width, initial-scale=1" name="viewport">
-    <meta content="{{config(label)}}" property="og:title">
-    <meta content="{{config(description)}}" property="og:description">
-    <meta content="{{config(url)}}img/social.png?{{config(version)}}" property="og:image">
-    <meta content="{{config(url)}}" property="og:url">
-    <meta content="summary_large_image" name="twitter:card">
-    <meta content="{{config(twitter)}}" name="twitter:site">
-    <meta content="{{config(label)}}" property="og:site_name">
-    <meta content="{{config(label)}}" name="twitter:image:alt">
-    <link rel="icon" href="img/favicon.png?{{config(version)}}" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="{{config(label)}}" />
+    <meta property="og:description" content="{{config(description)}}" />
+    <meta property="og:image" content="{{config(url)}}img/social.png?{{config(version)}}" />
+    <meta property="og:url" content="{{config(url)}}" />
+    <meta property="og:site_name" content="{{config(label)}}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="{{config(twitter)}}" />
+	<meta name="twitter:image" content="{{config(url)}}img/social.png?{{config(version)}}" />
+    <meta name="twitter:image:alt" content="{{config(label)}}" />
+    <link rel="icon" href="img/favicon.png?{{config(version)}}" type="image/png" />
 </head>
 
 <body>
