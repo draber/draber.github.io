@@ -19,7 +19,6 @@
     <meta name="google-site-verification" content="7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8" />
     <link rel="icon" href="img/favicon.png?{{config(version)}}" type="image/png" />
 </head>
-
 <body>
     <header>
         <div class="wrapper">
