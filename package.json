@@ -20,7 +20,7 @@
     "dev": "rollup -c -w",
     "test": "echo \"Error: no test specified\" && exit 1",
     "pretest": "npm run build",
-    "watch-node-sass": "node-sass src/scss -wo src/css --output-style=compressed",    
+    "watch-node-sass": "node-sass src/scss -wo src/css --output-style=compressed",
     "watch-sass": "sass --watch src/scss:src/css --style compressed --no-source-map"
   },
   "files": [
