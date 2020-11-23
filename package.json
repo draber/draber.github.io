@@ -1,35 +1,32 @@
 {
   "name": "spelling-bee-assistant",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle",
-  "main": "index.js",
-  "keywords": [
-    "bookmarklet"
-  ],
   "dependencies": {},
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
     "autoprefixer": "^10.0.2",
-    "bookmarklet": "^1.0.4",
-    "config-includer": "file:project/modules/config-includer",
-    "convert-source-map": "^1.7.0",
-    "datauri": "^3.0.0",
-    "detect-indent": "^4.0.0",
-    "file-includer": "file:project/modules/file-includer",
-    "gulp": "^4.0.2",
-    "gulp-dart-sass": "^1.0.2",
-    "gulp-postcss": "^9.0.0",
-    "is-image": "^3.0.0",
-    "postcss": "^8.1.7",
-    "regexpu-core": "^2.0.0",
-    "regjsparser": "^0.1.5",
-    "repeating": "^2.0.1",
-    "semver": "^5.7.1",
-    "slash": "^1.0.0"
+    "node-sass": "^5.0.0",
+    "rollup": "^2.33.3",
+    "rollup-plugin-cleanup": "^3.2.1",
+    "rollup-plugin-string": "^3.0.0",
+    "sass": "^1.29.0"
   },
-  "homepage": "https://github.com/draber/draber.github.io.git#readme",
+  "console": "dist/spelling-bee-assistant.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretest": "npm run build",
+    "watch-node-sass": "node-sass src/scss -wo src/css --output-style=compressed",    
+    "watch-sass": "sass --watch src/scss:src/css --style compressed --no-source-map"
   },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/draber/draber.github.io.git#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/draber/draber.github.io.git"

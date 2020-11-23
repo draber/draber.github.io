@@ -55,7 +55,7 @@
         <section>
             <h2>Installation</h2>
             <p><em>Note: The current version of Spelling Bee Assistant is {{config(version)}}. If you already have an older version, you may want to delete it first (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
-            <p>Drag and drop the bookmarklet below into your browser’s bookmark menu <br /><a class="bookmarklet" href="{{config(bookmarklet)}}">Spelling Bee Assistant</a></p>
+            <p>Drag and drop the bookmarklet below into your browser’s bookmark menu <br /><a class="bookmarklet" onclick="return false" href="{{config(bookmarklet)}}">Spelling Bee Assistant</a></p>
             <p>Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant. You can drag the assistant anywhere on the page by grabbing it at the top and close it by clicking on the <b>×</b> symbol.</p>
         </section>
         <section>

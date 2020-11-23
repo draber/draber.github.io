@@ -1,15 +1,19 @@
-
+(function (element_js) {
     'use strict';
 
     const gameContainer = document.querySelector('.sb-content-box');
+    const textInput = gameContainer.querySelector('.sb-hive-input-content');
     const resultContainer = gameContainer.querySelector('.sb-wordlist-items');
     const statListings = {};
+    const observers = {};
     let foundTerms = [];
     let foundPangrams = [];
     let remainders = [];
     let allPoints = 0;
-    let observer;
+    let spyArea;
     let styles;
+
+    element_js.element({});
 
     /**
      * Create elements conveniently
@@ -37,7 +41,7 @@
             }
         }
         return element;
-    }
+    };
 
     /**
      * Add stylesheet
@@ -45,10 +49,10 @@
     const appendStyles = () => {
         styles = createElement('style', {
             // This will be replaced by the actual CSS
-            text: `.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba{position:absolute;width:200px;right:-210px;top:16px;background:#fff;z-index:3;border:1px solid #dcdcdc;border-radius:6px;padding:0 10px 5px}.sba *{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:5px}.sba details[open] summary:before{content:"－"}.sba summary{line-height:32px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:"＋";position:absolute;left:8px}.sba button{margin:10px auto 5px;width:80%;display:block}.sba .no-confirmation{display:inline-block;margin:0 0 10px 0;font-size:80%}.sba .no-confirmation input{margin:5px;position:relative;top:2px}.sba table{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%}.sba th,.sba td{border:1px solid #dcdcdc;padding:3px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba .link{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:3px}.sba .link:hover{opacity:.8;text-decoration:underline}`
+            text: `{{include(project/css/widget.css)}}`
         });
         document.querySelector('head').append(styles);
-    }
+    };
 
     /**
      * Count how many words exist for each length
@@ -65,8 +69,7 @@
             };
             if (foundTerms.includes(term)) {
                 letterCount[term.length].found++;
-            }
-            else {
+            } else {
                 letterCount[term.length].missing++;
             }
             letterCount[term.length].total++;
@@ -85,30 +88,28 @@
         data.forEach(term => {
             if (gameData.today.pangrams.includes(term)) {
                 points += term.length + 7;
-            }
-            else if (term.length > 4) {
+            } else if (term.length > 4) {
                 points += term.length;
-            }
-            else {
+            } else {
                 points += 1;
             }
         });
         return points;
-    }
+    };
 
-    allPoints = countPoints(gameData.today.answers);    
+    allPoints = countPoints(gameData.today.answers);
 
     /**
      * Calculates points at launch and after adding a new word
      *
-     * @returns {{Stats: [[string, number, number, *], [string, number, number, number]], Spoilers: (string|number|*)[][]}}
+     * @returns {{Score: [[string, number, number, *], [string, number, number, number]], Spoilers: (string|number|*)[][]}}
      */
     const calculateUpdates = () => {
         const letterCount = countLetters();
         const letterKeys = Object.keys(letterCount);
         letterKeys.sort((a, b) => a - b);
         const updates = {
-            Stats: [
+            Score: [
                 [
                     'Words',
                     foundTerms.length,
@@ -130,7 +131,7 @@
                     gameData.today.pangrams.length
                 ]
             ]
-        }
+        };
         letterKeys.forEach(count => {
             updates.Spoilers.push([
                 count + ' ' + (count > 1 ? 'letters' : 'letter'),
@@ -140,8 +141,8 @@
             ]);
         });
         return updates;
-    }
-    
+    };
+
     /**
      * Update and populate statistic panels
      */
@@ -166,7 +167,7 @@
                 statListing.innerHTML = '';
                 updates[key].forEach(entry => {
                     statListing.append(buildTableRow('td', entry));
-                })
+                });
             }
         }
     };
@@ -179,9 +180,7 @@
      */
     const buildWordListItem = term => {
         const entry = createElement('li', {
-            classNames: gameData.today.pangrams.includes(term) ?
-                ['sb-anagram', 'sb-pangram'] :
-                ['sb-anagram']
+            classNames: gameData.today.pangrams.includes(term) ? ['sb-anagram', 'sb-pangram'] : ['sb-anagram']
         });
         entry.append(createElement('a', {
             text: term,
@@ -193,17 +192,37 @@
         return entry;
     };
 
+    const disconnectObservers = () => {
+        for (const [key, config] of Object.entries(observers)) {
+            observers[key].observer.disconnect();
+        }
+    };
+
     /**
      * Display the solution after confirmation
      */
     const resolveGame = () => {
-        if (Number(localStorage.getItem('no-check-before-reveal')) 
-        || confirm('Are you sure you want to display all answers?')) {
-            observer.disconnect();
+        if (Number(localStorage.getItem('no-check-before-reveal')) ||
+            confirm('Are you sure you want to display all answers?')) {
+            disconnectObservers();
             remainders.forEach(term => {
                 resultContainer.append(buildWordListItem(term));
             });
         }
+    };
+
+    /**
+     * Check if there are still starting with the search term
+     * 
+     * @param {String} value 
+     */
+    const sneakPreview = (value) => {
+        if (!value) {
+            return '😐';
+        }
+        if (!remainders.filter(term => term.startsWith(value)).length) {
+            return '🙁';
+        }    return '🙂';
     };
 
     /**
@@ -221,7 +240,7 @@
             }));
         });
         return row;
-    }
+    };
 
     /**
      * Build app closer (the little x in the top right corner)
@@ -239,11 +258,11 @@
         closer.addEventListener('click', function () {
             window.gameData.assistant = false;
             styles.remove();
-            observer.disconnect();
+            disconnectObservers();
             this.parentNode.remove();
         });
         return closer;
-    }
+    };
 
     /**
      * Implement drag/drop
@@ -254,7 +273,7 @@
 
         gameContainer.addEventListener('dragstart', function (event) {
             event.preventDefault();
-            event.dataTransfer.dropEffect = "move"
+            event.dataTransfer.dropEffect = "move";
         });
 
         gameContainer.addEventListener('dragover', function (event) {
@@ -290,13 +309,13 @@
         }, false);
 
         return dragger;
-    }
+    };
 
     /**
      * Build panels
      */
     const buildPanels = () => {
-        const types = ['Stats', 'Spoilers', 'Solution'];
+        const types = ['Score', 'Spoilers', 'Sneak Preview', 'Solution'];
         const container = createElement('div', {
             classNames: ['sba']
         });
@@ -307,7 +326,7 @@
         types.forEach(type => {
             const panel = createElement('details', {
                 attributes: {
-                    open: type === 'Stats' ? 'open' : false
+                    open: type === 'Score' ? 'open' : false
                 }
             });
 
@@ -338,17 +357,23 @@
                         checked: !!Number(localStorage.getItem('no-check-before-reveal'))
                     }
                 });
-                checkbox.addEventListener('click', function() {
+                checkbox.addEventListener('click', function () {
                     localStorage.setItem('no-check-before-reveal', Number(this.checked));
-                })
+                });
                 const label = createElement('label', {
                     text: 'Never require confirmation',
                     classNames: ['no-confirmation']
                 });
                 label.prepend(checkbox);
                 content.append(label);
-            }
-            else {
+            } else if (type === 'Sneak Preview') {
+                content = createElement('div');
+                spyArea = createElement('div', {
+                    text: '😐',
+                    classNames: ['spy-area']
+                });
+                content.append(spyArea);
+            } else {
                 content = createElement('table');
                 const thead = createElement('thead');
                 thead.append(buildTableRow('th', ['', 'Found', 'Missing', 'Total']));
@@ -367,9 +392,9 @@
         const siteLinkBox = createElement('div', {
             classNames: ['link']
 
-        })
+        });
         const siteLink = createElement('a', {
-            text: 'Spelling Bee Assistant 1.4.0',
+            text: 'Spelling Bee Assistant {{config(version)}}',
             attributes: {
                 href: 'https://draber.github.io',
                 target: '_blank'
@@ -382,21 +407,37 @@
 
     /**
      * Listen to the result container and update the panels when adding a new term
-     *
-     * @type {MutationObserver}
      */
-    observer = new MutationObserver((mutationsList) => {
-        // we're only interested in the very last mutation
-        const mutation = mutationsList.pop();
-        const node = mutation.addedNodes[0];
-        if (gameData.today.pangrams.includes(node.textContent)) {
-            node.classList.add('sb-pangram');
+    observers.resultContainer = {
+        target: resultContainer,
+        callback: (mutation) => {
+            const node = mutation.addedNodes[0];
+            if (gameData.today.pangrams.includes(node.textContent)) {
+                node.classList.add('sb-pangram');
+            }
+            updateStats();
         }
-        updateStats();
-    });
-    observer.observe(resultContainer, {
-        childList: true
-    });
+    };
+
+    /**
+     * Listen to the text input field and update the sneak preview
+     */
+    observers.textInput = {
+        target: textInput,
+        callback: (mutation) => {
+            spyArea.innerHTML = sneakPreview(mutation.target.textContent.trim());
+        }
+    };
+
+    for (const [key, config] of Object.entries(observers)) {
+        observers[key].observer = new MutationObserver(mutationsList => {
+            // we're only interested in the very last mutation
+            observers[key].callback(mutationsList.pop());
+        });
+        observers[key].observer.observe(observers[key].target, {
+            childList: true
+        });
+    }
 
     /**
      * Initialize app
@@ -415,5 +456,7 @@
         updateStats();
         window.gameData.assistant = true;
         return true;
-    }
+    };
     init();
+
+}(element_js));

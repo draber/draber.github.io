@@ -1,0 +1,14 @@
+{
+  "name": "config-reader",
+  "version": "1.0.0",
+  "description": "Include information from main package.json",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "config-reader"
+  ],
+  "author": "Dieter Raber",
+  "license": "MIT"
+}

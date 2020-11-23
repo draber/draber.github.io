@@ -1,0 +1,261 @@
+$colorHighlight: rgb(248, 205, 5);
+$colorBorder: rgb(220, 220, 220);
+$colorPaleText: #888;
+
+
+// invert
+$bg : #111;
+$txt: #eee;
+$yellow: #f7c60a;
+$cellBg: #393939;
+
+.pz-game-field {
+    background: inherit;
+    color: inherit;
+}
+
+.sb-content-box {
+    position: relative;
+}
+
+.sb-wordlist-items {
+    .sb-pangram {
+        border-bottom: 2px $colorHighlight solid;
+    }
+
+    .sb-anagram {
+        a {
+            color: $colorPaleText;
+        }
+    }
+}
+
+
+.sba-dark {
+    background: $bg;
+    color: $txt;
+
+    .sb-progress-marker .sb-progress-value,
+    .sba summary,
+    .hive-cell.center .cell-fill {
+        background: $yellow;
+        fill: $yellow;
+        color: $bg
+    }
+
+    .sb-input-bright {
+        color: $yellow
+    }
+
+    .hive-cell.outer .cell-fill {
+        fill: $cellBg;
+    }
+
+    .cell-fill {
+        stroke: $bg;
+    }
+
+    .cell-letter {
+        fill: $txt;
+    }
+
+    .hive-cell.center .cell-letter {
+        fill: $bg;
+    }
+
+    .hive-action:not(.hive-action__shuffle) {
+        background: $bg;
+        color: $txt;
+    }
+
+    .hive-action__shuffle {
+        filter: invert(100%)
+    }
+
+    *:not(.hive-action__shuffle):not(.sb-pangram) {
+        border-color: #333 !important
+    }
+}
+
+
+.sba {
+    position: absolute;
+    width: 200px;
+    right: -210px;
+    top: 16px;
+    background: inherit;
+    z-index: 3;
+
+    border: {
+        width: 1px;
+        color: $colorBorder;
+        radius: 6px;
+        style: solid
+    }
+
+    padding: 0 10px 5px;
+
+    * {
+        box-sizing: border-box;
+
+        &:focus {
+            outline: 0;
+        }
+    }
+
+    .dragger {
+        font-weight: bold;
+        cursor: move;
+        line-height: 32px;
+    }
+
+    &.dragging {
+        opacity: .5;
+        border-style: dashed;
+    }
+
+    .closer {
+        font-size: 20px;
+        font-weight: bold;
+        position: absolute;
+        top: 0;
+        right: 0;
+        line-height: 32px;
+        padding: 0 10px;
+        cursor: pointer;
+    }
+
+    details {
+        font-size: 90%;
+        margin-bottom: 1px;
+
+        &[open] {
+            summary {
+                &:before {
+                    content: "\ff0d";
+                }
+            }
+        }
+    }
+
+    summary {
+        line-height: 24px;
+        padding: 0 15px 0 25px;
+        background: $colorHighlight;
+        cursor: pointer;
+        list-style: none;
+        position: relative;
+
+        &::-webkit-details-marker {
+            display: none
+        }
+
+        &:before {
+            content: "\ff0b";
+            position: absolute;
+            left: 8px;
+        }
+    }
+
+    .hive-action {
+        margin: 0 auto;
+        display: block;
+        font-size: 100%;
+        white-space: nowrap;
+    }
+
+    .no-confirmation {
+        display: inline-block;
+        margin: 0 0 10px 0;
+        font-size: 80%;
+
+        input {
+            margin: 5px;
+            position: relative;
+            top: 2px;
+        }
+    }
+
+    table,
+    .frame {
+        border: 1px solid $colorBorder;
+        border-top: none;
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 85%;
+        margin-bottom: 4px
+    }
+
+    th,
+    td {
+        border: 1px solid $colorBorder;
+        padding: 3px;
+    }
+
+    thead {
+        th {
+            text-align: center;
+        }
+    }
+
+    tbody {
+        th {
+            text-align: right;
+        }
+
+        td {
+            text-align: center;
+        }
+    }
+
+    [data-plugin="footer"] a {
+        color: currentColor;
+        opacity: .6;
+        font-size: 10px;
+        text-align: right;
+        display: block;
+        padding-top: 8px;
+
+        &:hover {
+            opacity: .8;
+            text-decoration: underline
+        }
+    }
+
+    .spill-title {
+        padding: 10px 6px 0px;
+        text-align: center;
+    }
+
+    .spill {
+        text-align: center;
+        padding: 17px 0;
+        font-size: 280%;
+    }
+
+    ul {
+        &.frame {
+            text-align: right;
+            padding: 5px;
+        }
+    }
+
+    [data-plugin="surrender"] {
+        .frame {
+            padding: 10px 5px;
+        }
+    }
+
+
+    input {
+        &[type="checkbox"] {
+            position: relative;
+            top: 2px;
+        }
+    }
+
+    label {
+        cursor: pointer;
+    }
+
+}
