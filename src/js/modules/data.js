@@ -44,6 +44,7 @@ const getPoints = type => {
  * Update word lists
  */
 const updateLists = () => {
+    //@todo : use sb-today from local storage
     lists.foundTerms = [];
     lists.foundPangrams = [];
 
