@@ -11,6 +11,7 @@ import scoreSoFar from './plugins/scoreSoFar.js';
 import setUp from './plugins/setUp.js';
 import spillTheBeans from './plugins/spillTheBeans.js';
 import spoilers from './plugins/spoilers.js';
+//import steps from './plugins/steps.js';
 import surrender from './plugins/surrender.js';
 import footer from './plugins/footer.js';
 
@@ -42,7 +43,6 @@ if (window.gameData) {
 	});
 
 	app.addEventListener('sbadarkMode', evt => {
-		console.log(evt.detail)
         if(evt.detail.enabled){
             document.body.classList.add('sba-dark');
         }
@@ -62,6 +62,7 @@ if (window.gameData) {
 	spoilers.add(app);
 	spillTheBeans.add(app, el.$('.sb-hive-input-content', gameContainer));
 	surrender.add(app, resultContainer);
+	//steps.add(app, gameContainer);
 	setUp.add(app);
 	footer.add(app);
 	styles.add();

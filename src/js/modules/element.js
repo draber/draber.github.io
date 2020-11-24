@@ -25,9 +25,16 @@ const $$ = (expr, container) => {
 	return [].slice.call((container || document).querySelectorAll(expr));
 }
 
-const tableRow = (cellData, cellTag) => {
+const tableRow = ({
+	classNames = [],
+	events = {},
+	cellData = [],
+	cellTag = 'td'
+} = {}) => {
 	const row = create({
-		tag: 'tr'
+		tag: 'tr',
+		classNames: classNames,
+		events: events
 	});
 	cellData.forEach(entry => {
 		row.append(create({
@@ -78,7 +85,7 @@ const create = ({
 	cellTag = 'td'
 } = {}) => {
 	if (tag === 'tr' && cellData.length) {
-		return tableRow(cellData, cellTag);
+		return tableRow({ classNames, events, cellData, cellTag });
 	}
 	if (tag === 'input' && attributes.type === 'checkbox' && text) {
 		return labeledCheckbox({

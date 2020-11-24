@@ -30,6 +30,22 @@ $cellBg: #393939;
     }
 }
 
+.sb-modal-scrim {
+    background: rgba($bg, .85);
+    color: $txt;
+}
+
+.pz-modal__title{
+    color: $txt;
+}
+
+.sb-modal-frame, .pz-modal__button.white{
+    background: $bg;
+    color: $txt;
+}
+.pz-modal__button.white:hover{
+    background: $cellBg;
+}
 
 .sba-dark {
     background: $bg;
