@@ -16,7 +16,8 @@ const add = (app, plugin, key, title, optional) => {
     if(optional) {
        settings.set(key, { v: available, t: `Display "${title}"` });
     }    
-    app.addEventListener(`sba${key}`, evt => {
+    const evtName = 'sba' + key.charAt(0).toUpperCase() + key.slice(1);
+    app.addEventListener(evtName, evt => {
         if(evt.detail.enabled){
             add(app, plugin, key, title, optional);
         }

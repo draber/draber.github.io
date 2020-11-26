@@ -24,7 +24,8 @@ const populate = (app, frame) => {
 			},
 			events: {
 				click: function (evt) {
-					app.dispatchEvent(new CustomEvent(`sba${key}`, {
+					const evtName = 'sba' + key.charAt(0).toUpperCase() + key.slice(1);
+					app.dispatchEvent(new CustomEvent(evtName, {
 						detail: {
 							enabled: this.checked
 						}						

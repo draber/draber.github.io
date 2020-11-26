@@ -42,7 +42,7 @@
 			text: text,
 			classNames: classNames
 		});
-		label.append(checkbox);
+		label.prepend(checkbox);
 		return label;
 	};
 	const create = ({
@@ -116,71 +116,6 @@
 	        });
 	    }
 	};
-
-	const addObserver = (app, target) => {
-		observers$1.add(new MutationObserver(mutationsList => {
-			app.dispatchEvent(new CustomEvent('sbaUpdate', {
-				detail: {
-					text: mutationsList.pop().addedNodes[0]
-				}
-			}));
-		}), target, {
-			childList: true
-		});
-	};
-	function widget(observerTarget, {
-		text = '',
-		classNames = [],
-		attributes = {},
-		data = {},
-		draggable = true,
-		modal = !draggable,
-		closable = draggable,
-		events = {}
-	} = {}) {
-		if (!data.id) {
-			console.error('Widget must have a unique id');
-			return;
-		}
-		const canvas = el.create({
-			data: Object.assign({
-				modal: modal
-			}, data),
-			classNames: classNames,
-			attributes: attributes,
-			events: events
-		});
-		addObserver(canvas, observerTarget);
-		const ui = el.create();
-		canvas.append(ui);
-		if (text) {
-			const title = el.create({
-				text: text,
-				attributes: {
-					title: 'Hold the mouse down to drag'
-				},
-				classNames: ['dragger']
-			});
-			ui.append(title);
-		}
-		if (closable) {
-			const closer = el.create({
-				tag: 'span',
-				text: '×',
-				attributes: {
-					title: 'Close'
-				},
-				classNames: ['closer'],
-				events: {
-					click: () => {
-						canvas.dispatchEvent(new Event('destroy'));
-					}
-				}
-			});
-			ui.append(closer);
-		}
-		return canvas;
-	}
 
 	var version = "2.0.0";
 
@@ -284,14 +219,61 @@
 	    getPoints
 	};
 
-	var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.pz-modal__title{color:#eee}.sb-modal-frame,.pz-modal__button.white{background:#111;color:#eee}.pz-modal__button.white:hover{background:#393939}.sba-dark{background:#111;color:#eee}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .sba summary,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;right:-210px;top:16px;background:inherit;z-index:3;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid;padding:0 10px 5px}.sba *{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .no-confirmation{display:inline-block;margin:0 0 10px 0;font-size:80%}.sba .no-confirmation input{margin:5px;position:relative;top:2px}.sba table,.sba .frame{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba th,.sba td{border:1px solid #dcdcdc;padding:3px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.frame{text-align:right;padding:5px}.sba [data-plugin=surrender] .frame{padding:10px 5px}.sba input[type=checkbox]{position:relative;top:2px}.sba label{cursor:pointer}\n";
+	const addObserver = (app, target) => {
+		observers$1.add(new MutationObserver(mutationsList => {
+			app.dispatchEvent(new CustomEvent('sbaUpdate', {
+				detail: {
+					text: mutationsList.pop().addedNodes[0]
+				}
+			}));
+		}), target, {
+			childList: true
+		});
+	};
+	function widget(resultContainer) {
+		const app = el.create({
+			attributes: {
+				draggable: true
+			},
+			data: {
+				id: settings$1.get('repo')
+			},
+			classNames: ['sba'],
+			events: {
+				sbaDestroy: evt => {
+					observers$1.removeAll();
+					evt.target.remove();
+				},
+				sbaDarkMode: evt => {
+					if (evt.detail.enabled) {
+						document.body.classList.add('sba-dark');
+					} else {
+						document.body.classList.remove('sba-dark');
+					}
+				}
+			}
+		});
+		data.init(app, resultContainer);
+		addObserver(app, resultContainer);
+		app.dispatchEvent(new CustomEvent('sbaDarkMode', {
+			detail: {
+				enabled: settings$1.get('darkMode')
+			}
+		}));
+		return app;
+	}
+
+	var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .sba summary,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;right:-210px;top:16px;background:inherit;z-index:3;box-sizing:border-box;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid;padding:0 10px 5px}.sba *,.sba *:before,.sba *:after{box-sizing:inherit}.sba *{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .no-confirmation{display:inline-block;margin:0 0 10px 0;font-size:80%}.sba .no-confirmation input{margin:5px;position:relative;top:2px}.sba table,.sba .frame{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px;table-layout:fixed}.sba tr td:first-of-type{text-align:left}.sba tr.done{font-weight:bold}.sba tr.done:last-of-type{color:#f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;padding:4px 6px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.frame{padding:5px}.sba [data-plugin=surrender] .frame{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
 
 	let styles;
 	var styles$1 = {
-		add: () => {
+		add: (app) => {
 			styles = el.create({
 				tag: 'style',
 				text: css.replace(/(\uFEFF|\\n)/u, '')
+			});
+			app.addEventListener('sbaDestroy', evt => {
+				styles.remove();
 			});
 			return el.$('head').append(styles);
 		},
@@ -314,7 +296,8 @@
 	    if(optional) {
 	       settings$1.set(key, { v: available, t: `Display "${title}"` });
 	    }
-	    app.addEventListener(`sba${key}`, evt => {
+	    const evtName = 'sba' + key.charAt(0).toUpperCase() + key.slice(1);
+	    app.addEventListener(evtName, evt => {
 	        if(evt.detail.enabled){
 	            add(app, plugin, key, title, optional);
 	        }
@@ -419,7 +402,8 @@
 				},
 				events: {
 					click: function (evt) {
-						app.dispatchEvent(new CustomEvent(`sba${key}`, {
+						const evtName = 'sba' + key.charAt(0).toUpperCase() + key.slice(1);
+						app.dispatchEvent(new CustomEvent(evtName, {
 							detail: {
 								enabled: this.checked
 							}
@@ -596,10 +580,86 @@
 		}
 	};
 
-	const title$5 = "Surrender";
-	const key$4 = 'surrender';
-	const optional$4 = true;
+	const title$5 = 'Header';
+	const key$4 = 'header';
+	const optional$4 = false;
 	let plugin$4;
+	const makeDraggable = (plugin, app) => {
+	    let headerHeight;
+	    let screenWidth;
+	    app.addEventListener('dragstart', (evt) => {
+	        headerHeight = el.$('header').clientHeight;
+	        screenWidth = screen.availWidth;
+	        evt.stopPropagation();
+	        const style = getComputedStyle(app);
+	        evt.dataTransfer.effectAllowed = 'move';
+	        app.classList.add('dragging');
+	        app.dataset.right = style.getPropertyValue('right');
+	        app.dataset.top = style.getPropertyValue('top');
+	        app.dataset.mouseX = evt.clientX;
+	        app.dataset.mouseY = evt.clientY;
+	    }, false);
+	    app.addEventListener('dragend', (evt) => {
+	        evt.stopPropagation();
+	        const pos = {
+	            x: parseInt(app.dataset.right) - (evt.clientX - app.dataset.mouseX),
+	            y: parseInt(app.dataset.top) + (evt.clientY - app.dataset.mouseY)
+	        };
+	        app.style.right = pos.x + 'px';
+	        app.style.top = pos.y + 'px';
+	        app.classList.remove('dragging');
+	        const rect = app.getBoundingClientRect();
+	        const neededW = rect.x + rect.width;
+	        console.log({rw: rect.x, sw: screenWidth, swa: neededW, px: pos.x});
+	        if(rect.x < 0) {
+	            app.style.right = pos.x + rect.x + 'px';
+	        }
+	        else if(rect.x + rect.width > screenWidth) {
+	            app.style.right = pos.x - (neededW - screenWidth) + 'px';
+	        }
+	        if(rect.y < headerHeight) {
+	            app.style.top = pos.y - (headerHeight - rect.y) + 'px';
+	        }
+	    }, false);
+	};
+	var header = {
+	    add: (app) => {
+	        plugin$4 = el.create();
+	        const title = el.create({
+	            text: settings$1.get('title'),
+	            attributes: {
+	                title: 'Hold the mouse down to drag'
+	            },
+	            classNames: ['dragger']
+	        });
+	        plugin$4.append(title);
+	        const closer = el.create({
+	            tag: 'span',
+	            text: '×',
+	            attributes: {
+	                title: 'Close'
+	            },
+	            classNames: ['closer'],
+	            events: {
+	                click: () => {
+	                    app.dispatchEvent(new Event('sbaDestroy'));
+	                }
+	            }
+	        });
+	        plugin$4.append(closer);
+	        makeDraggable(plugin$4, app);
+	        return plugins.add(app, plugin$4, key$4, title, optional$4);
+	    },
+	    remove: () => {
+	        plugin$4 = plugins.remove(plugin$4, key$4, title$5);
+	        return true;
+	    }
+	};
+
+	const title$6 = "Surrender";
+	const key$5 = 'surrender';
+	const optional$5 = true;
+	let plugin$5;
 	const pangrams = window.gameData.today.pangrams;
 	const buildEntry = term => {
 		const entry = el.create({
@@ -624,12 +684,12 @@
 	};
 	var surrender = {
 		add: (app, resultContainer) => {
-			if (settings$1.get(key$4) === false) {
+			if (settings$1.get(key$5) === false) {
 				return false;
 			}
-			plugin$4 = el.create({
+			plugin$5 = el.create({
 				tag: 'details',
-				text: [title$5, 'summary']
+				text: [title$6, 'summary']
 			});
 			const frame = el.create({
 				classNames: ['frame']
@@ -648,22 +708,94 @@
 				}
 			});
 			frame.append(button);
-			plugin$4.append(frame);
-			return plugins.add(app, plugin$4, key$4, title$5, optional$4);
+			plugin$5.append(frame);
+			return plugins.add(app, plugin$5, key$5, title$6, optional$5);
 		},
 		remove: () => {
-			plugin$4 = plugins.remove(plugin$4, key$4, title$5);
+			plugin$5 = plugins.remove(plugin$5, key$5, title$6);
 			return true;
 		}
 	};
 
-	const title$6 = 'Footer';
-	const key$5 = 'footer';
-	const optional$5 = false;
-	let plugin$5;
+	const title$7 = "Steps to success";
+	const key$6 = 'steps';
+	const optional$6 = true;
+	let observer$1;
+	let plugin$6;
+	const steps = {};
+	const allPoints = data.getPoints('answers');
+	const addObserver$2 = (target, frame) => {
+	    observer$1 = new MutationObserver(mutationsList => {
+	        const node = mutationsList.pop().target;
+	        const title = el.$('.sb-modal-title', node);
+	        if (title && title.textContent.trim() === 'Rankings') {
+	            init$1(target, frame);
+	        }
+	    });
+	    observers$1.add(observer$1, target, {
+	        childList: true
+	    });
+	};
+	const init$1 = (modal, frame) => {
+	    el.$$('.sb-modal-list li', modal).forEach(element => {
+	        const values = element.textContent.match(/([^\(]+) \((\d+)\)/);
+	        steps[values[1]] = parseInt(values[2], 10);
+	    });
+	    steps['Queen Bee'] = allPoints;
+	    el.$('.sb-modal-close', modal).click();
+	    observers$1.remove(observer$1);
+	    update$2(frame);
+	};
+	const update$2 = (frame) => {
+	    frame.innerHTML = '';
+	    const ownPoints = data.getPoints('foundTerms');
+	    for (const [key, value] of Object.entries(steps)) {
+	        frame.append(el.create({
+	            tag: 'tr',
+	            classNames: ownPoints >= value ? ['done'] : [],
+	            cellTag: 'td',
+	            cellData: [key, value]
+	        }));
+	    }};
+	var steps$1 = {
+	    add: (app, gameContainer) => {
+	        plugin$6 = el.create({
+	            tag: 'details',
+	            text: [title$7, 'summary']
+	        });
+	        const content = el.create({
+	            tag: 'table'
+	        });
+	        const frame = el.create({
+	            tag: 'tbody'
+	        });
+	        content.append(frame);
+	        plugin$6.addEventListener('toggle', event => {
+	            if (plugin$6.open && !frame.hasChildNodes()) {
+	                addObserver$2(el.$('.sb-modal-wrapper'), frame);
+	                el.$('.sb-progress', gameContainer).click();
+	            }
+	        });
+	        plugin$6.append(content);
+	        app.addEventListener('sbaUpdateComplete', evt => {
+	            update$2(frame);
+	        });
+	        return plugins.add(app, plugin$6, key$6, title$7, optional$6);
+	    },
+	    remove: () => {
+	        plugin$6 = plugins.remove(plugin$6, key$6, title$7);
+	        observers$1.remove(observer$1);
+	        return true;
+	    }
+	};
+
+	const title$8 = 'Footer';
+	const key$7 = 'footer';
+	const optional$7 = false;
+	let plugin$7;
 	var footer = {
 		add: (app) => {
-			plugin$5 = el.create({
+			plugin$7 = el.create({
 				tag: 'a',
 				text: `${settings$1.get('label')} ${settings$1.get('version')}`,
 	            attributes: {
@@ -671,10 +803,10 @@
 	                target: '_blank'
 	            }
 			});
-			return plugins.add(app, plugin$5, key$5, title$6, optional$5);
+			return plugins.add(app, plugin$7, key$7, title$8, optional$7);
 		},
 		remove: () => {
-			plugin$5 = plugins.remove(plugin$5, key$5, title$6);
+			plugin$7 = plugins.remove(plugin$7, key$7, title$8);
 			return true;
 		}
 	};
@@ -684,44 +816,18 @@
 	if (window.gameData) {
 		const oldInstance = el.$(`[data-id="${settings$1.get('repo')}"]`, gameContainer);
 		if (oldInstance) {
-			oldInstance.dispatchEvent(new Event('destroy'));
+			oldInstance.dispatchEvent(new Event('sbaDestroy'));
 		}
-		const app = widget(resultContainer$1, {
-			text: settings$1.get('title'),
-			classNames: ['sba'],
-			draggable: true,
-			data: {
-				id: settings$1.get('repo')
-			},
-			events: {
-				destroy: function () {
-					observers$1.removeAll();
-					styles$1.remove();
-					this.remove();
-				}
-			}
-		});
-		app.addEventListener('sbadarkMode', evt => {
-	        if(evt.detail.enabled){
-	            document.body.classList.add('sba-dark');
-	        }
-	        else {
-	            document.body.classList.remove('sba-dark');
-	        }
-		});
-		app.dispatchEvent(new CustomEvent('sbadarkMode', {
-			detail: {
-				enabled: settings$1.get('darkMode')
-			}
-		}));
-		data.init(app, resultContainer$1);
+		const app = widget(resultContainer$1);
+		header.add(app);
 		scoreSoFar.add(app);
 		spoilers.add(app);
 		spillTheBeans.add(app, el.$('.sb-hive-input-content', gameContainer));
 		surrender.add(app, resultContainer$1);
+		steps$1.add(app, gameContainer);
 		setUp.add(app);
 		footer.add(app);
-		styles$1.add();
+		styles$1.add(app);
 		gameContainer.append(app);
 		app.dispatchEvent(new Event('sbaLaunchComplete'));
 	}

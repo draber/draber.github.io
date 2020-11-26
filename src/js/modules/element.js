@@ -61,7 +61,7 @@ const labeledCheckbox = ({
 		text: text,
 		classNames: classNames
 	});
-	label.append(checkbox);
+	label.prepend(checkbox);
 	return label;
 }
 

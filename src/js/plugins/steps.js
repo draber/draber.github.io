@@ -3,7 +3,7 @@ import plugins from '../modules/plugins.js';
 import data from '../modules/data.js';
 import observers from '../modules/observers.js';
 
-const title = "Steps";
+const title = "Steps to success";
 const key = 'steps';
 const optional = true;
 
@@ -15,7 +15,6 @@ const steps = {};
 const allPoints = data.getPoints('answers');
 
 const addObserver = (target, frame) => {
-  //  target.parentElement.style.opacity = 0;
     observer = new MutationObserver(mutationsList => {
         const node = mutationsList.pop().target;
         const title = el.$('.sb-modal-title', node);
@@ -35,7 +34,6 @@ const init = (modal, frame) => {
     });
     steps['Queen Bee'] = allPoints;
     el.$('.sb-modal-close', modal).click();
-  //  modal.parentElement.style.opacity = 1;
     observers.remove(observer);
     update(frame);
 }
@@ -81,9 +79,9 @@ export default {
 
         plugin.append(content);
 
-		app.addEventListener('sbaUpdateComplete', evt => {
-			update(frame);
-		});
+        app.addEventListener('sbaUpdateComplete', evt => {
+            update(frame);
+        });
 
         return plugins.add(app, plugin, key, title, optional);
     },

@@ -30,26 +30,51 @@ $cellBg: #393939;
     }
 }
 
-.sb-modal-scrim {
-    background: rgba($bg, .85);
-    color: $txt;
-}
-
-.pz-modal__title{
-    color: $txt;
-}
-
-.sb-modal-frame, .pz-modal__button.white{
-    background: $bg;
-    color: $txt;
-}
-.pz-modal__button.white:hover{
-    background: $cellBg;
-}
-
 .sba-dark {
     background: $bg;
     color: $txt;
+
+    .sba {
+        background: $bg;
+    }
+
+    .pz-nav__hamburger-inner,
+    .pz-nav__hamburger-inner::before,
+    .pz-nav__hamburger-inner::after {
+        background-color: $txt;
+    }
+
+    .pz-nav {
+        width: 100%;
+        background: $bg;
+    }
+
+    .pz-nav__logo {
+        filter: invert(1);
+    }
+
+    .sb-modal-scrim {
+        background: rgba($bg, .85);
+        color: $txt;
+    }
+
+    .pz-modal__title {
+        color: $txt;
+    }
+
+    .sb-modal-frame,
+    .pz-modal__button.white {
+        background: $bg;
+        color: $txt;
+    }
+
+    .pz-modal__button.white:hover {
+        background: $cellBg;
+    }
+
+    .sb-message {
+        background: $cellBg;
+    }
 
     .sb-progress-marker .sb-progress-value,
     .sba summary,
@@ -101,6 +126,13 @@ $cellBg: #393939;
     top: 16px;
     background: inherit;
     z-index: 3;
+    box-sizing: border-box;
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: inherit;
+    }
 
     border: {
         width: 1px;
@@ -199,13 +231,30 @@ $cellBg: #393939;
         border-collapse: collapse;
         width: 100%;
         font-size: 85%;
-        margin-bottom: 4px
+        margin-bottom: 4px;
+        table-layout: fixed;
+    }
+
+    tr {
+        td {
+            &:first-of-type {
+                text-align: left;
+            }
+        }
+
+        &.done {
+            font-weight: bold;
+
+            &:last-of-type { 
+                color: $colorHighlight
+            }
+        }
     }
 
     th,
     td {
         border: 1px solid $colorBorder;
-        padding: 3px;
+        padding: 4px 6px;
     }
 
     thead {
@@ -251,7 +300,6 @@ $cellBg: #393939;
 
     ul {
         &.frame {
-            text-align: right;
             padding: 5px;
         }
     }
@@ -262,16 +310,16 @@ $cellBg: #393939;
         }
     }
 
-
-    input {
-        &[type="checkbox"] {
-            position: relative;
-            top: 2px;
-        }
-    }
-
     label {
         cursor: pointer;
+        position: relative;
+        line-height: 19px;
+
+        input {
+            position: relative;
+            top: 2px;
+            margin: 0 10px 0 0;
+        }
     }
 
 }
