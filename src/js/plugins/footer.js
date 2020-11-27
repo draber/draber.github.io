@@ -9,7 +9,7 @@ const optional = false;
 let plugin;
 
 export default {
-	add: (app) => {
+	add: (app, game) => {
 	
 		plugin = el.create({
 			tag: 'a',

@@ -50,6 +50,7 @@
 		text = '',
 		classNames = [],
 		attributes = {},
+		style = {},
 		data = {},
 		events = {},
 		cellData = [],
@@ -67,6 +68,9 @@
 			});
 		}
 		const el = document.createElement(tag);
+		for (const [prop, value] of Object.entries(style)) {
+			el.style[prop] = value;
+		}
 		if (classNames.length) {
 			el.classList.add(...classNames);
 		}
@@ -169,7 +173,7 @@
 	    remainders: []
 	};
 	let app;
-	let resultContainer;
+	let resultList;
 	const getList = (type) => {
 	    return lists[type];
 	};
@@ -193,7 +197,7 @@
 	const updateLists = () => {
 	    lists.foundTerms = [];
 	    lists.foundPangrams = [];
-	    el.$$('li', resultContainer).forEach(node => {
+	    el.$$('li', resultList).forEach(node => {
 	        const term = node.textContent;
 	        lists.foundTerms.push(term);
 	        if (lists.pangrams.includes(term)) {
@@ -204,8 +208,8 @@
 	    lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
 	    app.dispatchEvent(new Event('sbaUpdateComplete'));
 	};
-	const init = (_app, _resultContainer) => {
-	    resultContainer = _resultContainer;
+	const init = (_app, _resultList) => {
+	    resultList = _resultList;
 	    app = _app;
 	    updateLists();
 	    app.addEventListener('sbaUpdate', evt => {
@@ -230,10 +234,16 @@
 			childList: true
 		});
 	};
-	function widget(resultContainer) {
+	function widget(game) {
+		const rect = el.$('.sb-content-box', game).getBoundingClientRect();
+		const resultList = el.$('.sb-wordlist-items', game);
 		const app = el.create({
 			attributes: {
 				draggable: true
+			},
+			style: {
+				left: (rect.right + 10) + 'px',
+				top: (rect.top + window.pageYOffset) + 'px',
 			},
 			data: {
 				id: settings$1.get('repo')
@@ -253,8 +263,8 @@
 				}
 			}
 		});
-		data.init(app, resultContainer);
-		addObserver(app, resultContainer);
+		data.init(app, resultList);
+		addObserver(app, resultList);
 		app.dispatchEvent(new CustomEvent('sbaDarkMode', {
 			detail: {
 				enabled: settings$1.get('darkMode')
@@ -263,7 +273,7 @@
 		return app;
 	}
 
-	var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-content-box{position:relative}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .sba summary,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;right:-210px;top:16px;background:inherit;z-index:3;box-sizing:border-box;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid;padding:0 10px 5px}.sba *,.sba *:before,.sba *:after{box-sizing:inherit}.sba *{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .no-confirmation{display:inline-block;margin:0 0 10px 0;font-size:80%}.sba .no-confirmation input{margin:5px;position:relative;top:2px}.sba table,.sba .frame{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px;table-layout:fixed}.sba tr td:first-of-type{text-align:left}.sba tr.done{font-weight:bold}.sba tr.done:last-of-type{color:#f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;padding:4px 6px}.sba thead th{text-align:center}.sba tbody th{text-align:right}.sba tbody td{text-align:center}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.frame{padding:5px}.sba [data-plugin=surrender] .frame{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
+	var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .sba summary,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid;padding:0 10px 5px}.sba *,.sba *:before,.sba *:after{box-sizing:inherit}.sba *{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .no-confirmation{display:inline-block;margin:0 0 10px 0;font-size:80%}.sba .no-confirmation input{margin:5px;position:relative;top:2px}.sba table,.sba .frame{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr td:first-of-type{text-align:left}.sba tr.current{font-weight:bold;color:#f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.frame{padding:5px}.sba [data-plugin=surrender] .frame{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
 
 	let styles;
 	var styles$1 = {
@@ -350,7 +360,7 @@
 		});
 	};
 	var scoreSoFar = {
-		add: (app) => {
+		add: (app, game) => {
 			if(settings$1.get(key) === false){
 				return false;
 			}
@@ -414,7 +424,7 @@
 			frame.append(li);
 		}};
 	var setUp = {
-		add: (app) => {
+		add: (app, game) => {
 			plugin$1 = el.create({
 				tag: 'details',
 				text: [title$2, 'summary']
@@ -461,7 +471,8 @@
 		});
 	};
 	var spillTheBeans = {
-		add: (app, observerTarget) => {
+		add: (app, game) => {
+			const observerTarget = el.$('.sb-hive-input-content', game);
 			if (settings$1.get(key$2) === false) {
 				return false;
 			}
@@ -528,7 +539,7 @@
 	        }
 	        counts[term.length].total++;
 		});
-		keys = Object.keys(counts);
+		let keys = Object.keys(counts);
 		keys.sort((a, b) => a - b);
 		keys.forEach(count => {
 			cellData.push([
@@ -550,7 +561,7 @@
 		});
 	};
 	var spoilers = {
-		add: (app) => {
+		add: (app, game) => {
 			if (settings$1.get(key$3) === false) {
 				return false;
 			}
@@ -584,46 +595,51 @@
 	const key$4 = 'header';
 	const optional$4 = false;
 	let plugin$4;
-	const makeDraggable = (plugin, app) => {
-	    let headerHeight;
-	    let screenWidth;
-	    app.addEventListener('dragstart', (evt) => {
-	        headerHeight = el.$('header').clientHeight;
-	        screenWidth = screen.availWidth;
-	        evt.stopPropagation();
-	        const style = getComputedStyle(app);
-	        evt.dataTransfer.effectAllowed = 'move';
-	        app.classList.add('dragging');
-	        app.dataset.right = style.getPropertyValue('right');
-	        app.dataset.top = style.getPropertyValue('top');
-	        app.dataset.mouseX = evt.clientX;
-	        app.dataset.mouseY = evt.clientY;
+	let params;
+	const getDragParams = (evt, game) => {
+	    const gRect = game.getBoundingClientRect();
+	    const aRect = evt.target.getBoundingClientRect();
+	    const aStyle = getComputedStyle(evt.target);
+	    const minT = gRect.top + window.pageYOffset;
+	    const pRect = el.$(`[data-plugin="${key$4}"]`).getBoundingClientRect();
+	    const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
+	    const result = {
+	        maxL: document.documentElement.clientWidth - aRect.width,
+	        minT: minT,
+	        maxT: minT + gAvailH,
+	        offX: evt.clientX - aRect.x,
+	        offY: evt.clientY - aRect.y,
+	        margT: parseInt(aStyle.marginTop, 10)
+	    };
+	    return result;
+	};
+	const getDropPosition = evt => {
+	    let left = Math.max(0, (evt.clientX - params.offX));
+	    left = Math.min(left, (params.maxL)) + 'px';
+	    let top = Math.max(params.minT, (evt.clientY + window.pageYOffset - params.margT - params.offY));
+	    top = Math.min(top, params.maxT) + 'px';
+	    console.log('end', top, params.maxT, evt.clientY, params.offY);
+	    return {
+	        left,
+	        top
+	    };
+	};
+	const makeDraggable = (app, game) => {
+	    game.addEventListener('dragover', evt => {
+	        evt.preventDefault();
+	    });
+	    app.addEventListener('dragstart', evt => {
+	        evt.target.style.opacity = .2;
+	        params = getDragParams(evt, game);
+	        console.log('start', params);
 	    }, false);
-	    app.addEventListener('dragend', (evt) => {
-	        evt.stopPropagation();
-	        const pos = {
-	            x: parseInt(app.dataset.right) - (evt.clientX - app.dataset.mouseX),
-	            y: parseInt(app.dataset.top) + (evt.clientY - app.dataset.mouseY)
-	        };
-	        app.style.right = pos.x + 'px';
-	        app.style.top = pos.y + 'px';
-	        app.classList.remove('dragging');
-	        const rect = app.getBoundingClientRect();
-	        const neededW = rect.x + rect.width;
-	        console.log({rw: rect.x, sw: screenWidth, swa: neededW, px: pos.x});
-	        if(rect.x < 0) {
-	            app.style.right = pos.x + rect.x + 'px';
-	        }
-	        else if(rect.x + rect.width > screenWidth) {
-	            app.style.right = pos.x - (neededW - screenWidth) + 'px';
-	        }
-	        if(rect.y < headerHeight) {
-	            app.style.top = pos.y - (headerHeight - rect.y) + 'px';
-	        }
-	    }, false);
+	    app.addEventListener('dragend', evt => {
+	        Object.assign(evt.target.style, getDropPosition(evt));
+	        evt.target.style.opacity = 1;
+	    });
 	};
 	var header = {
-	    add: (app) => {
+	    add: (app, game) => {
 	        plugin$4 = el.create();
 	        const title = el.create({
 	            text: settings$1.get('title'),
@@ -647,7 +663,7 @@
 	            }
 	        });
 	        plugin$4.append(closer);
-	        makeDraggable(plugin$4, app);
+	        makeDraggable(app, game);
 	        return plugins.add(app, plugin$4, key$4, title, optional$4);
 	    },
 	    remove: () => {
@@ -676,14 +692,14 @@
 		}));
 		return entry;
 	};
-	const resolve = (resultContainer) => {
+	const resolve = (resultList) => {
 		observers$1.removeAll();
 		data.getList('remainders').forEach(term => {
-			resultContainer.append(buildEntry(term));
+			resultList.append(buildEntry(term));
 		});
 	};
 	var surrender = {
-		add: (app, resultContainer) => {
+		add: (app, game) => {
 			if (settings$1.get(key$5) === false) {
 				return false;
 			}
@@ -703,7 +719,7 @@
 				},
 				events: {
 					click: function (evt) {
-						resolve(resultContainer);
+						resolve(el.$('.sb-wordlist-items', game));
 					}
 				}
 			});
@@ -749,16 +765,23 @@
 	const update$2 = (frame) => {
 	    frame.innerHTML = '';
 	    const ownPoints = data.getPoints('foundTerms');
+	    let previous;
+	    let hasCurrent = false;
 	    for (const [key, value] of Object.entries(steps)) {
-	        frame.append(el.create({
+	        const cell = el.create({
 	            tag: 'tr',
-	            classNames: ownPoints >= value ? ['done'] : [],
 	            cellTag: 'td',
 	            cellData: [key, value]
-	        }));
+	        });
+	        frame.append(cell);
+	        if(ownPoints < value && previous && !hasCurrent) {
+	            previous.classList.add('current');
+	            hasCurrent = true;
+	        }
+	        previous = cell;
 	    }};
 	var steps$1 = {
-	    add: (app, gameContainer) => {
+	    add: (app, game) => {
 	        plugin$6 = el.create({
 	            tag: 'details',
 	            text: [title$7, 'summary']
@@ -773,7 +796,7 @@
 	        plugin$6.addEventListener('toggle', event => {
 	            if (plugin$6.open && !frame.hasChildNodes()) {
 	                addObserver$2(el.$('.sb-modal-wrapper'), frame);
-	                el.$('.sb-progress', gameContainer).click();
+	                el.$('.sb-progress', game).click();
 	            }
 	        });
 	        plugin$6.append(content);
@@ -794,7 +817,7 @@
 	const optional$7 = false;
 	let plugin$7;
 	var footer = {
-		add: (app) => {
+		add: (app, game) => {
 			plugin$7 = el.create({
 				tag: 'a',
 				text: `${settings$1.get('label')} ${settings$1.get('version')}`,
@@ -811,24 +834,18 @@
 		}
 	};
 
-	const gameContainer = el.$('.sb-content-box');
-	const resultContainer$1 = el.$('.sb-wordlist-items', gameContainer);
 	if (window.gameData) {
-		const oldInstance = el.$(`[data-id="${settings$1.get('repo')}"]`, gameContainer);
+		const game = el.$('#pz-game-root');
+		const app = widget(game);
+		const oldInstance = el.$(`[data-id="${settings$1.get('repo')}"]`);
 		if (oldInstance) {
 			oldInstance.dispatchEvent(new Event('sbaDestroy'));
 		}
-		const app = widget(resultContainer$1);
-		header.add(app);
-		scoreSoFar.add(app);
-		spoilers.add(app);
-		spillTheBeans.add(app, el.$('.sb-hive-input-content', gameContainer));
-		surrender.add(app, resultContainer$1);
-		steps$1.add(app, gameContainer);
-		setUp.add(app);
-		footer.add(app);
+		document.body.append(app);
+		[header, scoreSoFar, spoilers, spillTheBeans, steps$1, surrender, setUp, footer].forEach(plugin => {
+			plugin.add(app, game);
+		});
 		styles$1.add(app);
-		gameContainer.append(app);
 		app.dispatchEvent(new Event('sbaLaunchComplete'));
 	}
 

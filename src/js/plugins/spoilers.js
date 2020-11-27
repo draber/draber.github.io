@@ -38,7 +38,7 @@ const getCellData = () => {
         }
         counts[term.length].total++;
 	});
-	keys = Object.keys(counts);
+	let keys = Object.keys(counts);
 	keys.sort((a, b) => a - b);
 	keys.forEach(count => {
 		cellData.push([
@@ -62,7 +62,7 @@ const update = () => {
 }
 
 export default {
-	add: (app) => {
+	add: (app, game) => {
 	
 		if (settings.get(key) === false) {
 			return false;

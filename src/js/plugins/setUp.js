@@ -39,7 +39,7 @@ const populate = (app, frame) => {
 
 
 export default {
-	add: (app) => {
+	add: (app, game) => {
 
 		plugin = el.create({
 			tag: 'details',

@@ -9,7 +9,7 @@ const lists = {
 };
 
 let app;
-let resultContainer;
+let resultList;
 
 const getList = (type) => {
     return lists[type];
@@ -48,7 +48,7 @@ const updateLists = () => {
     lists.foundTerms = [];
     lists.foundPangrams = [];
 
-    el.$$('li', resultContainer).forEach(node => {
+    el.$$('li', resultList).forEach(node => {
         const term = node.textContent;
         lists.foundTerms.push(term);
         if (lists.pangrams.includes(term)) {
@@ -61,8 +61,8 @@ const updateLists = () => {
 };
 
 
-const init = (_app, _resultContainer) => {
-    resultContainer = _resultContainer;
+const init = (_app, _resultList) => {
+    resultList = _resultList;
     app = _app;
     updateLists();
     app.addEventListener('sbaUpdate', evt => {

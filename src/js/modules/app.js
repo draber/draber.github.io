@@ -20,13 +20,19 @@ const addObserver = (app, target) => {
 /**
  * export widget
  */
-export default function widget(container) {
+export default function widget(game) {
 
-	const resultList = el.$('.sb-wordlist-items', container);
+	
+	const rect = el.$('.sb-content-box', game).getBoundingClientRect();
 
+	const resultList = el.$('.sb-wordlist-items', game);
 	const app = el.create({
 		attributes: {
 			draggable: true
+		},
+		style: {
+			left: (rect.right + 10) + 'px',
+			top: (rect.top + window.pageYOffset) + 'px',
 		},
 		data: {
 			id: settings.get('repo')
@@ -57,6 +63,7 @@ export default function widget(container) {
 			enabled: settings.get('darkMode')
 		}
 	}));
+
 
 	return app;
 }

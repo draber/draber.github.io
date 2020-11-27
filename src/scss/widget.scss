@@ -2,7 +2,6 @@ $colorHighlight: rgb(248, 205, 5);
 $colorBorder: rgb(220, 220, 220);
 $colorPaleText: #888;
 
-
 // invert
 $bg : #111;
 $txt: #eee;
@@ -12,10 +11,6 @@ $cellBg: #393939;
 .pz-game-field {
     background: inherit;
     color: inherit;
-}
-
-.sb-content-box {
-    position: relative;
 }
 
 .sb-wordlist-items {
@@ -118,15 +113,13 @@ $cellBg: #393939;
     }
 }
 
-
 .sba {
     position: absolute;
     width: 200px;
-    right: -210px;
-    top: 16px;
     background: inherit;
-    z-index: 3;
     box-sizing: border-box;
+    z-index: 3;
+    margin: 16px 0;
 
     *,
     *:before,
@@ -232,7 +225,6 @@ $cellBg: #393939;
         width: 100%;
         font-size: 85%;
         margin-bottom: 4px;
-        table-layout: fixed;
     }
 
     tr {
@@ -242,24 +234,22 @@ $cellBg: #393939;
             }
         }
 
-        &.done {
+        &.current {
             font-weight: bold;
-
-            &:last-of-type { 
-                color: $colorHighlight
-            }
+            color: $colorHighlight;
         }
     }
 
     th,
     td {
         border: 1px solid $colorBorder;
-        padding: 4px 6px;
+        white-space: nowrap;
     }
 
     thead {
         th {
             text-align: center;
+            padding: 4px 0;
         }
     }
 
@@ -270,6 +260,7 @@ $cellBg: #393939;
 
         td {
             text-align: center;
+            padding: 4px 6px;
         }
     }
 

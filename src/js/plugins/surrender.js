@@ -38,15 +38,15 @@ const buildEntry = term => {
 /**
  * Display the solution after confirmation
  */
-const resolve = (resultContainer) => {
+const resolve = (resultList) => {
 	observers.removeAll();
 	data.getList('remainders').forEach(term => {
-		resultContainer.append(buildEntry(term));
+		resultList.append(buildEntry(term));
 	});
 };
 
 export default {
-	add: (app, resultContainer) => {
+	add: (app, game) => {
 
 		if (settings.get(key) === false) {
 			return false;
@@ -70,7 +70,7 @@ export default {
 			},
 			events: {
 				click: function (evt) {
-					resolve(resultContainer);
+					resolve(el.$('.sb-wordlist-items', game));
 				}
 			}
 		});

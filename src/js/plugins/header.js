@@ -8,55 +8,70 @@ const optional = false;
 
 let plugin;
 
+let params;
+
+const getDragParams = (evt, game) => {
+    const gRect = game.getBoundingClientRect();
+    const aRect = evt.target.getBoundingClientRect();
+    const aStyle = getComputedStyle(evt.target);
+    const minT = gRect.top + window.pageYOffset;
+    const pRect = el.$(`[data-plugin="${key}"]`).getBoundingClientRect();
+    const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height; // - margin?
+
+    const result = {
+        maxL: document.documentElement.clientWidth - aRect.width,
+        minT: minT,
+        maxT: minT + gAvailH,
+        offX: evt.clientX - aRect.x,
+        offY: evt.clientY - aRect.y,
+        margT: parseInt(aStyle.marginTop, 10)
+    };
+
+    return result;
+}
+
+/**
+ * 
+ * @param {*} evt 
+ */
+const getDropPosition = evt => {
+    let left = Math.max(0, (evt.clientX - params.offX));
+    left = Math.min(left, (params.maxL)) + 'px';
+    let top = Math.max(params.minT, (evt.clientY + window.pageYOffset - params.margT - params.offY));
+    top = Math.min(top, params.maxT) + 'px';
+    console.log('end', top, params.maxT, evt.clientY, params.offY);
+    return {
+        left,
+        top
+    };
+}
+
 /**
  * Implement drag/drop
  * @param app
  * @returns {*}
  */
-const makeDraggable = (plugin, app) => {
+const makeDraggable = (app, game) => {
 
-    let headerHeight;
-    let screenWidth;
+    game.addEventListener('dragover', evt => {
+        evt.preventDefault();
+    });
 
-    app.addEventListener('dragstart', (evt) => {
-        headerHeight = el.$('header').clientHeight;
-        screenWidth = screen.availWidth;
-        evt.stopPropagation();
-        const style = getComputedStyle(app);
-        evt.dataTransfer.effectAllowed = 'move';
-        app.classList.add('dragging');
-        app.dataset.right = style.getPropertyValue('right');
-        app.dataset.top = style.getPropertyValue('top');
-        app.dataset.mouseX = evt.clientX;
-        app.dataset.mouseY = evt.clientY;
+    app.addEventListener('dragstart', evt => {
+        evt.target.style.opacity = .2;
+        params = getDragParams(evt, game);
+        console.log('start', params)
     }, false);
 
-    app.addEventListener('dragend', (evt) => {
-        evt.stopPropagation();
-        const pos = {
-            x: parseInt(app.dataset.right) - (evt.clientX - app.dataset.mouseX),
-            y: parseInt(app.dataset.top) + (evt.clientY - app.dataset.mouseY)
-        };
-        app.style.right = pos.x + 'px';
-        app.style.top = pos.y + 'px';
-        app.classList.remove('dragging');
-        const rect = app.getBoundingClientRect();
-        const neededW = rect.x + rect.width;
-        console.log({rw: rect.x, sw: screenWidth, swa: neededW, px: pos.x})
-        if(rect.x < 0) {
-            app.style.right = pos.x + rect.x + 'px';
-        }
-        else if(rect.x + rect.width > screenWidth) {
-            app.style.right = pos.x - (neededW - screenWidth) + 'px';
-        }
-        if(rect.y < headerHeight) {
-            app.style.top = pos.y - (headerHeight - rect.y) + 'px';
-        }
-    }, false);
+    app.addEventListener('dragend', evt => {
+        Object.assign(evt.target.style, getDropPosition(evt));
+        evt.target.style.opacity = 1;
+    });
 }
 
+
 export default {
-    add: (app) => {
+    add: (app, game) => {
 
         plugin = el.create();
         const title = el.create({
@@ -83,7 +98,7 @@ export default {
         });
         plugin.append(closer);
 
-        makeDraggable(plugin, app);
+        makeDraggable(app, game);
 
         return plugins.add(app, plugin, key, title, optional);
     },

@@ -35,7 +35,7 @@ const update = () => {
 }
 
 export default {
-	add: (app) => {
+	add: (app, game) => {
 
 		if(settings.get(key) === false){
 			return false;

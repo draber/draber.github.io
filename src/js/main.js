@@ -14,28 +14,23 @@ import surrender from './plugins/surrender.js';
 import steps from './plugins/steps.js';
 import footer from './plugins/footer.js';
 
-// containers
-const gameContainer = el.$('#pz-game-root');
-const resultContainer = el.$('.sb-wordlist-items', gameContainer);
-
 // initialize instance, destroy old one before
 if (window.gameData) {
-	const oldInstance = el.$(`[data-id="${settings.get('repo')}"]`, gameContainer);
+	const game = el.$('#pz-game-root');
+	const app = widget(game);
+
+	const oldInstance = el.$(`[data-id="${settings.get('repo')}"]`);
 	if (oldInstance) {
 		oldInstance.dispatchEvent(new Event('sbaDestroy'));
 	}
+	document.body.append(app);
 
-	const app = widget(gameContainer);
+	// plugins in order of appearance
+	[header, scoreSoFar, spoilers, spillTheBeans, steps, surrender, setUp, footer].forEach(plugin => {
+		plugin.add(app, game);
+	});
 
-	header.add(app);
-	scoreSoFar.add(app);
-	spoilers.add(app);
-	spillTheBeans.add(app, el.$('.sb-hive-input-content', gameContainer));
-	surrender.add(app, resultContainer);
-	steps.add(app, gameContainer);
-	setUp.add(app);
-	footer.add(app);
 	styles.add(app);
-	gameContainer.append(app);
+
 	app.dispatchEvent(new Event('sbaLaunchComplete'));
 }

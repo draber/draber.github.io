@@ -79,6 +79,7 @@ const create = ({
 	text = '',
 	classNames = [],
 	attributes = {},
+	style = {},
 	data = {},
 	events = {},
 	cellData = [],
@@ -96,6 +97,9 @@ const create = ({
 		});
 	}
 	const el = document.createElement(tag);
+	for (const [prop, value] of Object.entries(style)) {
+		el.style[prop] = value;
+	}
 	if (classNames.length) {
 		el.classList.add(...classNames);
 	}

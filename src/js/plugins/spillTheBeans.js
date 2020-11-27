@@ -42,7 +42,9 @@ const addObserver = (app, target) => {
 }
 
 export default {
-	add: (app, observerTarget) => {
+	add: (app, game) => {
+
+		const observerTarget = el.$('.sb-hive-input-content', game)
 	
 		if (settings.get(key) === false) {
 			return false;

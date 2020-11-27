@@ -41,20 +41,26 @@ const init = (modal, frame) => {
 const update = (frame) => {
     frame.innerHTML = '';
     const ownPoints = data.getPoints('foundTerms');
-
+    let previous;
+    let hasCurrent = false;
     for (const [key, value] of Object.entries(steps)) {
-        frame.append(el.create({
+        const cell = el.create({
             tag: 'tr',
-            classNames: ownPoints >= value ? ['done'] : [],
             cellTag: 'td',
             cellData: [key, value]
-        }));
+        });
+        frame.append(cell);
+        if(ownPoints < value && previous && !hasCurrent) {
+            previous.classList.add('current');
+            hasCurrent = true;
+        }
+        previous = cell;
     };
 }
 
 
 export default {
-    add: (app, gameContainer) => {
+    add: (app, game) => {
 
         plugin = el.create({
             tag: 'details',
@@ -73,7 +79,7 @@ export default {
         plugin.addEventListener('toggle', event => {
             if (plugin.open && !frame.hasChildNodes()) {
                 addObserver(el.$('.sb-modal-wrapper'), frame);
-                el.$('.sb-progress', gameContainer).click();
+                el.$('.sb-progress', game).click();
             }
         });
 
