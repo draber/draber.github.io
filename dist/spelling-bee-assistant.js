@@ -649,7 +649,6 @@
             });
         });
         app.addEventListener('dragstart', evt => {
-            console.log(isLastTarget);
             if(!isLastTarget){
                 evt.preventDefault();
                 return false;
