@@ -1,6 +1,7 @@
 import settings from '../modules/settings.js';
 import el from '../modules/element.js';
 import plugins from '../modules/plugins.js';
+import element from '../modules/element.js';
 
 /**
  * {HTMLElement}
@@ -30,6 +31,12 @@ const optional = false;
  * @type {Object}
  */
 let params;
+
+/**
+ * Last target of `mousedown`
+ * @type {Boolean}
+ */
+let isLastTarget = false;
 
 /**
  * Assign drag start parameters
@@ -78,12 +85,18 @@ const getDropPosition = evt => {
 const makeDraggable = (app, game) => {
 
     // ensure correct drag icon
-    game.addEventListener('dragover', evt => {
-        evt.preventDefault();
+    [app, game].forEach(element => {        
+        element.addEventListener('dragover', evt => {
+            evt.preventDefault();
+        });
     });
 
     // make app more transparent and get coordinates
     app.addEventListener('dragstart', evt => {
+        if(!isLastTarget){
+            evt.preventDefault();
+            return false;
+        }
         evt.target.style.opacity = '.2';
         params = getDragParams(evt, game);
     }, false);
@@ -127,6 +140,12 @@ export default {
                     app.dispatchEvent(new Event('sbaDestroy'))
                 }
             }
+        });
+        app.addEventListener('pointerdown', evt => {
+            isLastTarget = !!evt.target.closest(`[data-plugin="${key}"]`);
+        });
+        app.addEventListener('pointerup', evt => {
+            isLastTarget = false;
         });
         plugin.append(closer);
         makeDraggable(app, game);

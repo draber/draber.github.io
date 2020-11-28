@@ -34,8 +34,6 @@ const tbody = el.create({ tag: 'tbody'});
 
 const getCellData = () => {
 	const counts = {};
-	const answers = data.getList('answers');
-	const foundTerms = data.getList('foundTerms');
 	const pangramCount = data.getCount('pangrams');
 	const foundPangramCount = data.getCount('foundPangrams');
 	const cellData = [
@@ -46,13 +44,13 @@ const getCellData = () => {
 			pangramCount
 		]
 	];
-    answers.forEach(term => {
+    data.getList('answers').forEach(term => {
         counts[term.length] = counts[term.length] || {
             found: 0,
             missing: 0,
             total: 0
         };
-        if (foundTerms.includes(term)) {
+        if (data.getList('foundTerms').includes(term)) {
             counts[term.length].found++;
         } else {
             counts[term.length].missing++;
@@ -100,7 +98,7 @@ export default {
 		// add and populate content pane
 		const pane = el.create({ 
 			tag: 'table', 
-			classNames: ['frame']
+			classNames: ['pane']
 		});
 		const thead = el.create({
 			tag: 'thead'
