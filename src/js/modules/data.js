@@ -1,5 +1,9 @@
 import el from './element.js';
 
+/**
+ * Word lists
+ * @type {{remainders: [], answers: *, pangrams: [string], foundPangrams: [], foundTerms: []}}
+ */
 const lists = {
     answers: window.gameData.today.answers,
     pangrams: window.gameData.today.pangrams,
@@ -8,21 +12,27 @@ const lists = {
     remainders: []
 };
 
-let app;
-let resultList;
-
-const getList = (type) => {
+/**
+ * Returns a list
+ * @param type
+ * @returns {*}
+ */
+const getList = type => {
     return lists[type];
 }
 
-const getCount = (type) => {
+/**
+ * Returns the number of words in given list
+ * @param type
+ * @returns {number}
+ */
+const getCount = type => {
     return lists[type].length;
 }
 
 /**
- * Count the points from an array of words
- * 
- * @param {Array} data 
+ * Returns the number of points in given list
+ * @param type
  * @returns {number}
  */
 const getPoints = type => {
@@ -42,9 +52,10 @@ const getPoints = type => {
 
 /**
  * Update word lists
+ * @param {HTMLElement} app
+ * @param {HTMLElement} resultList
  */
-const updateLists = () => {
-    //@todo : use sb-today from local storage
+const updateLists = (app, resultList) => {
     lists.foundTerms = [];
     lists.foundPangrams = [];
 
@@ -60,16 +71,17 @@ const updateLists = () => {
     app.dispatchEvent(new Event('sbaUpdateComplete'));
 };
 
-
-const init = (_app, _resultList) => {
-    resultList = _resultList;
-    app = _app;
-    updateLists();
-    app.addEventListener('sbaUpdate', evt => {
-        updateLists();
+/**
+ * Build initial word lists
+ * @param {HTMLElement} app
+ * @param {HTMLElement} resultList
+ */
+const init = (app, resultList) => {
+    updateLists(app, resultList);
+    app.addEventListener('sbaUpdate', () => {
+        updateLists(app, resultList);
     });
 }
-
 
 export default {
     init,

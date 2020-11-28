@@ -3,12 +3,33 @@ import el from '../modules/element.js';
 import plugins from '../modules/plugins.js';
 import data from '../modules/data.js';
 
-const title = "Spoilers";
-const key = 'spoilers';
-const optional = true;
-
+/**
+ * {HTMLElement}
+ */
 let plugin;
 
+/**
+ * Display name
+ * @type {string}
+ */
+const title = 'Spoilers';
+
+/**
+ * Internal identifier
+ * @type {string}
+ */
+const key = 'spoilers';
+
+/**
+ * Can be removed by the user
+ * @type {boolean}
+ */
+const optional = true;
+
+/**
+ * Updatable part of the pane
+ * @type {HTMLElement}
+ */
 const tbody = el.create({ tag: 'tbody'});
 
 const getCellData = () => {
@@ -51,6 +72,9 @@ const getCellData = () => {
     return cellData;
 };
 
+/**
+ * Populate/update pane
+ */
 const update = () => {
 	tbody.innerHTML = ''; 
 	getCellData().forEach(cellData => {
@@ -63,7 +87,7 @@ const update = () => {
 
 export default {
 	add: (app, game) => {
-	
+		// if opted out
 		if (settings.get(key) === false) {
 			return false;
 		}
@@ -71,30 +95,38 @@ export default {
 		plugin = el.create({
 			tag: 'details',
 			text: [title, 'summary']
-		});		
-		
-		const content = el.create({ tag: 'table'});
-		const thead = el.create({ tag: 'thead'});
+		});
+
+		// add and populate content pane
+		const pane = el.create({ 
+			tag: 'table', 
+			classNames: ['frame']
+		});
+		const thead = el.create({
+			tag: 'thead'
+		});
 		thead.append(el.create({
 			tag: 'tr',
 			cellTag: 'th',
 			cellData: ['', 'Found', 'Missing', 'Total']
 		}))
-		content.append(thead);
-		content.append(tbody);
-
+		pane.append(thead);
+		pane.append(tbody);
 		update();
+		plugin.append(pane);
 
-		plugin.append(content);
-
-		app.addEventListener('sbaUpdateComplete', evt => {
+		// update on demand
+		app.addEventListener('sbaUpdateComplete', () => {
 			update();
 		});
 	
 		return plugins.add(app, plugin, key, title, optional);
 	},
+	/**
+	 * Remove plugin
+	 * @returns null
+	 */
 	remove: () => {
-		plugin = plugins.remove(plugin, key, title);	
-		return true;
+		return plugins.remove(plugin, key, title);
 	}
 }

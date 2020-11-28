@@ -4,6 +4,7 @@
     "url": "https://spelling-bee-assistant.app/",
     "repo": "draber/draber.github.io.git",
     "twitter": "@d_raber",
+    "ns": "sba",
     "ga": {
         "tid": "UA-182372232-1",
         "ec": "SBA Download"

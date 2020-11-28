@@ -1,0 +1,49 @@
+// add new themes here
+// you can add any key as long as you do it in all themes
+// CSS variables will be '--' + key name + 'color' => foo becomes --foo-color
+
+$themeColors: (
+    'light': (
+        txt: rgb(0,0,0),
+        bg: rgb(255,255,255),
+        active-bg: rgb(237,237,237),
+        modal: rgba(255,255,255, .85),
+        cell-bg: rgb(230,230,230),
+        cell-push-bg: rgb(217,217,217),
+        border: rgb(220, 220, 220),
+        sec-text: rgb(136,136,136),
+        sec-button: rgb(51, 51, 51),
+    ),
+    'dark': (
+        txt: rgb(238, 238, 238),
+        bg: rgb(17,17,17),
+        active-bg: rgb(35,35,35),
+        modal: rgba(17,17,17, .85),
+        cell-bg: rgb(57, 57, 57),
+        cell-push-bg: rgb(70,70,70),
+        border: rgb(51, 51, 51),
+        sec-text: rgb(170,170,170),
+        sec-btn-txt: rgb(190,190,190),
+    )
+);
+
+//-- DO NOT EDIT BELOW THIS LINE --//
+// immutable colors
+$sharedColors: (
+    hlight: rgb(248, 205, 5),
+    hlight-push: rgb(223,184,4)
+);
+
+html {
+    @each $purpose, $color in $sharedColors {
+        #{'--' + $purpose + '-color'} : $color;
+    }
+}
+
+@each $theme, $colors in $themeColors {
+    [data-theme="#{$theme}"] {
+        @each $purpose, $color in $colors {
+            #{'--' + $purpose + '-color'} : $color;
+        }
+    }
+}

@@ -2,14 +2,35 @@ import el from '../modules/element.js';
 import plugins from '../modules/plugins.js';
 import settings from '../modules/settings.js';
 
-const title = "Settings";
-const key = 'settings';
-const optional = false;
-
+/**
+ * {HTMLElement}
+ */
 let plugin;
 
-const populate = (app, frame) => {
+/**
+ * Display name
+ * @type {string}
+ */
+const title = 'Settings';
 
+/**
+ * Internal identifier
+ * @type {string}
+ */
+const key = 'settings';
+
+/**
+ * Can't be removed by the user
+ * @type {boolean}
+ */
+const optional = false;
+
+/**
+ * Populate the pane
+ * @param {HTMLElement} app
+ * @param {HTMLElement} pane
+ */
+const populate = (app, pane) => {
 	for (const [key, option] of Object.entries(settings.getAll().options)) {
 		const li = el.create({
 			tag: 'li'
@@ -23,8 +44,8 @@ const populate = (app, frame) => {
 				checked: option.v
 			},
 			events: {
-				click: function (evt) {
-					const evtName = 'sba' + key.charAt(0).toUpperCase() + key.slice(1);
+				click: function () {
+					const evtName = settings.get('ns') + key.charAt(0).toUpperCase() + key.slice(1);
 					app.dispatchEvent(new CustomEvent(evtName, {
 						detail: {
 							enabled: this.checked
@@ -33,35 +54,41 @@ const populate = (app, frame) => {
 				}
 			}
 		}));
-		frame.append(li);
-	};
+		pane.append(li);
+	}
 }
 
 
 export default {
+	/**
+	 * Create and attach plugin
+	 * @param {HTMLElement} app
+	 * @param {HTMLElement} game
+	 * @returns {HTMLElement} plugin
+	 */
 	add: (app, game) => {
-
 		plugin = el.create({
 			tag: 'details',
 			text: [title, 'summary']
 		});
-
-		const frame = el.create({
+		const pane = el.create({
 			tag: 'ul',
-			classNames: ['frame']
+			classNames: ['pane']
 		});
+		plugin.append(pane);
 
-
-		plugin.append(frame);
-
-		app.addEventListener('sbaLaunchComplete', evt => {
-			populate(app, frame);
+		// populate when the app has started
+		app.addEventListener('sbaLaunchComplete', () => {
+			populate(app, pane);
 		});
 
 		return plugins.add(app, plugin, key, title, optional);
 	},
+	/**
+	 * Remove plugin
+	 * @returns null
+	 */
 	remove: () => {
-		plugin = plugins.remove(plugin, key, title);
-		return true;
+		return plugins.remove(plugin, key, title);
 	}
 }

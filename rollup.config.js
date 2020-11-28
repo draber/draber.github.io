@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import pkg from './package.json';
 import cleanup from 'rollup-plugin-cleanup';
 import json from '@rollup/plugin-json';
-import { string } from "rollup-plugin-string";
+import { string } from 'rollup-plugin-string';
 
 
 export default [

@@ -4,25 +4,39 @@ import plugins from '../modules/plugins.js';
 import data from '../modules/data.js';
 import observers from '../modules/observers.js';
 
-
-const title = "Surrender";
-const key = 'surrender';
-const optional = true;
-
+/**
+ * {HTMLElement}
+ */
 let plugin;
 
-const pangrams = window.gameData.today.pangrams;
+/**
+ * Display name
+ * @type {string}
+ */
+const title = 'Surrender';
+
+/**
+ * Internal identifier
+ * @type {string}
+ */
+const key = 'surrender';
+
+/**
+ * Can be removed by the user
+ * @type {boolean}
+ */
+const optional = true;
+
 
 /**
  * Build a single entry for the term list
- *
- * @param term
- * @returns {*}
+ * @param {String} term
+ * @returns {HTMLElement}
  */
 const buildEntry = term => {
 	const entry = el.create({
 		tag: 'li',
-		classNames: pangrams.includes(term) ? ['sb-anagram', 'sb-pangram'] : ['sb-anagram']
+		classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', 'sb-pangram'] : ['sb-anagram']
 	});
 	entry.append(el.create({
 		tag: 'a',
@@ -36,7 +50,7 @@ const buildEntry = term => {
 };
 
 /**
- * Display the solution after confirmation
+ * Display the solution
  */
 const resolve = (resultList) => {
 	observers.removeAll();
@@ -46,21 +60,25 @@ const resolve = (resultList) => {
 };
 
 export default {
+	/**
+	 * Create and attach plugin
+	 * @param {HTMLElement} app
+	 * @param {HTMLElement} game
+	 * @returns {HTMLElement|boolean} plugin
+	 */
 	add: (app, game) => {
 
 		if (settings.get(key) === false) {
 			return false;
 		}
-
+		// add content pane
 		plugin = el.create({
 			tag: 'details',
 			text: [title, 'summary']
 		});
-
-		const frame = el.create({
-			classNames: ['frame']
+		const pane = el.create({
+			classNames: ['pane']
 		});
-
 		const button = el.create({
 			tag: 'button',
 			classNames: ['hive-action'],
@@ -69,19 +87,21 @@ export default {
 				type: 'button'
 			},
 			events: {
-				click: function (evt) {
+				click: function () {
 					resolve(el.$('.sb-wordlist-items', game));
 				}
 			}
 		});
-		frame.append(button);
-
-		plugin.append(frame);
+		pane.append(button);
+		plugin.append(pane);
 
 		return plugins.add(app, plugin, key, title, optional);
 	},
+	/**
+	 * Remove plugin
+	 * @returns null
+	 */
 	remove: () => {
-		plugin = plugins.remove(plugin, key, title);
-		return true;
+		return plugins.remove(plugin, key, title);
 	}
 }

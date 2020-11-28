@@ -3,74 +3,112 @@ import el from '../modules/element.js';
 import plugins from '../modules/plugins.js';
 import data from '../modules/data.js';
 
-const title = "Score so far";
-const key = 'scoreSoFar';
-const optional = true;
-
+/**
+ * {HTMLElement}
+ */
 let plugin;
 
-const tbody = el.create({ tag: 'tbody'});
+/**
+ * Display name
+ * @type {string}
+ */
+const title = "Score so far";
 
+/**
+ * Internal identifier
+ * @type {string}
+ */
+const key = 'scoreSoFar';
+
+/**
+ * Can be removed by the user
+ * @type {boolean}
+ */
+const optional = true;
+
+/**
+ * Updatable part of the pane
+ * @type {HTMLElement}
+ */
+const tbody = el.create({tag: 'tbody'});
+
+/**
+ * Populate/update pane
+ */
 const update = () => {
-	tbody.innerHTML = ''; 
-	[
-		[
-			'Words',
-			data.getCount('foundTerms'),
-			data.getCount('remainders'),
-			data.getCount('answers')
-		],
-		[
-			'Points',
-			data.getPoints('foundTerms'),
-			data.getPoints('remainders'),
-			data.getPoints('answers')
-		]
-	].forEach(cellData => {
-		tbody.append(el.create({
-			tag: 'tr',
-			cellData: cellData
-		}));
-	});
+    tbody.innerHTML = '';
+    [
+        [
+            'Words',
+            data.getCount('foundTerms'),
+            data.getCount('remainders'),
+            data.getCount('answers')
+        ],
+        [
+            'Points',
+            data.getPoints('foundTerms'),
+            data.getPoints('remainders'),
+            data.getPoints('answers')
+        ]
+    ].forEach(cellData => {
+        tbody.append(el.create({
+            tag: 'tr',
+            cellData: cellData
+        }));
+    });
 }
 
 export default {
-	add: (app, game) => {
+    /**
+     * Create and attach plugin
+     * @param {HTMLElement} app
+     * @param {HTMLElement} game
+     * @returns {HTMLElement|boolean} plugin
+     */
+    add: (app, game) => {
+        // if opted out
+        if (settings.get(key) === false) {
+            return false;
+        }
 
-		if(settings.get(key) === false){
-			return false;
-		}
-	
-		plugin = el.create({
-			tag: 'details',
-			text: [title, 'summary'],
-			attributes: {
-				open: true
-			}
-		});
-		
-		const content = el.create({ tag: 'table'});
-		const thead = el.create({ tag: 'thead'});
-		thead.append(el.create({
-			tag: 'tr',
-			cellTag: 'th',
-			cellData: ['', 'Found', 'Missing', 'Total']
-		}))
-		content.append(thead);
-		content.append(tbody);
+        plugin = el.create({
+            tag: 'details',
+            text: [title, 'summary'],
+            attributes: {
+                open: true
+            }
+        });
 
-		update();
+        // add and populate content pane        
+        const pane = el.create({
+            tag: 'table',
+            classNames: ['pane']
 
-		plugin.append(content);
+        });
+        const thead = el.create({
+            tag: 'thead'
+        });
+        thead.append(el.create({
+            tag: 'tr',
+            cellTag: 'th',
+            cellData: ['', 'Found', 'Missing', 'Total']
+        }))
+        pane.append(thead);
+        pane.append(tbody);
+        update();
+        plugin.append(pane);
 
-		app.addEventListener('sbaUpdateComplete', evt => {
-			update();
-		});
-	
-		return plugins.add(app, plugin, key, title, optional);
-	},
-	remove: () => {
-		plugin = plugins.remove(plugin, key, title);	
-		return true;
-	}
+        // update on demand
+        app.addEventListener('sbaUpdateComplete', () => {
+            update();
+        });
+        return plugins.add(app, plugin, key, title, optional);
+    },
+    /**
+     * Remove plugin
+     * @returns null
+     */
+    remove: () => {
+        return plugins.remove(plugin, key, title);
+    }
 }

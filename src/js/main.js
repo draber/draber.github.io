@@ -15,22 +15,24 @@ import steps from './plugins/steps.js';
 import footer from './plugins/footer.js';
 
 // initialize instance, destroy old one before
-if (window.gameData) {
-	const game = el.$('#pz-game-root');
-	const app = widget(game);
+const game = el.$('#pz-game-root');
 
-	const oldInstance = el.$(`[data-id="${settings.get('repo')}"]`);
-	if (oldInstance) {
-		oldInstance.dispatchEvent(new Event('sbaDestroy'));
-	}
-	document.body.append(app);
+// returns false and logs an error on sites other than Spelling Bee
+const app = widget(game);
+if (app) {
 
-	// plugins in order of appearance
-	[header, scoreSoFar, spoilers, spillTheBeans, steps, surrender, setUp, footer].forEach(plugin => {
-		plugin.add(app, game);
-	});
+    const oldInstance = el.$(`[data-id="${settings.get('repo')}"]`);
+    if (oldInstance) {
+        oldInstance.dispatchEvent(new Event('sbaDestroy'));
+    }
+    document.body.append(app);
 
-	styles.add(app);
+    // plugins in order of appearance
+    [header, scoreSoFar, spoilers, spillTheBeans, steps, surrender, setUp, footer].forEach(plugin => {
+        plugin.add(app, game);
+    });
 
-	app.dispatchEvent(new Event('sbaLaunchComplete'));
+    styles.add(app);
+
+    app.dispatchEvent(new Event('sbaLaunchComplete'));
 }
