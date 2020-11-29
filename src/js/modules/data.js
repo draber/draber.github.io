@@ -1,16 +1,25 @@
 import el from './element.js';
+import prefix from './prefixer.js';
 
 /**
  * Word lists
  * @type {{remainders: [], answers: *, pangrams: [string], foundPangrams: [], foundTerms: []}}
  */
-const lists = {
-    answers: window.gameData.today.answers,
-    pangrams: window.gameData.today.pangrams,
-    foundTerms: [],
-    foundPangrams: [],
-    remainders: []
-};
+let lists;
+
+/**
+ * Build word lists
+ * @return {{remainders: [], answers: *, pangrams: [string], foundPangrams: [], foundTerms: []}}
+ */
+const initLists = () => {
+    return {
+        answers: window.gameData.today.answers,
+        pangrams: window.gameData.today.pangrams,
+        foundTerms: [],
+        foundPangrams: [],
+        remainders: []
+    }
+}
 
 /**
  * Returns a list
@@ -68,7 +77,7 @@ const updateLists = (app, resultList) => {
         }
     });
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.dispatchEvent(new Event('sbaUpdateComplete'));
+    app.dispatchEvent(new Event(prefix('updateComplete')));
 };
 
 /**
@@ -77,8 +86,9 @@ const updateLists = (app, resultList) => {
  * @param {HTMLElement} resultList
  */
 const init = (app, resultList) => {
+    lists = initLists();
     updateLists(app, resultList);
-    app.addEventListener('sbaUpdate', () => {
+    app.addEventListener(prefix('update'), () => {
         updateLists(app, resultList);
     });
 }

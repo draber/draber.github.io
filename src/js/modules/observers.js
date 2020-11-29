@@ -37,6 +37,5 @@ export default {
             this.remove(observer);
         });
         return observers.length;
-    },
-    get: () => observers
+    }
 }

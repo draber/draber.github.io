@@ -5,7 +5,7 @@ import * as config from '../../config/config.json';
  * Values from `localStorage`
  * @type {Object}
  */
-const stored = JSON.parse(localStorage.getItem('sba-settings') || '{}')
+const stored = JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 
 /**
  * Returns a value based on a key
@@ -23,7 +23,7 @@ const get = key => {
  */
 const set = (key, value) => {
     settings.options[key] = value;
-    localStorage.setItem('sba-settings', JSON.stringify(settings.options));
+    localStorage.setItem(config.prefix + '-settings', JSON.stringify(settings.options));
 };
 
 /**
@@ -50,12 +50,13 @@ const settings = {
     label: config.label,
     title: config.title,
     url: config.url,
+    prefix: config.prefix,
     repo: config.repo,
     version: pkg.version,
     options: {
         ...{
             darkMode: {
-                v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains('sba-dark'),
+                v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains(config.prefix + '-dark'),
                 t: 'Dark Mode'
             }
         },

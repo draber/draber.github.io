@@ -150,15 +150,37 @@ $cellBg: #393939;
         line-height: 32px;
     }
 
-    .closer {
-        font-size: 20px;
+    .closer, .minimizer {
+        font-size: 18px;
         font-weight: bold;
         position: absolute;
         top: 0;
-        right: 0;
         line-height: 32px;
         padding: 0 10px;
         cursor: pointer;
+    }
+
+    .closer {
+        right: 0;
+    }
+
+    .minimizer {
+        right: 16px;
+        &:before {
+            content: "\ff0d";
+        }
+    }
+
+    &.minimized {
+        details {
+            display:none;
+        }
+
+        .minimizer {
+            &:before {
+                content: "\ff0b";
+            }
+        }
     }
 
     details {

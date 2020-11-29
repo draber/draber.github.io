@@ -1,5 +1,6 @@
 import css from "../../css/widget.css";
 import el from './element.js';
+import prefix from './prefixer.js';
 
 /**
  * @type {HTMLElement}
@@ -18,7 +19,7 @@ export default {
 			// `rollup-plugin-string` converts linebreaks to `\n`
 			text: css.replace(/(\uFEFF|\\n)/gu, '')
 		});
-		app.addEventListener('sbaDestroy', () => {
+		app.addEventListener(prefix('destroy'), () => {
 			styles.remove();
 		})
 		return el.$('head').append(styles);

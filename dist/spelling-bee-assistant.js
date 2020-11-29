@@ -120,8 +120,7 @@
                 this.remove(observer);
             });
             return observers.length;
-        },
-        get: () => observers
+        }
     };
 
     var version = "2.0.0";
@@ -130,14 +129,15 @@
     var title = "Assistant";
     var url = "https://spelling-bee-assistant.app/";
     var repo = "draber/draber.github.io.git";
+    var prefix = "sba";
 
-    const stored = JSON.parse(localStorage.getItem('sba-settings') || '{}');
+    const stored = JSON.parse(localStorage.getItem(prefix + '-settings') || '{}');
     const get = key => {
         return settings[key] || settings.options[key] || null;
     };
     const set = (key, value) => {
         settings.options[key] = value;
-        localStorage.setItem('sba-settings', JSON.stringify(settings.options));
+        localStorage.setItem(prefix + '-settings', JSON.stringify(settings.options));
     };
     const getAll = () => {
         return settings;
@@ -149,12 +149,13 @@
         label: label,
         title: title,
         url: url,
+        prefix: prefix,
         repo: repo,
         version: version,
         options: {
             ...{
                 darkMode: {
-                    v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains('sba-dark'),
+                    v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains(prefix + '-dark'),
                     t: 'Dark Mode'
                 }
             },
@@ -168,12 +169,37 @@
         getStored
     };
 
-    const lists = {
-        answers: window.gameData.today.answers,
-        pangrams: window.gameData.today.pangrams,
-        foundTerms: [],
-        foundPangrams: [],
-        remainders: []
+    const prefix$1 = settings$1.get('prefix');
+    const toCamelCase = term => {
+        return term.replace(/[_-]+([a-z])/g, (g) => g[1].toUpperCase());
+    };
+    const toDashCase = term => {
+        return term.match(/([A-Z])/g).reduce(
+                (str, c) => str.replace(new RegExp(c), '-' + c.toLowerCase()),
+                term
+            )
+            .substring((term.slice(0, 1).match(/([A-Z])/g)) ? 1 : 0);
+    };
+    const pf = (term, mode = 'c') => {
+        switch (mode) {
+            case 'c':
+                return toCamelCase(prefix$1 + '_' + term);
+            case 'd':
+                return toDashCase(prefix$1 + term.charAt(0).toUpperCase() + term.slice(1));
+            default:
+                return term;
+        }
+    };
+
+    let lists;
+    const initLists = () => {
+        return {
+            answers: window.gameData.today.answers,
+            pangrams: window.gameData.today.pangrams,
+            foundTerms: [],
+            foundPangrams: [],
+            remainders: []
+        }
     };
     const getList = type => {
         return lists[type];
@@ -207,11 +233,12 @@
             }
         });
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.dispatchEvent(new Event('sbaUpdateComplete'));
+        app.dispatchEvent(new Event(pf('updateComplete')));
     };
     const init = (app, resultList) => {
+        lists = initLists();
         updateLists(app, resultList);
-        app.addEventListener('sbaUpdate', () => {
+        app.addEventListener(pf('update'), () => {
             updateLists(app, resultList);
         });
     };
@@ -225,7 +252,7 @@
     let observer;
     const initObserver = (app, target) => {
     	const _observer = new MutationObserver(mutationsList => {
-    		app.dispatchEvent(new CustomEvent('sbaUpdate', {
+    		app.dispatchEvent(new CustomEvent(pf('update'), {
     			detail: {
     				text: mutationsList.pop().addedNodes[0]
     			}
@@ -238,12 +265,24 @@
     	}
     };
     function widget(game) {
-    	if(!game || !window.gameData) {
-    		console.error('Spelling Bee not found');
-    		return false;
-    	}
+        if(!game || !window.gameData) {
+            console.info('This bookmarklet only works on https://www.nytimes.com/puzzles/spelling-bee');
+            return false;
+        }
     	const rect = el.$('.sb-content-box', game).getBoundingClientRect();
     	const resultList = el.$('.sb-wordlist-items', game);
+    	const events = {};
+    	events[pf('destroy')] = evt => {
+    		observers$1.removeAll();
+    		evt.target.remove();
+    	};
+    	events[pf('darkMode')] = evt => {
+    		if (evt.detail.enabled) {
+    			document.body.classList.add(pf('dark', 'd'));
+    		} else {
+    			document.body.classList.remove(pf('dark', 'd'));
+    		}
+    	};
     	const app = el.create({
     		attributes: {
     			draggable: true
@@ -255,25 +294,13 @@
     		data: {
     			id: settings$1.get('repo')
     		},
-    		classNames: ['sba'],
-    		events: {
-    			sbaDestroy: evt => {
-    				observers$1.removeAll();
-    				evt.target.remove();
-    			},
-    			sbaDarkMode: evt => {
-    				if (evt.detail.enabled) {
-    					document.body.classList.add('sba-dark');
-    				} else {
-    					document.body.classList.remove('sba-dark');
-    				}
-    			}
-    		}
+    		classNames: [settings$1.get('prefix')],
+    		events: events
     	});
     	data.init(app, resultList);
     	observer = initObserver(app, resultList);
     	observers$1.add(observer.observer, observer.target, observer.args);
-    	app.dispatchEvent(new CustomEvent('sbaDarkMode', {
+    	app.dispatchEvent(new CustomEvent(pf('darkMode'), {
     		detail: {
     			enabled: settings$1.get('darkMode')
     		}
@@ -281,7 +308,7 @@
     	return app;
     }
 
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr td:first-of-type{text-align:left}.sba tr.current{font-weight:bold;color:#f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
+    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px}.sba .minimizer:before{content:\"－\"}.sba.minimized details{display:none}.sba.minimized .minimizer:before{content:\"＋\"}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr td:first-of-type{text-align:left}.sba tr.current{font-weight:bold;color:#f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
 
     let styles;
     var styles$1 = {
@@ -290,7 +317,7 @@
     			tag: 'style',
     			text: css.replace(/(\uFEFF|\\n)/gu, '')
     		});
-    		app.addEventListener('sbaDestroy', () => {
+    		app.addEventListener(pf('destroy'), () => {
     			styles.remove();
     		});
     		return el.$('head').append(styles);
@@ -314,7 +341,7 @@
         if(optional) {
            settings$1.set(key, { v: available, t: `Display "${title}"` });
         }
-        const evtName = settings$1.get('ns') + key.charAt(0).toUpperCase() + key.slice(1);
+        const evtName = pf(key);
         app.addEventListener(evtName, evt => {
             if(evt.detail.enabled){
                 add(app, plugin, key, title, optional);
@@ -347,7 +374,7 @@
     };
 
     let plugin;
-    const title$1 = "Score so far";
+    const title$1 = 'Score so far';
     const key = 'scoreSoFar';
     const optional = true;
     const tbody = el.create({tag: 'tbody'});
@@ -401,7 +428,7 @@
             pane.append(tbody);
             update();
             plugin.append(pane);
-            app.addEventListener('sbaUpdateComplete', () => {
+            app.addEventListener(pf('updateComplete'), () => {
                 update();
             });
             return plugins.add(app, plugin, key, title$1, optional);
@@ -412,8 +439,8 @@
     };
 
     let plugin$1;
-    const title$2 = 'Settings';
-    const key$1 = 'settings';
+    const title$2 = 'Set-up';
+    const key$1 = 'setUp';
     const optional$1 = false;
     const populate = (app, pane) => {
     	for (const [key, option] of Object.entries(settings$1.getAll().options)) {
@@ -430,8 +457,7 @@
     			},
     			events: {
     				click: function () {
-    					const evtName = settings$1.get('ns') + key.charAt(0).toUpperCase() + key.slice(1);
-    					app.dispatchEvent(new CustomEvent(evtName, {
+    					app.dispatchEvent(new CustomEvent(pf(key), {
     						detail: {
     							enabled: this.checked
     						}
@@ -453,7 +479,7 @@
     			classNames: ['pane']
     		});
     		plugin$1.append(pane);
-    		app.addEventListener('sbaLaunchComplete', () => {
+    		app.addEventListener(pf('launchComplete'), () => {
     			populate(app, pane);
     		});
     		return plugins.add(app, plugin$1, key$1, title$2, optional$1);
@@ -479,7 +505,7 @@
     };
     const initObserver$1 = (app, target) => {
         const _observer = new MutationObserver(mutationsList => {
-            app.dispatchEvent(new CustomEvent('sbaSpill', {
+            app.dispatchEvent(new CustomEvent(pf('spill'), {
                 detail: {
                     text: mutationsList.pop().target.textContent.trim()
                 }
@@ -601,7 +627,7 @@
     		pane.append(tbody$1);
     		update$1();
     		plugin$3.append(pane);
-    		app.addEventListener('sbaUpdateComplete', () => {
+    		app.addEventListener(pf('updateComplete'), () => {
     			update$1();
     		});
     		return plugins.add(app, plugin$3, key$3, title$4, optional$3);
@@ -681,7 +707,19 @@
                 classNames: ['closer'],
                 events: {
                     click: () => {
-                        app.dispatchEvent(new Event('sbaDestroy'));
+                        app.dispatchEvent(new Event(pf('destroy')));
+                    }
+                }
+            });
+            const minimizer = el.create({
+                tag: 'span',
+                attributes: {
+                    title: 'Minimize'
+                },
+                classNames: ['minimizer'],
+                events: {
+                    click: () => {
+                        app.classList.toggle('minimized');
                     }
                 }
             });
@@ -691,6 +729,7 @@
             app.addEventListener('pointerup', evt => {
                 isLastTarget = false;
             });
+            plugin$4.append(minimizer);
             plugin$4.append(closer);
             makeDraggable(app, game);
             return plugins.add(app, plugin$4, key$4, title, optional$4);
@@ -761,16 +800,16 @@
 
     let plugin$6;
     const title$7 = 'Steps to success';
-    const key$6 = 'steps';
+    const key$6 = 'stepsToSuccess';
     const optional$6 = true;
     let observer$2;
     const steps = {};
-    const allPoints = data.getPoints('answers');
     const initObserver$2 = (target, frame) => {
         const _observer = new MutationObserver(mutationsList => {
             const node = mutationsList.pop().target;
             const title = el.$('.sb-modal-title', node);
             if (title && title.textContent.trim() === 'Rankings') {
+                target.parentElement.style.opacity = 0;
                 retrieveRankings(target, frame);
             }
         });
@@ -781,11 +820,13 @@
         }
     };
     const retrieveRankings = (modal, frame) => {
+        const allPoints = data.getPoints('answers');
         el.$$('.sb-modal-list li', modal).forEach(element => {
             const values = element.textContent.match(/([^\(]+) \((\d+)\)/);
             steps[values[1]] = parseInt(values[2], 10);
         });
         steps['Queen Bee'] = allPoints;
+        modal.parentElement.style.opacity = 0;
         el.$('.sb-modal-close', modal).click();
         observers$1.remove(observer$2.observer);
         update$2(frame);
@@ -802,7 +843,7 @@
             }));
         }
     };
-    var steps$1 = {
+    var stepsToSuccess = {
         add: (app, game) => {
             if (settings$1.get(key$6) === false) {
                 return false;
@@ -821,13 +862,14 @@
             pane.append(frame);
             plugin$6.addEventListener('toggle', () => {
                 if (plugin$6.open && !frame.hasChildNodes()) {
-                    observer$2 = initObserver$2(el.$('.sb-modal-wrapper'), frame);
+                    const modal = el.$('.sb-modal-wrapper');
+                    observer$2 = initObserver$2(modal, frame);
                     observers$1.add(observer$2.observer, observer$2.target, observer$2.args);
                     el.$('.sb-progress', game).click();
                 }
             });
             plugin$6.append(pane);
-            app.addEventListener('sbaUpdateComplete', () => {
+            app.addEventListener(pf('updateComplete'), () => {
                 update$2(frame);
             });
             return plugins.add(app, plugin$6, key$6, title$7, optional$6);
@@ -863,14 +905,14 @@
     if (app) {
         const oldInstance = el.$(`[data-id="${settings$1.get('repo')}"]`);
         if (oldInstance) {
-            oldInstance.dispatchEvent(new Event('sbaDestroy'));
+            oldInstance.dispatchEvent(new Event(pf('destroy')));
         }
         document.body.append(app);
-        [header, scoreSoFar, spoilers, spillTheBeans, steps$1, surrender, setUp, footer].forEach(plugin => {
+        [header, scoreSoFar, spoilers, spillTheBeans, stepsToSuccess, surrender, setUp, footer].forEach(plugin => {
             plugin.add(app, game);
         });
         styles$1.add(app);
-        app.dispatchEvent(new Event('sbaLaunchComplete'));
+        app.dispatchEvent(new Event(pf('launchComplete')));
     }
 
 }());

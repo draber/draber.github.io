@@ -1,6 +1,7 @@
 import el from './element.js';
 import settings from './settings.js';
-import observers from "./observers";
+import observers from './observers';
+import prefix from './prefixer.js';
 
 /**
  * Settings from localStorage
@@ -32,7 +33,7 @@ const add = (app, plugin, key, title, optional, observer = null) => {
     if(optional) {
        settings.set(key, { v: available, t: `Display "${title}"` });
     }    
-    const evtName = settings.get('ns') + key.charAt(0).toUpperCase() + key.slice(1);
+    const evtName = prefix(key);
 
     // react to opt in/out
     app.addEventListener(evtName, evt => {

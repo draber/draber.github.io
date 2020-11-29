@@ -5,7 +5,6 @@ import cleanup from 'rollup-plugin-cleanup';
 import json from '@rollup/plugin-json';
 import { string } from 'rollup-plugin-string';
 
-
 export default [
 	{
 		input: 'src/js/main.js',
