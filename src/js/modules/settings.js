@@ -46,23 +46,24 @@ const getStored = () => {
  * Collection of settings from `package.json`, `config.json` and `localStorage`
  * @type {{repo: string, options: any, label: string, title: string, version: string, url: string}}
  */
-const settings = {
+const settings = Object.assign(
+{
     label: config.label,
     title: config.title,
     url: config.url,
     prefix: config.prefix,
     repo: config.repo,
     version: pkg.version,
-    options: {
-        ...{
+    options: Object.assign(
+        {
             darkMode: {
                 v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains(config.prefix + '-dark'),
                 t: 'Dark Mode'
             }
         },
-        ...stored
-    }
-};
+        stored
+    )
+});
 
 export default {
     get,

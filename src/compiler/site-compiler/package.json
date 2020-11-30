@@ -1,14 +1,14 @@
 {
-  "name": "bm-comp",
+  "name": "site-compiler",
   "version": "1.0.0",
-  "description": "Builds a simple html page with a bookmarklet link",
+  "description": "Builds the website",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dieter Raber",
-  "license": "MIT",
-  "dependencies": {  
+  "license": "MIT",  
+  "dependencies": {
     "bookmarklet": "^1.0.4",
     "markdown-it": "^12.0.2"
   }

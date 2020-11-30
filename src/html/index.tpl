@@ -5,7 +5,7 @@
     <title>{{label}}</title>
     <meta name="description" content="{{description}}">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>{{include(project/css/site.css}}</style>
+    <style>{{css}}</style>
     <meta property="og:title" content="{{label}}" />
     <meta property="og:description" content="{{description}}" />
     <meta property="og:image" content="{{url}}img/social.png?{{version}}" />
@@ -15,8 +15,8 @@
     <meta name="twitter:site" content="{{twitter}}" />
     <meta name="twitter:image" content="{{url}}img/social.png?{{version}}" />
     <meta name="twitter:image:alt" content="{{label}}" />
-    <meta name="google-site-verification" content="xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU" />
-    <meta name="google-site-verification" content="7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8" />
+    <meta name="google-site-verification" content="{{gsc.drg}}" />
+    <meta name="google-site-verification" content="{{gsc.sba}}" />
     <link rel="icon" href="img/favicon.png?{{version}}" type="image/png" />
 </head>
 <body>
@@ -32,7 +32,7 @@
     {{plugins}}    
   </main>
   <script>
-  {{javascript}}
+ {{javascript}}
   </script>
 </body>
 

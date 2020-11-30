@@ -145,23 +145,24 @@
     const getStored = () => {
         return stored;
     };
-    const settings = {
+    const settings = Object.assign(
+    {
         label: label,
         title: title,
         url: url,
         prefix: prefix,
         repo: repo,
         version: version,
-        options: {
-            ...{
+        options: Object.assign(
+            {
                 darkMode: {
                     v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains(prefix + '-dark'),
                     t: 'Dark Mode'
                 }
             },
-            ...stored
-        }
-    };
+            stored
+        )
+    });
     var settings$1 = {
         get,
         set,
