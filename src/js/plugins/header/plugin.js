@@ -1,7 +1,7 @@
 import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
 import plugins from '../../modules/plugins.js';
-import prefix from '../../modules/prefixer.js';
+import pf from '../../modules/prefixer.js';
 
 /**
  * {HTMLElement}
@@ -19,12 +19,6 @@ const title = 'Header';
  * @type {string}
  */
 const key = 'header';
-
-/**
- * Can't be removed by the user
- * @type {boolean}
- */
-const optional = false;
 
 /**
  * Drag start parameters
@@ -85,7 +79,7 @@ const getDropPosition = evt => {
 const makeDraggable = (app, game) => {
 
     // ensure correct drag icon
-    [app, game].forEach(element => {        
+    [app, game].forEach(element => {
         element.addEventListener('dragover', evt => {
             evt.preventDefault();
         });
@@ -93,7 +87,7 @@ const makeDraggable = (app, game) => {
 
     // make app more transparent and get coordinates
     app.addEventListener('dragstart', evt => {
-        if(!isLastTarget){
+        if (!isLastTarget) {
             evt.preventDefault();
             return false;
         }
@@ -137,7 +131,7 @@ export default {
             classNames: ['closer'],
             events: {
                 click: () => {
-                    app.dispatchEvent(new Event(prefix('destroy')))
+                    app.dispatchEvent(new Event(pf('destroy')))
                 }
             }
         });
@@ -163,13 +157,22 @@ export default {
         plugin.append(minimizer);
         plugin.append(closer);
         makeDraggable(app, game);
-        return plugins.add(app, plugin, key, title, optional);
+
+        return plugins.add({
+            app,
+            plugin,
+            key
+        });
     },
     /**
      * Remove plugin
      * @returns null
      */
     remove: () => {
-        return plugins.remove(plugin, key, title);
+        return plugins.remove({
+            plugin,
+            key,
+            title
+        });
     }
 }

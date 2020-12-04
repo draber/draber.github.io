@@ -1,7 +1,7 @@
 import el from '../../modules/element.js';
 import plugins from '../../modules/plugins.js';
 import settings from '../../modules/settings.js';
-import prefix from '../../modules/prefixer.js';
+import pf from '../../modules/prefixer.js';
 
 /**
  * {HTMLElement}
@@ -38,18 +38,18 @@ const populate = (app, pane) => {
 		});
 		li.append(el.create({
 			tag: 'input',
-			text: option.t ,
+			text: option.t,
 			attributes: {
 				type: 'checkbox',
 				name: key,
-				checked: option.v
+				checked: !plugins.isDisabled(key)
 			},
 			events: {
 				click: function () {
-					app.dispatchEvent(new CustomEvent(prefix(key), {
+					app.dispatchEvent(new CustomEvent(pf(key), {
 						detail: {
 							enabled: this.checked
-						}						
+						}
 					}))
 				}
 			}
@@ -78,17 +78,27 @@ export default {
 		plugin.append(pane);
 
 		// populate when the app has started
-		app.addEventListener(prefix('launchComplete'), () => {
+		app.addEventListener(pf('launchComplete'), () => {
 			populate(app, pane);
 		});
 
-		return plugins.add(app, plugin, key, title, optional);
+		return plugins.add({
+			app,
+			plugin,
+			key,
+			title,
+			optional
+		});
 	},
 	/**
 	 * Remove plugin
 	 * @returns null
 	 */
 	remove: () => {
-		return plugins.remove(plugin, key, title);
+		return plugins.remove({
+			plugin,
+			key,
+			title
+		});
 	}
 }

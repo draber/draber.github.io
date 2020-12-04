@@ -68,40 +68,50 @@ export default {
 	 */
 	add: (app, game) => {
 
-		if (settings.get(key) === false) {
-			return false;
-		}
-		// add content pane
-		plugin = el.create({
-			tag: 'details',
-			text: [title, 'summary']
-		});
-		const pane = el.create({
-			classNames: ['pane']
-		});
-		const button = el.create({
-			tag: 'button',
-			classNames: ['hive-action'],
-			text: 'Display answers',
-			attributes: {
-				type: 'button'
-			},
-			events: {
-				click: function () {
-					resolve(el.$('.sb-wordlist-items', game));
+		// if user has not disabled the plugin
+		if (!plugins.isDisabled(key)) {
+			// add content pane
+			plugin = el.create({
+				tag: 'details',
+				text: [title, 'summary']
+			});
+			const pane = el.create({
+				classNames: ['pane']
+			});
+			const button = el.create({
+				tag: 'button',
+				classNames: ['hive-action'],
+				text: 'Display answers',
+				attributes: {
+					type: 'button'
+				},
+				events: {
+					click: function () {
+						resolve(el.$('.sb-wordlist-items', game));
+					}
 				}
-			}
-		});
-		pane.append(button);
-		plugin.append(pane);
+			});
+			pane.append(button);
+			plugin.append(pane);
+		}
 
-		return plugins.add(app, plugin, key, title, optional);
+		return plugins.add({
+			app,
+			plugin,
+			key,
+			title,
+			optional
+		});
 	},
 	/**
 	 * Remove plugin
 	 * @returns null
 	 */
 	remove: () => {
-		return plugins.remove(plugin, key, title);
+		return plugins.remove({
+			plugin,
+			key,
+			title
+		});
 	}
 }

@@ -34,5 +34,7 @@
   },
   "author": "Dieter Raber",
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "bookmarklet-babel7": "^3.0.0"
+  }
 }

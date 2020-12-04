@@ -1,12 +1,4 @@
-$colorHighlight: rgb(248, 205, 5);
-$colorBorder: rgb(220, 220, 220);
-$colorPaleText: #888;
-
-// invert
-$bg : #111;
-$txt: #eee;
-$yellow: #f7c60a;
-$cellBg: #393939;
+@import './inc/colors';
 
 .pz-game-field {
     background: inherit;
@@ -31,6 +23,7 @@ $cellBg: #393939;
 
     .sba {
         background: $bg;
+
         summary {
             background: #252525;
             color: $txt;
@@ -114,7 +107,7 @@ $cellBg: #393939;
     *:not(.hive-action__shuffle):not(.sb-pangram) {
         border-color: #333 !important
     }
-    
+
 }
 
 .sba {
@@ -125,6 +118,8 @@ $cellBg: #393939;
     z-index: 3;
     margin: 16px 0;
     padding: 0 10px 5px;
+    background: #fff;
+
     border: {
         width: 1px;
         color: $colorBorder;
@@ -150,7 +145,8 @@ $cellBg: #393939;
         line-height: 32px;
     }
 
-    .closer, .minimizer {
+    .closer,
+    .minimizer {
         font-size: 18px;
         font-weight: bold;
         position: absolute;
@@ -166,6 +162,7 @@ $cellBg: #393939;
 
     .minimizer {
         right: 16px;
+
         &:before {
             content: "\ff0d";
         }
@@ -173,7 +170,7 @@ $cellBg: #393939;
 
     &.minimized {
         details {
-            display:none;
+            display: none;
         }
 
         .minimizer {
@@ -232,6 +229,11 @@ $cellBg: #393939;
     }
 
     tr {
+        &:first-of-type {
+            td, th {
+                border-top: none;
+            }
+        }
         td {
             &:first-of-type {
                 text-align: left;
@@ -240,7 +242,7 @@ $cellBg: #393939;
 
         &.current {
             font-weight: bold;
-            color: $colorHighlight;
+            border-bottom: 2px solid $colorHighlight;
         }
     }
 

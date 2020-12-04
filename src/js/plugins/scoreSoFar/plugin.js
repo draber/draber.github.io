@@ -2,12 +2,12 @@ import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
 import plugins from '../../modules/plugins.js';
 import data from '../../modules/data.js';
-import prefix from '../../modules/prefixer.js';
+import pf from '../../modules/prefixer.js';
 
 /**
  * {HTMLElement}
  */
-let plugin;
+let plugin = null;
 
 /**
  * Display name
@@ -31,7 +31,9 @@ const optional = true;
  * Updatable part of the pane
  * @type {HTMLElement}
  */
-const tbody = el.create({tag: 'tbody'});
+const tbody = el.create({
+    tag: 'tbody'
+});
 
 /**
  * Populate/update pane
@@ -64,52 +66,63 @@ export default {
      * Create and attach plugin
      * @param {HTMLElement} app
      * @param {HTMLElement} game
-     * @returns {HTMLElement|boolean} plugin
+     * @returns {HTMLElement|null} plugin
      */
     add: (app, game) => {
-        // if opted out
-        if (settings.get(key) === false) {
-            return false;
+        
+        // if user has not disabled the plugin
+        if (!plugins.isDisabled(key)) {
+
+            plugin = el.create({
+                tag: 'details',
+                text: [title, 'summary'],
+                attributes: {
+                    open: true
+                }
+            });
+
+            // add and populate content pane        
+            const pane = el.create({
+                tag: 'table',
+                classNames: ['pane']
+
+            });
+            const thead = el.create({
+                tag: 'thead'
+            });
+            thead.append(el.create({
+                tag: 'tr',
+                cellTag: 'th',
+                cellData: ['', 'Found', 'Missing', 'Total']
+            }))
+            pane.append(thead);
+            pane.append(tbody);
+            update();
+            plugin.append(pane);
+
+            // update on demand
+            app.addEventListener(pf('updateComplete'), () => {
+                update();
+            });
         }
 
-        plugin = el.create({
-            tag: 'details',
-            text: [title, 'summary'],
-            attributes: {
-                open: true
-            }
+        return plugins.add({
+            app,
+            plugin,
+            key,
+            title,
+            optional
         });
-
-        // add and populate content pane        
-        const pane = el.create({
-            tag: 'table',
-            classNames: ['pane']
-
-        });
-        const thead = el.create({
-            tag: 'thead'
-        });
-        thead.append(el.create({
-            tag: 'tr',
-            cellTag: 'th',
-            cellData: ['', 'Found', 'Missing', 'Total']
-        }))
-        pane.append(thead);
-        pane.append(tbody);
-        update();
-        plugin.append(pane);
-
-        // update on demand
-        app.addEventListener(prefix('updateComplete'), () => {
-            update();
-        });
-        return plugins.add(app, plugin, key, title, optional);
     },
     /**
      * Remove plugin
      * @returns null
      */
     remove: () => {
-        return plugins.remove(plugin, key, title);
+        return plugins.remove({
+            plugin,
+            key,
+            title
+        });
     }
 }

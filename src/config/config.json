@@ -6,13 +6,13 @@
     "twitter": "@d_raber",
     "prefix": "sba",
     "plugins": [
-        "header",
         "scoreSoFar",
         "spoilers",
         "spillTheBeans",
         "stepsToSuccess",
         "surrender",
         "setUp",
+        "header",
         "footer"
     ],
     "htmlIn": "src/html/index.tpl",

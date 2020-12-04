@@ -2,7 +2,7 @@ import el from './element.js';
 import observers from './observers.js';
 import settings from './settings.js';
 import data from './data.js';
-import prefix from './prefixer.js';
+import pf from './prefixer.js';
 
 /**
  * Watches for changes as the user types
@@ -20,14 +20,16 @@ let observer;
 const initObserver = (app, target) => {
 	const _observer = new MutationObserver(mutationsList => {
 		// we're only interested in the very last mutation
-		app.dispatchEvent(new CustomEvent(prefix('update'), {
+		app.dispatchEvent(new CustomEvent(pf('update'), {
 			detail: {
 				text: mutationsList.pop().addedNodes[0]
 			}
 		}));
 	});
 	return {
-		observer: _observer, target: target, args: {
+		observer: _observer,
+		target: target,
+		args: {
 			childList: true
 		}
 	}
@@ -38,25 +40,18 @@ const initObserver = (app, target) => {
  * @param {HTMLElement|null} game
  * @returns {HTMLElement|boolean}
  */
-export default function widget(game) {	
-    if(!game || !window.gameData) {
-        console.info('This bookmarklet only works on https://www.nytimes.com/puzzles/spelling-bee');
-        return false;
-    }	
+export default function widget(game) {
+	if (!game || !window.gameData) {
+		console.info('This bookmarklet only works on https://www.nytimes.com/puzzles/spelling-bee');
+		return false;
+	}
 	const rect = el.$('.sb-content-box', game).getBoundingClientRect();
 
 	const resultList = el.$('.sb-wordlist-items', game);
 	const events = {};
-	events[prefix('destroy')] = evt => {
+	events[pf('destroy')] = evt => {
 		observers.removeAll();
 		evt.target.remove();
-	};
-	events[prefix('darkMode')] = evt => {
-		if (evt.detail.enabled) {
-			document.body.classList.add(prefix('dark', 'd'));
-		} else {
-			document.body.classList.remove(prefix('dark', 'd'));
-		}
 	};
 	const app = el.create({
 		attributes: {
@@ -76,10 +71,5 @@ export default function widget(game) {
 	data.init(app, resultList);
 	observer = initObserver(app, resultList);
 	observers.add(observer.observer, observer.target, observer.args);
-	app.dispatchEvent(new CustomEvent(prefix('darkMode'), {
-		detail: {
-			enabled: settings.get('darkMode')
-		}
-	}));
 	return app;
 }

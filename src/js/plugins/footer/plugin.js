@@ -20,12 +20,6 @@ const title = 'Footer';
 const key = 'footer';
 
 /**
- * Can't be removed by the user
- * @type {boolean}
- */
-const optional = false;
-
-/**
  * Link in the footer
  */
 export default {
@@ -44,13 +38,21 @@ export default {
                 target: '_blank'
             }
         });
-        return plugins.add(app, plugin, key, title, optional);
+        return plugins.add({
+            app,
+            key,
+            plugin
+        });
     },
     /**
      * Remove plugin
      * @returns null
      */
     remove: () => {
-        return plugins.remove(plugin, key, title);
+        return plugins.remove({
+            plugin,
+            key,
+            title
+        });
     }
 }

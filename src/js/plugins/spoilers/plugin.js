@@ -2,7 +2,7 @@ import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
 import plugins from '../../modules/plugins.js';
 import data from '../../modules/data.js';
-import prefix from '../../modules/prefixer.js';
+import pf from '../../modules/prefixer.js';
 
 /**
  * {HTMLElement}
@@ -31,7 +31,9 @@ const optional = true;
  * Updatable part of the pane
  * @type {HTMLElement}
  */
-const tbody = el.create({ tag: 'tbody'});
+const tbody = el.create({
+	tag: 'tbody'
+});
 
 const getCellData = () => {
 	const counts = {};
@@ -45,18 +47,18 @@ const getCellData = () => {
 			pangramCount
 		]
 	];
-    data.getList('answers').forEach(term => {
-        counts[term.length] = counts[term.length] || {
-            found: 0,
-            missing: 0,
-            total: 0
-        };
-        if (data.getList('foundTerms').includes(term)) {
-            counts[term.length].found++;
-        } else {
-            counts[term.length].missing++;
-        }
-        counts[term.length].total++;
+	data.getList('answers').forEach(term => {
+		counts[term.length] = counts[term.length] || {
+			found: 0,
+			missing: 0,
+			total: 0
+		};
+		if (data.getList('foundTerms').includes(term)) {
+			counts[term.length].found++;
+		} else {
+			counts[term.length].missing++;
+		}
+		counts[term.length].total++;
 	});
 	let keys = Object.keys(counts);
 	keys.sort((a, b) => a - b);
@@ -68,14 +70,14 @@ const getCellData = () => {
 			counts[count].total
 		]);
 	});
-    return cellData;
+	return cellData;
 };
 
 /**
  * Populate/update pane
  */
 const update = () => {
-	tbody.innerHTML = ''; 
+	tbody.innerHTML = '';
 	getCellData().forEach(cellData => {
 		tbody.append(el.create({
 			tag: 'tr',
@@ -85,47 +87,62 @@ const update = () => {
 }
 
 export default {
+	/**
+	 * Create and attach plugin
+	 * @param {HTMLElement} app
+	 * @param {HTMLElement} game
+	 * @returns {HTMLElement|null}
+	 */
 	add: (app, game) => {
-		// if opted out
-		if (settings.get(key) === false) {
-			return false;
-		}
-	
-		plugin = el.create({
-			tag: 'details',
-			text: [title, 'summary']
-		});
 
-		// add and populate content pane
-		const pane = el.create({ 
-			tag: 'table', 
-			classNames: ['pane']
-		});
-		const thead = el.create({
-			tag: 'thead'
-		});
-		thead.append(el.create({
-			tag: 'tr',
-			cellTag: 'th',
-			cellData: ['', 'Found', 'Missing', 'Total']
-		}))
-		pane.append(thead);
-		pane.append(tbody);
-		update();
-		plugin.append(pane);
+        // if user has not disabled the plugin
+        if (!plugins.isDisabled(key)) {
+			plugin = el.create({
+				tag: 'details',
+				text: [title, 'summary']
+			});
 
-		// update on demand
-		app.addEventListener(prefix('updateComplete'), () => {
+			// add and populate content pane
+			const pane = el.create({
+				tag: 'table',
+				classNames: ['pane']
+			});
+			const thead = el.create({
+				tag: 'thead'
+			});
+			thead.append(el.create({
+				tag: 'tr',
+				cellTag: 'th',
+				cellData: ['', 'Found', 'Missing', 'Total']
+			}))
+			pane.append(thead);
+			pane.append(tbody);
 			update();
+			plugin.append(pane);
+
+			// update on demand
+			app.addEventListener(pf('updateComplete'), () => {
+				update();
+			});
+		}
+
+		return plugins.add({
+			app,
+			plugin,
+			key,
+			title,
+			optional
 		});
-	
-		return plugins.add(app, plugin, key, title, optional);
 	},
 	/**
 	 * Remove plugin
 	 * @returns null
 	 */
 	remove: () => {
-		return plugins.remove(plugin, key, title);
+		return plugins.remove({
+			plugin,
+			key,
+			title
+		});
 	}
 }

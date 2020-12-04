@@ -3,7 +3,7 @@ import plugins from '../../modules/plugins.js';
 import data from '../../modules/data.js';
 import observers from '../../modules/observers.js';
 import settings from '../../modules/settings';
-import prefix from '../../modules/prefixer.js';
+import pf from '../../modules/prefixer.js';
 
 /**
  * {HTMLElement}
@@ -57,7 +57,9 @@ const initObserver = (target, frame) => {
         }
     });
     return {
-        observer: _observer, target: target, args: {
+        observer: _observer,
+        target: target,
+        args: {
             childList: true
         }
     }
@@ -102,57 +104,68 @@ const update = (frame) => {
 export default {
     /**
      * Create and attach plugin
-     * @param app
-     * @param game
-     * @returns {HTMLElement|boolean}
+     * @param {HTMLElement} app
+     * @param {HTMLElement} game
+     * @returns {HTMLElement|null}
      */
     add: (app, game) => {
-        // if opted out
-        if (settings.get(key) === false) {
-            return false;
+        
+        // if user has not disabled the plugin
+        if (!plugins.isDisabled(key)) {
+            plugin = el.create({
+                tag: 'details',
+                text: [title, 'summary']
+            });
+
+            // add and populate content pane
+            const pane = el.create({
+                tag: 'table',
+                classNames: ['pane']
+
+            });
+            const frame = el.create({
+                tag: 'tbody'
+            });
+            pane.append(frame);
+
+            // populate this when first opened
+            // otherwise it could be that the modal overlay is still populated 
+            // by the welcome screen which as consequence would disappear
+            plugin.addEventListener('toggle', () => {
+                if (plugin.open && !frame.hasChildNodes()) {
+                    const modal = el.$('.sb-modal-wrapper');
+                    observer = initObserver(modal, frame);
+                    observers.add(observer.observer, observer.target, observer.args);
+                    el.$('.sb-progress', game).click();
+                }
+            });
+
+            plugin.append(pane);
+
+            // update on demand
+            app.addEventListener(pf('updateComplete'), () => {
+                update(frame);
+            });
         }
-        plugin = el.create({
-            tag: 'details',
-            text: [title, 'summary']
+
+
+        return plugins.add({
+            app,
+            plugin,
+            key,
+            title,
+            optional
         });
-
-        // add and populate content pane
-        const pane = el.create({
-            tag: 'table',
-            classNames: ['pane']
-
-        });
-        const frame = el.create({
-            tag: 'tbody'
-        });
-        pane.append(frame);
-
-        // populate this when first opened
-        // otherwise it could be that the modal overlay is still populated by the welcome screen
-        // which as consequence would disappear
-        plugin.addEventListener('toggle', () => {
-            if (plugin.open && !frame.hasChildNodes()) {
-                const modal = el.$('.sb-modal-wrapper');
-                observer = initObserver(modal, frame);
-                observers.add(observer.observer, observer.target, observer.args);
-                el.$('.sb-progress', game).click();
-            }
-        });
-
-        plugin.append(pane);
-
-        // update on demand
-        app.addEventListener(prefix('updateComplete'), () => {
-            update(frame);
-        });
-
-        return plugins.add(app, plugin, key, title, optional);
     },
     /**
      * Remove plugin
      * @returns null
      */
     remove: () => {
-        return plugins.remove(plugin, key, title);
+        return plugins.remove({
+            plugin,
+            key,
+            title
+        });
     }
 }

@@ -1,15 +1,15 @@
 import el from './element.js';
-import prefix from './prefixer.js';
+import pf from './prefixer.js';
 
 /**
  * Word lists
- * @type {{remainders: [], answers: *, pangrams: [string], foundPangrams: [], foundTerms: []}}
+ * @type {{remainders: [], answers: object, pangrams: [string], foundPangrams: [], foundTerms: []}}
  */
 let lists;
 
 /**
  * Build word lists
- * @return {{remainders: [], answers: *, pangrams: [string], foundPangrams: [], foundTerms: []}}
+ * @return {{remainders: [], answers: object, pangrams: [string], foundPangrams: [], foundTerms: []}}
  */
 const initLists = () => {
     return {
@@ -77,7 +77,7 @@ const updateLists = (app, resultList) => {
         }
     });
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.dispatchEvent(new Event(prefix('updateComplete')));
+    app.dispatchEvent(new Event(pf('updateComplete')));
 };
 
 /**
@@ -88,7 +88,7 @@ const updateLists = (app, resultList) => {
 const init = (app, resultList) => {
     lists = initLists();
     updateLists(app, resultList);
-    app.addEventListener(prefix('update'), () => {
+    app.addEventListener(pf('update'), () => {
         updateLists(app, resultList);
     });
 }

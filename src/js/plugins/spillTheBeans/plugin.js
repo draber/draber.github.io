@@ -2,7 +2,7 @@ import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
 import plugins from '../../modules/plugins.js';
 import data from '../../modules/data.js';
-import prefix from '../../modules/prefixer.js';
+import pf from '../../modules/prefixer.js';
 
 
 /**
@@ -58,14 +58,16 @@ const react = (value) => {
 const initObserver = (app, target) => {
     const _observer = new MutationObserver(mutationsList => {
         // we're only interested in the very last mutation
-        app.dispatchEvent(new CustomEvent(prefix('spill'), {
+        app.dispatchEvent(new CustomEvent(pf('spill'), {
             detail: {
                 text: mutationsList.pop().target.textContent.trim()
             }
         }));
     });
     return {
-        observer: _observer, target: target, args: {
+        observer: _observer,
+        target: target,
+        args: {
             childList: true
         }
     }
@@ -74,46 +76,59 @@ const initObserver = (app, target) => {
 export default {
     /**
      * Create and attach plugin
-     * @param app
-     * @param game
-     * @returns {HTMLElement|boolean}
+     * @param {HTMLElement} app
+     * @param {HTMLElement} game
+     * @returns {HTMLElement|null}
      */
     add: (app, game) => {
-        // if opted out
-        if (settings.get(key) === false) {
-            return false;
+
+        // if user has not disabled the plugin
+        if (!plugins.isDisabled(key)) {
+            observer = initObserver(app, el.$('.sb-hive-input-content', game));
+
+            const pane = el.create({
+                classNames: ['pane']
+            });
+            const description = el.create({
+                text: 'Watch me while you type!',
+                classNames: ['spill-title']
+            })
+            const reaction = el.create({
+                text: '😐',
+                classNames: ['spill']
+            });
+            pane.append(description);
+            pane.append(reaction);
+
+            plugin = el.create({
+                tag: 'details',
+                text: [title, 'summary']
+            });
+            app.addEventListener('sbaSpill', evt => {
+                reaction.textContent = react(evt.detail.text);
+            });
+            plugin.append(pane);
         }
-        observer = initObserver(app, el.$('.sb-hive-input-content', game));
 
-        const pane = el.create({
-            classNames: ['pane']
+        return plugins.add({
+            app,
+            plugin,
+            key,
+            title,
+            optional,
+            observer
         });
-        const description = el.create({
-            text: 'Watch me while you type!',
-            classNames: ['spill-title']
-        })
-        const reaction = el.create({
-            text: '😐',
-            classNames: ['spill']
-        });
-        pane.append(description);
-        pane.append(reaction);
-
-        plugin = el.create({
-            tag: 'details',
-            text: [title, 'summary']
-        });
-        app.addEventListener('sbaSpill', evt => {
-            reaction.textContent = react(evt.detail.text);
-        });
-        plugin.append(pane);
-        return plugins.add(app, plugin, key, title, optional, observer);
     },
     /**
      * Remove plugin
      * @returns null
      */
     remove: () => {
-        return plugins.remove(plugin, key, title, observer);
+        return plugins.remove({
+            plugin,
+            key,
+            title,
+            observer
+        });
     }
 }

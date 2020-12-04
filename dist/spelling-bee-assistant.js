@@ -131,46 +131,55 @@
     var repo = "draber/draber.github.io.git";
     var prefix = "sba";
 
-    const stored = JSON.parse(localStorage.getItem(prefix + '-settings') || '{}');
+    const options = JSON.parse(localStorage.getItem(prefix + '-settings') || '{}');
     const get = key => {
-        return settings[key] || settings.options[key] || null;
+        let current = Object.create(settings);
+        for(let token of key.split('.')) {
+            if(!current[token]){
+                return undefined;
+            }
+            current = current[token];
+        }
+        return current;
     };
     const set = (key, value) => {
-        settings.options[key] = value;
+        if(typeof value === 'undefined'){
+            debugger;
+        }
+        const keys = key.split('.');
+        const last = keys.pop();
+        let current = settings;
+        for (let part of keys) {
+            if (!current[part]) {
+                current[part] = {};
+            }
+            if (!Object.prototype.toString.call(current) === '[object Object]') {
+                console.error(`${part} is not of the type Object`);
+                return false;
+            }
+            current = current[part];
+        }
+        current[last] = value;
         localStorage.setItem(prefix + '-settings', JSON.stringify(settings.options));
     };
     const getAll = () => {
         return settings;
     };
-    const getStored = () => {
-        return stored;
-    };
-    const settings = Object.assign(
-    {
+    const settings = {
         label: label,
         title: title,
         url: url,
         prefix: prefix,
         repo: repo,
         version: version,
-        options: Object.assign(
-            {
-                darkMode: {
-                    v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains(prefix + '-dark'),
-                    t: 'Dark Mode'
-                }
-            },
-            stored
-        )
-    });
+        options: options
+    };
     var settings$1 = {
         get,
         set,
-        getAll,
-        getStored
+        getAll
     };
 
-    const prefix$1 = settings$1.get('prefix');
     const toCamelCase = term => {
         return term.replace(/[_-]+([a-z])/g, (g) => g[1].toUpperCase());
     };
@@ -184,9 +193,9 @@
     const pf = (term, mode = 'c') => {
         switch (mode) {
             case 'c':
-                return toCamelCase(prefix$1 + '_' + term);
+                return toCamelCase(settings$1.get('prefix') + '_' + term);
             case 'd':
-                return toDashCase(prefix$1 + term.charAt(0).toUpperCase() + term.slice(1));
+                return toDashCase(settings$1.get('prefix') + term.charAt(0).toUpperCase() + term.slice(1));
             default:
                 return term;
         }
@@ -260,29 +269,24 @@
     		}));
     	});
     	return {
-    		observer: _observer, target: target, args: {
+    		observer: _observer,
+    		target: target,
+    		args: {
     			childList: true
     		}
     	}
     };
     function widget(game) {
-        if(!game || !window.gameData) {
-            console.info('This bookmarklet only works on https://www.nytimes.com/puzzles/spelling-bee');
-            return false;
-        }
+    	if (!game || !window.gameData) {
+    		console.info('This bookmarklet only works on https://www.nytimes.com/puzzles/spelling-bee');
+    		return false;
+    	}
     	const rect = el.$('.sb-content-box', game).getBoundingClientRect();
     	const resultList = el.$('.sb-wordlist-items', game);
     	const events = {};
     	events[pf('destroy')] = evt => {
     		observers$1.removeAll();
     		evt.target.remove();
-    	};
-    	events[pf('darkMode')] = evt => {
-    		if (evt.detail.enabled) {
-    			document.body.classList.add(pf('dark', 'd'));
-    		} else {
-    			document.body.classList.remove(pf('dark', 'd'));
-    		}
     	};
     	const app = el.create({
     		attributes: {
@@ -301,84 +305,90 @@
     	data.init(app, resultList);
     	observer = initObserver(app, resultList);
     	observers$1.add(observer.observer, observer.target, observer.args);
-    	app.dispatchEvent(new CustomEvent(pf('darkMode'), {
-    		detail: {
-    			enabled: settings$1.get('darkMode')
-    		}
-    	}));
     	return app;
     }
 
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px}.sba .minimizer:before{content:\"－\"}.sba.minimized details{display:none}.sba.minimized .minimizer:before{content:\"＋\"}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr td:first-of-type{text-align:left}.sba tr.current{font-weight:bold;color:#f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
-
-    let styles;
-    var styles$1 = {
-    	add: (app) => {
-    		styles = el.create({
-    			tag: 'style',
-    			text: css.replace(/(\uFEFF|\\n)/gu, '')
-    		});
-    		app.addEventListener(pf('destroy'), () => {
-    			styles.remove();
-    		});
-    		return el.$('head').append(styles);
-    	},
-    	remove: () => {
-    		return styles.remove();
-    	}
+    const noUi = 'noUi';
+    const isDisabled = key => {
+        return settings$1.get(`options.${key}.v`) === false;
     };
-
-    const stored$1 = settings$1.getStored();
-    const add = (app, plugin, key, title, optional, observer = null) => {
-        let slot = el.$(`[data-plugin="${key}"]`, app);
-        if(!slot){
-            slot = el.create({
-                data: {
-                    plugin: key
-                }});
-            app.append(slot);
+    const add = ({
+        app,
+        key,
+        plugin,
+        title = '',
+        optional = false,
+        observer,
+        target = null
+    } = {}) => {
+        if(plugin !== noUi) {
+            target = target || el.$(`[data-plugin="${key}"]`, app) || (() => {
+                const _target = el.create({
+                    data: {
+                        plugin: key
+                    }
+                });
+                app.append(_target);
+                return _target;
+            })();
+            target.append(plugin);
         }
-        const available = (stored$1[key] ? stored$1[key].v : optional);
-        if(optional) {
-           settings$1.set(key, { v: available, t: `Display "${title}"` });
+        if (optional) {
+            settings$1.set(`options.${key}.v`, plugin instanceof HTMLElement);
+            settings$1.set(`options.${key}.t`, title);
         }
         const evtName = pf(key);
         app.addEventListener(evtName, evt => {
-            if(evt.detail.enabled){
-                add(app, plugin, key, title, optional);
-            }
-            else {
-                remove(plugin, key, title);
+            if (evt.detail.enabled) {
+                add({
+                    app,
+                    plugin,
+                    key,
+                    title,
+                    optional
+                });
+            } else {
+                remove({
+                    plugin,
+                    key,
+                    title
+                });
             }
         });
-        if(observer) {
+        if (observer) {
             observers$1.add(observer.observer, observer.target, observer.args);
         }
-        slot.append(plugin);
         return plugin;
     };
-    const remove = (plugin, key, title, observer = null) => {
-        if(!plugin) {
-            console.error(`Plugin "${title}" not initialized`);
-            return null;
+    const remove = ({
+        plugin,
+        key = '',
+        title = '',
+        observer
+    } = {}) => {
+        if (plugin instanceof HTMLElement) {
+            plugin.remove();
         }
-        plugin.remove();
-        settings$1.set(key, { v: false, t: `Display ${title}` });
-        if(observer){
+        settings$1.set(`options.${key}.v`, false);
+        if (observer) {
             observers$1.remove(observer.observer);
         }
         return null;
     };
     var plugins = {
         add,
-        remove
+        remove,
+        isDisabled,
+        noUi
     };
 
-    let plugin;
+    let plugin = null;
     const title$1 = 'Score so far';
     const key = 'scoreSoFar';
     const optional = true;
-    const tbody = el.create({tag: 'tbody'});
+    const tbody = el.create({
+        tag: 'tbody'
+    });
     const update = () => {
         tbody.innerHTML = '';
         [
@@ -403,39 +413,48 @@
     };
     var scoreSoFar = {
         add: (app, game) => {
-            if (settings$1.get(key) === false) {
-                return false;
-            }
-            plugin = el.create({
-                tag: 'details',
-                text: [title$1, 'summary'],
-                attributes: {
-                    open: true
-                }
-            });
-            const pane = el.create({
-                tag: 'table',
-                classNames: ['pane']
-            });
-            const thead = el.create({
-                tag: 'thead'
-            });
-            thead.append(el.create({
-                tag: 'tr',
-                cellTag: 'th',
-                cellData: ['', 'Found', 'Missing', 'Total']
-            }));
-            pane.append(thead);
-            pane.append(tbody);
-            update();
-            plugin.append(pane);
-            app.addEventListener(pf('updateComplete'), () => {
+            if (!plugins.isDisabled(key)) {
+                plugin = el.create({
+                    tag: 'details',
+                    text: [title$1, 'summary'],
+                    attributes: {
+                        open: true
+                    }
+                });
+                const pane = el.create({
+                    tag: 'table',
+                    classNames: ['pane']
+                });
+                const thead = el.create({
+                    tag: 'thead'
+                });
+                thead.append(el.create({
+                    tag: 'tr',
+                    cellTag: 'th',
+                    cellData: ['', 'Found', 'Missing', 'Total']
+                }));
+                pane.append(thead);
+                pane.append(tbody);
                 update();
+                plugin.append(pane);
+                app.addEventListener(pf('updateComplete'), () => {
+                    update();
+                });
+            }
+            return plugins.add({
+                app,
+                plugin,
+                key,
+                title: title$1,
+                optional
             });
-            return plugins.add(app, plugin, key, title$1, optional);
         },
         remove: () => {
-            return plugins.remove(plugin, key, title$1);
+            return plugins.remove({
+                plugin,
+                key,
+                title: title$1
+            });
         }
     };
 
@@ -450,11 +469,11 @@
     		});
     		li.append(el.create({
     			tag: 'input',
-    			text: option.t ,
+    			text: option.t,
     			attributes: {
     				type: 'checkbox',
     				name: key,
-    				checked: option.v
+    				checked: !plugins.isDisabled(key)
     			},
     			events: {
     				click: function () {
@@ -483,10 +502,20 @@
     		app.addEventListener(pf('launchComplete'), () => {
     			populate(app, pane);
     		});
-    		return plugins.add(app, plugin$1, key$1, title$2, optional$1);
+    		return plugins.add({
+    			app,
+    			plugin: plugin$1,
+    			key: key$1,
+    			title: title$2,
+    			optional: optional$1
+    		});
     	},
     	remove: () => {
-    		return plugins.remove(plugin$1, key$1, title$2);
+    		return plugins.remove({
+    			plugin: plugin$1,
+    			key: key$1,
+    			title: title$2
+    		});
     	}
     };
 
@@ -513,42 +542,55 @@
             }));
         });
         return {
-            observer: _observer, target: target, args: {
+            observer: _observer,
+            target: target,
+            args: {
                 childList: true
             }
         }
     };
     var spillTheBeans = {
         add: (app, game) => {
-            if (settings$1.get(key$2) === false) {
-                return false;
+            if (!plugins.isDisabled(key$2)) {
+                observer$1 = initObserver$1(app, el.$('.sb-hive-input-content', game));
+                const pane = el.create({
+                    classNames: ['pane']
+                });
+                const description = el.create({
+                    text: 'Watch me while you type!',
+                    classNames: ['spill-title']
+                });
+                const reaction = el.create({
+                    text: '😐',
+                    classNames: ['spill']
+                });
+                pane.append(description);
+                pane.append(reaction);
+                plugin$2 = el.create({
+                    tag: 'details',
+                    text: [title$3, 'summary']
+                });
+                app.addEventListener('sbaSpill', evt => {
+                    reaction.textContent = react(evt.detail.text);
+                });
+                plugin$2.append(pane);
             }
-            observer$1 = initObserver$1(app, el.$('.sb-hive-input-content', game));
-            const pane = el.create({
-                classNames: ['pane']
+            return plugins.add({
+                app,
+                plugin: plugin$2,
+                key: key$2,
+                title: title$3,
+                optional: optional$2,
+                observer: observer$1
             });
-            const description = el.create({
-                text: 'Watch me while you type!',
-                classNames: ['spill-title']
-            });
-            const reaction = el.create({
-                text: '😐',
-                classNames: ['spill']
-            });
-            pane.append(description);
-            pane.append(reaction);
-            plugin$2 = el.create({
-                tag: 'details',
-                text: [title$3, 'summary']
-            });
-            app.addEventListener('sbaSpill', evt => {
-                reaction.textContent = react(evt.detail.text);
-            });
-            plugin$2.append(pane);
-            return plugins.add(app, plugin$2, key$2, title$3, optional$2, observer$1);
         },
         remove: () => {
-            return plugins.remove(plugin$2, key$2, title$3, observer$1);
+            return plugins.remove({
+                plugin: plugin$2,
+                key: key$2,
+                title: title$3,
+                observer: observer$1
+            });
         }
     };
 
@@ -556,7 +598,9 @@
     const title$4 = 'Spoilers';
     const key$3 = 'spoilers';
     const optional$3 = true;
-    const tbody$1 = el.create({ tag: 'tbody'});
+    const tbody$1 = el.create({
+    	tag: 'tbody'
+    });
     const getCellData = () => {
     	const counts = {};
     	const pangramCount = data.getCount('pangrams');
@@ -569,18 +613,18 @@
     			pangramCount
     		]
     	];
-        data.getList('answers').forEach(term => {
-            counts[term.length] = counts[term.length] || {
-                found: 0,
-                missing: 0,
-                total: 0
-            };
-            if (data.getList('foundTerms').includes(term)) {
-                counts[term.length].found++;
-            } else {
-                counts[term.length].missing++;
-            }
-            counts[term.length].total++;
+    	data.getList('answers').forEach(term => {
+    		counts[term.length] = counts[term.length] || {
+    			found: 0,
+    			missing: 0,
+    			total: 0
+    		};
+    		if (data.getList('foundTerms').includes(term)) {
+    			counts[term.length].found++;
+    		} else {
+    			counts[term.length].missing++;
+    		}
+    		counts[term.length].total++;
     	});
     	let keys = Object.keys(counts);
     	keys.sort((a, b) => a - b);
@@ -592,7 +636,7 @@
     			counts[count].total
     		]);
     	});
-        return cellData;
+    	return cellData;
     };
     const update$1 = () => {
     	tbody$1.innerHTML = '';
@@ -605,43 +649,51 @@
     };
     var spoilers = {
     	add: (app, game) => {
-    		if (settings$1.get(key$3) === false) {
-    			return false;
-    		}
-    		plugin$3 = el.create({
-    			tag: 'details',
-    			text: [title$4, 'summary']
-    		});
-    		const pane = el.create({
-    			tag: 'table',
-    			classNames: ['pane']
-    		});
-    		const thead = el.create({
-    			tag: 'thead'
-    		});
-    		thead.append(el.create({
-    			tag: 'tr',
-    			cellTag: 'th',
-    			cellData: ['', 'Found', 'Missing', 'Total']
-    		}));
-    		pane.append(thead);
-    		pane.append(tbody$1);
-    		update$1();
-    		plugin$3.append(pane);
-    		app.addEventListener(pf('updateComplete'), () => {
+            if (!plugins.isDisabled(key$3)) {
+    			plugin$3 = el.create({
+    				tag: 'details',
+    				text: [title$4, 'summary']
+    			});
+    			const pane = el.create({
+    				tag: 'table',
+    				classNames: ['pane']
+    			});
+    			const thead = el.create({
+    				tag: 'thead'
+    			});
+    			thead.append(el.create({
+    				tag: 'tr',
+    				cellTag: 'th',
+    				cellData: ['', 'Found', 'Missing', 'Total']
+    			}));
+    			pane.append(thead);
+    			pane.append(tbody$1);
     			update$1();
+    			plugin$3.append(pane);
+    			app.addEventListener(pf('updateComplete'), () => {
+    				update$1();
+    			});
+    		}
+    		return plugins.add({
+    			app,
+    			plugin: plugin$3,
+    			key: key$3,
+    			title: title$4,
+    			optional: optional$3
     		});
-    		return plugins.add(app, plugin$3, key$3, title$4, optional$3);
     	},
     	remove: () => {
-    		return plugins.remove(plugin$3, key$3, title$4);
+    		return plugins.remove({
+    			plugin: plugin$3,
+    			key: key$3,
+    			title: title$4
+    		});
     	}
     };
 
     let plugin$4;
     const title$5 = 'Header';
     const key$4 = 'header';
-    const optional$4 = false;
     let params;
     let isLastTarget = false;
     const getDragParams = (evt, game) => {
@@ -676,7 +728,7 @@
             });
         });
         app.addEventListener('dragstart', evt => {
-            if(!isLastTarget){
+            if (!isLastTarget) {
                 evt.preventDefault();
                 return false;
             }
@@ -733,17 +785,25 @@
             plugin$4.append(minimizer);
             plugin$4.append(closer);
             makeDraggable(app, game);
-            return plugins.add(app, plugin$4, key$4, title, optional$4);
+            return plugins.add({
+                app,
+                plugin: plugin$4,
+                key: key$4
+            });
         },
         remove: () => {
-            return plugins.remove(plugin$4, key$4, title$5);
+            return plugins.remove({
+                plugin: plugin$4,
+                key: key$4,
+                title: title$5
+            });
         }
     };
 
     let plugin$5;
     const title$6 = 'Surrender';
     const key$5 = 'surrender';
-    const optional$5 = true;
+    const optional$4 = true;
     const buildEntry = term => {
     	const entry = el.create({
     		tag: 'li',
@@ -767,42 +827,51 @@
     };
     var surrender = {
     	add: (app, game) => {
-    		if (settings$1.get(key$5) === false) {
-    			return false;
-    		}
-    		plugin$5 = el.create({
-    			tag: 'details',
-    			text: [title$6, 'summary']
-    		});
-    		const pane = el.create({
-    			classNames: ['pane']
-    		});
-    		const button = el.create({
-    			tag: 'button',
-    			classNames: ['hive-action'],
-    			text: 'Display answers',
-    			attributes: {
-    				type: 'button'
-    			},
-    			events: {
-    				click: function () {
-    					resolve(el.$('.sb-wordlist-items', game));
+    		if (!plugins.isDisabled(key$5)) {
+    			plugin$5 = el.create({
+    				tag: 'details',
+    				text: [title$6, 'summary']
+    			});
+    			const pane = el.create({
+    				classNames: ['pane']
+    			});
+    			const button = el.create({
+    				tag: 'button',
+    				classNames: ['hive-action'],
+    				text: 'Display answers',
+    				attributes: {
+    					type: 'button'
+    				},
+    				events: {
+    					click: function () {
+    						resolve(el.$('.sb-wordlist-items', game));
+    					}
     				}
-    			}
+    			});
+    			pane.append(button);
+    			plugin$5.append(pane);
+    		}
+    		return plugins.add({
+    			app,
+    			plugin: plugin$5,
+    			key: key$5,
+    			title: title$6,
+    			optional: optional$4
     		});
-    		pane.append(button);
-    		plugin$5.append(pane);
-    		return plugins.add(app, plugin$5, key$5, title$6, optional$5);
     	},
     	remove: () => {
-    		return plugins.remove(plugin$5, key$5, title$6);
+    		return plugins.remove({
+    			plugin: plugin$5,
+    			key: key$5,
+    			title: title$6
+    		});
     	}
     };
 
     let plugin$6;
     const title$7 = 'Steps to success';
     const key$6 = 'stepsToSuccess';
-    const optional$6 = true;
+    const optional$5 = true;
     let observer$2;
     const steps = {};
     const initObserver$2 = (target, frame) => {
@@ -815,7 +884,9 @@
             }
         });
         return {
-            observer: _observer, target: target, args: {
+            observer: _observer,
+            target: target,
+            args: {
                 childList: true
             }
         }
@@ -846,44 +917,52 @@
     };
     var stepsToSuccess = {
         add: (app, game) => {
-            if (settings$1.get(key$6) === false) {
-                return false;
+            if (!plugins.isDisabled(key$6)) {
+                plugin$6 = el.create({
+                    tag: 'details',
+                    text: [title$7, 'summary']
+                });
+                const pane = el.create({
+                    tag: 'table',
+                    classNames: ['pane']
+                });
+                const frame = el.create({
+                    tag: 'tbody'
+                });
+                pane.append(frame);
+                plugin$6.addEventListener('toggle', () => {
+                    if (plugin$6.open && !frame.hasChildNodes()) {
+                        const modal = el.$('.sb-modal-wrapper');
+                        observer$2 = initObserver$2(modal, frame);
+                        observers$1.add(observer$2.observer, observer$2.target, observer$2.args);
+                        el.$('.sb-progress', game).click();
+                    }
+                });
+                plugin$6.append(pane);
+                app.addEventListener(pf('updateComplete'), () => {
+                    update$2(frame);
+                });
             }
-            plugin$6 = el.create({
-                tag: 'details',
-                text: [title$7, 'summary']
+            return plugins.add({
+                app,
+                plugin: plugin$6,
+                key: key$6,
+                title: title$7,
+                optional: optional$5
             });
-            const pane = el.create({
-                tag: 'table',
-                classNames: ['pane']
-            });
-            const frame = el.create({
-                tag: 'tbody'
-            });
-            pane.append(frame);
-            plugin$6.addEventListener('toggle', () => {
-                if (plugin$6.open && !frame.hasChildNodes()) {
-                    const modal = el.$('.sb-modal-wrapper');
-                    observer$2 = initObserver$2(modal, frame);
-                    observers$1.add(observer$2.observer, observer$2.target, observer$2.args);
-                    el.$('.sb-progress', game).click();
-                }
-            });
-            plugin$6.append(pane);
-            app.addEventListener(pf('updateComplete'), () => {
-                update$2(frame);
-            });
-            return plugins.add(app, plugin$6, key$6, title$7, optional$6);
         },
         remove: () => {
-            return plugins.remove(plugin$6, key$6, title$7);
+            return plugins.remove({
+                plugin: plugin$6,
+                key: key$6,
+                title: title$7
+            });
         }
     };
 
     let plugin$7;
     const title$8 = 'Footer';
     const key$7 = 'footer';
-    const optional$7 = false;
     var footer = {
         add: (app, game) => {
             plugin$7 = el.create({
@@ -894,26 +973,123 @@
                     target: '_blank'
                 }
             });
-            return plugins.add(app, plugin$7, key$7, title$8, optional$7);
+            return plugins.add({
+                app,
+                key: key$7,
+                plugin: plugin$7
+            });
         },
         remove: () => {
-            return plugins.remove(plugin$7, key$7, title$8);
+            return plugins.remove({
+                plugin: plugin$7,
+                key: key$7,
+                title: title$8
+            });
         }
     };
 
+    let plugin$8 = plugins.noUi;
+    const title$9 = 'Dark Mode';
+    const key$8 = 'darkMode';
+    const optional$6 = true;
+    const getInitialState = () => {
+        if(typeof settings$1.get(`options.${key$8}.v`) === 'undefined'){
+            return false;
+        }
+        return !plugins.isDisabled(key$8);
+    };
+    var darkMode = {
+        add: (app, game) => {
+            app.addEventListener(pf(key$8), evt => {
+                if (evt.detail.enabled) {
+                    el.$('body').classList.add(pf('dark', 'd'));
+                    settings$1.set(`options.${key$8}.v`, true);
+                } else {
+                    el.$('body').classList.remove(pf('dark', 'd'));
+                    settings$1.set(`options.${key$8}.v`, false);
+                }
+            });
+            app.dispatchEvent(new CustomEvent(pf(key$8), {
+                detail: {
+                    enabled: getInitialState()
+                }
+            }));
+            return plugins.add({
+                app,
+                plugin: plugin$8,
+                key: key$8,
+                title: title$9,
+                optional: optional$6
+            });
+        },
+        remove: () => {
+            app.dispatchEvent(new CustomEvent(pf(key$8), {
+                detail: {
+                    enabled: false
+                }
+            }));
+        }
+    };
+
+    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px}.sba .minimizer:before{content:\"－\"}.sba.minimized details{display:none}.sba.minimized .minimizer:before{content:\"＋\"}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td,.sba tr:first-of-type th{border-top:none}.sba tr td:first-of-type{text-align:left}.sba tr.current{font-weight:bold;border-bottom:2px solid #f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
+
+    let plugin$9;
+    const title$a = 'Styles';
+    const key$9 = 'styles';
+    const remove$1 = () => {
+        return plugins.remove({
+            plugin: plugin$9,
+            key: key$9,
+            title: title$a
+        });
+    };
+    var styles = {
+        add: (app, game) => {
+            plugin$9 = el.create({
+                tag: 'style',
+                text: css.replace(/(\uFEFF|\\n)/gu, '')
+            });
+            app.addEventListener(pf('destroy'), () => {
+                remove$1();
+            });
+            const target = el.$('head');
+            return plugins.add({
+                app,
+                plugin: plugin$9,
+                key: key$9,
+                target
+            });
+        },
+        remove: remove$1
+    };
+
     const game = el.$('#pz-game-root');
-    const app = widget(game);
-    if (app) {
+    const app$1 = widget(game);
+    if (app$1) {
         const oldInstance = el.$(`[data-id="${settings$1.get('repo')}"]`);
         if (oldInstance) {
             oldInstance.dispatchEvent(new Event(pf('destroy')));
         }
-        document.body.append(app);
-        [header, scoreSoFar, spoilers, spillTheBeans, stepsToSuccess, surrender, setUp, footer].forEach(plugin => {
-            plugin.add(app, game);
+        settings$1.get('prefix');
+        settings$1.get('options.darkMode');
+        settings$1.get('options.darkMode.v');
+        settings$1.get('options.darkMode.x');
+        [
+            styles,
+            darkMode,
+            header,
+            scoreSoFar,
+            spoilers,
+            spillTheBeans,
+            stepsToSuccess,
+            surrender,
+            setUp,
+            footer
+        ].forEach(plugin => {
+            plugin.add(app$1, game);
         });
-        styles$1.add(app);
-        app.dispatchEvent(new Event(pf('launchComplete')));
+        el.$('body').append(app$1);
+        app$1.dispatchEvent(new Event(pf('launchComplete')));
     }
 
 }());

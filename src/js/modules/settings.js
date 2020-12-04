@@ -5,15 +5,22 @@ import * as config from '../../config/config.json';
  * Values from `localStorage`
  * @type {Object}
  */
-const stored = JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
+const options = JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 
 /**
- * Returns a value based on a key
+ * Returns a value based on a key, can also be `foo.bar`
  * @param key
- * @returns {String|null}
+ * @returns {String|undefined}
  */
 const get = key => {
-    return settings[key] || settings.options[key] || null;
+    let current = Object.create(settings);
+    for(let token of key.split('.')) {
+        if(!current[token]){
+            return undefined;
+        }
+        current = current[token];
+    }
+    return current;
 };
 
 /**
@@ -22,52 +29,47 @@ const get = key => {
  * @param value
  */
 const set = (key, value) => {
-    settings.options[key] = value;
+    const keys = key.split('.');
+    const last = keys.pop();
+    let current = settings;
+    for (let part of keys) {
+        if (!current[part]) {
+            current[part] = {};
+        }        
+        if (!Object.prototype.toString.call(current) === '[object Object]') {
+            console.error(`${part} is not of the type Object`);
+            return false;
+        }
+        current = current[part];
+    }
+    current[last] = value;
     localStorage.setItem(config.prefix + '-settings', JSON.stringify(settings.options));
 };
 
 /**
  * Returns all settings
- * @returns {{repo: string, options: *, label: string, title: string, version: string, url: string}}
+ * @returns {{repo: string, options: options, label: string, title: string, version: string, url: string}}
  */
 const getAll = () => {
     return settings;
 }
 
 /**
- * Returns data from `localStorage`
- * @returns {any}
- */
-const getStored = () => {
-    return stored;
-}
-
-/**
  * Collection of settings from `package.json`, `config.json` and `localStorage`
- * @type {{repo: string, options: any, label: string, title: string, version: string, url: string}}
+ * @type {{repo: string, options: object, label: string, title: string, version: string, url: string}}
  */
-const settings = Object.assign(
-{
+const settings = {
     label: config.label,
     title: config.title,
     url: config.url,
     prefix: config.prefix,
     repo: config.repo,
     version: pkg.version,
-    options: Object.assign(
-        {
-            darkMode: {
-                v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains(config.prefix + '-dark'),
-                t: 'Dark Mode'
-            }
-        },
-        stored
-    )
-});
+    options: options
+};
 
 export default {
     get,
     set,
-    getAll,
-    getStored
+    getAll
 }

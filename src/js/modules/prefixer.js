@@ -1,11 +1,6 @@
 import settings from './settings.js';
 
 /**
- * @type {String}
- */
-const prefix = settings.get('prefix');
-
-/**
  * Convert a string to camelCase
  * @see https://gist.github.com/cawfree/c08c10f6f2e7b2c8d225d88b031a03ce#file-case-js
  * @param {String} term 
@@ -35,9 +30,9 @@ const toDashCase = term => {
 const pf = (term, mode = 'c') => {
     switch (mode) {
         case 'c':
-            return toCamelCase(prefix + '_' + term);
+            return toCamelCase(settings.get('prefix') + '_' + term);
         case 'd':
-            return toDashCase(prefix + term.charAt(0).toUpperCase() + term.slice(1));
+            return toDashCase(settings.get('prefix') + term.charAt(0).toUpperCase() + term.slice(1));
         default:
             return term;
     }
