@@ -1,12 +1,5 @@
 # Spill the beans
 
-In Spelling Bee you enter words either by clicking on the cells of the honeycomb (a.k.a hive) or by typing them directly in the field above, which looks like this:
+You know it there is this word starting with *sp* but you can't quite remember, if the next letter was *y* or an *i*? This little face might know a thing or two that you don't, so watch it while you type! The happy face **🙂** means you are on the right track, the sad face **🙁** shows when you're barking up the wrong tree. This weirdly indifferent look **😐** appears when you didn't type anything yet - or that you completed the word already and there is no other letter to look for.
 
-
-Let's try this out: click on the field below and watch the little face as you type, a good start would be <strong id="random-term"></strong>
-
-<span class="sb-hive-input-content" tabindex="1"></span>
-
-- **🙂** you are doing well
-- **🙁** the last letter you typed is wrong, probably because the word is already complete
-- **😐** the input filed is empty
+![Spill the beans](assets/light.png)
