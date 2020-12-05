@@ -27,16 +27,10 @@ const key = 'darkMode';
 const optional = true;
 
 /**
- * Initial state
- * @returns {boolean}
+ * Initial state of the plugin, if not overridden in previous session
+ * @type {boolean}
  */
-const getInitialState = () => {
-    // never used = no dark mode
-    if(typeof settings.get(`options.${key}.v`) === 'undefined'){
-        return false;
-    }
-    return !plugins.isDisabled(key);
-}
+const defaultState = false;
 
 /**
  * Dark Mode (no UI)
@@ -61,7 +55,7 @@ export default {
 
         app.dispatchEvent(new CustomEvent(pf(key), {
             detail: {
-                enabled: getInitialState()
+                enabled: plugins.getState(plugin, key, defaultState)
             }
         }));
 
@@ -70,7 +64,8 @@ export default {
             plugin,
             key,
             title,
-            optional
+            optional,
+            defaultState
         });
     },
 

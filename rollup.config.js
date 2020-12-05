@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import cleanup from 'rollup-plugin-cleanup';
 import json from '@rollup/plugin-json';
 import { string } from 'rollup-plugin-string';
-//import { terser } from "rollup-plugin-terser";
+import { terser } from "rollup-plugin-terser";
 
 const plugins = [
 	resolve(),
@@ -17,10 +17,10 @@ const plugins = [
 
 let output = 'dist/spelling-bee-assistant.js';
 
-// if(!process.argv.includes('-w')) {
-// 	plugins.push(terser());
-// 	output = 'dist/spelling-bee-assistant.min.js';
-// }
+if(!process.argv.includes('-w')) {
+	plugins.push(terser());
+	output = 'dist/spelling-bee-assistant.min.js';
+}
 
 export default [
 	{

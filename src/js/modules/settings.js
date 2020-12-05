@@ -2,12 +2,6 @@ import * as pkg from '../../../package.json';
 import * as config from '../../config/config.json';
 
 /**
- * Values from `localStorage`
- * @type {Object}
- */
-const options = JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
-
-/**
  * Returns a value based on a key, can also be `foo.bar`
  * @param key
  * @returns {String|undefined}
@@ -47,14 +41,6 @@ const set = (key, value) => {
 };
 
 /**
- * Returns all settings
- * @returns {{repo: string, options: options, label: string, title: string, version: string, url: string}}
- */
-const getAll = () => {
-    return settings;
-}
-
-/**
  * Collection of settings from `package.json`, `config.json` and `localStorage`
  * @type {{repo: string, options: object, label: string, title: string, version: string, url: string}}
  */
@@ -65,11 +51,10 @@ const settings = {
     prefix: config.prefix,
     repo: config.repo,
     version: pkg.version,
-    options: options
+    options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 };
 
 export default {
     get,
-    set,
-    getAll
+    set
 }

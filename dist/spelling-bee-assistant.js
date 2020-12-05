@@ -131,7 +131,6 @@
     var repo = "draber/draber.github.io.git";
     var prefix = "sba";
 
-    const options = JSON.parse(localStorage.getItem(prefix + '-settings') || '{}');
     const get = key => {
         let current = Object.create(settings);
         for(let token of key.split('.')) {
@@ -143,9 +142,6 @@
         return current;
     };
     const set = (key, value) => {
-        if(typeof value === 'undefined'){
-            debugger;
-        }
         const keys = key.split('.');
         const last = keys.pop();
         let current = settings;
@@ -162,9 +158,6 @@
         current[last] = value;
         localStorage.setItem(prefix + '-settings', JSON.stringify(settings.options));
     };
-    const getAll = () => {
-        return settings;
-    };
     const settings = {
         label: label,
         title: title,
@@ -172,12 +165,11 @@
         prefix: prefix,
         repo: repo,
         version: version,
-        options: options
+        options: JSON.parse(localStorage.getItem(prefix + '-settings') || '{}')
     };
     var settings$1 = {
         get,
-        set,
-        getAll
+        set
     };
 
     const toCamelCase = term => {
@@ -312,16 +304,23 @@
     const isDisabled = key => {
         return settings$1.get(`options.${key}.v`) === false;
     };
+    const getState = (plugin, key, defaultState) => {
+        if(isDisabled(key)){
+            return false;
+        }
+        return plugin !== noUi ? plugin instanceof HTMLElement : defaultState;
+    };
     const add = ({
         app,
         key,
         plugin,
         title = '',
         optional = false,
+        defaultState = true,
         observer,
         target = null
     } = {}) => {
-        if(plugin !== noUi) {
+        if (plugin !== noUi) {
             target = target || el.$(`[data-plugin="${key}"]`, app) || (() => {
                 const _target = el.create({
                     data: {
@@ -331,13 +330,16 @@
                 app.append(_target);
                 return _target;
             })();
-            target.append(plugin);
+            if(defaultState){
+                target.append(plugin);
+            }
         }
         if (optional) {
-            settings$1.set(`options.${key}.v`, plugin instanceof HTMLElement);
-            settings$1.set(`options.${key}.t`, title);
-        }
-        const evtName = pf(key);
+            settings$1.set(`options.${key}`, {
+                t: title,
+                v: getState(plugin, key, defaultState)
+            });
+        }    const evtName = pf(key);
         app.addEventListener(evtName, evt => {
             if (evt.detail.enabled) {
                 add({
@@ -379,6 +381,7 @@
         add,
         remove,
         isDisabled,
+        getState,
         noUi
     };
 
@@ -463,28 +466,31 @@
     const key$1 = 'setUp';
     const optional$1 = false;
     const populate = (app, pane) => {
-    	for (const [key, option] of Object.entries(settings$1.getAll().options)) {
+    	for (const [key, option] of Object.entries(settings$1.get('options'))) {
     		const li = el.create({
     			tag: 'li'
     		});
-    		li.append(el.create({
+    		const labeledCheck = el.create({
     			tag: 'input',
     			text: option.t,
     			attributes: {
     				type: 'checkbox',
-    				name: key,
-    				checked: !plugins.isDisabled(key)
+    				name: key
     			},
     			events: {
-    				click: function () {
+    				click: function (evt) {
     					app.dispatchEvent(new CustomEvent(pf(key), {
     						detail: {
-    							enabled: this.checked
+    							enabled: evt.target.checked
     						}
     					}));
     				}
     			}
-    		}));
+    		});
+    		if(option.v){
+    			labeledCheck.click();
+    		}
+    		li.append(labeledCheck);
     		pane.append(li);
     	}
     };
@@ -992,12 +998,7 @@
     const title$9 = 'Dark Mode';
     const key$8 = 'darkMode';
     const optional$6 = true;
-    const getInitialState = () => {
-        if(typeof settings$1.get(`options.${key$8}.v`) === 'undefined'){
-            return false;
-        }
-        return !plugins.isDisabled(key$8);
-    };
+    const defaultState = false;
     var darkMode = {
         add: (app, game) => {
             app.addEventListener(pf(key$8), evt => {
@@ -1011,7 +1012,7 @@
             });
             app.dispatchEvent(new CustomEvent(pf(key$8), {
                 detail: {
-                    enabled: getInitialState()
+                    enabled: plugins.getState(plugin$8, key$8, defaultState)
                 }
             }));
             return plugins.add({
@@ -1019,7 +1020,8 @@
                 plugin: plugin$8,
                 key: key$8,
                 title: title$9,
-                optional: optional$6
+                optional: optional$6,
+                defaultState
             });
         },
         remove: () => {

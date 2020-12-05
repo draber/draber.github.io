@@ -32,28 +32,31 @@ const optional = false;
  * @param {HTMLElement} pane
  */
 const populate = (app, pane) => {
-	for (const [key, option] of Object.entries(settings.getAll().options)) {
+	for (const [key, option] of Object.entries(settings.get('options'))) {
 		const li = el.create({
 			tag: 'li'
 		});
-		li.append(el.create({
+		const labeledCheck = el.create({
 			tag: 'input',
 			text: option.t,
 			attributes: {
 				type: 'checkbox',
-				name: key,
-				checked: !plugins.isDisabled(key)
+				name: key
 			},
 			events: {
-				click: function () {
+				click: function (evt) {
 					app.dispatchEvent(new CustomEvent(pf(key), {
 						detail: {
-							enabled: this.checked
+							enabled: evt.target.checked
 						}
 					}))
 				}
 			}
-		}));
+		});
+		if(option.v){
+			labeledCheck.click();
+		}
+		li.append(labeledCheck);
 		pane.append(li);
 	}
 }

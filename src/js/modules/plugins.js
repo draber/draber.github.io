@@ -19,12 +19,27 @@ const isDisabled = key => {
 }
 
 /**
+ * Get the current state of a plugin
+ * @param {HTMLElement|undefined|String} plugin
+ * @param {String} key
+ * @param {Boolean} defaultState
+ * @returns {boolean}
+ */
+const getState = (plugin, key, defaultState) => {
+    if(isDisabled(key)){
+        return false;
+    }
+    return plugin !== noUi ? plugin instanceof HTMLElement : defaultState;
+}
+
+/**
  * Add a slot to the app and attach the plugin
  * @param {HTMLElement} app
  * @param {String} key
  * @param {HTMLElement|undefined|String} plugin
  * @param {String} title
  * @param {Boolean} optional
+ * @param {Boolean} defaultState
  * @param {Object|undefined} observer
  * @returns {HTMLElement|undefined}
  */
@@ -34,10 +49,11 @@ const add = ({
     plugin,
     title = '',
     optional = false,
+    defaultState = true,
     observer,
     target = null
 } = {}) => {
-    if(plugin !== noUi) {
+    if (plugin !== noUi) {
         target = target || el.$(`[data-plugin="${key}"]`, app) || (() => {
             const _target = el.create({
                 data: {
@@ -47,15 +63,18 @@ const add = ({
             app.append(_target);
             return _target;
         })();
-        target.append(plugin);
+        if(defaultState){
+            target.append(plugin);
+        }
     }
 
     // can be opted out?
     if (optional) {
         settings.set(`options.${key}`, {
-            v: plugin instanceof HTMLElement,
-            t: title
-    });
+            t: title,
+            v: getState(plugin, key, defaultState)
+        });
+    };
 
     // react to opt in/out
     const evtName = pf(key);
@@ -111,5 +130,6 @@ export default {
     add,
     remove,
     isDisabled,
+    getState,
     noUi
 }
