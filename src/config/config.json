@@ -1,0 +1,28 @@
+{
+    "label": "Spelling Bee Assistant",
+    "title": "Assistant",
+    "url": "https://spelling-bee-assistant.app/",
+    "repo": "draber/draber.github.io.git",
+    "twitter": "@d_raber",
+    "prefix": "sba",
+    "plugins": [
+        "scoreSoFar",
+        "spoilers",
+        "spillTheBeans",
+        "stepsToSuccess",
+        "surrender",
+        "setUp",
+        "header",
+        "footer"
+    ],
+    "htmlIn": "src/html/index.tpl",
+    "htmlOut": "dist/index.html",
+    "ga": {
+        "tid": "UA-182372232-1",
+        "ec": "SBA Download"
+    },
+    "gsc": {
+        "drg": "xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU",
+        "sba": "7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8"
+    }
+}
