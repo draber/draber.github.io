@@ -8,11 +8,11 @@
         return [].slice.call((container || document).querySelectorAll(expr));
     };
     const tableRow = ({
-                          classNames = [],
-                          events = {},
-                          cellData = [],
-                          cellTag = 'td'
-                      } = {}) => {
+        classNames = [],
+        events = {},
+        cellData = [],
+        cellTag = 'td'
+    } = {}) => {
         const row = create({
             tag: 'tr',
             classNames: classNames,
@@ -27,11 +27,15 @@
         return row;
     };
     const labeledCheckbox = ({
-                                 text = '',
-                                 classNames = [],
-                                 attributes = {},
-                                 events = {}
-                             } = {}) => {
+        text = '',
+        classNames = [],
+        attributes = {},
+        events = {},
+        checked = false
+    } = {}) => {
+        if(checked) {
+            attributes.checked = 'checked';
+        }
         const checkbox = create({
             tag: 'input',
             attributes: attributes,
@@ -46,25 +50,32 @@
         return label;
     };
     const create = ({
-                        tag = 'div',
-                        text = '',
-                        attributes = {},
-                        style = {},
-                        data = {},
-                        events = {},
-                        classNames = [],
-                        cellData = [],
-                        cellTag = 'td'
-                    } = {}) => {
+        tag = 'div',
+        text = '',
+        attributes = {},
+        style = {},
+        data = {},
+        events = {},
+        classNames = [],
+        cellData = [],
+        cellTag = 'td',
+        checked = false
+    } = {}) => {
         if (tag === 'tr' && cellData.length) {
-            return tableRow({classNames, events, cellData, cellTag});
+            return tableRow({
+                classNames,
+                events,
+                cellData,
+                cellTag
+            });
         }
         if (tag === 'input' && attributes.type === 'checkbox' && text) {
             return labeledCheckbox({
                 text,
                 classNames,
                 attributes,
-                events
+                events,
+                checked
             });
         }
         const el = document.createElement(tag);
@@ -79,8 +90,7 @@
                 tag: text[1],
                 text: text[0]
             }));
-        }
-        else {
+        } else {
             el.textContent = text;
         }
         for (const [key, value] of Object.entries(attributes)) {
@@ -133,8 +143,8 @@
 
     const get = key => {
         let current = Object.create(settings);
-        for(let token of key.split('.')) {
-            if(!current[token]){
+        for (let token of key.split('.')) {
+            if (!current[token]) {
                 return undefined;
             }
             current = current[token];
@@ -485,11 +495,9 @@
     						}
     					}));
     				}
-    			}
+    			},
+    			checked: option.v
     		});
-    		if(option.v){
-    			labeledCheck.click();
-    		}
     		li.append(labeledCheck);
     		pane.append(li);
     	}
@@ -915,7 +923,7 @@
         for (const [key, value] of Object.entries(steps)) {
             frame.append(el.create({
                 tag: 'tr',
-                classNames: value === tier ? ['current'] : [],
+                classNames: value === tier ? ['sba-current'] : [],
                 cellTag: 'td',
                 cellData: [key, value]
             }));
@@ -1033,7 +1041,7 @@
         }
     };
 
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px}.sba .minimizer:before{content:\"－\"}.sba.minimized details{display:none}.sba.minimized .minimizer:before{content:\"＋\"}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td,.sba tr:first-of-type th{border-top:none}.sba tr td:first-of-type{text-align:left}.sba tr.current{font-weight:bold;border-bottom:2px solid #f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
+    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px}.sba .minimizer:before{content:\"－\"}.sba.minimized details{display:none}.sba.minimized .minimizer:before{content:\"＋\"}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td,.sba tr:first-of-type th{border-top:none}.sba tr td:first-of-type{text-align:left}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
 
     let plugin$9;
     const title$a = 'Styles';

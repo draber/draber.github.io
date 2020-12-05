@@ -104,7 +104,7 @@
         filter: invert(100%)
     }
 
-    *:not(.hive-action__shuffle):not(.sb-pangram) {
+    *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current) {
         border-color: #333 !important
     }
 
@@ -240,9 +240,9 @@
             }
         }
 
-        &.current {
+        &.sba-current {
             font-weight: bold;
-            border-bottom: 2px solid $colorHighlight;
+            border-bottom: 2px solid $colorHighlight !important;
         }
     }
 

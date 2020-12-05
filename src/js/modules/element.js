@@ -32,11 +32,11 @@ const $$ = (expr, container = null) => {
  * @returns {HTMLElement}
  */
 const tableRow = ({
-                      classNames = [],
-                      events = {},
-                      cellData = [],
-                      cellTag = 'td'
-                  } = {}) => {
+    classNames = [],
+    events = {},
+    cellData = [],
+    cellTag = 'td'
+} = {}) => {
     const row = create({
         tag: 'tr',
         classNames: classNames,
@@ -56,14 +56,19 @@ const tableRow = ({
  * @param {Array} classNames
  * @param {Object} attributes
  * @param {Object} events
+ * @param {boolean} checked
  * @returns {HTMLElement}
  */
 const labeledCheckbox = ({
-                             text = '',
-                             classNames = [],
-                             attributes = {},
-                             events = {}
-                         } = {}) => {
+    text = '',
+    classNames = [],
+    attributes = {},
+    events = {},
+    checked = false
+} = {}) => {
+    if(checked) {
+        attributes.checked = 'checked';
+    }
     const checkbox = create({
         tag: 'input',
         attributes: attributes,
@@ -89,28 +94,36 @@ const labeledCheckbox = ({
  * @param {Array} classNames
  * @param {Array} cellData
  * @param {String} cellTag
+ * @param {boolean} checked
  * @returns {HTMLElement}
  */
 const create = ({
-                    tag = 'div',
-                    text = '',
-                    attributes = {},
-                    style = {},
-                    data = {},
-                    events = {},
-                    classNames = [],
-                    cellData = [],
-                    cellTag = 'td'
-                } = {}) => {
+    tag = 'div',
+    text = '',
+    attributes = {},
+    style = {},
+    data = {},
+    events = {},
+    classNames = [],
+    cellData = [],
+    cellTag = 'td',
+    checked = false
+} = {}) => {
     if (tag === 'tr' && cellData.length) {
-        return tableRow({classNames, events, cellData, cellTag});
+        return tableRow({
+            classNames,
+            events,
+            cellData,
+            cellTag
+        });
     }
     if (tag === 'input' && attributes.type === 'checkbox' && text) {
         return labeledCheckbox({
             text,
             classNames,
             attributes,
-            events
+            events,
+            checked
         });
     }
     const el = document.createElement(tag);
@@ -125,8 +138,7 @@ const create = ({
             tag: text[1],
             text: text[0]
         }));
-    }
-    else {
+    } else {
         el.textContent = text;
     }
     for (const [key, value] of Object.entries(attributes)) {

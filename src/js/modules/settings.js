@@ -8,8 +8,8 @@ import * as config from '../../config/config.json';
  */
 const get = key => {
     let current = Object.create(settings);
-    for(let token of key.split('.')) {
-        if(!current[token]){
+    for (let token of key.split('.')) {
+        if (!current[token]) {
             return undefined;
         }
         current = current[token];
@@ -29,7 +29,7 @@ const set = (key, value) => {
     for (let part of keys) {
         if (!current[part]) {
             current[part] = {};
-        }        
+        }
         if (!Object.prototype.toString.call(current) === '[object Object]') {
             console.error(`${part} is not of the type Object`);
             return false;

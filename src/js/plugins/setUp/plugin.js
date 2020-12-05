@@ -51,11 +51,9 @@ const populate = (app, pane) => {
 						}
 					}))
 				}
-			}
+			},
+			checked: option.v
 		});
-		if(option.v){
-			labeledCheck.click();
-		}
 		li.append(labeledCheck);
 		pane.append(li);
 	}

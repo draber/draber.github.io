@@ -17,10 +17,10 @@ const plugins = [
 
 let output = 'dist/spelling-bee-assistant.js';
 
-if(!process.argv.includes('-w')) {
-	plugins.push(terser());
-	output = 'dist/spelling-bee-assistant.min.js';
-}
+// if(!process.argv.includes('-w')) {
+// 	plugins.push(terser());
+// 	output = 'dist/spelling-bee-assistant.min.js';
+// }
 
 export default [
 	{

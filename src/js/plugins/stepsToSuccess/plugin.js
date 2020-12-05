@@ -93,7 +93,7 @@ const update = (frame) => {
     for (const [key, value] of Object.entries(steps)) {
         frame.append(el.create({
             tag: 'tr',
-            classNames: value === tier ? ['current'] : [],
+            classNames: value === tier ? ['sba-current'] : [],
             cellTag: 'td',
             cellData: [key, value]
         }));
