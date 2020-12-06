@@ -23,11 +23,11 @@ const toDashCase = term => {
 };
 
 /**
- * 
+ * Prefix a key and format the result as either camelCase or dash-case
  * @param {String} term 
  * @param {String} mode 
  */
-const pf = (term, mode = 'c') => {
+export default function pf(term, mode = 'c') {
     switch (mode) {
         case 'c':
             return toCamelCase(settings.get('prefix') + '_' + term);
@@ -37,5 +37,3 @@ const pf = (term, mode = 'c') => {
             return term;
     }
 }
-
-export default pf;

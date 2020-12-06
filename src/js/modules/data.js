@@ -9,7 +9,7 @@ let lists;
 
 /**
  * Build word lists
- * @return {{remainders: [], answers: object, pangrams: [string], foundPangrams: [], foundTerms: []}}
+ * @returns {{remainders: [], answers: object, pangrams: [string], foundPangrams: [], foundTerms: []}}
  */
 const initLists = () => {
     return {
@@ -23,8 +23,8 @@ const initLists = () => {
 
 /**
  * Returns a list
- * @param type
- * @returns {*}
+ * @param {String} type
+ * @returns {Array}
  */
 const getList = type => {
     return lists[type];
@@ -32,7 +32,7 @@ const getList = type => {
 
 /**
  * Returns the number of words in given list
- * @param type
+ * @param {String} type
  * @returns {number}
  */
 const getCount = type => {
@@ -41,7 +41,7 @@ const getCount = type => {
 
 /**
  * Returns the number of points in given list
- * @param type
+ * @param {String} type
  * @returns {number}
  */
 const getPoints = type => {

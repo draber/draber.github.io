@@ -2,7 +2,8 @@
 import el from './modules/element.js';
 import widget from './modules/app.js';
 import settings from './modules/settings.js';
-import prefix from './modules/prefixer.js';
+import pf from './modules/prefixer.js';
+import pluginManager from './modules/pluginManager.js';
 
 // plugins
 import scoreSoFar from './plugins/scoreSoFar/plugin.js';
@@ -26,13 +27,8 @@ if (app) {
 
     const oldInstance = el.$(`[data-id="${settings.get('repo')}"]`);
     if (oldInstance) {
-        oldInstance.dispatchEvent(new Event(prefix('destroy')));
+        oldInstance.dispatchEvent(new Event(pf('destroy')));
     }
-
-    settings.get('prefix');
-    settings.get('options.darkMode');
-    settings.get('options.darkMode.v');
-    settings.get('options.darkMode.x');
 
     // plugins in order of appearance
     [
@@ -47,10 +43,10 @@ if (app) {
         setUp, 
         footer
     ].forEach(plugin => {
-        plugin.add(app, game);
+        pluginManager.add(new plugin(app, game));
     });
 
     el.$('body').append(app);
 
-    app.dispatchEvent(new Event(prefix('launchComplete')));
+    app.dispatchEvent(new Event(pf('launchComplete')));
 }

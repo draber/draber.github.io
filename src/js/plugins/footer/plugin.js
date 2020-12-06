@@ -1,58 +1,30 @@
 import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
-import plugins from '../../modules/plugins.js';
-
-/**
- * {HTMLElement}
- */
-let plugin;
-
-/**
- * Display name
- * @type {string}
- */
-const title = 'Footer';
-
-/**
- * Internal identifier
- * @type {string}
- */
-const key = 'footer';
 
 /**
  * Link in the footer
+ * 
+ * @param {HTMLElement} app
+ * @param {Array} args
+ * @returns {HTMLElement|boolean} plugin
  */
-export default {
-    /**
-     * Create and attach plugin
-     * @param {HTMLElement} app
-     * @param {HTMLElement} game
-     * @returns {HTMLElement} plugin
-     */
-    add: (app, game) => {
-        plugin = el.create({
+class footer {
+    constructor(app, ...args) {
+
+        this.app = app;
+        this.args = args;
+        this.title = `${settings.get('label')} ${settings.get('version')}`;
+        this.key = 'footer';
+
+        this.ui = el.create({
             tag: 'a',
-            text: `${settings.get('label')} ${settings.get('version')}`,
+            text: this.title,
             attributes: {
                 href: settings.get('url'),
                 target: '_blank'
             }
         });
-        return plugins.add({
-            app,
-            key,
-            plugin
-        });
-    },
-    /**
-     * Remove plugin
-     * @returns null
-     */
-    remove: () => {
-        return plugins.remove({
-            plugin,
-            key,
-            title
-        });
     }
 }
+
+export default footer;

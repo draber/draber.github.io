@@ -1,128 +1,118 @@
-import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
-import plugins from '../../modules/plugins.js';
 import pf from '../../modules/prefixer.js';
+import settings from '../../modules/settings.js';
+
 
 /**
- * {HTMLElement}
- */
-let plugin;
-
-/**
- * Display name
- * @type {string}
- */
-const title = 'Header';
-
-/**
- * Internal identifier
- * @type {string}
- */
-const key = 'header';
-
-/**
- * Drag start parameters
- * @type {Object}
- */
-let params;
-
-/**
- * Last target of `mousedown`
- * @type {Boolean}
- */
-let isLastTarget = false;
-
-/**
- * Assign drag start parameters
- * @param evt
- * @param game
- * @returns {{minT: number, maxT: number, margT, maxL: number, offX: number, offY: number}}
- */
-const getDragParams = (evt, game) => {
-    const gRect = game.getBoundingClientRect();
-    const aRect = evt.target.getBoundingClientRect();
-    const minT = gRect.top + window.pageYOffset;
-    const pRect = plugin.parentElement.getBoundingClientRect();
-    const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
-
-    return {
-        maxL: document.documentElement.clientWidth - aRect.width,
-        minT: minT,
-        maxT: minT + gAvailH,
-        offX: evt.clientX - aRect.x,
-        offY: evt.clientY - aRect.y,
-        margT: parseInt(getComputedStyle(evt.target).marginTop, 10)
-    };
-}
-
-/**
- * Get corrected drop position
- * @param evt
- * @returns {{top: string, left: string}}
- */
-const getDropPosition = evt => {
-    let left = Math.max(0, (evt.clientX - params.offX));
-    left = Math.min(left, (params.maxL)) + 'px';
-    let top = Math.max(params.minT, (evt.clientY + window.pageYOffset - params.margT - params.offY));
-    top = Math.min(top, params.maxT) + 'px';
-    return {
-        left,
-        top
-    };
-}
-
-/**
- * Implement drag/drop
+ * Header plugin
+ * 
  * @param {HTMLElement} app
- * @param {HTMLElement} game
+ * @param {Array} args
+ * @returns {HTMLElement|boolean} plugin
  */
-const makeDraggable = (app, game) => {
+class header {
+    constructor(app, ...args) {
 
-    // ensure correct drag icon
-    [app, game].forEach(element => {
-        element.addEventListener('dragover', evt => {
-            evt.preventDefault();
-        });
-    });
+        this.app = app;
+        this.args = args;
+        this.title = settings.get('title');
+        this.key = 'header';
+        this.ui = el.create();
 
-    // make app more transparent and get coordinates
-    app.addEventListener('dragstart', evt => {
-        if (!isLastTarget) {
-            evt.preventDefault();
-            return false;
+        const game = this.args[0];
+
+        /**
+         * Drag start parameters
+         * @type {Object}
+         */
+        let params;
+
+        /**
+         * Start dragging only when initiated on the header
+         * @type {Object}
+         */
+        let isLastTarget = false;
+
+        /**
+         * Assign drag start parameters
+         * @param evt
+         * @returns {{minT: number, maxT: number, margT, maxL: number, offX: number, offY: number}}
+         */
+        const getDragParams = (evt) => {
+            const gRect = game.getBoundingClientRect();
+            const aRect = evt.target.getBoundingClientRect();
+            const minT = gRect.top + window.pageYOffset;
+            const pRect = plugin.parentElement.getBoundingClientRect();
+            const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
+
+            return {
+                maxL: document.documentElement.clientWidth - aRect.width,
+                minT: minT,
+                maxT: minT + gAvailH,
+                offX: evt.clientX - aRect.x,
+                offY: evt.clientY - aRect.y,
+                margT: parseInt(getComputedStyle(evt.target).marginTop, 10)
+            };
         }
-        evt.target.style.opacity = '.2';
-        params = getDragParams(evt, game);
-    }, false);
 
-    // place app at new position and restore opacity
-    app.addEventListener('dragend', evt => {
-        Object.assign(evt.target.style, getDropPosition(evt));
-        evt.target.style.opacity = '1';
-    });
-}
+        /**
+         * Get corrected drop position
+         * @param evt
+         * @returns {{top: string, left: string}}
+         */
+        const getDropPosition = evt => {
+            let left = Math.max(0, (evt.clientX - params.offX));
+            left = Math.min(left, (params.maxL)) + 'px';
+            let top = Math.max(params.minT, (evt.clientY + window.pageYOffset - params.margT - params.offY));
+            top = Math.min(top, params.maxT) + 'px';
+            return {
+                left,
+                top
+            };
+        }
+
+        /**
+         * Implement drag/drop
+         */
+        const makeDraggable = () => {
+
+            // ensure correct drag icon
+            [this.app, game].forEach(element => {
+                element.addEventListener('dragover', evt => {
+                    evt.preventDefault();
+                });
+            });
+
+            // make app more transparent and get coordinates
+            this.app.addEventListener('dragstart', evt => {
+                if (!isLastTarget) {
+                    evt.preventDefault();
+                    return false;
+                }
+                evt.target.style.opacity = '.2';
+                params = getDragParams(evt);
+            }, false);
+
+            // place app at new position and restore opacity
+            this.app.addEventListener('dragend', evt => {
+                Object.assign(evt.target.style, getDropPosition(evt));
+                evt.target.style.opacity = '1';
+            });
+        }
 
 
-export default {
-    /**
-     * Create and attach plugin
-     * @param {HTMLElement} app
-     * @param {HTMLElement} game
-     * @returns {HTMLElement} plugin
-     */
-    add: (app, game) => {
-        plugin = el.create();
+
         // add title
-        const title = el.create({
-            text: settings.get('title'),
+        this.ui.append(el.create({
+            text: this.title,
             attributes: {
                 title: 'Hold the mouse down to drag'
             },
             classNames: ['dragger']
-        });
-        plugin.append(title);
+        }));
+
         // add closer
-        const closer = el.create({
+        this.ui.append(el.create({
             tag: 'span',
             text: '×',
             attributes: {
@@ -131,12 +121,13 @@ export default {
             classNames: ['closer'],
             events: {
                 click: () => {
-                    app.dispatchEvent(new Event(pf('destroy')))
+                    this.app.dispatchEvent(new Event(pf('destroy')));
                 }
             }
-        });
+        }));
+
         // add minimizer
-        const minimizer = el.create({
+        this.ui.append(el.create({
             tag: 'span',
             attributes: {
                 title: 'Minimize'
@@ -144,35 +135,20 @@ export default {
             classNames: ['minimizer'],
             events: {
                 click: () => {
-                    app.classList.toggle('minimized')
+                    this.app.classList.toggle('minimized');
                 }
             }
+        }));
+
+        this.app.addEventListener('pointerdown', evt => {
+            isLastTarget = !!evt.target.closest(`[data-plugin="${this.key}"]`);
         });
-        app.addEventListener('pointerdown', evt => {
-            isLastTarget = !!evt.target.closest(`[data-plugin="${key}"]`);
-        });
-        app.addEventListener('pointerup', evt => {
+        this.app.addEventListener('pointerup', () => {
             isLastTarget = false;
         });
-        plugin.append(minimizer);
-        plugin.append(closer);
-        makeDraggable(app, game);
 
-        return plugins.add({
-            app,
-            plugin,
-            key
-        });
-    },
-    /**
-     * Remove plugin
-     * @returns null
-     */
-    remove: () => {
-        return plugins.remove({
-            plugin,
-            key,
-            title
-        });
+        makeDraggable();
     }
 }
+
+export default header;

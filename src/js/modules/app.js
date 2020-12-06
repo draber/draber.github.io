@@ -5,17 +5,11 @@ import data from './data.js';
 import pf from './prefixer.js';
 
 /**
- * Watches for changes as the user types
- * @type {{args: {childList: boolean}, observer: MutationObserver, target: HTMLElement}}
- */
-let observer;
-
-/**
  * Watch the result list for changes
  * Partially initializes the observer, the rest is done in `observers.js`
  * @param app
  * @param target
- * @returns {{args: {childList: boolean}, observer: MutationObserver, target: HTMLElement}}
+ * @returns {{config: {childList: boolean}, observer: MutationObserver, target: HTMLElement}}
  */
 const initObserver = (app, target) => {
 	const _observer = new MutationObserver(mutationsList => {
@@ -29,7 +23,7 @@ const initObserver = (app, target) => {
 	return {
 		observer: _observer,
 		target: target,
-		args: {
+		config: {
 			childList: true
 		}
 	}
@@ -69,7 +63,6 @@ export default function widget(game) {
 	});
 
 	data.init(app, resultList);
-	observer = initObserver(app, resultList);
-	observers.add(observer.observer, observer.target, observer.args);
+	observers.add(initObserver(app, resultList));
 	return app;
 }

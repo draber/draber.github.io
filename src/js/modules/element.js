@@ -25,10 +25,10 @@ const $$ = (expr, container = null) => {
 
 /**
  * Create a table row with data
- * @param classNames
- * @param events
- * @param cellData
- * @param cellTag
+ * @param {Array} classNames
+ * @param {Object} events
+ * @param {Array} cellData
+ * @param {String} cellTag
  * @returns {HTMLElement}
  */
 const tableRow = ({

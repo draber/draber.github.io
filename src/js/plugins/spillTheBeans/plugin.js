@@ -1,134 +1,90 @@
-import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
-import plugins from '../../modules/plugins.js';
+import pluginManager from '../../modules/pluginManager.js';
 import data from '../../modules/data.js';
 import pf from '../../modules/prefixer.js';
 
-
 /**
- * {HTMLElement}
+ * Spill the Beans plugin
+ * 
+ * @param {HTMLElement} app
+ * @param {Array} args
+ * @returns {HTMLElement|boolean} plugin
  */
-let plugin;
+class spillTheBeans {
+    constructor(app, ...args) {
 
-/**
- * Display name
- * @type {string}
- */
-const title = 'Spill the beans';
+        this.app = app;
+        this.args = args;
+        this.title = 'Spill the beans';
+        this.key = 'spillTheBeans';
+        this.optional = true;
 
-/**
- * Internal identifier
- * @type {string}
- */
-const key = 'spillTheBeans';
-
-/**
- * Can be removed by the user
- * @type {boolean}
- */
-const optional = true;
-
-/**
- * Watches for changes as the user types
- * @type {{args: {childList: boolean}, observer: MutationObserver, target: HTMLElement}}
- */
-let observer;
-
-/**
- * Check if there are still starting with the search term
- * @param {String} value
- */
-const react = (value) => {
-    if (!value) {
-        return '😐';
-    }
-    if (!data.getList('remainders').filter(term => term.startsWith(value)).length) {
-        return '🙁';
-    }
-    return '🙂';
-}
-
-/**
- * Watch the text input for changes
- * Partially initializes the observer, the rest is done in `observers.js` via `plugins.js`
- * @param app
- * @param target
- * @returns {{args: {childList: boolean}, observer: MutationObserver, target: HTMLElement}}
- */
-const initObserver = (app, target) => {
-    const _observer = new MutationObserver(mutationsList => {
-        // we're only interested in the very last mutation
-        app.dispatchEvent(new CustomEvent(pf('spill'), {
-            detail: {
-                text: mutationsList.pop().target.textContent.trim()
+        /**
+         * Watch the text input for changes
+         * Partially initializes the observer, the rest is done in `observers.js` via `pluginManager.js`
+         * @param target
+         * @returns {{config: {childList: boolean}, observer: MutationObserver, target: HTMLElement}}
+         */
+        const initObserver = (target) => {
+            const _observer = new MutationObserver(mutationsList => {
+                // we're only interested in the very last mutation
+                this.app.dispatchEvent(new CustomEvent(pf('spill'), {
+                    detail: {
+                        text: mutationsList.pop().target.textContent.trim()
+                    }
+                }));
+            });
+            return {
+                observer: _observer,
+                target: target,
+                config: {
+                    childList: true
+                }
             }
-        }));
-    });
-    return {
-        observer: _observer,
-        target: target,
-        args: {
-            childList: true
         }
-    }
-}
 
-export default {
-    /**
-     * Create and attach plugin
-     * @param {HTMLElement} app
-     * @param {HTMLElement} game
-     * @returns {HTMLElement|null}
-     */
-    add: (app, game) => {
+        /**
+         * Check if there are still starting with the search term
+         * @param {String} value
+         */
+        const react = (value) => {
+            if (!value) {
+                return '😐';
+            }
+            if (!data.getList('remainders').filter(term => term.startsWith(value)).length) {
+                return '🙁';
+            }
+            return '🙂';
+        }
 
-        // if user has not disabled the plugin
-        if (!plugins.isDisabled(key)) {
-            observer = initObserver(app, el.$('.sb-hive-input-content', game));
+        // has the user has disabled the plugin?
+        if (pluginManager.isEnabled(this.key, true)) {
 
             const pane = el.create({
                 classNames: ['pane']
             });
-            const description = el.create({
+            pane.append(el.create({
                 text: 'Watch me while you type!',
                 classNames: ['spill-title']
-            })
-            const reaction = el.create({
+            }));
+            pane.append(el.create({
                 text: '😐',
                 classNames: ['spill']
-            });
-            pane.append(description);
-            pane.append(reaction);
+            }));
 
-            plugin = el.create({
+            this.ui = el.create({
                 tag: 'details',
-                text: [title, 'summary']
+                text: [this.title, 'summary']
             });
-            app.addEventListener('sbaSpill', evt => {
+            this.ui.append(pane);
+
+            this.observer = initObserver(el.$('.sb-hive-input-content'));
+
+            this.app.addEventListener('sbaSpill', evt => {
                 reaction.textContent = react(evt.detail.text);
             });
-            plugin.append(pane);
         }
-
-        return plugins.add({
-            app,
-            plugin,
-            key,
-            title,
-            optional,
-            observer
-        });
-    },
-    /**
-     * Remove plugin
-     * @returns null
-     */
-    remove: () => {
-        return plugins.remove({
-            plugin,
-            key,
-            title,
-            observer
-        });
     }
 }
+
+export default spillTheBeans;

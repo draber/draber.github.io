@@ -1,81 +1,64 @@
-import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
-import plugins from '../../modules/plugins.js';
+import pluginManager from '../../modules/pluginManager.js';
 import data from '../../modules/data.js';
 import pf from '../../modules/prefixer.js';
 
 /**
- * {HTMLElement}
+ * Stylesheet plugin
+ * 
+ * @param {HTMLElement} app
+ * @param {Array} args
+ * @returns {HTMLElement|boolean} plugin
  */
-let plugin = null;
+class scoreSoFar {
+    constructor(app, ...args) {
 
-/**
- * Display name
- * @type {string}
- */
-const title = 'Score so far';
+        this.app = app;
+        this.args = args; 
+        this.title = 'Score so far';
+        this.key = 'scoreSoFar';
+        this.optional = true;
 
-/**
- * Internal identifier
- * @type {string}
- */
-const key = 'scoreSoFar';
+        /**
+         * Updatable part of the pane
+         * @type {HTMLElement}
+         */
+        const tbody = el.create({
+            tag: 'tbody'
+        });
 
-/**
- * Can be removed by the user
- * @type {boolean}
- */
-const optional = true;
+        /**
+         * Populate/update pane
+         */
+        const update = () => {
+            tbody.innerHTML = '';
+            [
+                [
+                    'Words',
+                    data.getCount('foundTerms'),
+                    data.getCount('remainders'),
+                    data.getCount('answers')
+                ],
+                [
+                    'Points',
+                    data.getPoints('foundTerms'),
+                    data.getPoints('remainders'),
+                    data.getPoints('answers')
+                ]
+            ].forEach(cellData => {
+                tbody.append(el.create({
+                    tag: 'tr',
+                    cellData: cellData
+                }));
+            });
+        }
 
-/**
- * Updatable part of the pane
- * @type {HTMLElement}
- */
-const tbody = el.create({
-    tag: 'tbody'
-});
+        // has the user has disabled the plugin?
+        if (pluginManager.isEnabled(this.key, true)) {
 
-/**
- * Populate/update pane
- */
-const update = () => {
-    tbody.innerHTML = '';
-    [
-        [
-            'Words',
-            data.getCount('foundTerms'),
-            data.getCount('remainders'),
-            data.getCount('answers')
-        ],
-        [
-            'Points',
-            data.getPoints('foundTerms'),
-            data.getPoints('remainders'),
-            data.getPoints('answers')
-        ]
-    ].forEach(cellData => {
-        tbody.append(el.create({
-            tag: 'tr',
-            cellData: cellData
-        }));
-    });
-}
-
-export default {
-    /**
-     * Create and attach plugin
-     * @param {HTMLElement} app
-     * @param {HTMLElement} game
-     * @returns {HTMLElement|null} plugin
-     */
-    add: (app, game) => {
-        
-        // if user has not disabled the plugin
-        if (!plugins.isDisabled(key)) {
-
-            plugin = el.create({
+            this.ui = el.create({
                 tag: 'details',
-                text: [title, 'summary'],
+                text: [this.title, 'summary'],
                 attributes: {
                     open: true
                 }
@@ -85,7 +68,6 @@ export default {
             const pane = el.create({
                 tag: 'table',
                 classNames: ['pane']
-
             });
             const thead = el.create({
                 tag: 'thead'
@@ -94,35 +76,18 @@ export default {
                 tag: 'tr',
                 cellTag: 'th',
                 cellData: ['', 'Found', 'Missing', 'Total']
-            }))
+            }));
             pane.append(thead);
             pane.append(tbody);
             update();
-            plugin.append(pane);
+            this.ui.append(pane);
 
             // update on demand
             app.addEventListener(pf('updateComplete'), () => {
                 update();
             });
         }
-
-        return plugins.add({
-            app,
-            plugin,
-            key,
-            title,
-            optional
-        });
-    },
-    /**
-     * Remove plugin
-     * @returns null
-     */
-    remove: () => {
-        return plugins.remove({
-            plugin,
-            key,
-            title
-        });
     }
 }
+
+export default scoreSoFar;

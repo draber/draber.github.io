@@ -1,83 +1,32 @@
-import settings from '../../modules/settings.js';
-import plugins from '../../modules/plugins.js';
+import pluginManager from '../../modules/pluginManager.js';
 import el from '../../modules/element.js';
 import pf from '../../modules/prefixer.js';
 
 /**
- * {HTMLElement}
+ * Dark Mode plugin
+ * 
+ * @param {HTMLElement} app
+ * @param {Array} args
+ * @returns {HTMLElement|boolean} plugin
  */
-let plugin = plugins.noUi;
+class darkMode {
+    constructor(app, ...args) {
 
-/**
- * Display name
- * @type {string}
- */
-const title = 'Dark Mode';
+        this.app = app;
+        this.args = args;
+        this.ui = pluginManager.noUi;        
+        this.title = 'Dark Mode';        
+        this.key = 'darkMode';        
+        this.optional = true;
+        this.defaultState = false;
 
-/**
- * Internal identifier
- * @type {string}
- */
-const key = 'darkMode';
-
-/**
- * Can be removed by the user
- * @type {boolean}
- */
-const optional = true;
-
-/**
- * Initial state of the plugin, if not overridden in previous session
- * @type {boolean}
- */
-const defaultState = false;
-
-/**
- * Dark Mode (no UI)
- */
-export default {
-    /**
-     * Create and attach plugin
-     * @param {HTMLElement} app
-     * @param {HTMLElement} game
-     * @returns {null} plugin
-     */
-    add: (app, game) => {
-        app.addEventListener(pf(key), evt => {
-            if (evt.detail.enabled) {
-                el.$('body').classList.add(pf('dark', 'd'));
-                settings.set(`options.${key}.v`, true);
-            } else {
-                el.$('body').classList.remove(pf('dark', 'd'));
-                settings.set(`options.${key}.v`, false);
-            }
-        });
-
-        app.dispatchEvent(new CustomEvent(pf(key), {
-            detail: {
-                enabled: plugins.getState(plugin, key, defaultState)
-            }
-        }));
-
-        return plugins.add({
-            app,
-            plugin,
-            key,
-            title,
-            optional,
-            defaultState
-        });
-    },
-
-    /**
-     * Remove plugin
-     * @returns null
-     */
-    remove: () => {
-        app.dispatchEvent(new CustomEvent(pf(key), {
-            detail: {
-                enabled: false
-            }
-        }));
+        // has the user has disabled the plugin?
+        if (pluginManager.isEnabled(this.key, this.defaultState)) {
+            el.$('body').classList.add(pf('dark', 'd'));
+        } else {
+            el.$('body').classList.remove(pf('dark', 'd'));
+        }
     }
 }
+
+export default darkMode;
