@@ -41,9 +41,9 @@ const pluginCode = () => {
   const path = `${process.cwd()}/src/js/plugins`;
   let html = '';
   config.plugins.forEach(plugin => {
-    html += `<div data-trigger="${plugin}">` 
+    html += `<li>` 
          + md.render(getContents(`${path}/${plugin}/readme.md`).replace(/^#/g, '###'))
-         + `</div>`;
+         + `</li>`;
   });
   return html;
 };
@@ -51,10 +51,6 @@ const pluginCode = () => {
 const bmCode = () => {
   const code = getContents(`${process.cwd()}/dist/spelling-bee-assistant.js`);
   return `<a class="bookmarklet" onclick="return false" href="${bookmarklet.convert(code, { style: false, script: false})}">${config.label}</a>`;
-};
-
-const widgetJsCode = () => {
-  return getContents(`${process.cwd()}/dist/spelling-bee-assistant.min.js`);
 };
 
 const siteJsCode = () => {
@@ -71,6 +67,14 @@ const cssCode = () => {
   return code;
 }
 
+// const copyPictures = () => {
+//   config.plugins.forEach(plugin => {
+//     html += `<li>` 
+//          + md.render(getContents(`${path}/${plugin}/readme.md`).replace(/^#/g, '###'))
+//          + `</li>`;
+//   });
+// }
+
 
 const compile = writeHtml({
     ...config,
@@ -78,7 +82,6 @@ const compile = writeHtml({
       css: cssCode(),
       bookmarklet: bmCode(),
       plugins: pluginCode(),
-      widgetJs: widgetJsCode(),
       siteJs: siteJsCode()
     }
   },

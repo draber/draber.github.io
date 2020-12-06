@@ -1,3 +1,3 @@
 # Steps to success
 
-This is identical to the *Ranking* pop-up that will be displayed when you click on the progress bar with the addition of the points for *Queen Bee*. The tier that you have currently achieved is highlighted.
+![Steps to success](assets/steps-to-success-light.png) You've certainly seen this one before, which is no wonder, because it's pretty close to the *Rankings* pop-up that is already part of *Spelling Bee*. But this one you can keep open while you're playing and - as an added bonus - it reveals how far the road to *Queen Bee* is. The tier that you're currently in is highlighted.

@@ -1,3 +1,3 @@
 # Dark Mode
 
-Dark mode
+Darkness surrounds you. 

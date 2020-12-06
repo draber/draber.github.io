@@ -1,975 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
     <title>Spelling Bee Assistant</title>
     <meta name="description" content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>html{line-height:1.15;-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;text-size-adjust:100%;color:#222;font-size:62.5%;box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}body{margin:0;font:1.6rem -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"}main.wrapper{padding-top:10rem}h1{margin:0}h2{margin:2rem 0 1rem}a{background-color:transparent}strong{font-weight:bolder}img{border-style:none;vertical-align:middle;max-width:100%}::-moz-selection{background:#f8cd05}::selection{background:#f8cd05}header{position:fixed;border-bottom:1px solid #dcdcdc;width:100%;background:#fff;padding:2rem 0;top:0;z-index:1}.twitter-share-button{position:absolute !important;bottom:.5rem;right:2rem}.wrapper{margin:0 auto;max-width:1040px;padding:0 2rem;position:relative}.bookmarklet{background:#f8cd05;padding:8px 16px;text-decoration:none;color:currentColor;display:inline-block;margin-top:10px;border-radius:3px;cursor:move}.panels{display:grid;justify-content:space-between;grid-template-columns:repeat(3, minmax(0, 1fr));-moz-column-gap:60px;column-gap:60px}.hidden{display:none !important}@media screen and (max-width: 1024px){.panels{display:block}}</style>
+    <style>html{line-height:1.15;text-size-adjust:100%;color:#222;font-size:62.5%;box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}body{margin:0;font:1.6rem/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"}main.wrapper{padding-top:10rem}h1{margin:0}h2{margin:2rem 0 1rem}h3{margin:1.5rem 0 .8rem}p,ul,ol{margin:0 0 1rem}a{background-color:transparent;color:#326891}a:hover{text-decoration:none}a:visited{color:#326891}strong{font-weight:bolder}img{border-style:none;vertical-align:middle;max-width:100%}::selection{background:#f8cd05}header{position:fixed;border-bottom:1px solid #dcdcdc;width:100%;background:#fff;padding:2rem 0;top:0;z-index:10}.twitter-share-button{position:absolute !important;bottom:.5rem;right:2rem}.wrapper{margin:0 auto;max-width:1024px;padding:0 2rem;position:relative}.bookmarklet{background:#f8cd05;padding:0 10px;text-decoration:none;color:#000 !important;display:inline-block;margin:0 5px;border-radius:3px;line-height:1.8;cursor:move}.help{cursor:help}.cards{display:grid;justify-content:space-between;grid-template-columns:repeat(2, minmax(0, 1fr));column-gap:2rem;position:relative;overflow:hidden}.cards li{border-width:1px;border-color:#dcdcdc;border-style:solid;border-radius:20px;padding:2rem;margin-bottom:2rem;background:rgba(248,205,5,.2)}.cards h3{position:absolute;left:-100rem;top:-100rem}.cards img{float:left;padding:1rem;margin:.6rem 2rem .3rem 0;background:#fff;border-width:1px;border-color:#dcdcdc;border-style:solid;border-radius:1rem}th{font-weight:normal}ul{list-style:none;padding:0;margin:0}.sba-dark>header{background:#111;color:#eee}.sba-dark a{color:#51a9f7}.sba-dark a:hover{color:#8dc6f8}@media screen and (max-width: 1024px){.cards{display:block}}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px}.sba .minimizer:before{content:"－"}.sba.minimized details{display:none}.sba.minimized .minimizer:before{content:"＋"}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:"－"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:"＋";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td,.sba tr:first-of-type th{border-top:none}.sba tr td:first-of-type{text-align:left}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}</style>
     <meta property="og:title" content="Spelling Bee Assistant" />
     <meta property="og:description" content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle" />
-    <meta property="og:image" content="https://spelling-bee-assistant.app/img/social.png?1.4.0" />
+    <meta property="og:image" content="https://spelling-bee-assistant.app/img/social.png?2.0.0" />
     <meta property="og:url" content="https://spelling-bee-assistant.app/" />
     <meta property="og:site_name" content="Spelling Bee Assistant" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@d_raber" />
-    <meta name="twitter:image" content="https://spelling-bee-assistant.app/img/social.png?1.4.0" />
+    <meta name="twitter:image" content="https://spelling-bee-assistant.app/img/social.png?2.0.0" />
     <meta name="twitter:image:alt" content="Spelling Bee Assistant" />
     <meta name="google-site-verification" content="xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU" />
     <meta name="google-site-verification" content="7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8" />
-    <link rel="icon" href="img/favicon.png?1.4.0" type="image/png" />
-</head>
-<body>
+    <link rel="icon" href="assets/favicon.png?2.0.0" type="image/png" />
+  </head>
+  <body>
     <header>
-        <div class="wrapper">
-            <h1>Spelling Bee Assistant</h1>
-            <a class="twitter-share-button" data-show-count="false" href="https://twitter.com/share?ref_src=twsrc%5Etfw">Tweet</a>
-            <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
-        </div>
+      <div class="wrapper">
+        <h1>Spelling Bee Assistant</h1>
+        <a class="twitter-share-button" data-show-count="false" href="https://twitter.com/share?ref_src=twsrc%5Etfw">Tweet</a>
+        <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
+      </div>
     </header>
     <main class="wrapper">
-        <section>
-            <h2>What is this?</h2>
-            <p><strong>Spelling Bee Assistant</strong> is a JavaScript bookmarklet for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
-            <p>In case you haven’t heard of bookmarklets before, they are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks, in your browser’s bookmark menu.</p>
-            <p><img alt="Bookmarks" src="img/bookmarklet.png?1.4.0"><br /></p>
-            <p>This bookmarklet adds a new panel with three sections to the game, data will be updated as you progress.</p>
-            <div class="panels">
-                <div>
-                    <h3>Stats</h3>
-                    <img alt="Game stats" src="img/stats.png?1.4.0">
-                    <p>This section shows some statistics but contains - apart from the total number of points - no spoilers.</p>
-                </div>
-                <div>
-                    <h3>Spoilers</h3>
-                    <img alt="Spoilers" src="img/spoilers.png?1.4.0">
-                    <p>This one is similar but it gives away information that you probably don’t want to know early on.</p>
-                </div>
-                <div>
-                    <h3>Solution</h3>
-                    <img alt="Solution" src="img/solution.png?1.4.0">
-                    <p>The third section hides a button that will solve the game with a few mouse clicks, though without making you Queen Bee 😞. All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
-                </div>
-            </div>
-        </section>
-        <section>
-            <h2>Installation</h2>
-            <p><em>Note: The current version of Spelling Bee Assistant is 1.4.0. If you already have an older version, you may want to delete it first (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
-            <p>Drag and drop the bookmarklet below into your browser’s bookmark menu <br /><a class="bookmarklet" onclick="return false" href="javascript:(function()%7B%22use%20strict%22%3Bvar%20_slicedToArray%3Dfunction(t%2Ce)%7Bif(Array.isArray(t))return%20t%3Bif(Symbol.iterator%20in%20Object(t))return%20function(t%2Ce)%7Bvar%20a%3D%5B%5D%2Cn%3D!0%2Cr%3D!1%2Co%3Dvoid%200%3Btry%7Bfor(var%20s%2Ci%3Dt%5BSymbol.iterator%5D()%3B!(n%3D(s%3Di.next()).done)%26%26(a.push(s.value)%2C!e%7C%7Ca.length!%3D%3De)%3Bn%3D!0)%3B%7Dcatch(t)%7Br%3D!0%2Co%3Dt%7Dfinally%7Btry%7B!n%26%26i.return%26%26i.return()%7Dfinally%7Bif(r)throw%20o%7D%7Dreturn%20a%7D(t%2Ce)%3Bthrow%20new%20TypeError(%22Invalid%20attempt%20to%20destructure%20non-iterable%20instance%22)%7D%3Bfunction%20_toConsumableArray(t)%7Bif(Array.isArray(t))%7Bfor(var%20e%3D0%2Ca%3DArray(t.length)%3Be%3Ct.length%3Be%2B%2B)a%5Be%5D%3Dt%5Be%5D%3Breturn%20a%7Dreturn%20Array.from(t)%7D!function()%7Bfunction%20i(t%2Ce)%7Bvar%20a%3D1%3Carguments.length%26%26void%200!%3D%3De%3Fe%3A%7B%7D%2Ce%3Dvoid%200%3D%3D%3D(n%3Da.text)%3F%22%22%3An%2Cn%3Dvoid%200%3D%3D%3D(n%3Da.classNames)%3F%5B%5D%3An%2Cr%3Dvoid%200%3D%3D%3D(a%3Da.attributes)%3F%7B%7D%3Aa%2Co%3Ddocument.createElement(t)%3Bn.length%26%26(t%3Do.classList).add.apply(t%2C_toConsumableArray(n))%2C%22%22!%3D%3De%26%26(o.textContent%3De)%3Bvar%20s%3D!0%2Ci%3D!1%2Cd%3Dvoid%200%3Btry%7Bfor(var%20l%3DObject.entries(r)%5BSymbol.iterator%5D()%3B!(s%3D(p%3Dl.next()).done)%3Bs%3D!0)%7Bvar%20c%3Dp.value%2Cp%3D_slicedToArray(c%2C2)%2Cc%3Dp%5B0%5D%2Cp%3Dp%5B1%5D%3Bp%26%26o.setAttribute(c%2Cp)%7D%7Dcatch(t)%7Bi%3D!0%2Cd%3Dt%7Dfinally%7Btry%7B!s%26%26l.return%26%26l.return()%7Dfinally%7Bif(i)throw%20d%7D%7Dreturn%20o%7Dfunction%20r(t)%7Bvar%20e%3D0%3Breturn%20t.forEach(function(t)%7BgameData.today.pangrams.includes(t)%3Fe%2B%3Dt.length%2B7%3A4%3Ct.length%3Fe%2B%3Dt.length%3Ae%2B%3D1%7D)%2Ce%7Dfunction%20s()%7Bvar%20e%2Ca%3D(e%3D%7B%7D%2CgameData.today.answers.forEach(function(t)%7Be%5Bt.length%5D%3De%5Bt.length%5D%7C%7C%7Bfound%3A0%2Cmissing%3A0%2Ctotal%3A0%7D%2Cu.includes(t)%3Fe%5Bt.length%5D.found%2B%2B%3Ae%5Bt.length%5D.missing%2B%2B%2Ce%5Bt.length%5D.total%2B%2B%7D)%2Ce)%2Ct%3DObject.keys(a)%3Bt.sort(function(t%2Ce)%7Breturn%20t-e%7D)%3Bvar%20n%3D%7BStats%3A%5B%5B%22Words%22%2Cu.length%2Cb.length%2CgameData.today.answers.length%5D%2C%5B%22Points%22%2Cr(u)%2Cr(b)%2Ch%5D%5D%2CSpoilers%3A%5B%5B%22Pangrams%22%2Cg.length%2CgameData.today.pangrams.length-g.length%2CgameData.today.pangrams.length%5D%5D%7D%3Breturn%20t.forEach(function(t)%7Bn.Spoilers.push(%5Bt%2B%22%20%22%2B(1%3Ct%3F%22letters%22%3A%22letter%22)%2Ca%5Bt%5D.found%2Ca%5Bt%5D.missing%2Ca%5Bt%5D.total%5D)%7D)%2Cn%7Dfunction%20d()%7Bu%3D%5B%5D%2Cg%3D%5B%5D%2Cc.querySelectorAll(%22li%22).forEach(function(t)%7Bvar%20e%3Dt.textContent%3Bu.push(e)%2CgameData.today.pangrams.includes(e)%26%26(g.push(e)%2Ct.classList.add(%22sb-pangram%22))%7D)%2Cb%3DgameData.today.answers.filter(function(t)%7Breturn!u.includes(t)%7D)%3Bvar%20a%3Ds()%2Ct%3D!0%2Ce%3D!1%2Cn%3Dvoid%200%3Btry%7Bfor(var%20r%3DObject.entries(p)%5BSymbol.iterator%5D()%3B!(t%3D(o%3Dr.next()).done)%3Bt%3D!0)%7Bvar%20o%3Do.value%2Co%3D_slicedToArray(o%2C2)%3B!function(t%2Ce)%7Ba%5Bt%5D.length%26%26(e.innerHTML%3D%22%22%2Ca%5Bt%5D.forEach(function(t)%7Be.append(m(%22td%22%2Ct))%7D))%7D(o%5B0%5D%2Co%5B1%5D)%7D%7Dcatch(t)%7Be%3D!0%2Cn%3Dt%7Dfinally%7Btry%7B!t%26%26r.return%26%26r.return()%7Dfinally%7Bif(e)throw%20n%7D%7D%7Dfunction%20l()%7B(Number(localStorage.getItem(%22no-check-before-reveal%22))%7C%7Cconfirm(%22Are%20you%20sure%20you%20want%20to%20display%20all%20answers%3F%22))%26%26(a.disconnect()%2Cb.forEach(function(t)%7Bvar%20e%3Bc.append((e%3Dt%2C(t%3Di(%22li%22%2C%7BclassNames%3AgameData.today.pangrams.includes(e)%3F%5B%22sb-anagram%22%2C%22sb-pangram%22%5D%3A%5B%22sb-anagram%22%5D%7D)).append(i(%22a%22%2C%7Btext%3Ae%2Cattributes%3A%7Bhref%3A%22https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3D%22%2Be%2Ctarget%3A%22_blank%22%7D%7D))%2Ct))%7D))%7Dfunction%20t()%7Bvar%20s%3Di(%22div%22%2C%7BclassNames%3A%5B%22sba%22%5D%7D)%3Bs.append(function(a)%7Bn.addEventListener(%22dragstart%22%2Cfunction(t)%7Bt.preventDefault()%2Ct.dataTransfer.dropEffect%3D%22move%22%7D)%2Cn.addEventListener(%22dragover%22%2Cfunction(t)%7Bt.preventDefault()%7D)%2Ca.draggable%3D!0%3Bvar%20t%3Di(%22div%22%2C%7BclassNames%3A%5B%22dragger%22%5D%2Ctext%3A%22Assistant%22%2Cattributes%3A%7Btitle%3A%22Hold%20the%20mouse%20down%20to%20drag%20assistant%22%7D%7D)%3Breturn%20a.addEventListener(%22dragstart%22%2Cfunction(t)%7Bt.stopPropagation()%3Bvar%20e%3DgetComputedStyle(this)%3Ba.classList.add(%22dragging%22)%2Cthis.dataset.right%3De.getPropertyValue(%22right%22)%2Cthis.dataset.top%3De.getPropertyValue(%22top%22)%2Cthis.dataset.mouseX%3Dt.clientX%2Cthis.dataset.mouseY%3Dt.clientY%7D%2C!1)%2Ca.addEventListener(%22dragend%22%2Cfunction(t)%7Bt.stopPropagation()%3Bvar%20e%3Dt.clientX-this.dataset.mouseX%2Ct%3Dt.clientY-this.dataset.mouseY%3Bthis.style.right%3DparseInt(this.dataset.right)-e%2B%22px%22%2Cthis.style.top%3DparseInt(this.dataset.top)%2Bt%2B%22px%22%2Ca.classList.remove(%22dragging%22)%7D%2C!1)%2Ct%7D(s))%2Cs.append(((e%3Di(%22span%22%2C%7BclassNames%3A%5B%22closer%22%5D%2Ctext%3A%22%C3%97%22%2Cattributes%3A%7Btitle%3A%22Close%20assistant%22%7D%7D)).addEventListener(%22click%22%2Cfunction()%7Bwindow.gameData.assistant%3D!1%2Co.remove()%2Ca.disconnect()%2Cthis.parentNode.remove()%7D)%2Ce))%2C%5B%22Stats%22%2C%22Spoilers%22%2C%22Solution%22%5D.forEach(function(t)%7Bvar%20e%2Ca%2Cn%3Di(%22details%22%2C%7Battributes%3A%7Bopen%3A%22Stats%22%3D%3D%3Dt%26%26%22open%22%7D%7D)%2Cr%3Di(%22summary%22%2C%7Btext%3At%7D)%2Co%3Dvoid%200%3B%22Solution%22%3D%3D%3Dt%3F(o%3Di(%22div%22)%2C(a%3Di(%22button%22%2C%7BclassNames%3A%5B%22pz-modal__button%22%2C%22white%22%5D%2Ctext%3A%22Display%20answers%22%2Cattributes%3A%7Btype%3A%22button%22%7D%7D)).addEventListener(%22click%22%2Cfunction()%7Bl()%7D)%2Co.append(a)%2C(e%3Di(%22input%22%2C%7Battributes%3A%7Btype%3A%22checkbox%22%2Cchecked%3A!!Number(localStorage.getItem(%22no-check-before-reveal%22))%7D%7D)).addEventListener(%22click%22%2Cfunction()%7BlocalStorage.setItem(%22no-check-before-reveal%22%2CNumber(this.checked))%7D)%2C(a%3Di(%22label%22%2C%7Btext%3A%22Never%20require%20confirmation%22%2CclassNames%3A%5B%22no-confirmation%22%5D%7D)).prepend(e)%2Co.append(a))%3A(o%3Di(%22table%22)%2C(a%3Di(%22thead%22)).append(m(%22th%22%2C%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D))%2Cp%5Bt%5D%3Di(%22tbody%22)%2Co.append(a)%2Co.append(p%5Bt%5D)%2Cd())%2Cn.append(r)%2Cn.append(o)%2Cs.append(n)%7D)%3Bvar%20t%3Di(%22div%22%2C%7BclassNames%3A%5B%22link%22%5D%7D)%2Ce%3Di(%22a%22%2C%7Btext%3A%22Spelling%20Bee%20Assistant%201.4.0%22%2Cattributes%3A%7Bhref%3A%22https%3A%2F%2Fdraber.github.io%22%2Ctarget%3A%22_blank%22%7D%7D)%3Bt.append(e)%2Cs.append(t)%2Cn.append(s)%7Dvar%20n%3Ddocument.querySelector(%22.sb-content-box%22)%2Cc%3Dn.querySelector(%22.sb-wordlist-items%22)%2Cp%3D%7B%7D%2Cu%3D%5B%5D%2Cg%3D%5B%5D%2Cb%3D%5B%5D%2Ca%3Dvoid%200%2Co%3Dvoid%200%2Ch%3Dr(gameData.today.answers)%2Cm%3Dfunction(a%2Ct)%7Bvar%20n%3Di(%22tr%22)%3Breturn%20t.forEach(function(t%2Ce)%7Bn.append(i(0%3D%3D%3De%3F%22th%22%3Aa%2C%7Btext%3At%7D))%7D)%2Cn%7D%3B(a%3Dnew%20MutationObserver(function(t)%7Bt%3Dt.pop().addedNodes%5B0%5D%3BgameData.today.pangrams.includes(t.textContent)%26%26t.classList.add(%22sb-pangram%22)%2Cd()%7D)).observe(c%2C%7BchildList%3A!0%7D)%3B%22%2Fpuzzles%2Fspelling-bee%22%3D%3D%3Dwindow.location.pathname%26%26(window.gameData.assistant%7C%7C(o%3Di(%22style%22%2C%7Btext%3A'.sb-content-box%7Bposition%3Arelative%7D.sb-wordlist-items%20.sb-pangram%7Bborder-bottom%3A2px%20%23f8cd05%20solid%7D.sb-wordlist-items%20.sb-anagram%20a%7Bcolor%3A%23888%7D.sba%7Bposition%3Aabsolute%3Bwidth%3A200px%3Bright%3A-210px%3Btop%3A16px%3Bbackground%3A%23fff%3Bz-index%3A3%3Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-radius%3A6px%3Bpadding%3A0%2010px%205px%7D.sba%20*%7Bbox-sizing%3Aborder-box%7D.sba%20*%3Afocus%7Boutline%3A0%7D.sba%20.dragger%7Bfont-weight%3Abold%3Bcursor%3Amove%3Bline-height%3A32px%7D.sba.dragging%7Bopacity%3A.5%3Bborder-style%3Adashed%7D.sba%20.closer%7Bfont-size%3A20px%3Bfont-weight%3Abold%3Bposition%3Aabsolute%3Btop%3A0%3Bright%3A0%3Bline-height%3A32px%3Bpadding%3A0%2010px%3Bcursor%3Apointer%7D.sba%20details%7Bfont-size%3A90%25%3Bmargin-bottom%3A5px%7D.sba%20details%5Bopen%5D%20summary%3Abefore%7Bcontent%3A%22%EF%BC%8D%22%7D.sba%20summary%7Bline-height%3A32px%3Bpadding%3A0%2015px%200%2025px%3Bbackground%3A%23f8cd05%3Bcursor%3Apointer%3Blist-style%3Anone%3Bposition%3Arelative%7D.sba%20summary%3A%3A-webkit-details-marker%7Bdisplay%3Anone%7D.sba%20summary%3Abefore%7Bcontent%3A%22%EF%BC%8B%22%3Bposition%3Aabsolute%3Bleft%3A8px%7D.sba%20button%7Bmargin%3A10px%20auto%205px%3Bwidth%3A80%25%3Bdisplay%3Ablock%7D.sba%20.no-confirmation%7Bdisplay%3Ainline-block%3Bmargin%3A0%200%2010px%200%3Bfont-size%3A80%25%7D.sba%20.no-confirmation%20input%7Bmargin%3A5px%3Bposition%3Arelative%3Btop%3A2px%7D.sba%20table%7Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-top%3Anone%3Bborder-collapse%3Acollapse%3Bwidth%3A100%25%3Bfont-size%3A85%25%7D.sba%20th%2C.sba%20td%7Bborder%3A1px%20solid%20%23dcdcdc%3Bpadding%3A3px%7D.sba%20thead%20th%7Btext-align%3Acenter%7D.sba%20tbody%20th%7Btext-align%3Aright%7D.sba%20tbody%20td%7Btext-align%3Acenter%7D.sba%20.link%7Bcolor%3AcurrentColor%3Bopacity%3A.6%3Bfont-size%3A10px%3Btext-align%3Aright%3Bdisplay%3Ablock%3Bpadding-top%3A3px%7D.sba%20.link%3Ahover%7Bopacity%3A.8%3Btext-decoration%3Aunderline%7D'%7D)%2Cdocument.querySelector(%22head%22).append(o)%2Ct()%2Cd()%2Cwindow.gameData.assistant%3D!0))%7D()%3B%7D)()">Spelling Bee Assistant</a></p>
-            <p>Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant. You can drag the assistant anywhere on the page by grabbing it at the top and close it by clicking on the <b>×</b> symbol.</p>
-        </section>
-        <section>
-            <h2>Does it work everywhere?</h2>
-            <p>The assistant is not suitable for the mobile version of the game and has only been tested in the desktop version. It requires a <a href="https://caniuse.com/details">modern browser</a> and won’t work in Internet Explorer.</p>
-            <h2>Does it not spoil the game?</h2>
-            <p>Other people have been creating <a href="https://www.shunn.net/bee/">tools with a similar purpose</a> which - according to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html">this article</a> - the Spelling Bee community seems to like well.</p>
-            <p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the <em>Spoilers</em> panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
-            <h2>How did you do this?</h2>
-            <p>The source code is available under the MIT License from <a href="https://github.com/draber/draber.github.io">this repository</a>.</p>
-            <h2>I discovered a bug | I’d like to ask for a new feature</h2>
-            <p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
-            <h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
-            <p>No.</p>
-        </section>
+      <section>
+        <h2>What is this?</h2>
+        <p><strong>Spelling Bee Assistant</strong> is a JavaScript <a href="#bookmarklet" class="help">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
+      </section>
+      <section>
+        <h2>Installation</h2>
+        <p>Drag and drop this bookmarklet <a class="bookmarklet" onclick="return false" href="javascript:(function()%7B%22use%20strict%22%3Bvar%20_slicedToArray%3Dfunction(e%2Ct)%7Bif(Array.isArray(e))return%20e%3Bif(Symbol.iterator%20in%20Object(e))return%20function(e%2Ct)%7Bvar%20a%3D%5B%5D%2Cr%3D!0%2Cn%3D!1%2Ci%3Dvoid%200%3Btry%7Bfor(var%20o%2Cs%3De%5BSymbol.iterator%5D()%3B!(r%3D(o%3Ds.next()).done)%26%26(a.push(o.value)%2C!t%7C%7Ca.length!%3D%3Dt)%3Br%3D!0)%3B%7Dcatch(e)%7Bn%3D!0%2Ci%3De%7Dfinally%7Btry%7B!r%26%26s.return%26%26s.return()%7Dfinally%7Bif(n)throw%20i%7D%7Dreturn%20a%7D(e%2Ct)%3Bthrow%20new%20TypeError(%22Invalid%20attempt%20to%20destructure%20non-iterable%20instance%22)%7D%3Bfunction%20_toConsumableArray(e)%7Bif(Array.isArray(e))%7Bfor(var%20t%3D0%2Ca%3DArray(e.length)%3Bt%3Ce.length%3Bt%2B%2B)a%5Bt%5D%3De%5Bt%5D%3Breturn%20a%7Dreturn%20Array.from(e)%7D!function()%7Bfunction%20c(e%2Ct)%7Bvar%20a%3Bswitch(1%3Carguments.length%26%26void%200!%3D%3Dt%3Ft%3A%22c%22)%7Bcase%22c%22%3Areturn(l(%22prefix%22)%2B%22_%22%2Be).replace(%2F%5B_-%5D%2B(%5Ba-z%5D)%2Fg%2Cfunction(e)%7Breturn%20e%5B1%5D.toUpperCase()%7D)%3Bcase%22d%22%3Areturn(a%3Dl(%22prefix%22)%2Be.charAt(0).toUpperCase()%2Be.slice(1)).match(%2F(%5BA-Z%5D)%2Fg).reduce(function(e%2Ct)%7Breturn%20e.replace(new%20RegExp(t)%2C%22-%22%2Bt.toLowerCase())%7D%2Ca).substring(a.slice(0%2C1).match(%2F(%5BA-Z%5D)%2Fg)%3F1%3A0)%3Bdefault%3Areturn%20e%7D%7Dfunction%20a(e%2Ct)%7Bn.foundTerms%3D%5B%5D%2Cn.foundPangrams%3D%5B%5D%2Cp.%24%24(%22li%22%2Ct).forEach(function(e)%7Bvar%20t%3De.textContent%3Bn.foundTerms.push(t)%2Cn.pangrams.includes(t)%26%26(n.foundPangrams.push(t)%2Ce.classList.add(%22sb-pangram%22))%7D)%2Cn.remainders%3Dn.answers.filter(function(e)%7Breturn!n.foundTerms.includes(e)%7D)%2Ce.dispatchEvent(new%20Event(c(%22updateComplete%22)))%7Dvar%20j%3Dfunction%20e(t)%7Bvar%20a%3D0%3Carguments.length%26%26void%200!%3D%3Dt%3Ft%3A%7B%7D%2Cr%3Da.tag%2Cn%3Dvoid%200%3D%3D%3Dr%3F%22div%22%3Ar%2Ci%3Da.text%2Co%3Dvoid%200%3D%3D%3Di%3F%22%22%3Ai%2Ct%3Da.attributes%2Cs%3Dvoid%200%3D%3D%3Dt%3F%7B%7D%3At%2Cr%3Da.style%2Cl%3Dvoid%200%3D%3D%3Dr%3F%7B%7D%3Ar%2Ci%3Da.data%2Cd%3Dvoid%200%3D%3D%3Di%3F%7B%7D%3Ai%2Ct%3Da.events%2Cc%3Dvoid%200%3D%3D%3Dt%3F%7B%7D%3At%2Cr%3Da.classNames%2Ci%3Dvoid%200%3D%3D%3Dr%3F%5B%5D%3Ar%2Ct%3Da.cellData%2Cr%3Dvoid%200%3D%3D%3Dt%3F%5B%5D%3At%2Ct%3Da.cellTag%2Ct%3Dvoid%200%3D%3D%3Dt%3F%22td%22%3At%2Ca%3Da.checked%2Ca%3Dvoid%200!%3D%3Da%26%26a%3Bif(%22tr%22%3D%3D%3Dn%26%26r.length)return%20function(e)%7Bvar%20t%3D0%3Carguments.length%26%26void%200!%3D%3De%3Fe%3A%7B%7D%2Ca%3Dt.classNames%2Cr%3Dvoid%200%3D%3D%3Da%3F%5B%5D%3Aa%2Ce%3Dt.events%2Ca%3Dvoid%200%3D%3D%3De%3F%7B%7D%3Ae%2Ce%3Dt.cellData%2Ce%3Dvoid%200%3D%3D%3De%3F%5B%5D%3Ae%2Ct%3Dt.cellTag%2Cn%3Dvoid%200%3D%3D%3Dt%3F%22td%22%3At%2Ci%3Dj(%7Btag%3A%22tr%22%2CclassNames%3Ar%2Cevents%3Aa%7D)%3Breturn%20e.forEach(function(e)%7Bi.append(j(%7Btag%3An%2Ctext%3Ae%7D))%7D)%2Ci%7D(%7BclassNames%3Ai%2Cevents%3Ac%2CcellData%3Ar%2CcellTag%3At%7D)%3Bif(%22input%22%3D%3D%3Dn%26%26%22checkbox%22%3D%3D%3Ds.type%26%26o)return%20function(e)%7Bvar%20t%3D0%3Carguments.length%26%26void%200!%3D%3De%3Fe%3A%7B%7D%2Ca%3Dt.text%2Cr%3Dvoid%200%3D%3D%3Da%3F%22%22%3Aa%2Cn%3Dt.classNames%2Ce%3Dvoid%200%3D%3D%3Dn%3F%5B%5D%3An%2Ca%3Dt.attributes%2Cn%3Dvoid%200%3D%3D%3Da%3F%7B%7D%3Aa%2Ca%3Dt.events%2Ca%3Dvoid%200%3D%3D%3Da%3F%7B%7D%3Aa%2Ct%3Dt.checked%3Bvoid%200!%3D%3Dt%26%26t%26%26(n.checked%3D%22checked%22)%3Ba%3Dj(%7Btag%3A%22input%22%2Cattributes%3An%2Cevents%3Aa%7D)%2Ce%3Dj(%7Btag%3A%22label%22%2Ctext%3Ar%2CclassNames%3Ae%7D)%3Breturn%20e.prepend(a)%2Ce%7D(%7Btext%3Ao%2CclassNames%3Ai%2Cattributes%3As%2Cevents%3Ac%2Cchecked%3Aa%7D)%3Bvar%20p%3Ddocument.createElement(n)%2Cu%3D!0%2Cf%3D!1%2Cg%3Dvoid%200%3Btry%7Bfor(var%20v%3DObject.entries(l)%5BSymbol.iterator%5D()%3B!(u%3D(m%3Dv.next()).done)%3Bu%3D!0)%7Bvar%20b%3Dm.value%2Cm%3D_slicedToArray(b%2C2)%2Cb%3Dm%5B0%5D%2Cm%3Dm%5B1%5D%3Bp.style%5Bb%5D%3Dm%7D%7Dcatch(e)%7Bf%3D!0%2Cg%3De%7Dfinally%7Btry%7B!u%26%26v.return%26%26v.return()%7Dfinally%7Bif(f)throw%20g%7D%7Di.length%26%26(n%3Dp.classList).add.apply(n%2C_toConsumableArray(i))%2CArray.isArray(o)%3Fp.append(e(%7Btag%3Ao%5B1%5D%2Ctext%3Ao%5B0%5D%7D))%3Ap.textContent%3Do%3Bvar%20h%3D!0%2Cy%3D!1%2Cx%3Dvoid%200%3Btry%7Bfor(var%20k%3DObject.entries(s)%5BSymbol.iterator%5D()%3B!(h%3D(E%3Dk.next()).done)%3Bh%3D!0)%7Bvar%20w%3DE.value%2CE%3D_slicedToArray(w%2C2)%2Cw%3DE%5B0%5D%2CE%3DE%5B1%5D%3B%22%22!%3D%3DE%26%26p.setAttribute(w%2CE)%7D%7Dcatch(e)%7By%3D!0%2Cx%3De%7Dfinally%7Btry%7B!h%26%26k.return%26%26k.return()%7Dfinally%7Bif(y)throw%20x%7D%7Dvar%20T%3D!0%2CS%3D!1%2C_%3Dvoid%200%3Btry%7Bfor(var%20L%3DObject.entries(d)%5BSymbol.iterator%5D()%3B!(T%3D(C%3DL.next()).done)%3BT%3D!0)%7Bvar%20z%3DC.value%2CC%3D_slicedToArray(z%2C2)%2Cz%3DC%5B0%5D%2CC%3DC%5B1%5D%3Bp.dataset%5Bz%5D%3DC%7D%7Dcatch(e)%7BS%3D!0%2C_%3De%7Dfinally%7Btry%7B!T%26%26L.return%26%26L.return()%7Dfinally%7Bif(S)throw%20_%7D%7Dvar%20A%3D!0%2CN%3D!1%2CO%3Dvoid%200%3Btry%7Bfor(var%20%24%3DObject.entries(c)%5BSymbol.iterator%5D()%3B!(A%3D(M%3D%24.next()).done)%3BA%3D!0)%7Bvar%20D%3DM.value%2CM%3D_slicedToArray(D%2C2)%2CD%3DM%5B0%5D%2CM%3DM%5B1%5D%3Bp.addEventListener(D%2CM%2C!1)%7D%7Dcatch(e)%7BN%3D!0%2CO%3De%7Dfinally%7Btry%7B!A%26%26%24.return%26%26%24.return()%7Dfinally%7Bif(N)throw%20O%7D%7Dreturn%20p%7D%2Cp%3D%7B%24%3Afunction(e%2Ct)%7Breturn%22string%22%3D%3Dtypeof%20e%3F((1%3Carguments.length%26%26void%200!%3D%3Dt%3Ft%3Anull)%7C%7Cdocument).querySelector(e)%3Ae%7C%7Cnull%7D%2C%24%24%3Afunction(e%2Ct)%7Bt%3D1%3Carguments.length%26%26void%200!%3D%3Dt%3Ft%3Anull%3Breturn%5B%5D.slice.call((t%7C%7Cdocument).querySelectorAll(e))%7D%2Ccreate%3Aj%7D%2Cr%3D%5B%5D%2Cu%3D%7Badd%3Afunction(e%2Ct%2Ca)%7Breturn%20e.observe(t%2Ca)%2Cr.push(e)%7D%2Cremove%3Afunction(t)%7Breturn%20t.disconnect()%2C(r%3Dr.filter(function(e)%7Breturn%20e!%3D%3Dt%7D)).length%7D%2CremoveAll%3Afunction()%7Bvar%20t%3Dthis%3Breturn%20r.forEach(function(e)%7Bt.remove(e)%7D)%2Cr.length%7D%7D%2Cd%3D%22sba%22%2Cf%3D%7Blabel%3A%22Spelling%20Bee%20Assistant%22%2Ctitle%3A%22Assistant%22%2Curl%3A%22https%3A%2F%2Fspelling-bee-assistant.app%2F%22%2Cprefix%3Ad%2Crepo%3A%22draber%2Fdraber.github.io.git%22%2Cversion%3A%222.0.0%22%2Coptions%3AJSON.parse(localStorage.getItem(d%2B%22-settings%22)%7C%7C%22%7B%7D%22)%7D%2Cl%3Dfunction(e)%7Bvar%20t%3DObject.create(f)%2Ca%3D!0%2Cr%3D!1%2Cn%3Dvoid%200%3Btry%7Bfor(var%20i%3De.split(%22.%22)%5BSymbol.iterator%5D()%3B!(a%3D(o%3Di.next()).done)%3Ba%3D!0)%7Bvar%20o%3Do.value%3Bif(!t%5Bo%5D)return%3Bt%3Dt%5Bo%5D%7D%7Dcatch(e)%7Br%3D!0%2Cn%3De%7Dfinally%7Btry%7B!a%26%26i.return%26%26i.return()%7Dfinally%7Bif(r)throw%20n%7D%7Dreturn%20t%7D%2Cg%3Dfunction(e%2Ct)%7Bvar%20a%3De.split(%22.%22)%2Ce%3Da.pop()%2Cr%3Df%2Cn%3D!0%2Ci%3D!1%2Co%3Dvoid%200%3Btry%7Bfor(var%20s%3Da%5BSymbol.iterator%5D()%3B!(n%3D(l%3Ds.next()).done)%3Bn%3D!0)%7Bvar%20l%3Dl.value%3Bif(r%5Bl%5D%7C%7C(r%5Bl%5D%3D%7B%7D)%2C%22%5Bobject%20Object%5D%22%3D%3D%3D!Object.prototype.toString.call(r))return%20console.error(l%2B%22%20is%20not%20of%20the%20type%20Object%22)%2C!1%3Br%3Dr%5Bl%5D%7D%7Dcatch(e)%7Bi%3D!0%2Co%3De%7Dfinally%7Btry%7B!n%26%26s.return%26%26s.return()%7Dfinally%7Bif(i)throw%20o%7D%7Dr%5Be%5D%3Dt%2ClocalStorage.setItem(d%2B%22-settings%22%2CJSON.stringify(f.options))%7D%2Cn%3Dvoid%200%2Ci%3Dfunction(e%2Ct)%7Bn%3D%7Banswers%3Awindow.gameData.today.answers%2Cpangrams%3Awindow.gameData.today.pangrams%2CfoundTerms%3A%5B%5D%2CfoundPangrams%3A%5B%5D%2Cremainders%3A%5B%5D%7D%2Ca(e%2Ct)%2Ce.addEventListener(c(%22update%22)%2Cfunction()%7Ba(e%2Ct)%7D)%7D%2Co%3Dfunction(e)%7Breturn%20n%5Be%5D%7D%2Cs%3Dfunction(e)%7Breturn%20n%5Be%5D.length%7D%2Cv%3Dfunction(e)%7Bvar%20e%3Dn%5Be%5D%2Ct%3D0%3Breturn%20e.forEach(function(e)%7Bn.pangrams.includes(e)%3Ft%2B%3De.length%2B7%3A4%3Ce.length%3Ft%2B%3De.length%3At%2B%3D1%7D)%2Ct%7D%2Cb%3Dvoid%200%3Bfunction%20m(e)%7Breturn!1%3D%3D%3Dl(%22options.%22%2Be%2B%22.v%22)%7Dfunction%20h(e%2Ct%2Ca)%7Breturn!m(t)%26%26(e!%3D%3DT%3Fe%20instanceof%20HTMLElement%3Aa)%7Dfunction%20y()%7BA.innerHTML%3D%22%22%2C%5B%5B%22Words%22%2Cs(%22foundTerms%22)%2Cs(%22remainders%22)%2Cs(%22answers%22)%5D%2C%5B%22Points%22%2Cv(%22foundTerms%22)%2Cv(%22remainders%22)%2Cv(%22answers%22)%5D%5D.forEach(function(e)%7BA.append(p.create(%7Btag%3A%22tr%22%2CcellData%3Ae%7D))%7D)%7Dfunction%20x()%7BR.innerHTML%3D%22%22%2Cfunction()%7Bvar%20t%3D%7B%7D%2Ce%3Ds(%22pangrams%22)%2Ca%3Ds(%22foundPangrams%22)%2Cr%3D%5B%5B%22Pangrams%22%2Ca%2Ce-a%2Ce%5D%5D%3Bo(%22answers%22).forEach(function(e)%7Bt%5Be.length%5D%3Dt%5Be.length%5D%7C%7C%7Bfound%3A0%2Cmissing%3A0%2Ctotal%3A0%7D%2Co(%22foundTerms%22).includes(e)%3Ft%5Be.length%5D.found%2B%2B%3At%5Be.length%5D.missing%2B%2B%2Ct%5Be.length%5D.total%2B%2B%7D)%3Be%3DObject.keys(t)%3Breturn%20e.sort(function(e%2Ct)%7Breturn%20e-t%7D)%2Ce.forEach(function(e)%7Br.push(%5Be%2B%22%20%22%2B(1%3Ce%3F%22letters%22%3A%22letter%22)%2Ct%5Be%5D.found%2Ct%5Be%5D.missing%2Ct%5Be%5D.total%5D)%7D)%2Cr%7D().forEach(function(e)%7BR.append(p.create(%7Btag%3A%22tr%22%2CcellData%3Ae%7D))%7D)%7Dfunction%20k(e%2Co)%7B%5Be%2Co%5D.forEach(function(e)%7Be.addEventListener(%22dragover%22%2Cfunction(e)%7Be.preventDefault()%7D)%7D)%2Ce.addEventListener(%22dragstart%22%2Cfunction(e)%7Breturn%20J%3F(e.target.style.opacity%3D%22.2%22%2Ct%3De%2Cr%3D(a%3Do).getBoundingClientRect()%2Cn%3Dt.target.getBoundingClientRect()%2Ci%3Dr.top%2Bwindow.pageYOffset%2Ca%3DW.parentElement.getBoundingClientRect()%2Ca%3Dr.height-(r.top-n.top)-(n.top-a.top)-a.height%2Cvoid(q%3D%7BmaxL%3Adocument.documentElement.clientWidth-n.width%2CminT%3Ai%2CmaxT%3Ai%2Ba%2CoffX%3At.clientX-n.x%2CoffY%3At.clientY-n.y%2CmargT%3AparseInt(getComputedStyle(t.target).marginTop%2C10)%7D))%3A(e.preventDefault()%2C!1)%3Bvar%20t%2Ca%2Cr%2Cn%2Ci%7D%2C!1)%2Ce.addEventListener(%22dragend%22%2Cfunction(e)%7Bvar%20t%2Ca%3BObject.assign(e.target.style%2C(t%3De%2Ca%3DMath.max(0%2Ct.clientX-q.offX)%2Ca%3DMath.min(a%2Cq.maxL)%2B%22px%22%2Ct%3DMath.max(q.minT%2Ct.clientY%2Bwindow.pageYOffset-q.margT-q.offY)%2C%7Bleft%3Aa%2Ctop%3At%3DMath.min(t%2Cq.maxT)%2B%22px%22%7D))%2Ce.target.style.opacity%3D%221%22%7D)%7Dfunction%20w(a)%7Bu.removeAll()%2Co(%22remainders%22).forEach(function(e)%7Bvar%20t%3Ba.append((t%3De%2C(e%3Dp.create(%7Btag%3A%22li%22%2CclassNames%3Ao(%22pangrams%22).includes(t)%3F%5B%22sb-anagram%22%2C%22sb-pangram%22%5D%3A%5B%22sb-anagram%22%5D%7D)).append(p.create(%7Btag%3A%22a%22%2Ctext%3At%2Cattributes%3A%7Bhref%3A%22https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3D%22%2Bt%2Ctarget%3A%22_blank%22%7D%7D))%2Ce))%7D)%7Dfunction%20E()%7Breturn%20_.remove(%7Bplugin%3Afe%2Ckey%3A%22styles%22%2Ctitle%3A%22Styles%22%7D)%7Dvar%20T%3D%22noUi%22%2Ce%3Dfunction%20t(e)%7Bvar%20a%3D0%3Carguments.length%26%26void%200!%3D%3De%3Fe%3A%7B%7D%2Cr%3Da.app%2Cn%3Da.key%2Ci%3Da.plugin%2Co%3Da.title%2Cs%3Dvoid%200%3D%3D%3Do%3F%22%22%3Ao%2Cl%3Da.optional%2Cd%3Dvoid%200!%3D%3Dl%26%26l%2Ce%3Da.defaultState%2Co%3Dvoid%200%3D%3D%3De%7C%7Ce%2Cl%3Da.observer%2Ce%3Da.target%2Ca%3Dvoid%200%3D%3D%3De%3Fnull%3Ae%3Bi!%3D%3DT%26%26(a%3Da%7C%7Cp.%24('%5Bdata-plugin%3D%22'%2Bn%2B'%22%5D'%2Cr)%7C%7C(e%3Dp.create(%7Bdata%3A%7Bplugin%3An%7D%7D)%2Cr.append(e)%2Ce)%2Co%26%26a.append(i))%2Cd%26%26g(%22options.%22%2Bn%2C%7Bt%3As%2Cv%3Ah(i%2Cn%2Co)%7D)%3Bo%3Dc(n)%3Breturn%20r.addEventListener(o%2Cfunction(e)%7Be.detail.enabled%3Ft(%7Bapp%3Ar%2Cplugin%3Ai%2Ckey%3An%2Ctitle%3As%2Coptional%3Ad%7D)%3AS(%7Bplugin%3Ai%2Ckey%3An%2Ctitle%3As%7D)%7D)%2Cl%26%26u.add(l.observer%2Cl.target%2Cl.args)%2Ci%7D%2CS%3Dfunction(e)%7Bvar%20t%3D0%3Carguments.length%26%26void%200!%3D%3De%3Fe%3A%7B%7D%2Ca%3Dt.plugin%2Cr%3Dt.key%2Ce%3Dvoid%200%3D%3D%3Dr%3F%22%22%3Ar%2Cr%3Dt.title%2Ct%3Dt.observer%3Breturn%20a%20instanceof%20HTMLElement%26%26a.remove()%2Cg(%22options.%22%2Be%2B%22.v%22%2C!1)%2Ct%26%26u.remove(t.observer)%2Cnull%7D%2C_%3D%7Badd%3Ae%2Cremove%3AS%2CisDisabled%3Am%2CgetState%3Ah%2CnoUi%3AT%7D%2CL%3Dnull%2Cz%3D%22Score%20so%20far%22%2CC%3D%22scoreSoFar%22%2CA%3Dp.create(%7Btag%3A%22tbody%22%7D)%2Ct%3D%7Badd%3Afunction(e)%7Bvar%20t%2Ca%3Breturn%20_.isDisabled(C)%7C%7C(L%3Dp.create(%7Btag%3A%22details%22%2Ctext%3A%5Bz%2C%22summary%22%5D%2Cattributes%3A%7Bopen%3A!0%7D%7D)%2Ct%3Dp.create(%7Btag%3A%22table%22%2CclassNames%3A%5B%22pane%22%5D%7D)%2C(a%3Dp.create(%7Btag%3A%22thead%22%7D)).append(p.create(%7Btag%3A%22tr%22%2CcellTag%3A%22th%22%2CcellData%3A%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D%7D))%2Ct.append(a)%2Ct.append(A)%2Cy()%2CL.append(t)%2Ce.addEventListener(c(%22updateComplete%22)%2Cfunction()%7By()%7D))%2C_.add(%7Bapp%3Ae%2Cplugin%3AL%2Ckey%3AC%2Ctitle%3Az%2Coptional%3A!0%7D)%7D%2Cremove%3Afunction()%7Breturn%20_.remove(%7Bplugin%3AL%2Ckey%3AC%2Ctitle%3Az%7D)%7D%7D%2CN%3Dvoid%200%2CO%3D%22Set-up%22%2C%24%3D%7Badd%3Afunction(e)%7BN%3Dp.create(%7Btag%3A%22details%22%2Ctext%3A%5BO%2C%22summary%22%5D%7D)%3Bvar%20t%3Dp.create(%7Btag%3A%22ul%22%2CclassNames%3A%5B%22pane%22%5D%7D)%3Breturn%20N.append(t)%2Ce.addEventListener(c(%22launchComplete%22)%2Cfunction()%7B!function(r%2Cn)%7Bvar%20e%3D!0%2Ct%3D!1%2Ca%3Dvoid%200%3Btry%7Bfor(var%20i%3DObject.entries(l(%22options%22))%5BSymbol.iterator%5D()%3B!(e%3D(s%3Di.next()).done)%3Be%3D!0)%7Bvar%20o%3Ds.value%2Cs%3D_slicedToArray(o%2C2)%2Co%3Ds%5B0%5D%3B!function(e%2Ct)%7Bvar%20a%3Dp.create(%7Btag%3A%22li%22%7D)%2Ce%3Dp.create(%7Btag%3A%22input%22%2Ctext%3Ae.t%2Cattributes%3A%7Btype%3A%22checkbox%22%2Cname%3At%7D%2Cevents%3A%7Bclick%3Afunction(e)%7Br.dispatchEvent(new%20CustomEvent(c(t)%2C%7Bdetail%3A%7Benabled%3Ae.target.checked%7D%7D))%7D%7D%2Cchecked%3Ae.v%7D)%3Ba.append(e)%2Cn.append(a)%7D(s%5B1%5D%2Co)%7D%7Dcatch(e)%7Bt%3D!0%2Ca%3De%7Dfinally%7Btry%7B!e%26%26i.return%26%26i.return()%7Dfinally%7Bif(t)throw%20a%7D%7D%7D(e%2Ct)%7D)%2C_.add(%7Bapp%3Ae%2Cplugin%3AN%2Ckey%3A%22setUp%22%2Ctitle%3AO%2Coptional%3A!1%7D)%7D%2Cremove%3Afunction()%7Breturn%20_.remove(%7Bplugin%3AN%2Ckey%3A%22setUp%22%2Ctitle%3AO%7D)%7D%7D%2CD%3Dvoid%200%2CM%3D%22Spill%20the%20beans%22%2CB%3D%22spillTheBeans%22%2CF%3Dvoid%200%2CH%3D%7Badd%3Afunction(e%2Ct)%7Bvar%20a%2Cr%2Cn%3Breturn%20_.isDisabled(B)%7C%7C(r%3De%2Cn%3Dp.%24(%22.sb-hive-input-content%22%2Ct)%2CF%3D%7Bobserver%3Anew%20MutationObserver(function(e)%7Br.dispatchEvent(new%20CustomEvent(c(%22spill%22)%2C%7Bdetail%3A%7Btext%3Ae.pop().target.textContent.trim()%7D%7D))%7D)%2Ctarget%3An%2Cargs%3A%7BchildList%3A!0%7D%7D%2Ct%3Dp.create(%7BclassNames%3A%5B%22pane%22%5D%7D)%2Cn%3Dp.create(%7Btext%3A%22Watch%20me%20while%20you%20type!%22%2CclassNames%3A%5B%22spill-title%22%5D%7D)%2Ca%3Dp.create(%7Btext%3A%22%F0%9F%98%90%22%2CclassNames%3A%5B%22spill%22%5D%7D)%2Ct.append(n)%2Ct.append(a)%2CD%3Dp.create(%7Btag%3A%22details%22%2Ctext%3A%5BM%2C%22summary%22%5D%7D)%2Ce.addEventListener(%22sbaSpill%22%2Cfunction(e)%7Bvar%20t%3Ba.textContent%3D(t%3De.detail.text)%3Fo(%22remainders%22).filter(function(e)%7Breturn%20e.startsWith(t)%7D).length%3F%22%F0%9F%99%82%22%3A%22%F0%9F%99%81%22%3A%22%F0%9F%98%90%22%7D)%2CD.append(t))%2C_.add(%7Bapp%3Ae%2Cplugin%3AD%2Ckey%3AB%2Ctitle%3AM%2Coptional%3A!0%2Cobserver%3AF%7D)%7D%2Cremove%3Afunction()%7Breturn%20_.remove(%7Bplugin%3AD%2Ckey%3AB%2Ctitle%3AM%2Cobserver%3AF%7D)%7D%7D%2CU%3Dvoid%200%2CY%3D%22Spoilers%22%2CP%3D%22spoilers%22%2CR%3Dp.create(%7Btag%3A%22tbody%22%7D)%2CI%3D%7Badd%3Afunction(e)%7Bvar%20t%2Ca%3Breturn%20_.isDisabled(P)%7C%7C(U%3Dp.create(%7Btag%3A%22details%22%2Ctext%3A%5BY%2C%22summary%22%5D%7D)%2Ct%3Dp.create(%7Btag%3A%22table%22%2CclassNames%3A%5B%22pane%22%5D%7D)%2C(a%3Dp.create(%7Btag%3A%22thead%22%7D)).append(p.create(%7Btag%3A%22tr%22%2CcellTag%3A%22th%22%2CcellData%3A%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D%7D))%2Ct.append(a)%2Ct.append(R)%2Cx()%2CU.append(t)%2Ce.addEventListener(c(%22updateComplete%22)%2Cfunction()%7Bx()%7D))%2C_.add(%7Bapp%3Ae%2Cplugin%3AU%2Ckey%3AP%2Ctitle%3AY%2Coptional%3A!0%7D)%7D%2Cremove%3Afunction()%7Breturn%20_.remove(%7Bplugin%3AU%2Ckey%3AP%2Ctitle%3AY%7D)%7D%7D%2CW%3Dvoid%200%2CX%3D%22header%22%2Cq%3Dvoid%200%2CJ%3D!1%2CZ%3D%7Badd%3Afunction(e%2Ct)%7BW%3Dp.create()%3Bvar%20a%3Dp.create(%7Btext%3Al(%22title%22)%2Cattributes%3A%7Btitle%3A%22Hold%20the%20mouse%20down%20to%20drag%22%7D%2CclassNames%3A%5B%22dragger%22%5D%7D)%3BW.append(a)%3Bvar%20r%3Dp.create(%7Btag%3A%22span%22%2Ctext%3A%22%C3%97%22%2Cattributes%3A%7Btitle%3A%22Close%22%7D%2CclassNames%3A%5B%22closer%22%5D%2Cevents%3A%7Bclick%3Afunction()%7Be.dispatchEvent(new%20Event(c(%22destroy%22)))%7D%7D%7D)%2Ca%3Dp.create(%7Btag%3A%22span%22%2Cattributes%3A%7Btitle%3A%22Minimize%22%7D%2CclassNames%3A%5B%22minimizer%22%5D%2Cevents%3A%7Bclick%3Afunction()%7Be.classList.toggle(%22minimized%22)%7D%7D%7D)%3Breturn%20e.addEventListener(%22pointerdown%22%2Cfunction(e)%7BJ%3D!!e.target.closest('%5Bdata-plugin%3D%22header%22%5D')%7D)%2Ce.addEventListener(%22pointerup%22%2Cfunction(e)%7BJ%3D!1%7D)%2CW.append(a)%2CW.append(r)%2Ck(e%2Ct)%2C_.add(%7Bapp%3Ae%2Cplugin%3AW%2Ckey%3AX%7D)%7D%2Cremove%3Afunction()%7Breturn%20_.remove(%7Bplugin%3AW%2Ckey%3AX%2Ctitle%3A%22Header%22%7D)%7D%7D%2CQ%3Dvoid%200%2CG%3D%22Surrender%22%2CK%3D%22surrender%22%2CV%3D%7Badd%3Afunction(e%2Ct)%7Bvar%20a%2Cr%3Breturn%20_.isDisabled(K)%7C%7C(Q%3Dp.create(%7Btag%3A%22details%22%2Ctext%3A%5BG%2C%22summary%22%5D%7D)%2Ca%3Dp.create(%7BclassNames%3A%5B%22pane%22%5D%7D)%2Cr%3Dp.create(%7Btag%3A%22button%22%2CclassNames%3A%5B%22hive-action%22%5D%2Ctext%3A%22Display%20answers%22%2Cattributes%3A%7Btype%3A%22button%22%7D%2Cevents%3A%7Bclick%3Afunction()%7Bw(p.%24(%22.sb-wordlist-items%22%2Ct))%7D%7D%7D)%2Ca.append(r)%2CQ.append(a))%2C_.add(%7Bapp%3Ae%2Cplugin%3AQ%2Ckey%3AK%2Ctitle%3AG%2Coptional%3A!0%7D)%7D%2Cremove%3Afunction()%7Breturn%20_.remove(%7Bplugin%3AQ%2Ckey%3AK%2Ctitle%3AG%7D)%7D%7D%2Cee%3Dvoid%200%2Cte%3D%22Steps%20to%20success%22%2Cae%3D%22stepsToSuccess%22%2Cre%3Dvoid%200%2Cne%3D%7B%7D%2Cie%3Dfunction(e%2Ct)%7Bvar%20a%3Dv(%22answers%22)%3Bp.%24%24(%22.sb-modal-list%20li%22%2Ce).forEach(function(e)%7Be%3De.textContent.match(%2F(%5B%5E%5C(%5D%2B)%20%5C((%5Cd%2B)%5C)%2F)%3Bne%5Be%5B1%5D%5D%3DparseInt(e%5B2%5D%2C10)%7D)%2Cne%5B%22Queen%20Bee%22%5D%3Da%2Ce.parentElement.style.opacity%3D0%2Cp.%24(%22.sb-modal-close%22%2Ce).click()%2Cu.remove(re.observer)%2Coe(t)%7D%2Coe%3Dfunction(e)%7Be.innerHTML%3D%22%22%3Bvar%20t%3DObject.values(ne).filter(function(e)%7Breturn%20e%3C%3Dv(%22foundTerms%22)%7D).pop()%2Ca%3D!0%2Cr%3D!1%2Cn%3Dvoid%200%3Btry%7Bfor(var%20i%3DObject.entries(ne)%5BSymbol.iterator%5D()%3B!(a%3D(s%3Di.next()).done)%3Ba%3D!0)%7Bvar%20o%3Ds.value%2Cs%3D_slicedToArray(o%2C2)%2Co%3Ds%5B0%5D%2Cs%3Ds%5B1%5D%3Be.append(p.create(%7Btag%3A%22tr%22%2CclassNames%3As%3D%3D%3Dt%3F%5B%22sba-current%22%5D%3A%5B%5D%2CcellTag%3A%22td%22%2CcellData%3A%5Bo%2Cs%5D%7D))%7D%7Dcatch(e)%7Br%3D!0%2Cn%3De%7Dfinally%7Btry%7B!a%26%26i.return%26%26i.return()%7Dfinally%7Bif(r)throw%20n%7D%7D%7D%2Cse%3D%7Badd%3Afunction(e%2Cr)%7Bvar%20t%2Cn%3Breturn%20_.isDisabled(ae)%7C%7C(ee%3Dp.create(%7Btag%3A%22details%22%2Ctext%3A%5Bte%2C%22summary%22%5D%7D)%2Ct%3Dp.create(%7Btag%3A%22table%22%2CclassNames%3A%5B%22pane%22%5D%7D)%2Cn%3Dp.create(%7Btag%3A%22tbody%22%7D)%2Ct.append(n)%2Cee.addEventListener(%22toggle%22%2Cfunction()%7Bvar%20e%2Ct%2Ca%3Bee.open%26%26!n.hasChildNodes()%26%26(e%3Dp.%24(%22.sb-modal-wrapper%22)%2Ct%3De%2Ca%3Dn%2Cre%3D%7Bobserver%3Anew%20MutationObserver(function(e)%7Be%3De.pop().target%2Ce%3Dp.%24(%22.sb-modal-title%22%2Ce)%3Be%26%26%22Rankings%22%3D%3D%3De.textContent.trim()%26%26(t.parentElement.style.opacity%3D0%2Cie(t%2Ca))%7D)%2Ctarget%3At%2Cargs%3A%7BchildList%3A!0%7D%7D%2Cu.add(re.observer%2Cre.target%2Cre.args)%2Cp.%24(%22.sb-progress%22%2Cr).click())%7D)%2Cee.append(t)%2Ce.addEventListener(c(%22updateComplete%22)%2Cfunction()%7Boe(n)%7D))%2C_.add(%7Bapp%3Ae%2Cplugin%3Aee%2Ckey%3Aae%2Ctitle%3Ate%2Coptional%3A!0%7D)%7D%2Cremove%3Afunction()%7Breturn%20_.remove(%7Bplugin%3Aee%2Ckey%3Aae%2Ctitle%3Ate%7D)%7D%7D%2Cle%3Dvoid%200%2Cde%3D%7Badd%3Afunction(e)%7Breturn%20le%3Dp.create(%7Btag%3A%22a%22%2Ctext%3Al(%22label%22)%2B%22%20%22%2Bl(%22version%22)%2Cattributes%3A%7Bhref%3Al(%22url%22)%2Ctarget%3A%22_blank%22%7D%7D)%2C_.add(%7Bapp%3Ae%2Ckey%3A%22footer%22%2Cplugin%3Ale%7D)%7D%2Cremove%3Afunction()%7Breturn%20_.remove(%7Bplugin%3Ale%2Ckey%3A%22footer%22%2Ctitle%3A%22Footer%22%7D)%7D%7D%2Cce%3D_.noUi%2Cpe%3D%22darkMode%22%2Cue%3D%7Badd%3Afunction(e)%7Breturn%20e.addEventListener(c(pe)%2Cfunction(e)%7Be.detail.enabled%3F(p.%24(%22body%22).classList.add(c(%22dark%22%2C%22d%22))%2Cg(%22options.%22%2Bpe%2B%22.v%22%2C!0))%3A(p.%24(%22body%22).classList.remove(c(%22dark%22%2C%22d%22))%2Cg(%22options.%22%2Bpe%2B%22.v%22%2C!1))%7D)%2Ce.dispatchEvent(new%20CustomEvent(c(pe)%2C%7Bdetail%3A%7Benabled%3A_.getState(ce%2Cpe%2C!1)%7D%7D))%2C_.add(%7Bapp%3Ae%2Cplugin%3Ace%2Ckey%3Ape%2Ctitle%3A%22Dark%20Mode%22%2Coptional%3A!0%2CdefaultState%3A!1%7D)%7D%2Cremove%3Afunction()%7Bapp.dispatchEvent(new%20CustomEvent(c(pe)%2C%7Bdetail%3A%7Benabled%3A!1%7D%7D))%7D%7D%2Cfe%3Dvoid%200%2Cge%3D%7Badd%3Afunction(e)%7Bfe%3Dp.create(%7Btag%3A%22style%22%2Ctext%3A'%5Cufeff.pz-game-field%7Bbackground%3Ainherit%3Bcolor%3Ainherit%7D.sb-wordlist-items%20.sb-pangram%7Bborder-bottom%3A2px%20%23f8cd05%20solid%7D.sb-wordlist-items%20.sb-anagram%20a%7Bcolor%3A%23888%7D.sba-dark%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.sba%7Bbackground%3A%23111%7D.sba-dark%20.sba%20summary%7Bbackground%3A%23252525%3Bcolor%3A%23eee%7D.sba-dark%20.pz-nav__hamburger-inner%2C.sba-dark%20.pz-nav__hamburger-inner%3A%3Abefore%2C.sba-dark%20.pz-nav__hamburger-inner%3A%3Aafter%7Bbackground-color%3A%23eee%7D.sba-dark%20.pz-nav%7Bwidth%3A100%25%3Bbackground%3A%23111%7D.sba-dark%20.pz-nav__logo%7Bfilter%3Ainvert(1)%7D.sba-dark%20.sb-modal-scrim%7Bbackground%3Argba(17%2C17%2C17%2C.85)%3Bcolor%3A%23eee%7D.sba-dark%20.pz-modal__title%7Bcolor%3A%23eee%7D.sba-dark%20.sb-modal-frame%2C.sba-dark%20.pz-modal__button.white%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.pz-modal__button.white%3Ahover%7Bbackground%3A%23393939%7D.sba-dark%20.sb-message%7Bbackground%3A%23393939%7D.sba-dark%20.sb-progress-marker%20.sb-progress-value%2C.sba-dark%20.hive-cell.center%20.cell-fill%7Bbackground%3A%23f7c60a%3Bfill%3A%23f7c60a%3Bcolor%3A%23111%7D.sba-dark%20.sb-input-bright%7Bcolor%3A%23f7c60a%7D.sba-dark%20.hive-cell.outer%20.cell-fill%7Bfill%3A%23393939%7D.sba-dark%20.cell-fill%7Bstroke%3A%23111%7D.sba-dark%20.cell-letter%7Bfill%3A%23eee%7D.sba-dark%20.hive-cell.center%20.cell-letter%7Bfill%3A%23111%7D.sba-dark%20.hive-action%3Anot(.hive-action__shuffle)%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.hive-action__shuffle%7Bfilter%3Ainvert(100%25)%7D.sba-dark%20*%3Anot(.hive-action__shuffle)%3Anot(.sb-pangram)%3Anot(.sba-current)%7Bborder-color%3A%23333%20!important%7D.sba%7Bposition%3Aabsolute%3Bwidth%3A200px%3Bbackground%3Ainherit%3Bbox-sizing%3Aborder-box%3Bz-index%3A3%3Bmargin%3A16px%200%3Bpadding%3A0%2010px%205px%3Bbackground%3A%23fff%3Bborder-width%3A1px%3Bborder-color%3A%23dcdcdc%3Bborder-radius%3A6px%3Bborder-style%3Asolid%7D.sba%20*%2C.sba%20*%3Abefore%2C.sba%20*%3Aafter%7Bbox-sizing%3Aborder-box%7D.sba%20*%3Afocus%7Boutline%3A0%7D.sba%20.dragger%7Bfont-weight%3Abold%3Bcursor%3Amove%3Bline-height%3A32px%7D.sba%20.closer%2C.sba%20.minimizer%7Bfont-size%3A18px%3Bfont-weight%3Abold%3Bposition%3Aabsolute%3Btop%3A0%3Bline-height%3A32px%3Bpadding%3A0%2010px%3Bcursor%3Apointer%7D.sba%20.closer%7Bright%3A0%7D.sba%20.minimizer%7Bright%3A16px%7D.sba%20.minimizer%3Abefore%7Bcontent%3A%22%EF%BC%8D%22%7D.sba.minimized%20details%7Bdisplay%3Anone%7D.sba.minimized%20.minimizer%3Abefore%7Bcontent%3A%22%EF%BC%8B%22%7D.sba%20details%7Bfont-size%3A90%25%3Bmargin-bottom%3A1px%7D.sba%20details%5Bopen%5D%20summary%3Abefore%7Bcontent%3A%22%EF%BC%8D%22%7D.sba%20summary%7Bline-height%3A24px%3Bpadding%3A0%2015px%200%2025px%3Bbackground%3A%23f8cd05%3Bcursor%3Apointer%3Blist-style%3Anone%3Bposition%3Arelative%7D.sba%20summary%3A%3A-webkit-details-marker%7Bdisplay%3Anone%7D.sba%20summary%3Abefore%7Bcontent%3A%22%EF%BC%8B%22%3Bposition%3Aabsolute%3Bleft%3A8px%7D.sba%20.hive-action%7Bmargin%3A0%20auto%3Bdisplay%3Ablock%3Bfont-size%3A100%25%3Bwhite-space%3Anowrap%7D.sba%20.pane%7Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-top%3Anone%3Bborder-collapse%3Acollapse%3Bwidth%3A100%25%3Bfont-size%3A85%25%3Bmargin-bottom%3A4px%7D.sba%20tr%3Afirst-of-type%20td%2C.sba%20tr%3Afirst-of-type%20th%7Bborder-top%3Anone%7D.sba%20tr%20td%3Afirst-of-type%7Btext-align%3Aleft%7D.sba%20tr.sba-current%7Bfont-weight%3Abold%3Bborder-bottom%3A2px%20solid%20%23f8cd05%20!important%7D.sba%20th%2C.sba%20td%7Bborder%3A1px%20solid%20%23dcdcdc%3Bwhite-space%3Anowrap%7D.sba%20thead%20th%7Btext-align%3Acenter%3Bpadding%3A4px%200%7D.sba%20tbody%20th%7Btext-align%3Aright%7D.sba%20tbody%20td%7Btext-align%3Acenter%3Bpadding%3A4px%206px%7D.sba%20%5Bdata-plugin%3Dfooter%5D%20a%7Bcolor%3AcurrentColor%3Bopacity%3A.6%3Bfont-size%3A10px%3Btext-align%3Aright%3Bdisplay%3Ablock%3Bpadding-top%3A8px%7D.sba%20%5Bdata-plugin%3Dfooter%5D%20a%3Ahover%7Bopacity%3A.8%3Btext-decoration%3Aunderline%7D.sba%20.spill-title%7Bpadding%3A10px%206px%200px%3Btext-align%3Acenter%7D.sba%20.spill%7Btext-align%3Acenter%3Bpadding%3A17px%200%3Bfont-size%3A280%25%7D.sba%20ul.pane%7Bpadding%3A5px%7D.sba%20%5Bdata-plugin%3Dsurrender%5D%20.pane%7Bpadding%3A10px%205px%7D.sba%20label%7Bcursor%3Apointer%3Bposition%3Arelative%3Bline-height%3A19px%7D.sba%20label%20input%7Bposition%3Arelative%3Btop%3A2px%3Bmargin%3A0%2010px%200%200%7D%5Cn'.replace(%2F(%5CuFEFF%7C%5C%5Cn)%2Fg%2C%22%22)%7D)%2Ce.addEventListener(c(%22destroy%22)%2Cfunction()%7BE()%7D)%3Bvar%20t%3Dp.%24(%22head%22)%3Breturn%20_.add(%7Bapp%3Ae%2Cplugin%3Afe%2Ckey%3A%22styles%22%2Ctarget%3At%7D)%7D%2Cremove%3AE%7D%2Cve%3Dp.%24(%22%23pz-game-root%22)%2Cbe%3Dfunction(e)%7Bif(!e%7C%7C!window.gameData)return%20console.info(%22This%20bookmarklet%20only%20works%20on%20https%3A%2F%2Fwww.nytimes.com%2Fpuzzles%2Fspelling-bee%22)%2C!1%3Bvar%20t%3Dp.%24(%22.sb-content-box%22%2Ce).getBoundingClientRect()%2Ca%3Dp.%24(%22.sb-wordlist-items%22%2Ce)%3B(e%3D%7B%7D)%5Bc(%22destroy%22)%5D%3Dfunction(e)%7Bu.removeAll()%2Ce.target.remove()%7D%3Bvar%20r%2Ce%3Dp.create(%7Battributes%3A%7Bdraggable%3A!0%7D%2Cstyle%3A%7Bleft%3At.right%2B10%2B%22px%22%2Ctop%3At.top%2Bwindow.pageYOffset%2B%22px%22%7D%2Cdata%3A%7Bid%3Al(%22repo%22)%7D%2CclassNames%3A%5Bl(%22prefix%22)%5D%2Cevents%3Ae%7D)%3Breturn%20i(e%2Ca)%2Cr%3De%2Ca%3Da%2Cb%3D%7Bobserver%3Anew%20MutationObserver(function(e)%7Br.dispatchEvent(new%20CustomEvent(c(%22update%22)%2C%7Bdetail%3A%7Btext%3Ae.pop().addedNodes%5B0%5D%7D%7D))%7D)%2Ctarget%3Aa%2Cargs%3A%7BchildList%3A!0%7D%7D%2Cu.add(b.observer%2Cb.target%2Cb.args)%2Ce%7D(ve)%3Bbe%26%26((e%3Dp.%24('%5Bdata-id%3D%22'%2Bl(%22repo%22)%2B'%22%5D'))%26%26e.dispatchEvent(new%20Event(c(%22destroy%22)))%2Cl(%22prefix%22)%2Cl(%22options.darkMode%22)%2Cl(%22options.darkMode.v%22)%2Cl(%22options.darkMode.x%22)%2C%5Bge%2Cue%2CZ%2Ct%2CI%2CH%2Cse%2CV%2C%24%2Cde%5D.forEach(function(e)%7Be.add(be%2Cve)%7D)%2Cp.%24(%22body%22).append(be)%2Cbe.dispatchEvent(new%20Event(c(%22launchComplete%22))))%7D()%3B%7D)()">Spelling Bee Assistant</a> into your browser’s bookmark menu. Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant.</p>
+        <p><em>Note: The current version of Spelling Bee Assistant is 2.0.0. If you already have an older version, you may want to delete it immediately (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
+      </section>
+      <section id="pz-game-root">
+        <h2>What are the different parts good for?</h2>
+        <ul class="cards">
+          <li><h3>Score so far</h3>
+<p><img src="assets/score-so-far-light.png" alt="Score so far"> How far have you been moving ahead already and long is the way to the top? And - and that's a tiny spoiler - how many points will you need to have to become <em>Queen Bee</em>? That's the sort of question you get answered here.</p>
+</li><li><h3>Spoilers</h3>
+<p><img src="assets/spoilers-light.png" alt="Spoilers"> So you found a good bunch of words, discovered the Pangram but now you wonder if there are words with four letters left that you've been missing. Maybe there is another Pangram hidden in the hive? Or at least a good long term that moves you to the next level? The <em>Spoiler</em> panel won't tell you the words, but it will tell you, how many of each size lay still ahead.</p>
+</li><li><h3>Spill the beans</h3>
+<p><img src="assets/spill-the-beans-light.png" alt="Spill the beans"> What was the name of this bird again, that you only know from solving crosswords? You know what it starts with, nut what came after the 3rd letter agin? This little face might know a thing or two that you don't, so watch it while you type! A happy expression <strong>🙂</strong> means you are on the right track, the sad one <strong>🙁</strong> shows when you're barking up the wrong tree. This weirdly indifferent look <strong>😐</strong> appears when you didn't type anything yet - or that you completed the word already and there is no other letter to look for.</p>
+</li><li><h3>Steps to success</h3>
+<p><img src="assets/steps-to-success-light.png" alt="Steps to success"> You've certainly seen this one before, which is no wonder, because it's pretty close to the <em>Rankings</em> pop-up that is already part of <em>Spelling Bee</em>. But this one you can keep open while you're playing and - as an added bonus - it reveals how far the road to <em>Queen Bee</em> is. The tier that you're currently in is highlighted.</p>
+</li><li><h3>Surrender</h3>
+<p><img src="assets/surrender-light.png" alt="Surrender"> You aren't ready to declare defeat already, are you?</p>
+<p>Well, if you are, no need to wait until 3:00 a.m. ET anymore - with this button you can resolve the game with a mouse clicks. But don't expect to be crowned <em>Queen Bee</em>! All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
+</li><li><h3>Set-up</h3>
+<p><img src="assets/set-up-light.png" alt="Set-up"> So you like only some of the toys here, but not all of them? Get rid of those you don't like, they won't bother you anymore. Unless of course you use the assistant on another browser, then you'll have to do it all over again.</p>
+<p>Oh, and while you're on it don't miss the Dark Mode!</p>
+</li><li><h3>Header</h3>
+<p>You can grab the Spelling Bee Assistant by the header to drag it anywhere inside the game area. Click on <strong>-</strong> to minimize it and on <strong>×</strong> to remove it from the game.</p>
+</li><li><h3>Footer</h3>
+<p>Click on the link to <a href="https://www.spelling-bee-assistant.app/">visit the homepage</a> of the Spelling Bee Assistant.</p>
+</li>            
+        </ul>
+      </section>
+      </section>
+      <section>
+        <h2 id="bookmarklet">What is a bookmarklet?</h2>
+        <p>Bookmarklets are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks, in your browser’s bookmark menu.</p>
+        <p><img alt="Bookmarks" src="assetsS/bookmarklet.png?2.0.0"><br /></p>
+      </section>
+      <section>
+        <h2>Does it work everywhere?</h2>
+        <p>The assistant is not suitable for the mobile version of the game and has only been tested in the desktop version. It requires a <a href="https://caniuse.com/details">modern browser</a> and won’t work in Internet Explorer.</p>
+        <h2>Does it not spoil the game?</h2>
+        <p>Other people have been creating <a href="https://www.shunn.net/bee/">tools with a similar purpose</a> which - according to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html">this article</a> - the Spelling Bee community seems to like well.</p>
+        <p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the <em>Spoilers</em> panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
+        <h2>How did you do this?</h2>
+        <p>The source code is available under the MIT License from <a href="https://github.com/draber/draber.github.io">this repository</a>.</p>
+        <h2>I discovered a bug | I’d like to ask for a new feature</h2>
+        <p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
+        <h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
+        <p>No.</p>
+      </section>
     </main>
     <script>
-        document.querySelector('.bookmarklet').addEventListener('dragstart', e => {
-            window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams({
-                v: 1,
-                tid: 'UA-182372232-1',
-                cid: Date.now(),
-                t: 'event',
-                aip: '1',
-                ec: 'SBA Download',
-                ea: e.type,
-                el: '1.4.0'
-            }).toString());
-        }, false);
+      (function () {
+    // simulate display of `.sb-modal-list`
+    const modalList = document.querySelector('.sb-modal-list');
+    const progress = document.querySelector('.sb-progress');
+    const modalWrapper = document.querySelector('.sb-modal-wrapper');
+    const input = document.querySelector('.sb-hive-input-content');
+    const data = window.gameData.today;
+    const foundTerms = [];
+    document.querySelectorAll('.sb-wordlist-items li').forEach(node => {
+        foundTerms.push(node.textContent.trim());
+    });
+    const remainders = data.answers.filter(term => !foundTerms.includes(term));
+
+    document.querySelector('#random-term').textContent= remainders[Math.floor(Math.random() * remainders.length)];
+
+    progress.addEventListener('click', () => {
+        modalWrapper.append(modalList);
+    });
+    document.querySelectorAll('[data-trigger]').forEach(trigger => {
+        trigger.addEventListener('click', function(evt){
+            document.querySelector(`[data-plugin="${this.dataset.trigger}"] details`).open = true;
+        })
+    })
+    // input.addEventListener('focus', evt => {
+    //     document.querySelector('[data-plugin="spillTheBeans"] details').open = true;
+    // })
+    input.addEventListener('keydown', evt => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        if (evt.key === 'Backspace' && input.hasChildNodes()) {
+            input.lastChild.remove();
+            return false;
+        } else if (!(/^[a-zA-Z]$/.test(evt.key))) {
+            return false;
+        }
+        const txt = document.createElement('span');
+        txt.textContent = evt.key.toLowerCase();
+        if (evt.key === data.centerLetter) {
+            txt.classList.add('highlight');
+        }
+        input.append(txt);
+    })
+}())       
     </script>
-    <script type="text/javascript">
-                        window.gameData = {
-                            "today": {
-                                "expiration": 1606550400,
-                                "displayWeekday": "Friday",
-                                "displayDate": "November 27, 2020",
-                                "printDate": "2020-11-27",
-                                "centerLetter": "n",
-                                "outerLetters": ["d", "e", "l", "o", "p", "v"],
-                                "validLetters": ["n", "d", "e", "l", "o", "p", "v"],
-                                "pangrams": ["enveloped"],
-                                "answers": ["enveloped", "deepen", "deepened", "depend", "depended", "done", "donee", "donned", "eleven", "ended", "envelop", "envelope", "even", "evened", "lend", "lone", "loon", "need", "needed", "needle", "needled", "nene", "neon", "nodded", "node", "noel", "none", "noodle", "noodled", "noon", "nope", "novel", "odeon", "olden", "open", "opened", "oven", "peen", "pend", "pended", "penne", "penned", "peon", "pollen", "pond", "pone", "vend", "vended"],
-                                "id": 10782,
-                                "freeExpiration": 0,
-                                "editor": "Sam Ezersky"
-                            },
-                            "yesterday": {
-                                "displayWeekday": "Thursday",
-                                "displayDate": "November 26, 2020",
-                                "printDate": "2020-11-26",
-                                "centerLetter": "l",
-                                "outerLetters": ["a", "m", "n", "o", "r", "y"],
-                                "validLetters": ["l", "a", "m", "n", "o", "r", "y"],
-                                "pangrams": ["normally"],
-                                "answers": ["normally", "alarm", "allay", "alloy", "ally", "amoral", "amorally", "amyl", "anal", "anally", "annal", "anomaly", "lama", "layman", "llama", "llano", "loam", "loamy", "loan", "loll", "loom", "loon", "loony", "lorry", "loyal", "loyally", "mall", "mammal", "manly", "mayoral", "molar", "moll", "moola", "moral", "morally", "nonroyal", "normal", "nylon", "onlay", "only", "oral", "orally", "rally", "roll", "royal", "royally"],
-                                "id": 10781,
-                                "freeExpiration": 0,
-                                "editor": "Sam Ezersky"
-                            }
-                        }
-                    </script>
-                    <script>(function () {
-    'use strict';
-
-    const $ = (expr, container) => {
-        return typeof expr === 'string' ? (container || document).querySelector(expr) : expr || null;
-    };
-    const $$ = (expr, container) => {
-        return [].slice.call((container || document).querySelectorAll(expr));
-    };
-    const tableRow = ({
-        classNames = [],
-        events = {},
-        cellData = [],
-        cellTag = 'td'
-    } = {}) => {
-        const row = create({
-            tag: 'tr',
-            classNames: classNames,
-            events: events
-        });
-        cellData.forEach(entry => {
-            row.append(create({
-                tag: cellTag,
-                text: entry
-            }));
-        });
-        return row;
-    };
-    const labeledCheckbox = ({
-        text = '',
-        classNames = [],
-        attributes = {},
-        events = {}
-    } = {}) => {
-        const checkbox = create({
-            tag: 'input',
-            attributes: attributes,
-            events: events
-        });
-        const label = create({
-            tag: 'label',
-            text: text,
-            classNames: classNames
-        });
-        label.prepend(checkbox);
-        return label;
-    };
-    const create = ({
-        tag = 'div',
-        text = '',
-        classNames = [],
-        attributes = {},
-        style = {},
-        data = {},
-        events = {},
-        cellData = [],
-        cellTag = 'td'
-    } = {}) => {
-        if (tag === 'tr' && cellData.length) {
-            return tableRow({ classNames, events, cellData, cellTag });
-        }
-        if (tag === 'input' && attributes.type === 'checkbox' && text) {
-            return labeledCheckbox({
-                text,
-                classNames,
-                attributes,
-                events
-            });
-        }
-        const el = document.createElement(tag);
-        for (const [prop, value] of Object.entries(style)) {
-            el.style[prop] = value;
-        }
-        if (classNames.length) {
-            el.classList.add(...classNames);
-        }
-        if (Array.isArray(text)) {
-            el.append(create({
-                tag: text[1],
-                text: text[0]
-            }));
-        } else {
-            el.textContent = text;
-        }
-        for (const [key, val] of Object.entries(attributes)) {
-            if (val !== '') {
-                el.setAttribute(key, val);
-            }
-        }
-        for (const [key, val] of Object.entries(data)) {
-            el.dataset[key] = val;
-        }
-        for (const [event, fn] of Object.entries(events)) {
-            el.addEventListener(event, fn, false);
-        }
-        return el;
-    };
-    var el = {
-        $,
-        $$,
-        create
-    };
-
-    let observers = [];
-    var observers$1 = {
-        add: (observer, target, options) => {
-            observer.observe(target, options);
-            observers.push(observer);
-            return true;
-        },
-        remove: observer => {
-            observer.disconnect();
-            observers = observers.filter(function (_observer) {
-                return _observer !== observer;
-            });
-        },
-        removeAll: function() {
-            observers.forEach(observer => {
-                this.remove(observer);
-            });
-        }
-    };
-
-    var version = "2.0.0";
-
-    var label = "Spelling Bee Assistant";
-    var title = "Assistant";
-    var url = "https://spelling-bee-assistant.app/";
-    var repo = "draber/draber.github.io.git";
-
-    const stored = JSON.parse(localStorage.getItem('sba-settings') || '{}');
-    const get = key => {
-        return settings[key] || settings.options[key] || null;
-    };
-    const set = (key, value) => {
-        settings.options[key] = value;
-        localStorage.setItem('sba-settings', JSON.stringify(settings.options));
-    };
-    const getAll = () => {
-        return settings;
-    };
-    const getStored = () => {
-        return stored;
-    };
-    let settings = {
-        label: label,
-        title: title,
-        url: url,
-        repo: repo,
-        version: version,
-        options: {
-            ...{
-                darkMode: {
-                    v: stored.darkMode ? stored.darkMode.v : document.body.classList.contains('sba-dark'),
-                    t: 'Dark Mode'
-                }
-            },
-            ...stored
-        }
-    };
-    var settings$1 = {
-        get,
-        set,
-        getAll,
-        getStored
-    };
-
-    const lists = {
-        answers: window.gameData.today.answers,
-        pangrams: window.gameData.today.pangrams,
-        foundTerms: [],
-        foundPangrams: [],
-        remainders: []
-    };
-    let app;
-    let resultList;
-    const getList = (type) => {
-        return lists[type];
-    };
-    const getCount = (type) => {
-        return lists[type].length;
-    };
-    const getPoints = type => {
-        const data = lists[type];
-        let points = 0;
-        data.forEach(term => {
-            if (lists.pangrams.includes(term)) {
-                points += term.length + 7;
-            } else if (term.length > 4) {
-                points += term.length;
-            } else {
-                points += 1;
-            }
-        });
-        return points;
-    };
-    const updateLists = () => {
-        lists.foundTerms = [];
-        lists.foundPangrams = [];
-        el.$$('li', resultList).forEach(node => {
-            const term = node.textContent;
-            lists.foundTerms.push(term);
-            if (lists.pangrams.includes(term)) {
-                lists.foundPangrams.push(term);
-                node.classList.add('sb-pangram');
-            }
-        });
-        lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.dispatchEvent(new Event('sbaUpdateComplete'));
-    };
-    const init = (_app, _resultList) => {
-        resultList = _resultList;
-        app = _app;
-        updateLists();
-        app.addEventListener('sbaUpdate', evt => {
-            updateLists();
-        });
-    };
-    var data = {
-        init,
-        getList,
-        getCount,
-        getPoints
-    };
-
-    const addObserver = (app, target) => {
-        observers$1.add(new MutationObserver(mutationsList => {
-            app.dispatchEvent(new CustomEvent('sbaUpdate', {
-                detail: {
-                    text: mutationsList.pop().addedNodes[0]
-                }
-            }));
-        }), target, {
-            childList: true
-        });
-    };
-    function widget(game) {
-        const rect = el.$('.sb-content-box', game).getBoundingClientRect();
-        const resultList = el.$('.sb-wordlist-items', game);
-        const app = el.create({
-            attributes: {
-                draggable: true
-            },
-            style: {
-                left: (rect.right + 10) + 'px',
-                top: (rect.top + window.pageYOffset) + 'px',
-            },
-            data: {
-                id: settings$1.get('repo')
-            },
-            classNames: ['sba'],
-            events: {
-                sbaDestroy: evt => {
-                    observers$1.removeAll();
-                    evt.target.remove();
-                },
-                sbaDarkMode: evt => {
-                    if (evt.detail.enabled) {
-                        document.body.classList.add('sba-dark');
-                    } else {
-                        document.body.classList.remove('sba-dark');
-                    }
-                }
-            }
-        });
-        data.init(app, resultList);
-        addObserver(app, resultList);
-        app.dispatchEvent(new CustomEvent('sbaDarkMode', {
-            detail: {
-                enabled: settings$1.get('darkMode')
-            }
-        }));
-        return app;
-    }
-
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .sba summary,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid;padding:0 10px 5px}.sba *,.sba *:before,.sba *:after{box-sizing:inherit}.sba *{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba.dragging{opacity:.5;border-style:dashed}.sba .closer{font-size:20px;font-weight:bold;position:absolute;top:0;right:0;line-height:32px;padding:0 10px;cursor:pointer}.sba details{font-size:90%;margin-bottom:1px}.sba details[open] summary:before{content:\"－\"}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"＋\";position:absolute;left:8px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .no-confirmation{display:inline-block;margin:0 0 10px 0;font-size:80%}.sba .no-confirmation input{margin:5px;position:relative;top:2px}.sba table,.sba .frame{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr td:first-of-type{text-align:left}.sba tr.current{font-weight:bold;color:#f8cd05}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.frame{padding:5px}.sba [data-plugin=surrender] .frame{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
-
-    let styles;
-    var styles$1 = {
-        add: (app) => {
-            styles = el.create({
-                tag: 'style',
-                text: css.replace(/(\uFEFF|\\n)/u, '')
-            });
-            app.addEventListener('sbaDestroy', evt => {
-                styles.remove();
-            });
-            return el.$('head').append(styles);
-        },
-        remove: () => {
-            return styles.remove();
-        }
-    };
-
-    const stored$1 = settings$1.getStored();
-    const add = (app, plugin, key, title, optional) => {
-        let slot = el.$(`[data-plugin="${key}"]`, app);
-        if(!slot){
-            slot = el.create({
-                data: {
-                    plugin: key
-                }});
-            app.append(slot);
-        }
-        const available = (stored$1[key] ? stored$1[key].v : optional);
-        if(optional) {
-           settings$1.set(key, { v: available, t: `Display "${title}"` });
-        }
-        const evtName = 'sba' + key.charAt(0).toUpperCase() + key.slice(1);
-        app.addEventListener(evtName, evt => {
-            if(evt.detail.enabled){
-                add(app, plugin, key, title, optional);
-            }
-            else {
-                remove(plugin, key, title);
-            }
-        });
-        slot.append(plugin);
-    };
-    const remove = (plugin, key, title) => {
-        if(!plugin) {
-            console.error(`Plugin "${title}" not initialized`);
-            return null;
-        }
-        const slot = el.$(`[data-plugin="${key}"]`);
-        slot.removeChild(slot.firstChild);
-        settings$1.set(key, { v: false, t: `Display ${title}` });
-        return null;
-    };
-    var plugins = {
-        add,
-        remove
-    };
-
-    const title$1 = "Score so far";
-    const key = 'scoreSoFar';
-    const optional = true;
-    let plugin;
-    const tbody = el.create({ tag: 'tbody'});
-    const update = () => {
-        tbody.innerHTML = '';
-        [
-            [
-                'Words',
-                data.getCount('foundTerms'),
-                data.getCount('remainders'),
-                data.getCount('answers')
-            ],
-            [
-                'Points',
-                data.getPoints('foundTerms'),
-                data.getPoints('remainders'),
-                data.getPoints('answers')
-            ]
-        ].forEach(cellData => {
-            tbody.append(el.create({
-                tag: 'tr',
-                cellData: cellData
-            }));
-        });
-    };
-    var scoreSoFar = {
-        add: (app, game) => {
-            if(settings$1.get(key) === false){
-                return false;
-            }
-            plugin = el.create({
-                tag: 'details',
-                text: [title$1, 'summary'],
-                attributes: {
-                    open: true
-                }
-            });
-            const content = el.create({ tag: 'table'});
-            const thead = el.create({ tag: 'thead'});
-            thead.append(el.create({
-                tag: 'tr',
-                cellTag: 'th',
-                cellData: ['', 'Found', 'Missing', 'Total']
-            }));
-            content.append(thead);
-            content.append(tbody);
-            update();
-            plugin.append(content);
-            app.addEventListener('sbaUpdateComplete', evt => {
-                update();
-            });
-            return plugins.add(app, plugin, key, title$1, optional);
-        },
-        remove: () => {
-            plugin = plugins.remove(plugin, key, title$1);
-            return true;
-        }
-    };
-
-    const title$2 = "Settings";
-    const key$1 = 'settings';
-    const optional$1 = false;
-    let plugin$1;
-    const populate = (app, frame) => {
-        for (const [key, option] of Object.entries(settings$1.getAll().options)) {
-            const li = el.create({
-                tag: 'li'
-            });
-            li.append(el.create({
-                tag: 'input',
-                text: option.t ,
-                attributes: {
-                    type: 'checkbox',
-                    name: key,
-                    checked: option.v
-                },
-                events: {
-                    click: function (evt) {
-                        const evtName = 'sba' + key.charAt(0).toUpperCase() + key.slice(1);
-                        app.dispatchEvent(new CustomEvent(evtName, {
-                            detail: {
-                                enabled: this.checked
-                            }
-                        }));
-                    }
-                }
-            }));
-            frame.append(li);
-        }};
-    var setUp = {
-        add: (app, game) => {
-            plugin$1 = el.create({
-                tag: 'details',
-                text: [title$2, 'summary']
-            });
-            const frame = el.create({
-                tag: 'ul',
-                classNames: ['frame']
-            });
-            plugin$1.append(frame);
-            app.addEventListener('sbaLaunchComplete', evt => {
-                populate(app, frame);
-            });
-            return plugins.add(app, plugin$1, key$1, title$2, optional$1);
-        },
-        remove: () => {
-            plugin$1 = plugins.remove(plugin$1, key$1, title$2);
-            return true;
-        }
-    };
-
-    const title$3 = "Spill the beans";
-    const key$2 = 'spillTheBeans';
-    const optional$2 = true;
-    let observer;
-    let plugin$2;
-    const react = (value) => {
-        if (!value) {
-            return '😐';
-        }
-        if (!data.getList('remainders').filter(term => term.startsWith(value)).length) {
-            return '🙁';
-        }   return '🙂';
-    };
-    const addObserver$1 = (app, target) => {
-        observer = new MutationObserver(mutationsList => {
-            app.dispatchEvent(new CustomEvent('sbaSpill', {
-                detail: {
-                    text: mutationsList.pop().target.textContent.trim()
-                }
-            }));
-        });
-        observers$1.add(observer, target, {
-            childList: true
-        });
-    };
-    var spillTheBeans = {
-        add: (app, game) => {
-            const observerTarget = el.$('.sb-hive-input-content', game);
-            if (settings$1.get(key$2) === false) {
-                return false;
-            }
-            addObserver$1(app, observerTarget);
-            const frame = el.create({
-                classNames: ['frame']
-            });
-            const description = el.create({
-                text: 'Watch me while you type!',
-                classNames: ['spill-title']
-            });
-            const reaction = el.create({
-                text: '😐',
-                classNames: ['spill']
-            });
-            frame.append(description);
-            frame.append(reaction);
-            plugin$2 = el.create({
-                tag: 'details',
-                text: [title$3, 'summary']
-            });
-            app.addEventListener('sbaSpill', evt => {
-                reaction.textContent = react(evt.detail.text);
-            });
-            plugin$2.append(frame);
-            return plugins.add(app, plugin$2, key$2, title$3, optional$2);
-        },
-        remove: () => {
-            plugin$2 = plugins.remove(plugin$2, key$2, title$3);
-            observers$1.remove(observer);
-            return true;
-        }
-    };
-
-    const title$4 = "Spoilers";
-    const key$3 = 'spoilers';
-    const optional$3 = true;
-    let plugin$3;
-    const tbody$1 = el.create({ tag: 'tbody'});
-    const getCellData = () => {
-        const counts = {};
-        const answers = data.getList('answers');
-        const foundTerms = data.getList('foundTerms');
-        const pangramCount = data.getCount('pangrams');
-        const foundPangramCount = data.getCount('foundPangrams');
-        const cellData = [
-            [
-                'Pangrams',
-                foundPangramCount,
-                pangramCount - foundPangramCount,
-                pangramCount
-            ]
-        ];
-        answers.forEach(term => {
-            counts[term.length] = counts[term.length] || {
-                found: 0,
-                missing: 0,
-                total: 0
-            };
-            if (foundTerms.includes(term)) {
-                counts[term.length].found++;
-            } else {
-                counts[term.length].missing++;
-            }
-            counts[term.length].total++;
-        });
-        let keys = Object.keys(counts);
-        keys.sort((a, b) => a - b);
-        keys.forEach(count => {
-            cellData.push([
-                count + ' ' + (count > 1 ? 'letters' : 'letter'),
-                counts[count].found,
-                counts[count].missing,
-                counts[count].total
-            ]);
-        });
-        return cellData;
-    };
-    const update$1 = () => {
-        tbody$1.innerHTML = '';
-        getCellData().forEach(cellData => {
-            tbody$1.append(el.create({
-                tag: 'tr',
-                cellData: cellData
-            }));
-        });
-    };
-    var spoilers = {
-        add: (app, game) => {
-            if (settings$1.get(key$3) === false) {
-                return false;
-            }
-            plugin$3 = el.create({
-                tag: 'details',
-                text: [title$4, 'summary']
-            });
-            const content = el.create({ tag: 'table'});
-            const thead = el.create({ tag: 'thead'});
-            thead.append(el.create({
-                tag: 'tr',
-                cellTag: 'th',
-                cellData: ['', 'Found', 'Missing', 'Total']
-            }));
-            content.append(thead);
-            content.append(tbody$1);
-            update$1();
-            plugin$3.append(content);
-            app.addEventListener('sbaUpdateComplete', evt => {
-                update$1();
-            });
-            return plugins.add(app, plugin$3, key$3, title$4, optional$3);
-        },
-        remove: () => {
-            plugin$3 = plugins.remove(plugin$3, key$3, title$4);
-            return true;
-        }
-    };
-
-    const title$5 = 'Header';
-    const key$4 = 'header';
-    const optional$4 = false;
-    let plugin$4;
-    let params;
-    const getDragParams = (evt, game) => {
-        const gRect = game.getBoundingClientRect();
-        const aRect = evt.target.getBoundingClientRect();
-        const aStyle = getComputedStyle(evt.target);
-        const minT = gRect.top + window.pageYOffset;
-        const pRect = el.$(`[data-plugin="${key$4}"]`).getBoundingClientRect();
-        const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
-        const result = {
-            maxL: document.documentElement.clientWidth - aRect.width,
-            minT: minT,
-            maxT: minT + gAvailH,
-            offX: evt.clientX - aRect.x,
-            offY: evt.clientY - aRect.y,
-            margT: parseInt(aStyle.marginTop, 10)
-        };
-        return result;
-    };
-    const getDropPosition = evt => {
-        let left = Math.max(0, (evt.clientX - params.offX));
-        left = Math.min(left, (params.maxL)) + 'px';
-        let top = Math.max(params.minT, (evt.clientY + window.pageYOffset - params.margT - params.offY));
-        top = Math.min(top, params.maxT) + 'px';
-        console.log('end', top, params.maxT, evt.clientY, params.offY);
-        return {
-            left,
-            top
-        };
-    };
-    const makeDraggable = (app, game) => {
-        game.addEventListener('dragover', evt => {
-            evt.preventDefault();
-        });
-        app.addEventListener('dragstart', evt => {
-            evt.target.style.opacity = .2;
-            params = getDragParams(evt, game);
-            console.log('start', params);
-        }, false);
-        app.addEventListener('dragend', evt => {
-            Object.assign(evt.target.style, getDropPosition(evt));
-            evt.target.style.opacity = 1;
-        });
-    };
-    var header = {
-        add: (app, game) => {
-            plugin$4 = el.create();
-            const title = el.create({
-                text: settings$1.get('title'),
-                attributes: {
-                    title: 'Hold the mouse down to drag'
-                },
-                classNames: ['dragger']
-            });
-            plugin$4.append(title);
-            const closer = el.create({
-                tag: 'span',
-                text: '×',
-                attributes: {
-                    title: 'Close'
-                },
-                classNames: ['closer'],
-                events: {
-                    click: () => {
-                        app.dispatchEvent(new Event('sbaDestroy'));
-                    }
-                }
-            });
-            plugin$4.append(closer);
-            makeDraggable(app, game);
-            return plugins.add(app, plugin$4, key$4, title, optional$4);
-        },
-        remove: () => {
-            plugin$4 = plugins.remove(plugin$4, key$4, title$5);
-            return true;
-        }
-    };
-
-    const title$6 = "Surrender";
-    const key$5 = 'surrender';
-    const optional$5 = true;
-    let plugin$5;
-    const pangrams = window.gameData.today.pangrams;
-    const buildEntry = term => {
-        const entry = el.create({
-            tag: 'li',
-            classNames: pangrams.includes(term) ? ['sb-anagram', 'sb-pangram'] : ['sb-anagram']
-        });
-        entry.append(el.create({
-            tag: 'a',
-            text: term,
-            attributes: {
-                href: `https://www.google.com/search?q=${term}`,
-                target: '_blank'
-            }
-        }));
-        return entry;
-    };
-    const resolve = (resultList) => {
-        observers$1.removeAll();
-        data.getList('remainders').forEach(term => {
-            resultList.append(buildEntry(term));
-        });
-    };
-    var surrender = {
-        add: (app, game) => {
-            if (settings$1.get(key$5) === false) {
-                return false;
-            }
-            plugin$5 = el.create({
-                tag: 'details',
-                text: [title$6, 'summary']
-            });
-            const frame = el.create({
-                classNames: ['frame']
-            });
-            const button = el.create({
-                tag: 'button',
-                classNames: ['hive-action'],
-                text: 'Display answers',
-                attributes: {
-                    type: 'button'
-                },
-                events: {
-                    click: function (evt) {
-                        resolve(el.$('.sb-wordlist-items', game));
-                    }
-                }
-            });
-            frame.append(button);
-            plugin$5.append(frame);
-            return plugins.add(app, plugin$5, key$5, title$6, optional$5);
-        },
-        remove: () => {
-            plugin$5 = plugins.remove(plugin$5, key$5, title$6);
-            return true;
-        }
-    };
-
-    const title$7 = "Steps to success";
-    const key$6 = 'steps';
-    const optional$6 = true;
-    let observer$1;
-    let plugin$6;
-    const steps = {};
-    const allPoints = data.getPoints('answers');
-    const addObserver$2 = (target, frame) => {
-        observer$1 = new MutationObserver(mutationsList => {
-            const node = mutationsList.pop().target;
-            const title = el.$('.sb-modal-title', node);
-            if (title && title.textContent.trim() === 'Rankings') {
-                init$1(target, frame);
-            }
-        });
-        observers$1.add(observer$1, target, {
-            childList: true
-        });
-    };
-    const init$1 = (modal, frame) => {
-        el.$$('.sb-modal-list li', modal).forEach(element => {
-            const values = element.textContent.match(/([^\(]+) \((\d+)\)/);
-            steps[values[1]] = parseInt(values[2], 10);
-        });
-        steps['Queen Bee'] = allPoints;
-        el.$('.sb-modal-close', modal).click();
-        observers$1.remove(observer$1);
-        update$2(frame);
-    };
-    const update$2 = (frame) => {
-        frame.innerHTML = '';
-        const ownPoints = data.getPoints('foundTerms');
-        let previous;
-        let hasCurrent = false;
-        for (const [key, value] of Object.entries(steps)) {
-            const cell = el.create({
-                tag: 'tr',
-                cellTag: 'td',
-                cellData: [key, value]
-            });
-            frame.append(cell);
-            if(ownPoints < value && previous && !hasCurrent) {
-                previous.classList.add('current');
-                hasCurrent = true;
-            }
-            previous = cell;
-        }};
-    var steps$1 = {
-        add: (app, game) => {
-            plugin$6 = el.create({
-                tag: 'details',
-                text: [title$7, 'summary']
-            });
-            const content = el.create({
-                tag: 'table'
-            });
-            const frame = el.create({
-                tag: 'tbody'
-            });
-            content.append(frame);
-            plugin$6.addEventListener('toggle', event => {
-                if (plugin$6.open && !frame.hasChildNodes()) {
-                    addObserver$2(el.$('.sb-modal-wrapper'), frame);
-                    el.$('.sb-progress', game).click();
-                }
-            });
-            plugin$6.append(content);
-            app.addEventListener('sbaUpdateComplete', evt => {
-                update$2(frame);
-            });
-            return plugins.add(app, plugin$6, key$6, title$7, optional$6);
-        },
-        remove: () => {
-            plugin$6 = plugins.remove(plugin$6, key$6, title$7);
-            observers$1.remove(observer$1);
-            return true;
-        }
-    };
-
-    const title$8 = 'Footer';
-    const key$7 = 'footer';
-    const optional$7 = false;
-    let plugin$7;
-    var footer = {
-        add: (app, game) => {
-            plugin$7 = el.create({
-                tag: 'a',
-                text: `${settings$1.get('label')} ${settings$1.get('version')}`,
-                attributes: {
-                    href: settings$1.get('url'),
-                    target: '_blank'
-                }
-            });
-            return plugins.add(app, plugin$7, key$7, title$8, optional$7);
-        },
-        remove: () => {
-            plugin$7 = plugins.remove(plugin$7, key$7, title$8);
-            return true;
-        }
-    };
-
-    if (window.gameData) {
-        const game = el.$('#pz-game-root');
-        const app = widget(game);
-        const oldInstance = el.$(`[data-id="${settings$1.get('repo')}"]`);
-        if (oldInstance) {
-            oldInstance.dispatchEvent(new Event('sbaDestroy'));
-        }
-        document.body.append(app);
-        [header, scoreSoFar, spoilers, spillTheBeans, steps$1, surrender, setUp, footer].forEach(plugin => {
-            plugin.add(app, game);
-        });
-        styles$1.add(app);
-        app.dispatchEvent(new Event('sbaLaunchComplete'));
-    }
-
-}());
-
-                    </script>
-</body>
+    <script>
+      document.querySelector('.bookmarklet').addEventListener('dragstart', e => {
+          window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams({
+              v: 1,
+              tid: 'UA-182372232-1',
+              cid: Date.now(),
+              t: 'event',
+              aip: '1',
+              ec: 'SBA Download',
+              ea: e.type,
+              el: '2.0.0'
+          }).toString());
+      }, false);
+    </script> 
+  </body>
 </html>
