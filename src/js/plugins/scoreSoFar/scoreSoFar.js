@@ -54,7 +54,7 @@ class scoreSoFar extends plugin {
             attributes: {
                 open: true
             },
-            classNames: !this.isEnabled ? ['inactive'] : []
+            classNames: !this.isEnabled() ? ['inactive'] : []
         });
 
         // add and populate content pane        

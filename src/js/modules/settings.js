@@ -24,7 +24,7 @@ const settings = {
 const get = key => {
     let current = Object.create(settings);
     for (let token of key.split('.')) {
-        if (!current[token]) {
+        if (typeof current[token] === 'undefined') {
             return undefined;
         }
         current = current[token];

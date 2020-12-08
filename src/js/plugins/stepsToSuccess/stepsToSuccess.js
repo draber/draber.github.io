@@ -85,7 +85,7 @@ class stepsToSuccess extends plugin {
         this.ui = el.create({
             tag: 'details',
             text: [this.title, 'summary'],
-            classNames: !this.isEnabled ? ['inactive'] : []
+            classNames: !this.isEnabled() ? ['inactive'] : []
         });
 
         // add and populate content pane

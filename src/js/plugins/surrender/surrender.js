@@ -63,7 +63,7 @@ class surrender extends plugin {
 		this.ui = el.create({
 			tag: 'details',
 			text: [this.title, 'summary'],
-            classNames: !this.isEnabled ? ['inactive'] : []
+            classNames: !this.isEnabled() ? ['inactive'] : []
 		});
 		const pane = el.create({
 			classNames: ['pane']
@@ -76,8 +76,8 @@ class surrender extends plugin {
 				type: 'button'
 			},
 			events: {
-				click: function () {
-					resolve(el.$('.sb-wordlist-items', this.app.game));
+				click: () => {
+					resolve(el.$('.sb-wordlist-items', app.game));
 				}
 			}
 		}));

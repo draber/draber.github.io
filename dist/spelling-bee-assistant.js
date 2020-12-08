@@ -134,7 +134,7 @@
     const get = key => {
         let current = Object.create(settings);
         for (let token of key.split('.')) {
-            if (!current[token]) {
+            if (typeof current[token] === 'undefined') {
                 return undefined;
             }
             current = current[token];
@@ -519,7 +519,7 @@
                 attributes: {
                     open: true
                 },
-                classNames: !this.isEnabled ? ['inactive'] : []
+                classNames: !this.isEnabled() ? ['inactive'] : []
             });
             const pane = el.create({
                 tag: 'table',
@@ -613,7 +613,7 @@
             this.ui = el.create({
                 tag: 'details',
                 text: [this.title, 'summary'],
-                classNames: !this.isEnabled ? ['inactive'] : []
+                classNames: !this.isEnabled() ? ['inactive'] : []
             });
             const pane = el.create({
                 classNames: ['pane']
@@ -695,7 +695,7 @@
     		this.ui = el.create({
     			tag: 'details',
     			text: [this.title, 'summary'],
-                classNames: !this.isEnabled ? ['inactive'] : []
+                classNames: !this.isEnabled() ? ['inactive'] : []
     		});
     		const pane = el.create({
     			tag: 'table',
@@ -769,7 +769,7 @@
             this.ui = el.create({
                 tag: 'details',
                 text: [this.title, 'summary'],
-                classNames: !this.isEnabled ? ['inactive'] : []
+                classNames: !this.isEnabled() ? ['inactive'] : []
             });
             const pane = el.create({
                 tag: 'table',
@@ -849,7 +849,7 @@
     		this.ui = el.create({
     			tag: 'details',
     			text: [this.title, 'summary'],
-                classNames: !this.isEnabled ? ['inactive'] : []
+                classNames: !this.isEnabled() ? ['inactive'] : []
     		});
     		const pane = el.create({
     			classNames: ['pane']
@@ -862,8 +862,8 @@
     				type: 'button'
     			},
     			events: {
-    				click: function () {
-    					resolve(el.$('.sb-wordlist-items', this.app.game));
+    				click: () => {
+    					resolve(el.$('.sb-wordlist-items', app.game));
     				}
     			}
     		}));
