@@ -21,7 +21,7 @@ class app {
 
 		this.title = settings.get('label');
 		this.key = camel(this.title);
-		this.game = game;		
+		this.game = game;	
 
 		const oldInstance = el.$(`[data-id="${this.key}"]`);
 		if (oldInstance) {
@@ -64,15 +64,17 @@ class app {
 			events: events
 		});
 
-		data.init(this, resultList);		
-
-        (new MutationObserver(mutationsList => {
+		data.init(this, resultList);
+        
+        this.observer = new MutationObserver(mutationsList => {
 			this.trigger(new CustomEvent(prefix('update'), {
 				detail: {
 					text: mutationsList.pop().addedNodes[0]
 				}
 			}));
-        })).observe(resultList, {
+		})
+		
+		this.observer.observe(resultList, {
             childList: true
 		});
 

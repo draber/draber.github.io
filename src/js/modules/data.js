@@ -69,6 +69,9 @@ const updateLists = (app, resultList) => {
     lists.foundPangrams = [];
 
     el.$$('li', resultList).forEach(node => {
+        if(el.$('a', node)){
+            return false;
+        }
         const term = node.textContent;
         lists.foundTerms.push(term);
         if (lists.pangrams.includes(term)) {

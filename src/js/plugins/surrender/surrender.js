@@ -52,6 +52,7 @@ class surrender extends plugin {
 			if (usedOnce) {
 				return false;
 			}
+			app.observer.disconnect();
 			data.getList('remainders').forEach(term => {
 				resultList.append(buildEntry(term));
 			});

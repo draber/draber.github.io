@@ -221,6 +221,9 @@
         lists.foundTerms = [];
         lists.foundPangrams = [];
         el.$$('li', resultList).forEach(node => {
+            if(el.$('a', node)){
+                return false;
+            }
             const term = node.textContent;
             lists.foundTerms.push(term);
             if (lists.pangrams.includes(term)) {
@@ -289,13 +292,14 @@
     			events: events
     		});
     		data.init(this, resultList);
-            (new MutationObserver(mutationsList => {
+            this.observer = new MutationObserver(mutationsList => {
     			this.trigger(new CustomEvent(prefix$1('update'), {
     				detail: {
     					text: mutationsList.pop().addedNodes[0]
     				}
     			}));
-            })).observe(resultList, {
+    		});
+    		this.observer.observe(resultList, {
                 childList: true
     		});
     		this.registerPlugins = (plugins) => {
@@ -835,6 +839,7 @@
     			if (usedOnce) {
     				return false;
     			}
+    			app.observer.disconnect();
     			data.getList('remainders').forEach(term => {
     				resultList.append(buildEntry(term));
     			});
