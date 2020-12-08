@@ -245,19 +245,6 @@
         getPoints
     };
 
-    const initObserver = (app, target) => {
-    	const observer = new MutationObserver(mutationsList => {
-    		app.on(new CustomEvent(prefix$1('update'), {
-    			detail: {
-    				text: mutationsList.pop().addedNodes[0]
-    			}
-    		}));
-    	});
-    	observer.observe(target, {
-    		childList: true
-    	});
-    	return observer;
-    };
     class app {
     	constructor(game) {
     		if (!game || !window.gameData) {
@@ -302,7 +289,15 @@
     			events: events
     		});
     		data.init(this, resultList);
-    		initObserver(this.ui, resultList);
+            (new MutationObserver(mutationsList => {
+    			this.trigger(new CustomEvent(prefix$1('update'), {
+    				detail: {
+    					text: mutationsList.pop().addedNodes[0]
+    				}
+    			}));
+            })).observe(resultList, {
+                childList: true
+    		});
     		this.registerPlugins = (plugins) => {
     			for (const [key, plugin] of Object.entries(plugins)) {
     				this.registry.set(key, new plugin(this));

@@ -8,27 +8,6 @@ import {
 
 
 /**
- * Watch the result list for changes
- * @param app
- * @param target
- * @returns {MutationObserver}
- */
-const initObserver = (app, target) => {
-	const observer = new MutationObserver(mutationsList => {
-		// we're only interested in the very last mutation
-		app.on(new CustomEvent(prefix('update'), {
-			detail: {
-				text: mutationsList.pop().addedNodes[0]
-			}
-		}));
-	});
-	observer.observe(target, {
-		childList: true
-	});
-	return observer;
-}
-
-/**
  * App container
  * @param {HTMLElement} game
  * @returns {app} app
@@ -85,8 +64,17 @@ class app {
 			events: events
 		});
 
-		data.init(this, resultList);
-		initObserver(this.ui, resultList);
+		data.init(this, resultList);		
+
+        (new MutationObserver(mutationsList => {
+			this.trigger(new CustomEvent(prefix('update'), {
+				detail: {
+					text: mutationsList.pop().addedNodes[0]
+				}
+			}));
+        })).observe(resultList, {
+            childList: true
+		});
 
 		this.registerPlugins = (plugins) => {
 			for (const [key, plugin] of Object.entries(plugins)) {
