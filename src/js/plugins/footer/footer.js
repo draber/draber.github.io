@@ -1,18 +1,16 @@
 import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
-
+import plugin from '../../modules/pluginBase.js';
 /**
- * Link in the footer
+ * Dark Mode plugin
  * 
- * @param {HTMLElement} app
- * @param {Array} args
- * @returns {HTMLElement|boolean} plugin
+ * @param {plugin} app
+ * @returns {plugin} footer
  */
-class footer {
-    constructor(app, ...args) {
+class footer extends plugin {
+    constructor(app) {
 
-        this.app = app;
-        this.args = args;
+        super(app);
         this.title = `${settings.get('label')} ${settings.get('version')}`;
         this.key = 'footer';
 
@@ -24,6 +22,7 @@ class footer {
                 target: '_blank'
             }
         });
+        this.add();
     }
 }
 

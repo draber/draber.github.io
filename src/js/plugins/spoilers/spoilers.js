@@ -1,21 +1,24 @@
 import el from '../../modules/element.js';
-import pluginManager from '../../modules/pluginManager.js';
 import data from '../../modules/data.js';
-import pf from '../../modules/prefixer.js';
+import {
+	prefix,
+	camel
+} from '../../modules/string.js';
+import plugin from '../../modules/pluginBase.js';
 
 /**
- * Spoilers plugin
+ * Dark Mode plugin
  * 
- * @param {HTMLElement} app
- * @param {Array} args
+ * @param {plugin} app
+ * @returns {plugin} spoilers
  */
-class spoilers {
-	constructor(app, ...args) {
+class spoilers extends plugin {
+	constructor(app) {
 
-		this.app = app;
-		this.args = args;
+		super(app);
+
 		this.title = 'Spoilers';
-		this.key = 'spoilers';
+		this.key = camel(this.title);
 		this.optional = true;
 
 		/**
@@ -77,37 +80,36 @@ class spoilers {
 			});
 		}
 
-		// has the user has disabled the plugin?
-		if (pluginManager.isEnabled(this.key, true)) {
 
-			this.ui = el.create({
-				tag: 'details',
-				text: [this.title, 'summary']
-			});
+		this.ui = el.create({
+			tag: 'details',
+			text: [this.title, 'summary'],
+            classNames: !this.isEnabled ? ['inactive'] : []
+		});
 
-			// add and populate content pane
-			const pane = el.create({
-				tag: 'table',
-				classNames: ['pane']
-			});
-			const thead = el.create({
-				tag: 'thead'
-			});
-			thead.append(el.create({
-				tag: 'tr',
-				cellTag: 'th',
-				cellData: ['', 'Found', 'Missing', 'Total']
-			}));
-			pane.append(thead);
-			pane.append(tbody);
+		// add and populate content pane
+		const pane = el.create({
+			tag: 'table',
+			classNames: ['pane']
+		});
+		const thead = el.create({
+			tag: 'thead'
+		});
+		thead.append(el.create({
+			tag: 'tr',
+			cellTag: 'th',
+			cellData: ['', 'Found', 'Missing', 'Total']
+		}));
+		pane.append(thead);
+		pane.append(tbody);
+		update();
+		this.ui.append(pane);
+
+		// update on demand
+		this.app.on(prefix('updateComplete'), () => {
 			update();
-			this.ui.append(pane);
-
-			// update on demand
-			this.app.addEventListener(pf('updateComplete'), () => {
-				update();
-			});
-		}
+		});
+		this.add();
 	}
 }
 

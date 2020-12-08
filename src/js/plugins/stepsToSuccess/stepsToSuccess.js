@@ -1,21 +1,19 @@
 import el from '../../modules/element.js';
-import pluginManager from '../../modules/pluginManager.js';
 import data from '../../modules/data.js';
-import observers from '../../modules/observers.js';
-import pf from '../../modules/prefixer.js';
-
+import { prefix } from '../../modules/string.js';
+import plugin from '../../modules/pluginBase.js';
 
 /**
- * Steps to Success plugin
+ * Dark Mode plugin
  * 
- * @param {HTMLElement} app
- * @param {Array} args
+ * @param {plugin} app
+ * @returns {plugin} stepsToSuccess
  */
-class stepsToSuccess {
-    constructor(app, ...args) {
+class stepsToSuccess extends plugin {
+    constructor(app) {
 
-        this.app = app;
-        this.args = args;
+        super(app);
+      
         this.title = 'Steps to success';
         this.key = 'stepsToSuccess';
         this.optional = true;
@@ -30,13 +28,12 @@ class stepsToSuccess {
 
         /**
          * Watch the result list for changes
-         * Partially initializes the observer, the rest is done in `observers.js` via `pluginManager.js`
          * @param {HTMLElement} target
          * @param {HTMLElement} frame
-         * @returns {{args: {childList: boolean}, observer: MutationObserver, target: HTMLElement}}
+         * @returns {MutationObserver}
          */
         const initObserver = (target, frame) => {
-            const _observer = new MutationObserver(mutationsList => {
+            const observer = new MutationObserver(mutationsList => {
                 const node = mutationsList.pop().target;
                 const title = el.$('.sb-modal-title', node);
                 if (title && title.textContent.trim() === 'Rankings') {
@@ -44,13 +41,10 @@ class stepsToSuccess {
                     retrieveRankings(target, frame);
                 }
             });
-            return {
-                observer: _observer,
-                target: target,
-                config: {
-                    childList: true
-                }
-            }
+            observer.observe(target, {
+                childList: true
+            });
+            return observer;
         }
 
         /**
@@ -67,7 +61,7 @@ class stepsToSuccess {
             steps['Queen Bee'] = allPoints;
             modal.parentElement.style.opacity = 0;
             el.$('.sb-modal-close', modal).click();
-            observers.remove(observer);
+            observer.disconnect();
             update(frame);
         }
 
@@ -88,40 +82,38 @@ class stepsToSuccess {
             }
         }
 
-        // has the user has disabled the plugin?
-        if (pluginManager.isEnabled(this.key, true)) {
+        this.ui = el.create({
+            tag: 'details',
+            text: [this.title, 'summary'],
+            classNames: !this.isEnabled ? ['inactive'] : []
+        });
 
-            this.ui = el.create({
-                tag: 'details',
-                text: [this.title, 'summary']
-            });
+        // add and populate content pane
+        const pane = el.create({
+            tag: 'table',
+            classNames: ['pane']
+        });
+        const frame = el.create({
+            tag: 'tbody'
+        });
+        pane.append(frame);
 
-            // add and populate content pane
-            const pane = el.create({
-                tag: 'table',
-                classNames: ['pane']
-            });
-            const frame = el.create({
-                tag: 'tbody'
-            });
-            pane.append(frame);
-
-            const popUpCloser = el.$('.sb-modal-buttons-section .pz-button__wrapper>button, sb-modal-close', el.$('.sb-modal-wrapper'));
-            if(popUpCloser){
-                popUpCloser.click();
-            }
-            const modal = el.$('.sb-modal-wrapper');
-            observer = initObserver(modal, frame);
-            observers.add(observer);
-            el.$('.sb-progress', args[0]).click();
-
-            this.ui.append(pane);
-
-            // update on demand
-            this.app.addEventListener(pf('updateComplete'), () => {
-                update(frame);
-            });
+        const popUpCloser = el.$('.sb-modal-buttons-section .pz-button__wrapper>button, sb-modal-close', el.$('.sb-modal-wrapper'));
+        if(popUpCloser){
+            popUpCloser.click();
         }
+        const modal = el.$('.sb-modal-wrapper');
+        observer = initObserver(modal, frame);
+        el.$('.sb-progress', app.game).click();
+
+        this.ui.append(pane);
+
+        // update on demand
+        app.on(prefix('updateComplete'), () => {
+            update(frame);
+        });
+        
+        this.add();
     }
 }
 

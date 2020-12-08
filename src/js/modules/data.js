@@ -1,5 +1,5 @@
 import el from './element.js';
-import pf from './prefixer.js';
+import { prefix } from './string.js';
 
 /**
  * Word lists
@@ -77,18 +77,18 @@ const updateLists = (app, resultList) => {
         }
     });
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.dispatchEvent(new Event(pf('updateComplete')));
+    app.on(new Event(prefix('updateComplete')));
 };
 
 /**
  * Build initial word lists
- * @param {HTMLElement} app
+ * @param {app} app
  * @param {HTMLElement} resultList
  */
 const init = (app, resultList) => {
     lists = initLists();
     updateLists(app, resultList);
-    app.addEventListener(pf('update'), () => {
+    app.on(prefix('update'), () => {
         updateLists(app, resultList);
     });
 }

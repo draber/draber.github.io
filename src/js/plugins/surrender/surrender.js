@@ -1,25 +1,27 @@
 import el from '../../modules/element.js';
-import pluginManager from '../../modules/pluginManager.js';
 import data from '../../modules/data.js';
-import observers from '../../modules/observers.js';
+import plugin from '../../modules/pluginBase.js';
+import {
+	camel
+} from '../../modules/string.js';
 
 /**
- * Surrender plugin
+ * Dark Mode plugin
  * 
- * @param {HTMLElement} app
- * @param {Array} args
+ * @param {plugin} app
+ * @returns {plugin} surrender
  */
-class surrender {
-	constructor(app, ...args) {
+class surrender extends plugin {
+	constructor(app) {
 
-		this.app = app;
-		this.args = args;
+		super(app);
+
 		this.title = 'Surrender';
-		this.key = 'surrender';
+		this.key = camel(this.title);
 		this.optional = true;
-		
+
 		let usedOnce = false;
-		
+
 		/**
 		 * Build a single entry for the term list
 		 * @param {String} term
@@ -40,17 +42,16 @@ class surrender {
 			}));
 			return entry;
 		};
-		
+
 		/**
 		 * Display the solution
 		 * @param {HTMLElement} resultList
 		 * @returns {Boolean} 
 		 */
 		const resolve = (resultList) => {
-			if(usedOnce) {
+			if (usedOnce) {
 				return false;
 			}
-			observers.removeAll();
 			data.getList('remainders').forEach(term => {
 				resultList.append(buildEntry(term));
 			});
@@ -58,32 +59,30 @@ class surrender {
 			return true;
 		};
 
-		// has the user has disabled the plugin?
-		if (pluginManager.isEnabled(this.key, true)) {
-
-			// add content pane
-			this.ui = el.create({
-				tag: 'details',
-				text: [this.title, 'summary']
-			});
-			const pane = el.create({
-				classNames: ['pane']
-			});
-			pane.append(el.create({
-				tag: 'button',
-				classNames: ['hive-action'],
-				text: 'Display answers',
-				attributes: {
-					type: 'button'
-				},
-				events: {
-					click: function () {
-						resolve(el.$('.sb-wordlist-items', args[0]));
-					}
+		// add content pane
+		this.ui = el.create({
+			tag: 'details',
+			text: [this.title, 'summary'],
+            classNames: !this.isEnabled ? ['inactive'] : []
+		});
+		const pane = el.create({
+			classNames: ['pane']
+		});
+		pane.append(el.create({
+			tag: 'button',
+			classNames: ['hive-action'],
+			text: 'Display answers',
+			attributes: {
+				type: 'button'
+			},
+			events: {
+				click: function () {
+					resolve(el.$('.sb-wordlist-items', this.app.game));
 				}
-			}));
-			this.ui.append(pane);
-		}
+			}
+		}));
+		this.ui.append(pane);
+		this.add();
 	}
 }
 

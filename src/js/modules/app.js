@@ -1,68 +1,101 @@
 import el from './element.js';
-import observers from './observers.js';
 import settings from './settings.js';
 import data from './data.js';
-import pf from './prefixer.js';
+import {
+	prefix,
+	camel
+} from './string.js';
+
 
 /**
  * Watch the result list for changes
- * Partially initializes the observer, the rest is done in `observers.js`
  * @param app
  * @param target
- * @returns {{config: {childList: boolean}, observer: MutationObserver, target: HTMLElement}}
+ * @returns {MutationObserver}
  */
 const initObserver = (app, target) => {
-	const _observer = new MutationObserver(mutationsList => {
+	const observer = new MutationObserver(mutationsList => {
 		// we're only interested in the very last mutation
-		app.dispatchEvent(new CustomEvent(pf('update'), {
+		app.on(new CustomEvent(prefix('update'), {
 			detail: {
 				text: mutationsList.pop().addedNodes[0]
 			}
 		}));
 	});
-	return {
-		observer: _observer,
-		target: target,
-		config: {
-			childList: true
-		}
-	}
+	observer.observe(target, {
+		childList: true
+	});
+	return observer;
 }
 
 /**
- * Build app container
- * @param {HTMLElement|null} game
- * @returns {HTMLElement|boolean}
+ * App container
+ * @param {HTMLElement} game
+ * @returns {app} app
  */
-export default function widget(game) {
-	if (!game || !window.gameData) {
-		console.info('This bookmarklet only works on https://www.nytimes.com/puzzles/spelling-bee');
-		return false;
-	}
-	const rect = el.$('.sb-content-box', game).getBoundingClientRect();
+class app {
+	constructor(game) {
+		if (!game || !window.gameData) {
+			console.info(`This bookmarklet only works on ${settings.get(targetUrl)}`);
+			return false;
+		}
 
-	const resultList = el.$('.sb-wordlist-items', game);
-	const events = {};
-	events[pf('destroy')] = evt => {
-		observers.removeAll();
-		evt.target.remove();
+		this.title = settings.get('label');
+		this.key = camel(this.title);
+		this.game = game;		
+
+		const oldInstance = el.$(`[data-id="${this.key}"]`);
+		if (oldInstance) {
+			oldInstance.dispatchEvent(new Event(prefix('destroy')));
+		}
+
+		this.registry = new Map();
+
+		this.remove = () => {
+			this.ui.remove();
+		}
+
+		this.on = (evt, action) => {
+			this.ui.addEventListener(evt, action);
+		}
+
+		this.trigger = (evt) => {
+			this.ui.dispatchEvent(evt);
+		}
+
+		const rect = el.$('.sb-content-box', game).getBoundingClientRect();
+
+		const resultList = el.$('.sb-wordlist-items', game);
+		const events = {};
+		events[prefix('destroy')] = () => {
+			this.remove();
+		};
+		this.ui = el.create({
+			attributes: {
+				draggable: true
+			},
+			style: {
+				left: (rect.right + 10) + 'px',
+				top: (rect.top + window.pageYOffset) + 'px',
+			},
+			data: {
+				id: this.key
+			},
+			classNames: [settings.get('prefix')],
+			events: events
+		});
+
+		data.init(this, resultList);
+		initObserver(this.ui, resultList);
+
+		this.registerPlugins = (plugins) => {
+			for (const [key, plugin] of Object.entries(plugins)) {
+				this.registry.set(key, new plugin(this));
+			}
+		}
+		
+		el.$('body').append(this.ui);
 	};
-	const app = el.create({
-		attributes: {
-			draggable: true
-		},
-		style: {
-			left: (rect.right + 10) + 'px',
-			top: (rect.top + window.pageYOffset) + 'px',
-		},
-		data: {
-			id: settings.get('repo')
-		},
-		classNames: [settings.get('prefix')],
-		events: events
-	});
-
-	data.init(app, resultList);
-	observers.add(initObserver(app, resultList));
-	return app;
 }
+
+export default app;

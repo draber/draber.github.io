@@ -1,25 +1,20 @@
 import el from '../../modules/element.js';
-import pf from '../../modules/prefixer.js';
+import { prefix } from '../../modules/string.js';
 import settings from '../../modules/settings.js';
-
-
+import plugin from '../../modules/pluginBase.js';
 /**
- * Header plugin
+ * Dark Mode plugin
  * 
- * @param {HTMLElement} app
- * @param {Array} args
- * @returns {HTMLElement|boolean} plugin
+ * @param {plugin} app
+ * @returns {plugin} header
  */
-class header {
-    constructor(app, ...args) {
+class header extends plugin {
+    constructor(app) {
 
-        this.app = app;
-        this.args = args;
+        super(app);
         this.title = settings.get('title');
         this.key = 'header';
         this.ui = el.create();
-
-        const game = this.args[0];
 
         /**
          * Drag start parameters
@@ -39,10 +34,10 @@ class header {
          * @returns {{minT: number, maxT: number, margT, maxL: number, offX: number, offY: number}}
          */
         const getDragParams = (evt) => {
-            const gRect = game.getBoundingClientRect();
+            const gRect = app.game.getBoundingClientRect();
             const aRect = evt.target.getBoundingClientRect();
             const minT = gRect.top + window.pageYOffset;
-            const pRect = plugin.parentElement.getBoundingClientRect();
+            const pRect = this.ui.parentElement.getBoundingClientRect();
             const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
 
             return {
@@ -77,14 +72,14 @@ class header {
         const makeDraggable = () => {
 
             // ensure correct drag icon
-            [this.app, game].forEach(element => {
+            [app.ui, app.game].forEach(element => {
                 element.addEventListener('dragover', evt => {
                     evt.preventDefault();
                 });
             });
 
             // make app more transparent and get coordinates
-            this.app.addEventListener('dragstart', evt => {
+            app.on('dragstart', evt => {
                 if (!isLastTarget) {
                     evt.preventDefault();
                     return false;
@@ -94,7 +89,7 @@ class header {
             }, false);
 
             // place app at new position and restore opacity
-            this.app.addEventListener('dragend', evt => {
+            app.on('dragend', evt => {
                 Object.assign(evt.target.style, getDropPosition(evt));
                 evt.target.style.opacity = '1';
             });
@@ -121,7 +116,7 @@ class header {
             classNames: ['closer'],
             events: {
                 click: () => {
-                    this.app.dispatchEvent(new Event(pf('destroy')));
+                    app.trigger(new Event(prefix('destroy')));
                 }
             }
         }));
@@ -135,19 +130,20 @@ class header {
             classNames: ['minimizer'],
             events: {
                 click: () => {
-                    this.app.classList.toggle('minimized');
+                    app.ui.classList.toggle('minimized');
                 }
             }
         }));
 
-        this.app.addEventListener('pointerdown', evt => {
+        app.on('pointerdown', evt => {
             isLastTarget = !!evt.target.closest(`[data-plugin="${this.key}"]`);
         });
-        this.app.addEventListener('pointerup', () => {
+        app.on('pointerup', () => {
             isLastTarget = false;
         });
 
         makeDraggable();
+        this.add();        
     }
 }
 

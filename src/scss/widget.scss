@@ -162,9 +162,14 @@
 
     .minimizer {
         right: 16px;
+        transform: rotate(-90deg);
+        transform-origin: center;
+        font-size: 10px;
+        right: 24px;
+        top: 1px;
 
         &:before {
-            content: "\ff0d";
+            content: "❯";
         }
     }
 
@@ -174,22 +179,34 @@
         }
 
         .minimizer {
-            &:before {
-                content: "\ff0b";
-            }
+            transform: rotate(90deg);
+            right: 25px;
+            top: 0
         }
     }
 
     details {
         font-size: 90%;
         margin-bottom: 1px;
+        max-height: 800px; // intentionally unrealistically high (transition)
+        transition: max-height 0.25s ease-in;
 
         &[open] {
             summary {
                 &:before {
-                    content: "\ff0d";
+                    transform: rotate(-90deg);
+                    left: 12px;
+                    top: 0;
                 }
             }
+        }
+
+        &.inactive {
+            height: 0;
+            max-height: 0;
+            transition: max-height 0.25s ease-out;
+            overflow: hidden;
+            margin: 0
         }
     }
 
@@ -206,9 +223,14 @@
         }
 
         &:before {
-            content: "\ff0b";
+            content: "❯";
+            font-size: 9px;
             position: absolute;
-            left: 8px;
+            display:inline-block;
+            transform: rotate(90deg);
+            transform-origin: center;
+            left: 9px;
+            top: -1px
         }
     }
 
@@ -230,10 +252,13 @@
 
     tr {
         &:first-of-type {
-            td, th {
+
+            td,
+            th {
                 border-top: none;
             }
         }
+
         td {
             &:first-of-type {
                 text-align: left;

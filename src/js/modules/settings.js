@@ -2,6 +2,21 @@ import * as pkg from '../../../package.json';
 import * as config from '../../config/config.json';
 
 /**
+ * Collection of data from `package.json`, `config.json` and `localStorage`
+ * @type {{repo: string, options: object, label: string, title: string, version: string, url: string}}
+ */
+const settings = {
+    label: config.label,
+    title: config.title,
+    url: config.url,
+    prefix: config.prefix,
+    repo: config.repo,
+    targetUrl: config.targetUrl,
+    version: pkg.version,
+    options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
+};
+
+/**
  * Returns a value based on a key, can also be `foo.bar`
  * @param key
  * @returns {String|undefined}
@@ -38,20 +53,6 @@ const set = (key, value) => {
     }
     current[last] = value;
     localStorage.setItem(config.prefix + '-settings', JSON.stringify(settings.options));
-};
-
-/**
- * Collection of settings from `package.json`, `config.json` and `localStorage`
- * @type {{repo: string, options: object, label: string, title: string, version: string, url: string}}
- */
-const settings = {
-    label: config.label,
-    title: config.title,
-    url: config.url,
-    prefix: config.prefix,
-    repo: config.repo,
-    version: pkg.version,
-    options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 };
 
 export default {
