@@ -7,9 +7,9 @@ import {
 import plugin from '../../modules/pluginBase.js';
 
 /**
- * Dark Mode plugin
+ * Spoilers plugin
  * 
- * @param {plugin} app
+ * @param {app} app
  * @returns {plugin} spoilers
  */
 class spoilers extends plugin {
@@ -29,6 +29,10 @@ class spoilers extends plugin {
 			tag: 'tbody'
 		});
 
+		/**
+		 * Get the data for the table cells
+		 * @returns {Array}
+		 */
 		const getCellData = () => {
 			const counts = {};
 			const pangramCount = data.getCount('pangrams');
@@ -80,7 +84,6 @@ class spoilers extends plugin {
 			});
 		}
 
-
 		this.ui = el.create({
 			tag: 'details',
 			text: [this.title, 'summary'],
@@ -106,7 +109,7 @@ class spoilers extends plugin {
 		this.ui.append(pane);
 
 		// update on demand
-		this.app.on(prefix('updateComplete'), () => {
+		app.on(prefix('newWord'), () => {
 			update();
 		});
 		this.add();

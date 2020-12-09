@@ -6,9 +6,9 @@ import {
 } from '../../modules/string.js';
 
 /**
- * Dark Mode plugin
+ * Surrender plugin
  * 
- * @param {plugin} app
+ * @param {app} app
  * @returns {plugin} surrender
  */
 class surrender extends plugin {

@@ -6,9 +6,9 @@ import {
 } from '../../modules/string.js';
 
 /**
- * Dark Mode plugin
+ * Spill the beans plugin
  * 
- * @param {plugin} app
+ * @param {app} app
  * @returns {plugin} spillTheBeans
  */
 class spillTheBeans extends plugin {
@@ -20,8 +20,9 @@ class spillTheBeans extends plugin {
         this.optional = true;
 
         /**
-         * Check if there are still starting with the search term
+         * Check per letter the typed letters still fit a word in the remainder list
          * @param {String} value
+         * @returns {string}
          */
         const react = (value) => {
             if (!value) {

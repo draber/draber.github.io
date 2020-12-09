@@ -4,9 +4,9 @@ import css from '../../../css/widget.css';
 import plugin from '../../modules/pluginBase.js';
 
 /**
- * Dark Mode plugin
+ * Styles plugin
  * 
- * @param {plugin} app
+ * @param {app} app
  * @returns {plugin} styles
  */
 class styles extends plugin {

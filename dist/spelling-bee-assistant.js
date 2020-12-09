@@ -118,7 +118,7 @@
     var title = "Assistant";
     var url = "https://spelling-bee-assistant.app/";
     var repo = "draber/draber.github.io.git";
-    var targetUrl$1 = "https://www.nytimes.com/puzzles/spelling-bee";
+    var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix = "sba";
 
     const settings = {
@@ -127,7 +127,7 @@
         url: url,
         prefix: prefix,
         repo: repo,
-        targetUrl: targetUrl$1,
+        targetUrl: targetUrl,
         version: version,
         options: JSON.parse(localStorage.getItem(prefix + '-settings') || '{}')
     };
@@ -232,12 +232,12 @@
             }
         });
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.on(new Event(prefix$1('updateComplete')));
+        app.on(new Event(prefix$1('newWord')));
     };
     const init = (app, resultList) => {
         lists = initLists();
         updateLists(app, resultList);
-        app.on(prefix$1('update'), () => {
+        app.on(prefix$1('newWord'), () => {
             updateLists(app, resultList);
         });
     };
@@ -249,109 +249,105 @@
     };
 
     class app {
-    	constructor(game) {
-    		if (!game || !window.gameData) {
-    			console.info(`This bookmarklet only works on ${settings$1.get(targetUrl)}`);
-    			return false;
-    		}
-    		this.title = settings$1.get('label');
-    		this.key = camel(this.title);
-    		this.game = game;
-    		const oldInstance = el.$(`[data-id="${this.key}"]`);
-    		if (oldInstance) {
-    			oldInstance.dispatchEvent(new Event(prefix$1('destroy')));
-    		}
-    		this.registry = new Map();
-    		this.remove = () => {
-    			this.ui.remove();
-    		};
-    		this.on = (evt, action) => {
-    			this.ui.addEventListener(evt, action);
-    		};
-    		this.trigger = (evt) => {
-    			this.ui.dispatchEvent(evt);
-    		};
-    		const rect = el.$('.sb-content-box', game).getBoundingClientRect();
-    		const resultList = el.$('.sb-wordlist-items', game);
-    		const events = {};
-    		events[prefix$1('destroy')] = () => {
-    			this.remove();
-    		};
-    		this.ui = el.create({
-    			attributes: {
-    				draggable: true
-    			},
-    			style: {
-    				left: (rect.right + 10) + 'px',
-    				top: (rect.top + window.pageYOffset) + 'px',
-    			},
-    			data: {
-    				id: this.key
-    			},
-    			classNames: [settings$1.get('prefix')],
-    			events: events
-    		});
-    		data.init(this, resultList);
-            this.observer = new MutationObserver(mutationsList => {
-    			this.trigger(new CustomEvent(prefix$1('update'), {
-    				detail: {
-    					text: mutationsList.pop().addedNodes[0]
-    				}
-    			}));
-    		});
-    		this.observer.observe(resultList, {
+        constructor(game) {
+            if (!game || !window.gameData) {
+                console.info(`This bookmarklet only works on ${settings$1.get('targetUrl')}`);
+                return false;
+            }
+            this.title = settings$1.get('label');
+            this.key = camel(this.title);
+            this.game = game;
+            const oldInstance = el.$(`[data-id="${this.key}"]`);
+            if (oldInstance) {
+                oldInstance.dispatchEvent(new Event(prefix$1('destroy')));
+            }
+            this.registry = new Map();
+            this.on = (evt, action) => {
+                this.ui.addEventListener(evt, action);
+            };
+            this.trigger = (evt) => {
+                this.ui.dispatchEvent(evt);
+            };
+            const rect = el.$('.sb-content-box', game).getBoundingClientRect();
+            const resultList = el.$('.sb-wordlist-items', game);
+            const events = {};
+            events[prefix$1('destroy')] = () => {
+                this.observer.disconnect();
+                this.ui.remove();
+            };
+            this.ui = el.create({
+                attributes: {
+                    draggable: true
+                },
+                style: {
+                    left: (rect.right + 10) + 'px',
+                    top: (rect.top + window.pageYOffset) + 'px',
+                },
+                data: {
+                    id: this.key
+                },
+                classNames: [settings$1.get('prefix')],
+                events: events
+            });
+            data.init(this, resultList);
+            this.observer = new MutationObserver(() => {
+                this.trigger(new Event(prefix$1('newWord')));
+            });
+            this.observer.observe(resultList, {
                 childList: true
-    		});
-    		this.registerPlugins = (plugins) => {
-    			for (const [key, plugin] of Object.entries(plugins)) {
-    				this.registry.set(key, new plugin(this));
-    			}
-    		};
-    		el.$('body').append(this.ui);
-    	};
+            });
+            this.registerPlugins = (plugins) => {
+                for (const [key, plugin] of Object.entries(plugins)) {
+                    this.registry.set(key, new plugin(this));
+                }
+            };
+            el.$('body').append(this.ui);
+        };
     }
 
     class plugin {
+        defaultEnabled = true;
+        optional = false;
+        ui;
+        title;
+        key;
+        target;
+        app;
+        hasUi = () => {
+            return this.ui instanceof HTMLElement;
+        }
+        isEnabled = () => {
+            const stored = settings$1.get(`options.${this.key}`);
+            return typeof stored !== 'undefined' ? stored : this.defaultEnabled;
+        }
+        toggle = state => {
+            settings$1.set(`options.${this.key}`, state);
+            this.ui.classList.toggle('inactive', !state);
+        }
+        attach = () => {
+            if (!this.hasUi()) {
+                return false;
+            }
+            const target = this.target || el.$(`[data-ui="${this.key}"]`, this.app.ui) || (() => {
+                const _target = el.create({
+                    data: {
+                        plugin: this.key
+                    }
+                });
+                this.app.ui.append(_target);
+                return _target;
+            })();
+            target.append(this.ui);
+            return true;
+        }
+        add = () => {
+            this.attach();
+            if (this.optional) {
+                settings$1.set(`options.${this.key}`, this.isEnabled());
+            }
+        }
         constructor(app) {
             this.app = app;
-            this.defaultEnabled = true;
-            this.optional = false;
-            this.title = '';
-            this.ui;
-            this.target;
-            this.hasUi = () => {
-                return this.ui instanceof HTMLElement;
-            };
-            this.isEnabled = () => {
-                const stored = settings$1.get(`options.${this.key}`);
-                return typeof stored !== 'undefined' ? stored : this.defaultEnabled;
-            };
-            this.toggle = state => {
-                settings$1.set(`options.${this.key}`, state);
-                this.ui.classList.toggle('inactive', !state);
-            };
-            this.attach = () => {
-                if (!this.hasUi()) {
-                    return false;
-                }
-                const target = this.target || el.$(`[data-ui="${this.key}"]`, app.ui) || (() => {
-                    const _target = el.create({
-                        data: {
-                            plugin: this.key
-                        }
-                    });
-                    app.ui.append(_target);
-                    return _target;
-                })();
-                target.append(this.ui);
-                return true;
-            };
-            this.add = () => {
-                this.attach();
-                if (this.optional) {
-                    settings$1.set(`options.${this.key}`, this.isEnabled());
-                }
-            };
         }
     }
 
@@ -539,7 +535,7 @@
             pane.append(tbody);
             update(tbody);
             this.ui.append(pane);
-            app.on(prefix$1('updateComplete'), () => {
+            app.on(prefix$1('newWord'), (evt) => {
                 update(tbody);
             });
             this.add();
@@ -712,7 +708,7 @@
     		pane.append(tbody);
     		update();
     		this.ui.append(pane);
-    		this.app.on(prefix$1('updateComplete'), () => {
+    		app.on(prefix$1('newWord'), () => {
     			update();
     		});
     		this.add();
@@ -786,7 +782,7 @@
             observer = initObserver(modal, frame);
             el.$('.sb-progress', app.game).click();
             this.ui.append(pane);
-            app.on(prefix$1('updateComplete'), () => {
+            app.on(prefix$1('newWord'), () => {
                 update(frame);
             });
             this.add();

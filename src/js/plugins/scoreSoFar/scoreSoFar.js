@@ -6,9 +6,9 @@ import {
 } from '../../modules/string.js';
 import plugin from '../../modules/pluginBase.js';
 
-
 /**
  * Populate/update pane
+ * @param {HTMLElement} tbody
  */
 const update = (tbody) => {
     tbody.innerHTML = '';
@@ -34,9 +34,9 @@ const update = (tbody) => {
 }
 
 /**
- * Dark Mode plugin
+ * Score so far plugin
  * 
- * @param {plugin} app
+ * @param {app} app
  * @returns {plugin} scoreSoFar
  */
 class scoreSoFar extends plugin {
@@ -79,7 +79,7 @@ class scoreSoFar extends plugin {
         this.ui.append(pane);
 
         // update on demand
-        app.on(prefix('updateComplete'), () => {
+        app.on(prefix('newWord'), (evt) => {
             update(tbody);
         });
 

@@ -47,7 +47,7 @@
       <section>
         <h2 id="bookmarklet">What is a bookmarklet?</h2>
         <p>Bookmarklets are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks, in your browser’s bookmark menu.</p>
-        <p><img alt="Bookmarks" src="assetsS/bookmarklet.png?{{version}}"><br /></p>
+        <p><img alt="Bookmarks" src="assets/bookmarklet.png?{{version}}"><br /></p>
       </section>
       <section>
         <h2>Does it work everywhere?</h2>

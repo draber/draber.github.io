@@ -81,8 +81,7 @@ const compile = writeHtml({
     ...{
       css: cssCode(),
       bookmarklet: bmCode(),
-      plugins: pluginCode(),
-      siteJs: siteJsCode()
+      plugins: pluginCode()
     }
   },
   `${process.cwd()}/${config.htmlIn}`,

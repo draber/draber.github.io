@@ -9,6 +9,9 @@ import stepsToSuccess from '../plugins/stepsToSuccess/stepsToSuccess.js';
 import styles from '../plugins/styles/styles.js';
 import surrender from '../plugins/surrender/surrender.js';
 
+/**
+ * All available plugins ready for loading
+ */
 export default {
     styles,
     darkMode,

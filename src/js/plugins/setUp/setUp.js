@@ -4,11 +4,10 @@ import {
 } from '../../modules/string.js';
 import plugin from '../../modules/pluginBase.js';
 
-
 /**
- * Dark Mode plugin
+ * Set-up plugin
  * 
- * @param {plugin} app
+ * @param {app} app
  * @returns {plugin} setUp
  */
 class setUp extends plugin {
@@ -27,6 +26,7 @@ class setUp extends plugin {
 
 		/**
 		 * Populate the pane
+		 * @param {HTMLElement} pane
 		 */
 		const populate = (pane) => {
 			app.registry.forEach((plugin, key) => {

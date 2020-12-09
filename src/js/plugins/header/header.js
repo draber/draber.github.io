@@ -2,10 +2,11 @@ import el from '../../modules/element.js';
 import { prefix } from '../../modules/string.js';
 import settings from '../../modules/settings.js';
 import plugin from '../../modules/pluginBase.js';
+
 /**
- * Dark Mode plugin
+ * Header plugin
  * 
- * @param {plugin} app
+ * @param {app} app
  * @returns {plugin} header
  */
 class header extends plugin {
@@ -24,7 +25,7 @@ class header extends plugin {
 
         /**
          * Start dragging only when initiated on the header
-         * @type {Object}
+         * @type {boolean}
          */
         let isLastTarget = false;
 
@@ -94,8 +95,6 @@ class header extends plugin {
                 evt.target.style.opacity = '1';
             });
         }
-
-
 
         // add title
         this.ui.append(el.create({

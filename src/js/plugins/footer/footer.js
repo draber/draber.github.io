@@ -1,10 +1,11 @@
 import settings from '../../modules/settings.js';
 import el from '../../modules/element.js';
 import plugin from '../../modules/pluginBase.js';
+
 /**
- * Dark Mode plugin
+ * Footer plugin
  * 
- * @param {plugin} app
+ * @param {app} app
  * @returns {plugin} footer
  */
 class footer extends plugin {

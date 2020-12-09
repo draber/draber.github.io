@@ -1,10 +1,14 @@
 import settings from './settings.js';
 
+/**
+ * Prefix used for event names and such
+ * @type {String}
+ */
 const pf = settings.get('prefix');
 
 /**
  * Convert a string to camelCase
- * @see https://stackoverflow.com/a/2970667 // some modifications
+ * @see https://stackoverflow.com/a/2970667 with some modifications
  * @param {String} term 
  */
 export const camel = term => {
@@ -16,8 +20,9 @@ export const camel = term => {
 
 /**
  * Convert a string to dash-case
- * @see https://stackoverflow.com/a/52964182 // some modifications
- * @param {String} term 
+ * @see https://stackoverflow.com/a/52964182 with some modifications
+ * @param term
+ * @returns {string}
  */
 export const dash = term => {
     return term.replace(/[\W_]+/g, ' ')
@@ -28,8 +33,9 @@ export const dash = term => {
 
 /**
  * Prefix a key and format the result as either camelCase or dash-case
- * @param {String} term 
- * @param {String} mode 
+ * @param term
+ * @param mode
+ * @returns {string}
  */
 export const prefix = (term, mode = 'c') => {
     switch (mode) {

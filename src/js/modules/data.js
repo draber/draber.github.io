@@ -80,7 +80,7 @@ const updateLists = (app, resultList) => {
         }
     });
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.on(new Event(prefix('updateComplete')));
+    app.on(new Event(prefix('newWord')));
 };
 
 /**
@@ -91,7 +91,7 @@ const updateLists = (app, resultList) => {
 const init = (app, resultList) => {
     lists = initLists();
     updateLists(app, resultList);
-    app.on(prefix('update'), () => {
+    app.on(prefix('newWord'), () => {
         updateLists(app, resultList);
     });
 }
