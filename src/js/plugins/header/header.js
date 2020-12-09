@@ -12,9 +12,10 @@ import plugin from '../../modules/pluginBase.js';
 class header extends plugin {
     constructor(app) {
 
-        super(app);
-        this.title = settings.get('title');
-        this.key = 'header';
+        super(app, settings.get('title'), {
+            key: 'header'
+        });
+
         this.ui = el.create();
 
         /**

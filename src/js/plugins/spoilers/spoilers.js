@@ -1,8 +1,7 @@
 import el from '../../modules/element.js';
 import data from '../../modules/data.js';
 import {
-	prefix,
-	camel
+	prefix
 } from '../../modules/string.js';
 import plugin from '../../modules/pluginBase.js';
 
@@ -15,11 +14,9 @@ import plugin from '../../modules/pluginBase.js';
 class spoilers extends plugin {
 	constructor(app) {
 
-		super(app);
-
-		this.title = 'Spoilers';
-		this.key = camel(this.title);
-		this.optional = true;
+		super(app, 'Spoilers', {
+			optional: true
+		});
 
 		/**
 		 * Updatable part of the pane

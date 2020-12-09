@@ -1,5 +1,8 @@
 import el from './element.js';
 import settings from './settings.js';
+import {
+    camel
+} from './string.js';
 
 /**
  * Plugin base class
@@ -104,8 +107,20 @@ class plugin {
             settings.set(`options.${this.key}`, this.isEnabled());
         }
     }
-    constructor(app) {
+
+    constructor(app, title, {
+        key,
+        optional,
+        defaultEnabled
+    } = {}) {
         this.app = app;
+        if (!app || !title) {
+            throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, only 1 was passed from ${this.constructor.name}`);
+        }
+        this.title = title;
+        this.key = key || camel(title);
+        this.optional = typeof optional !== 'undefined' ? optional : this.optional;
+        this.defaultEnabled = typeof defaultEnabled !== 'undefined' ? defaultEnabled : this.defaultEnabled;
     }
 }
 

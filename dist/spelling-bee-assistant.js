@@ -346,18 +346,28 @@
                 settings$1.set(`options.${this.key}`, this.isEnabled());
             }
         }
-        constructor(app) {
+        constructor(app, title, {
+            key,
+            optional,
+            defaultEnabled
+        } = {}) {
             this.app = app;
+            if (!app || !title) {
+                throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, only 1 was passed from ${this.constructor.name}`);
+            }
+            this.title = title;
+            this.key = key || camel(title);
+            this.optional = typeof optional !== 'undefined' ? optional : this.optional;
+            this.defaultEnabled = typeof defaultEnabled !== 'undefined' ? defaultEnabled : this.defaultEnabled;
         }
     }
 
     class darkMode extends plugin {
         constructor(app) {
-            super(app);
-            this.title = 'Dark Mode';
-            this.key = camel(this.title);
-            this.optional = true;
-            this.defaultEnabled = false;
+            super(app, 'Dark Mode', {
+                optional: true,
+                defaultEnabled: false
+            });
             const bodyClass = prefix$1('dark', 'd');
             this.toggle = state => {
                 settings$1.set(`options.${this.key}`, state);
@@ -370,9 +380,9 @@
 
     class footer extends plugin {
         constructor(app) {
-            super(app);
-            this.title = `${settings$1.get('label')} ${settings$1.get('version')}`;
-            this.key = 'footer';
+            super(app, `${settings$1.get('label')} ${settings$1.get('version')}`, {
+                key: 'footer'
+            });
             this.ui = el.create({
                 tag: 'a',
                 text: this.title,
@@ -387,9 +397,9 @@
 
     class header extends plugin {
         constructor(app) {
-            super(app);
-            this.title = settings$1.get('title');
-            this.key = 'header';
+            super(app, settings$1.get('title'), {
+                key: 'header'
+            });
             this.ui = el.create();
             let params;
             let isLastTarget = false;
@@ -504,10 +514,9 @@
     };
     class scoreSoFar extends plugin {
         constructor(app) {
-            super(app);
-            this.title = 'Score so far';
-            this.key = camel(this.title);
-            this.optional = true;
+            super(app, 'Score so far', {
+                optional: true
+            });
             this.ui = el.create({
                 tag: 'details',
                 text: [this.title, 'summary'],
@@ -544,10 +553,7 @@
 
     class setUp extends plugin {
     	constructor(app) {
-    		super(app);
-    		this.title = 'Set-up';
-    		this.key = camel(this.title);
-    		this.optional = false;
+    		super(app, 'Set-up');
     		const pane = el.create({
     			tag: 'ul',
     			classNames: ['pane']
@@ -592,10 +598,9 @@
 
     class spillTheBeans extends plugin {
         constructor(app) {
-            super(app);
-            this.title = 'Spill the beans';
-            this.key = camel(this.title);
-            this.optional = true;
+            super(app, 'Spill the beans', {
+                optional: true
+            });
             const react = (value) => {
                 if (!value) {
                     return '😐';
@@ -634,10 +639,9 @@
 
     class spoilers extends plugin {
     	constructor(app) {
-    		super(app);
-    		this.title = 'Spoilers';
-    		this.key = camel(this.title);
-    		this.optional = true;
+    		super(app, 'Spoilers', {
+    			optional: true
+    		});
     		const tbody = el.create({
     			tag: 'tbody'
     		});
@@ -717,10 +721,9 @@
 
     class stepsToSuccess extends plugin {
         constructor(app) {
-            super(app);
-            this.title = 'Steps to success';
-            this.key = 'stepsToSuccess';
-            this.optional = true;
+            super(app, 'Steps to success', {
+                optional: true
+            });
             let observer;
             const steps = {};
             const initObserver = (target, frame) => {
@@ -793,10 +796,7 @@
 
     class styles extends plugin {
         constructor(app) {
-            super(app);
-            this.app = app;
-            this.title = 'Styles';
-            this.key = camel(this.title);
+            super(app, 'Styles');
             this.target = el.$('head');
             this.ui = el.create({
                 tag: 'style',
@@ -811,10 +811,9 @@
 
     class surrender extends plugin {
     	constructor(app) {
-    		super(app);
-    		this.title = 'Surrender';
-    		this.key = camel(this.title);
-    		this.optional = true;
+    		super(app, 'Surrender', {
+    			optional: true
+    		});
     		let usedOnce = false;
     		const buildEntry = term => {
     			const entry = el.create({

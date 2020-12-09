@@ -1,7 +1,6 @@
 import el from '../../modules/element.js';
 import {
-    prefix,
-    camel
+    prefix
 } from '../../modules/string.js';
 import plugin from '../../modules/pluginBase.js';
 import settings from '../../modules/settings.js';
@@ -15,11 +14,10 @@ import settings from '../../modules/settings.js';
 class darkMode extends plugin {
     constructor(app) {
 
-        super(app);
-        this.title = 'Dark Mode';
-        this.key = camel(this.title);
-        this.optional = true;
-        this.defaultEnabled = false;
+        super(app, 'Dark Mode', {
+            optional: true,
+            defaultEnabled: false
+        });
 
         const bodyClass = prefix('dark', 'd');
         this.toggle = state => {

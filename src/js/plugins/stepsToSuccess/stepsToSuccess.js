@@ -12,11 +12,9 @@ import plugin from '../../modules/pluginBase.js';
 class stepsToSuccess extends plugin {
     constructor(app) {
 
-        super(app);
-      
-        this.title = 'Steps to success';
-        this.key = 'stepsToSuccess';
-        this.optional = true;
+        super(app, 'Steps to success', {
+            optional: true
+        });
 
         let observer;
 

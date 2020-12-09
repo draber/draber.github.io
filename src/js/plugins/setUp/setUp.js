@@ -1,7 +1,4 @@
 import el from '../../modules/element.js';
-import {
-	camel
-} from '../../modules/string.js';
 import plugin from '../../modules/pluginBase.js';
 
 /**
@@ -13,11 +10,7 @@ import plugin from '../../modules/pluginBase.js';
 class setUp extends plugin {
 	constructor(app) {
 
-		super(app);
-
-		this.title = 'Set-up';
-		this.key = camel(this.title);
-		this.optional = false;
+		super(app, 'Set-up');
 
 		const pane = el.create({
 			tag: 'ul',

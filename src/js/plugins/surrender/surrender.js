@@ -1,9 +1,6 @@
 import el from '../../modules/element.js';
 import data from '../../modules/data.js';
 import plugin from '../../modules/pluginBase.js';
-import {
-	camel
-} from '../../modules/string.js';
 
 /**
  * Surrender plugin
@@ -14,11 +11,9 @@ import {
 class surrender extends plugin {
 	constructor(app) {
 
-		super(app);
-
-		this.title = 'Surrender';
-		this.key = camel(this.title);
-		this.optional = true;
+		super(app, 'Surrender', {
+			optional: true
+		});
 
 		let usedOnce = false;
 

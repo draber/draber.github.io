@@ -1,5 +1,5 @@
 import el from '../../modules/element.js';
-import { prefix, camel } from '../../modules/string.js';
+import { prefix } from '../../modules/string.js';
 import css from '../../../css/widget.css';
 import plugin from '../../modules/pluginBase.js';
 
@@ -12,11 +12,8 @@ import plugin from '../../modules/pluginBase.js';
 class styles extends plugin {
     constructor(app) {
 
-        super(app);
+        super(app, 'Styles');
 
-        this.app = app;       
-        this.title = 'Styles';        
-        this.key = camel(this.title);   
         this.target = el.$('head');
 
         this.ui = el.create({

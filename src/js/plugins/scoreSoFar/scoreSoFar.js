@@ -1,8 +1,7 @@
 import el from '../../modules/element.js';
 import data from '../../modules/data.js';
 import {
-    prefix,
-    camel
+    prefix
 } from '../../modules/string.js';
 import plugin from '../../modules/pluginBase.js';
 
@@ -42,11 +41,9 @@ const update = (tbody) => {
 class scoreSoFar extends plugin {
     constructor(app) {
 
-        super(app);
-
-        this.title = 'Score so far';
-        this.key = camel(this.title);
-        this.optional = true;
+        super(app, 'Score so far', {
+            optional: true
+        });
 
         this.ui = el.create({
             tag: 'details',

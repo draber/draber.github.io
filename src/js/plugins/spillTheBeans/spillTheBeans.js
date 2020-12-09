@@ -1,9 +1,6 @@
 import el from '../../modules/element.js';
 import data from '../../modules/data.js';
 import plugin from '../../modules/pluginBase.js';
-import {
-	camel
-} from '../../modules/string.js';
 
 /**
  * Spill the beans plugin
@@ -14,10 +11,9 @@ import {
 class spillTheBeans extends plugin {
     constructor(app) {
 
-        super(app);
-        this.title = 'Spill the beans';
-        this.key = camel(this.title);
-        this.optional = true;
+        super(app, 'Spill the beans', {
+            optional: true
+        });
 
         /**
          * Check per letter the typed letters still fit a word in the remainder list
