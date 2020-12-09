@@ -9,7 +9,6 @@
   "author": "Dieter Raber",
   "license": "MIT",  
   "dependencies": {
-    "bookmarklet": "^1.0.4",
     "markdown-it": "^12.0.2"
   }
 }

@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-const bookmarklet = require('bookmarklet');
 const fs = require('fs');
-const Terser = require('terser');
 const md = require('markdown-it')({
   html: true
 });
@@ -49,8 +47,10 @@ const pluginCode = () => {
 };
 
 const bmCode = () => {
-  const code = getContents(`${process.cwd()}/dist/spelling-bee-assistant.js`);
-  return `<a class="bookmarklet" onclick="return false" href="${bookmarklet.convert(code, { style: false, script: false})}">${config.label}</a>`;
+  let code = getContents(`${process.cwd()}/dist/spelling-bee-assistant.min.js`);  
+  code = `(function(){${code}})()`;
+  code = `javascript:${encodeURIComponent(code)}`;
+  return `<a class="bookmarklet" onclick="return false" href="${code}">${config.label}</a>`;
 };
 
 const siteJsCode = () => {
