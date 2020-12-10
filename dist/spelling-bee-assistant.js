@@ -413,15 +413,15 @@
                     maxL: document.documentElement.clientWidth - aRect.width,
                     minT: minT,
                     maxT: minT + gAvailH,
-                    offX: evt.clientX - aRect.x,
-                    offY: evt.clientY - aRect.y,
+                    offX: evt.screenX - aRect.x,
+                    offY: evt.screenY - aRect.y,
                     margT: parseInt(getComputedStyle(evt.target).marginTop, 10)
                 };
             };
             const getDropPosition = evt => {
-                let left = Math.max(0, (evt.clientX - params.offX));
+                let left = Math.max(0, (evt.screenX - params.offX));
                 left = Math.min(left, (params.maxL)) + 'px';
-                let top = Math.max(params.minT, (evt.clientY + window.pageYOffset - params.margT - params.offY));
+                let top = Math.max(params.minT, (evt.screenY + window.pageYOffset - params.margT - params.offY));
                 top = Math.min(top, params.maxT) + 'px';
                 return {
                     left,
