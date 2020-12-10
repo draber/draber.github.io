@@ -37,6 +37,16 @@
         <p>Drag and drop this bookmarklet {{bookmarklet}} into your browser’s bookmark menu. Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant.</p>
         <p><em>Note: The current version of Spelling Bee Assistant is {{version}}. If you already have an older version, you may want to delete it immediately (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
       </section>
+      <section>
+        <h2>What’s new in version 2.0?</h2>
+        <ul>
+          <li>Minimize</li>
+          <li>Dark Mode</li>
+          <li>Spill the beans</li>
+          <li>Steps to Success</li>
+          <li>Set-up</li>
+        </ul>
+      </section>
       <section id="pz-game-root">
         <h2>What are the different parts good for?</h2>
         <ul class="cards">

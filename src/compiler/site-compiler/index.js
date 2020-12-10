@@ -35,12 +35,16 @@ const writeHtml = (replacements = {}, inPath, outPath) => {
   return `Content saved as ${outPath}`;
 };
 
+
 const pluginCode = () => {
   const path = `${process.cwd()}/src/js/plugins`;
   let html = '';
   config.plugins.forEach(plugin => {
+    const imgRe = /(!\[[^\(]+\()([^\)]+)(\))/g;
+    const repl = `$1src/js/plugins/${plugin}/$2$3`;
+    const readme = getContents(`${path}/${plugin}/readme.md`).replace(imgRe, repl).replace(/^#/g, '###');
     html += `<li>` 
-         + md.render(getContents(`${path}/${plugin}/readme.md`).replace(/^#/g, '###'))
+         + md.render(readme)
          + `</li>`;
   });
   return html;
