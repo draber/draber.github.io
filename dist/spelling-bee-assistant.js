@@ -724,7 +724,8 @@
             super(app, 'Steps to success', {
                 optional: true
             });
-            const rankings = new Map([
+            const maxPoints = data.getPoints('answers');
+            const rankings = [
                 ['Beginner', 0],
                 ['Good Start', 2],
                 ['Moving Up', 5],
@@ -735,19 +736,19 @@
                 ['Amazing', 50],
                 ['Genius', 70],
                 ['Queen Bee', 100]
-            ]);
-            const maxPoints = data.getPoints('answers');
+            ].map(entry => {
+                return [entry[0], Math.round(entry[1] / 100 * maxPoints)];
+            });
             const update = (frame) => {
                 frame.innerHTML = '';
                 const ownPoints = data.getPoints('foundTerms');
-                const tier = Array.from(rankings.values()).filter(entry => entry <= ownPoints).pop();
-                rankings.forEach((perc, label) => {
-                    const value = Math.round(perc / 100 * maxPoints);
+                const tier = rankings.filter(entry => entry[1] <= ownPoints).pop()[1];
+                rankings.forEach(value => {
                     frame.append(el.create({
                         tag: 'tr',
-                        classNames: value === tier ? ['sba-current'] : [],
+                        classNames: value[1] === tier ? ['sba-current'] : [],
                         cellTag: 'td',
-                        cellData: [label, value]
+                        cellData: [value[0], value[1]]
                     }));
                 });
             };
