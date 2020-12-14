@@ -1,3 +1,0 @@
-# Spoilers
-
-![Spoilers](assets/spoilers-light.png) So you found a good bunch of words, discovered the Pangram but now you wonder if there are words with four letters left that you've been missing. Maybe there is another Pangram hidden in the hive? Or at least a good long term that moves you to the next level? The *Spoiler* panel won't tell you the words, but it will tell you, how many of each size lay still ahead. 

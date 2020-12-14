@@ -1,6 +1,6 @@
-import el from '../../modules/element.js';
-import data from '../../modules/data.js';
-import plugin from '../../modules/pluginBase.js';
+import el from '../modules/element.js';
+import data from '../modules/data.js';
+import plugin from '../modules/pluginBase.js';
 
 /**
  * Surrender plugin

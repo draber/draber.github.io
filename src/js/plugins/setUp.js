@@ -1,5 +1,5 @@
-import el from '../../modules/element.js';
-import plugin from '../../modules/pluginBase.js';
+import el from '../modules/element.js';
+import plugin from '../modules/pluginBase.js';
 
 /**
  * Set-up plugin

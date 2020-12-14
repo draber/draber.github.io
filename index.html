@@ -5,7 +5,430 @@
     <title>Spelling Bee Assistant</title>
     <meta name="description" content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>html{line-height:1.15;text-size-adjust:100%;color:#222;font-size:62.5%;box-sizing:border-box}*,*:before,*:after{box-sizing:inherit}body{margin:0;font:1.6rem/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"}main.wrapper{padding-top:10rem}h1{margin:0}h2{margin:2rem 0 1rem}h3{margin:1.5rem 0 .8rem}p,ul,ol{margin:0 0 1rem}a{background-color:transparent;color:#326891}a:hover{text-decoration:none}a:visited{color:#326891}strong{font-weight:bolder}img{border-style:none;vertical-align:middle;max-width:100%}::selection{background:#f8cd05}header{position:fixed;border-bottom:1px solid #dcdcdc;width:100%;background:#fff;padding:2rem 0;top:0;z-index:10}.twitter-share-button{position:absolute !important;bottom:.5rem;right:2rem}.wrapper{margin:0 auto;max-width:1024px;padding:0 2rem;position:relative}.bookmarklet{background:#f8cd05;padding:0 10px;text-decoration:none;color:#000 !important;display:inline-block;margin:0 5px;border-radius:3px;line-height:1.8;cursor:move}.help{cursor:help}.cards{display:grid;justify-content:space-between;grid-template-columns:repeat(2, minmax(0, 1fr));column-gap:2rem;position:relative;overflow:hidden}.cards li{border-width:1px;border-color:#dcdcdc;border-style:solid;border-radius:20px;padding:2rem;margin-bottom:2rem;background:rgba(248,205,5,.2)}.cards h3{position:absolute;left:-100rem;top:-100rem}.cards img{float:left;padding:1rem;margin:.6rem 2rem .3rem 0;background:#fff;border-width:1px;border-color:#dcdcdc;border-style:solid;border-radius:1rem}th{font-weight:normal}ul{list-style:none;padding:0;margin:0}.sba-dark>header{background:#111;color:#eee}.sba-dark a{color:#51a9f7}.sba-dark a:hover{color:#8dc6f8}@media screen and (max-width: 1024px){.cards{display:block}}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px;transform:rotate(-90deg);transform-origin:center;font-size:10px;right:24px;top:1px}.sba .minimizer:before{content:"❯"}.sba.minimized details{display:none}.sba.minimized .minimizer{transform:rotate(90deg);right:25px;top:0}.sba details{font-size:90%;margin-bottom:1px;max-height:800px;transition:max-height .25s ease-in}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:"❯";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:9px;top:-1px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td,.sba tr:first-of-type th{border-top:none}.sba tr td:first-of-type{text-align:left}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}</style>
+    <style>html {
+  line-height: 1.15;
+  text-size-adjust: 100%;
+  color: #222;
+  font-size: 62.5%;
+  box-sizing: border-box; }
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit; }
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+@keyframes fadeOut {
+  0% {
+    opacity: 1; }
+  100% {
+    opacity: 0; } }
+body {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; }
+  body.dark-mode {
+    background: #111;
+    color: rgba(238, 238, 238, 0.85); }
+    body.dark-mode header {
+      background: #111;
+      color: rgba(238, 238, 238, 0.85); }
+    body.dark-mode .card {
+      background: #393939; }
+    body.dark-mode .img-box {
+      background: #111; }
+    body.dark-mode .github img {
+      filter: invert(1); }
+    body.dark-mode img.light {
+      animation: fadeOut ease .5s forwards; }
+    body.dark-mode a {
+      color: #51a9f7; }
+      body.dark-mode a:hover {
+        color: #8dc6f8; }
+    body.dark-mode * {
+      border-color: #333 !important; }
+    body.dark-mode .hive-box .cells path:not(.center) {
+      fill: #393939; }
+    body.dark-mode .hive-box .text path:not(.center) {
+      fill: #eee; }
+
+main.wrapper {
+  padding-top: 10rem; }
+
+h1 {
+  margin: 0; }
+
+h2 {
+  margin: 2rem 0 1rem; }
+
+h3 {
+  margin: 1.5rem 0 0.8rem; }
+
+p,
+ul,
+ol {
+  margin: 0 0 1rem; }
+
+a {
+  background-color: transparent;
+  color: #326891; }
+  a:hover {
+    text-decoration: none; }
+  a:visited {
+    color: #326891; }
+
+strong {
+  font-weight: bolder; }
+
+img {
+  border-style: none;
+  vertical-align: middle;
+  max-width: 100%; }
+
+::selection {
+  background: #f8cd05; }
+
+header {
+  position: fixed;
+  border-bottom: 1px solid gainsboro;
+  width: 100%;
+  background: white;
+  padding: 2rem 0;
+  top: 0;
+  z-index: 10; }
+  header .wrapper {
+    display: flex;
+    justify-content: space-between; }
+
+.social {
+  position: relative !important;
+  margin: 0 2rem 0 0;
+  padding: 1.3rem 0 0 0;
+  display: flex; }
+  .social li {
+    margin: 0 1rem; }
+
+.github {
+  position: relative;
+  top: -0.5rem; }
+  .github img {
+    width: 2rem; }
+
+.wrapper {
+  margin: 0 auto;
+  max-width: 1024px;
+  padding: 0 2rem;
+  position: relative; }
+
+.intro {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 40px; }
+  .intro .intro-text {
+    flex-grow: 2;
+    margin-right: 20px; }
+  .intro .img-box {
+    margin: 0; }
+  .intro .installer {
+    min-width: 200px;
+    height: 276px;
+    padding-top: 1.5rem; }
+    .intro .installer a:hover {
+      box-shadow: 0 0 1.5rem 0.8rem rgba(248, 205, 5, 0.35); }
+    .intro .installer a:focus {
+      box-shadow: 0 0 1.5rem 0.8rem rgba(248, 205, 5, 0.7); }
+  .intro .bookmarklet {
+    cursor: move; }
+
+figure {
+  margin: 0; }
+  figure.hive-box {
+    shape-outside: circle(55% at 42% 44%);
+    padding: 1.5rem 4rem 4rem 0;
+    float: left; }
+  figure svg {
+    width: 200px; }
+  figure figcaption {
+    font-size: 1.2rem;
+    text-align: center; }
+
+.help {
+  cursor: help; }
+
+.img-box {
+  float: left;
+  position: relative;
+  margin: .5rem 2rem .3rem 0;
+  background: white;
+  border-width: 1px;
+  border-color: gainsboro;
+  border-style: solid;
+  border-radius: .8rem; }
+  .img-box img {
+    display: block;
+    margin: 1rem; }
+    .img-box img.light {
+      animation: fadeIn ease .5s forwards;
+      position: relative;
+      z-index: 1; }
+    .img-box img.dark {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 0; }
+
+.card {
+  border-width: 1px;
+  border-color: #eee;
+  border-style: solid;
+  border-radius: 0.9rem;
+  padding: 1.1rem 1.5rem;
+  margin-bottom: 2rem;
+  background: rgba(248, 205, 5, 0.1); }
+  .card:after {
+    content: '';
+    clear: left;
+    display: block; }
+
+.card-listing {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 2rem;
+  position: relative;
+  overflow: hidden;
+  font-size: 1.5rem;
+  line-height: 1.5; }
+  .card-listing h3 {
+    position: absolute;
+    left: -100rem;
+    top: -100rem; }
+
+map,
+area {
+  outline: none !important; }
+
+th {
+  font-weight: normal; }
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0; }
+
+@media screen and (max-width: 1024px) {
+  .cards {
+    display: block; } }@charset "UTF-8";
+.pz-game-field {
+  background: inherit;
+  color: inherit; }
+
+.sb-wordlist-items .sb-pangram {
+  border-bottom: 2px #f8cd05 solid; }
+.sb-wordlist-items .sb-anagram a {
+  color: #888; }
+
+.sba-dark {
+  background: #111;
+  color: #eee; }
+  .sba-dark .sba {
+    background: #111; }
+    .sba-dark .sba summary {
+      background: #252525;
+      color: #eee; }
+  .sba-dark .pz-nav__hamburger-inner,
+  .sba-dark .pz-nav__hamburger-inner::before,
+  .sba-dark .pz-nav__hamburger-inner::after {
+    background-color: #eee; }
+  .sba-dark .pz-nav {
+    width: 100%;
+    background: #111; }
+  .sba-dark .pz-nav__logo {
+    filter: invert(1); }
+  .sba-dark .sb-modal-scrim {
+    background: rgba(17, 17, 17, 0.85);
+    color: #eee; }
+  .sba-dark .pz-modal__title {
+    color: #eee; }
+  .sba-dark .sb-modal-frame,
+  .sba-dark .pz-modal__button.white {
+    background: #111;
+    color: #eee; }
+  .sba-dark .pz-modal__button.white:hover {
+    background: #393939; }
+  .sba-dark .sb-message {
+    background: #393939; }
+  .sba-dark .sb-progress-marker .sb-progress-value,
+  .sba-dark .hive-cell.center .cell-fill {
+    background: #f7c60a;
+    fill: #f7c60a;
+    color: #111; }
+  .sba-dark .sb-input-bright {
+    color: #f7c60a; }
+  .sba-dark .hive-cell.outer .cell-fill {
+    fill: #393939; }
+  .sba-dark .cell-fill {
+    stroke: #111; }
+  .sba-dark .cell-letter {
+    fill: #eee; }
+  .sba-dark .hive-cell.center .cell-letter {
+    fill: #111; }
+  .sba-dark .hive-action:not(.hive-action__shuffle) {
+    background: #111;
+    color: #eee; }
+  .sba-dark .hive-action__shuffle {
+    filter: invert(100%); }
+  .sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current) {
+    border-color: #333 !important; }
+
+.sba {
+  position: absolute;
+  width: 200px;
+  background: inherit;
+  box-sizing: border-box;
+  z-index: 3;
+  margin: 16px 0;
+  padding: 0 10px 5px;
+  background: #fff;
+  border-width: 1px;
+  border-color: gainsboro;
+  border-radius: 6px;
+  border-style: solid; }
+  .sba *,
+  .sba *:before,
+  .sba *:after {
+    box-sizing: border-box; }
+  .sba *:focus {
+    outline: 0; }
+  .sba .dragger {
+    font-weight: bold;
+    cursor: move;
+    line-height: 32px; }
+  .sba .closer,
+  .sba .minimizer {
+    font-size: 18px;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+    line-height: 32px;
+    padding: 0 10px;
+    cursor: pointer; }
+  .sba .closer {
+    right: 0; }
+  .sba .minimizer {
+    right: 16px;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    font-size: 10px;
+    right: 24px;
+    top: 1px; }
+    .sba .minimizer:before {
+      content: "❯"; }
+  .sba.minimized details {
+    display: none; }
+  .sba.minimized .minimizer {
+    transform: rotate(90deg);
+    right: 25px;
+    top: 0; }
+  .sba details {
+    font-size: 90%;
+    margin-bottom: 1px;
+    max-height: 800px;
+    transition: max-height 0.25s ease-in; }
+    .sba details[open] summary:before {
+      transform: rotate(-90deg);
+      left: 12px;
+      top: 0; }
+    .sba details.inactive {
+      height: 0;
+      max-height: 0;
+      transition: max-height 0.25s ease-out;
+      overflow: hidden;
+      margin: 0; }
+  .sba summary {
+    line-height: 24px;
+    padding: 0 15px 0 25px;
+    background: #f8cd05;
+    cursor: pointer;
+    list-style: none;
+    position: relative; }
+    .sba summary::-webkit-details-marker {
+      display: none; }
+    .sba summary:before {
+      content: "❯";
+      font-size: 9px;
+      position: absolute;
+      display: inline-block;
+      transform: rotate(90deg);
+      transform-origin: center;
+      left: 9px;
+      top: -1px; }
+  .sba .hive-action {
+    margin: 0 auto;
+    display: block;
+    font-size: 100%;
+    white-space: nowrap; }
+  .sba .pane {
+    border: 1px solid gainsboro;
+    border-top: none;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 85%;
+    margin-bottom: 4px; }
+  .sba tr:first-of-type td,
+  .sba tr:first-of-type th {
+    border-top: none; }
+  .sba tr td:first-of-type {
+    text-align: left; }
+  .sba tr.sba-current {
+    font-weight: bold;
+    border-bottom: 2px solid #f8cd05 !important; }
+  .sba th,
+  .sba td {
+    border: 1px solid gainsboro;
+    white-space: nowrap; }
+  .sba thead th {
+    text-align: center;
+    padding: 4px 0; }
+  .sba tbody th {
+    text-align: right; }
+  .sba tbody td {
+    text-align: center;
+    padding: 4px 6px; }
+  .sba [data-plugin="footer"] a {
+    color: currentColor;
+    opacity: .6;
+    font-size: 10px;
+    text-align: right;
+    display: block;
+    padding-top: 8px; }
+    .sba [data-plugin="footer"] a:hover {
+      opacity: .8;
+      text-decoration: underline; }
+  .sba .spill-title {
+    padding: 10px 6px 0px;
+    text-align: center; }
+  .sba .spill {
+    text-align: center;
+    padding: 17px 0;
+    font-size: 280%; }
+  .sba ul.pane {
+    padding: 5px; }
+  .sba [data-plugin="surrender"] .pane {
+    padding: 10px 5px; }
+  .sba label {
+    cursor: pointer;
+    position: relative;
+    line-height: 19px; }
+    .sba label input {
+      position: relative;
+      top: 2px;
+      margin: 0 10px 0 0; }</style>
     <meta property="og:title" content="Spelling Bee Assistant" />
     <meta property="og:description" content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle" />
     <meta property="og:image" content="https://spelling-bee-assistant.app/img/social.png?2.0.0" />
@@ -30,49 +453,61 @@
     <main class="wrapper">
       <section>
         <h2>What is this?</h2>
-        <p><strong>Spelling Bee Assistant</strong> is a JavaScript <a href="#bookmarklet" class="help">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
-      </section>
+        <div class="card">
+          <div class="img-box">
+            <img src="src/img/assistant-closed-light.png" alt="Assistant" class="light">
+            <img src="src/img/assistant-closed-dark.png"  alt="Assistant" class="dark">
+          </div>
+          <p><strong>Spelling Bee Assistant</strong> is a JavaScript <a href="#bookmarklet" class="help">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
+        </div>
+        </section>
       <section>
-        <h2>Installation</h2>
+        <h2>How do you install it?</h2>
         <p>Drag and drop this bookmarklet <a class="bookmarklet" onclick="return false" href="javascript:(function()%7B!function()%7B%22use%20strict%22%3Bconst%20t%3D(%7Btag%3Ae%3D%22div%22%2Ctext%3Aa%3D%22%22%2Cattributes%3As%3D%7B%7D%2Cstyle%3Ar%3D%7B%7D%2Cdata%3An%3D%7B%7D%2Cevents%3Ai%3D%7B%7D%2CclassNames%3Ao%3D%5B%5D%2CcellData%3Al%3D%5B%5D%2CcellTag%3Ac%3D%22td%22%2Cchecked%3Ad%3D!1%7D%3D%7B%7D)%3D%3E%7Bif(%22tr%22%3D%3D%3De%26%26l.length)return((%7BclassNames%3Ae%3D%5B%5D%2Cevents%3Aa%3D%7B%7D%2CcellData%3As%3D%5B%5D%2CcellTag%3Ar%3D%22td%22%7D%3D%7B%7D)%3D%3E%7Bconst%20n%3Dt(%7Btag%3A%22tr%22%2CclassNames%3Ae%2Cevents%3Aa%7D)%3Breturn%20s.forEach((e%3D%3E%7Bn.append(t(%7Btag%3Ar%2Ctext%3Ae%7D))%7D))%2Cn%7D)(%7BclassNames%3Ao%2Cevents%3Ai%2CcellData%3Al%2CcellTag%3Ac%7D)%3Bif(%22input%22%3D%3D%3De%26%26%22checkbox%22%3D%3D%3Ds.type%26%26a)return((%7Btext%3Ae%3D%22%22%2CclassNames%3Aa%3D%5B%5D%2Cattributes%3As%3D%7B%7D%2Cevents%3Ar%3D%7B%7D%2Cchecked%3An%3D!1%7D%3D%7B%7D)%3D%3E%7Bn%26%26(s.checked%3D%22checked%22)%3Bconst%20i%3Dt(%7Btag%3A%22input%22%2Cattributes%3As%2Cevents%3Ar%7D)%2Co%3Dt(%7Btag%3A%22label%22%2Ctext%3Ae%2CclassNames%3Aa%7D)%3Breturn%20o.prepend(i)%2Co%7D)(%7Btext%3Aa%2CclassNames%3Ao%2Cattributes%3As%2Cevents%3Ai%2Cchecked%3Ad%7D)%3Bconst%20p%3Ddocument.createElement(e)%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(r))p.style%5Bt%5D%3De%3Bo.length%26%26p.classList.add(...o)%2CArray.isArray(a)%3Fp.append(t(%7Btag%3Aa%5B1%5D%2Ctext%3Aa%5B0%5D%7D))%3Ap.textContent%3Da%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(s))%22%22!%3D%3De%26%26p.setAttribute(t%2Ce)%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(n))p.dataset%5Bt%5D%3De%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(i))p.addEventListener(t%2Ce%2C!1)%3Breturn%20p%7D%3Bvar%20e%3D%7B%24%3A(t%2Ce%3Dnull)%3D%3E%22string%22%3D%3Dtypeof%20t%3F(e%7C%7Cdocument).querySelector(t)%3At%7C%7Cnull%2C%24%24%3A(t%2Ce%3Dnull)%3D%3E%5B%5D.slice.call((e%7C%7Cdocument).querySelectorAll(t))%2Ccreate%3At%7D%2Ca%3D%22sba%22%3Bconst%20s%3D%7Blabel%3A%22Spelling%20Bee%20Assistant%22%2Ctitle%3A%22Assistant%22%2Curl%3A%22https%3A%2F%2Fspelling-bee-assistant.app%2F%22%2Cprefix%3Aa%2Crepo%3A%22draber%2Fdraber.github.io.git%22%2CtargetUrl%3A%22https%3A%2F%2Fwww.nytimes.com%2Fpuzzles%2Fspelling-bee%22%2Cversion%3A%222.0.0%22%2Coptions%3AJSON.parse(localStorage.getItem(%22sba-settings%22)%7C%7C%22%7B%7D%22)%7D%3Bvar%20r%3Dt%3D%3E%7Blet%20e%3DObject.create(s)%3Bfor(let%20a%20of%20t.split(%22.%22))%7Bif(void%200%3D%3D%3De%5Ba%5D)return%3Be%3De%5Ba%5D%7Dreturn%20e%7D%2Cn%3D(t%2Ce)%3D%3E%7Bconst%20a%3Dt.split(%22.%22)%2Cr%3Da.pop()%3Blet%20n%3Ds%3Bfor(let%20t%20of%20a)%7Bif(n%5Bt%5D%7C%7C(n%5Bt%5D%3D%7B%7D)%2C%22%5Bobject%20Object%5D%22%3D%3D%3D!Object.prototype.toString.call(n))return%20console.error(%60%24%7Bt%7D%20is%20not%20of%20the%20type%20Object%60)%2C!1%3Bn%3Dn%5Bt%5D%7Dn%5Br%5D%3De%2ClocalStorage.setItem(%22sba-settings%22%2CJSON.stringify(s.options))%7D%3Bconst%20i%3Dr(%22prefix%22)%2Co%3Dt%3D%3Et.replace(%2F%5B_-%5D%2B%2F%2C%22%20%22).replace(%2F(%3F%3A%5E%5B%5Cw%5D%7C%5BA-Z%5D%7C%5Cb%5Cw%7C%5Cs%2B)%2Fg%2C(function(t%2Ce)%7Breturn%200%3D%3D%2Bt%3F%22%22%3A0%3D%3D%3De%3Ft.toLowerCase()%3At.toUpperCase()%7D))%2Cl%3D(t%2Ce%3D%22c%22)%3D%3E%7Bswitch(e)%7Bcase%22c%22%3Areturn%20o(i%2B%22_%22%2Bt)%3Bcase%22d%22%3Areturn(t%3D%3Et.replace(%2F%5B%5CW_%5D%2B%2Fg%2C%22%20%22).split(%2F%20%7C%5CB(%3F%3D%5BA-Z%5D)%2F).map((t%3D%3Et.toLowerCase())).join(%22-%22))(i%2Bt.charAt(0).toUpperCase()%2Bt.slice(1))%3Bdefault%3Areturn%20i%2Bt%7D%7D%3Blet%20c%3Bconst%20d%3D(t%2Ca)%3D%3E%7Bc.foundTerms%3D%5B%5D%2Cc.foundPangrams%3D%5B%5D%2Ce.%24%24(%22li%22%2Ca).forEach((t%3D%3E%7Bif(e.%24(%22a%22%2Ct))return!1%3Bconst%20a%3Dt.textContent%3Bc.foundTerms.push(a)%2Cc.pangrams.includes(a)%26%26(c.foundPangrams.push(a)%2Ct.classList.add(%22sb-pangram%22))%7D))%2Cc.remainders%3Dc.answers.filter((t%3D%3E!c.foundTerms.includes(t)))%2Ct.on(new%20Event(l(%22newWord%22)))%7D%3Bvar%20p%3D(t%2Ce)%3D%3E%7Bc%3D%7Banswers%3Awindow.gameData.today.answers%2Cpangrams%3Awindow.gameData.today.pangrams%2CfoundTerms%3A%5B%5D%2CfoundPangrams%3A%5B%5D%2Cremainders%3A%5B%5D%7D%2Cd(t%2Ce)%2Ct.on(l(%22newWord%22)%2C(()%3D%3E%7Bd(t%2Ce)%7D))%7D%2Cg%3Dt%3D%3Ec%5Bt%5D%2Cu%3Dt%3D%3Ec%5Bt%5D.length%2Cb%3Dt%3D%3E%7Bconst%20e%3Dc%5Bt%5D%3Blet%20a%3D0%3Breturn%20e.forEach((t%3D%3E%7Bc.pangrams.includes(t)%3Fa%2B%3Dt.length%2B7%3At.length%3E4%3Fa%2B%3Dt.length%3Aa%2B%3D1%7D))%2Ca%7D%3Bclass%20h%7BdefaultEnabled%3D!0%3Boptional%3D!1%3Bui%3Btitle%3Bkey%3Btarget%3Bapp%3BhasUi%3D()%3D%3Ethis.ui%20instanceof%20HTMLElement%3BisEnabled%3D()%3D%3E%7Bconst%20t%3Dr(%60options.%24%7Bthis.key%7D%60)%3Breturn%20void%200!%3D%3Dt%3Ft%3Athis.defaultEnabled%7D%3Btoggle%3Dt%3D%3E%7Bn(%60options.%24%7Bthis.key%7D%60%2Ct)%2Cthis.ui.classList.toggle(%22inactive%22%2C!t)%7D%3Battach%3D()%3D%3E%7Bif(!this.hasUi())return!1%3Breturn(this.target%7C%7Ce.%24(%60%5Bdata-ui%3D%22%24%7Bthis.key%7D%22%5D%60%2Cthis.app.ui)%7C%7C(()%3D%3E%7Bconst%20t%3De.create(%7Bdata%3A%7Bplugin%3Athis.key%7D%7D)%3Breturn%20this.app.ui.append(t)%2Ct%7D)()).append(this.ui)%2C!0%7D%3Badd%3D()%3D%3E%7Bthis.attach()%2Cthis.optional%26%26n(%60options.%24%7Bthis.key%7D%60%2Cthis.isEnabled())%7D%3Bconstructor(t%2Ce%2C%7Bkey%3Aa%2Coptional%3As%2CdefaultEnabled%3Ar%7D%3D%7B%7D)%7Bif(this.app%3Dt%2C!t%7C%7C!e)throw%20new%20TypeError(%60%24%7BObject.getPrototypeOf(this.constructor).name%7D%20expects%20at%20least%202%20arguments%2C%20only%201%20was%20passed%20from%20%24%7Bthis.constructor.name%7D%60)%3Bthis.title%3De%2Cthis.key%3Da%7C%7Co(e)%2Cthis.optional%3Dvoid%200!%3D%3Ds%3Fs%3Athis.optional%2Cthis.defaultEnabled%3Dvoid%200!%3D%3Dr%3Fr%3Athis.defaultEnabled%7D%7Dconst%20m%3Dt%3D%3E%7Bt.innerHTML%3D%22%22%2C%5B%5B%22Words%22%2Cu(%22foundTerms%22)%2Cu(%22remainders%22)%2Cu(%22answers%22)%5D%2C%5B%22Points%22%2Cb(%22foundTerms%22)%2Cb(%22remainders%22)%2Cb(%22answers%22)%5D%5D.forEach((a%3D%3E%7Bt.append(e.create(%7Btag%3A%22tr%22%2CcellData%3Aa%7D))%7D))%7D%3Bvar%20f%3D%7Bstyles%3Aclass%20extends%20h%7Bconstructor(t)%7Bsuper(t%2C%22Styles%22)%2Cthis.target%3De.%24(%22head%22)%2Cthis.ui%3De.create(%7Btag%3A%22style%22%2Ctext%3A'%5Cufeff.pz-game-field%7Bbackground%3Ainherit%3Bcolor%3Ainherit%7D.sb-wordlist-items%20.sb-pangram%7Bborder-bottom%3A2px%20%23f8cd05%20solid%7D.sb-wordlist-items%20.sb-anagram%20a%7Bcolor%3A%23888%7D.sba-dark%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.sba%7Bbackground%3A%23111%7D.sba-dark%20.sba%20summary%7Bbackground%3A%23252525%3Bcolor%3A%23eee%7D.sba-dark%20.pz-nav__hamburger-inner%2C.sba-dark%20.pz-nav__hamburger-inner%3A%3Abefore%2C.sba-dark%20.pz-nav__hamburger-inner%3A%3Aafter%7Bbackground-color%3A%23eee%7D.sba-dark%20.pz-nav%7Bwidth%3A100%25%3Bbackground%3A%23111%7D.sba-dark%20.pz-nav__logo%7Bfilter%3Ainvert(1)%7D.sba-dark%20.sb-modal-scrim%7Bbackground%3Argba(17%2C17%2C17%2C.85)%3Bcolor%3A%23eee%7D.sba-dark%20.pz-modal__title%7Bcolor%3A%23eee%7D.sba-dark%20.sb-modal-frame%2C.sba-dark%20.pz-modal__button.white%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.pz-modal__button.white%3Ahover%7Bbackground%3A%23393939%7D.sba-dark%20.sb-message%7Bbackground%3A%23393939%7D.sba-dark%20.sb-progress-marker%20.sb-progress-value%2C.sba-dark%20.hive-cell.center%20.cell-fill%7Bbackground%3A%23f7c60a%3Bfill%3A%23f7c60a%3Bcolor%3A%23111%7D.sba-dark%20.sb-input-bright%7Bcolor%3A%23f7c60a%7D.sba-dark%20.hive-cell.outer%20.cell-fill%7Bfill%3A%23393939%7D.sba-dark%20.cell-fill%7Bstroke%3A%23111%7D.sba-dark%20.cell-letter%7Bfill%3A%23eee%7D.sba-dark%20.hive-cell.center%20.cell-letter%7Bfill%3A%23111%7D.sba-dark%20.hive-action%3Anot(.hive-action__shuffle)%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.hive-action__shuffle%7Bfilter%3Ainvert(100%25)%7D.sba-dark%20*%3Anot(.hive-action__shuffle)%3Anot(.sb-pangram)%3Anot(.sba-current)%7Bborder-color%3A%23333%20!important%7D.sba%7Bposition%3Aabsolute%3Bwidth%3A200px%3Bbackground%3Ainherit%3Bbox-sizing%3Aborder-box%3Bz-index%3A3%3Bmargin%3A16px%200%3Bpadding%3A0%2010px%205px%3Bbackground%3A%23fff%3Bborder-width%3A1px%3Bborder-color%3A%23dcdcdc%3Bborder-radius%3A6px%3Bborder-style%3Asolid%7D.sba%20*%2C.sba%20*%3Abefore%2C.sba%20*%3Aafter%7Bbox-sizing%3Aborder-box%7D.sba%20*%3Afocus%7Boutline%3A0%7D.sba%20.dragger%7Bfont-weight%3Abold%3Bcursor%3Amove%3Bline-height%3A32px%7D.sba%20.closer%2C.sba%20.minimizer%7Bfont-size%3A18px%3Bfont-weight%3Abold%3Bposition%3Aabsolute%3Btop%3A0%3Bline-height%3A32px%3Bpadding%3A0%2010px%3Bcursor%3Apointer%7D.sba%20.closer%7Bright%3A0%7D.sba%20.minimizer%7Bright%3A16px%3Btransform%3Arotate(-90deg)%3Btransform-origin%3Acenter%3Bfont-size%3A10px%3Bright%3A24px%3Btop%3A1px%7D.sba%20.minimizer%3Abefore%7Bcontent%3A%22%E2%9D%AF%22%7D.sba.minimized%20details%7Bdisplay%3Anone%7D.sba.minimized%20.minimizer%7Btransform%3Arotate(90deg)%3Bright%3A25px%3Btop%3A0%7D.sba%20details%7Bfont-size%3A90%25%3Bmargin-bottom%3A1px%3Bmax-height%3A800px%3Btransition%3Amax-height%20.25s%20ease-in%7D.sba%20details%5Bopen%5D%20summary%3Abefore%7Btransform%3Arotate(-90deg)%3Bleft%3A12px%3Btop%3A0%7D.sba%20details.inactive%7Bheight%3A0%3Bmax-height%3A0%3Btransition%3Amax-height%20.25s%20ease-out%3Boverflow%3Ahidden%3Bmargin%3A0%7D.sba%20summary%7Bline-height%3A24px%3Bpadding%3A0%2015px%200%2025px%3Bbackground%3A%23f8cd05%3Bcursor%3Apointer%3Blist-style%3Anone%3Bposition%3Arelative%7D.sba%20summary%3A%3A-webkit-details-marker%7Bdisplay%3Anone%7D.sba%20summary%3Abefore%7Bcontent%3A%22%E2%9D%AF%22%3Bfont-size%3A9px%3Bposition%3Aabsolute%3Bdisplay%3Ainline-block%3Btransform%3Arotate(90deg)%3Btransform-origin%3Acenter%3Bleft%3A9px%3Btop%3A-1px%7D.sba%20.hive-action%7Bmargin%3A0%20auto%3Bdisplay%3Ablock%3Bfont-size%3A100%25%3Bwhite-space%3Anowrap%7D.sba%20.pane%7Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-top%3Anone%3Bborder-collapse%3Acollapse%3Bwidth%3A100%25%3Bfont-size%3A85%25%3Bmargin-bottom%3A4px%7D.sba%20tr%3Afirst-of-type%20td%2C.sba%20tr%3Afirst-of-type%20th%7Bborder-top%3Anone%7D.sba%20tr%20td%3Afirst-of-type%7Btext-align%3Aleft%7D.sba%20tr.sba-current%7Bfont-weight%3Abold%3Bborder-bottom%3A2px%20solid%20%23f8cd05%20!important%7D.sba%20th%2C.sba%20td%7Bborder%3A1px%20solid%20%23dcdcdc%3Bwhite-space%3Anowrap%7D.sba%20thead%20th%7Btext-align%3Acenter%3Bpadding%3A4px%200%7D.sba%20tbody%20th%7Btext-align%3Aright%7D.sba%20tbody%20td%7Btext-align%3Acenter%3Bpadding%3A4px%206px%7D.sba%20%5Bdata-plugin%3Dfooter%5D%20a%7Bcolor%3AcurrentColor%3Bopacity%3A.6%3Bfont-size%3A10px%3Btext-align%3Aright%3Bdisplay%3Ablock%3Bpadding-top%3A8px%7D.sba%20%5Bdata-plugin%3Dfooter%5D%20a%3Ahover%7Bopacity%3A.8%3Btext-decoration%3Aunderline%7D.sba%20.spill-title%7Bpadding%3A10px%206px%200px%3Btext-align%3Acenter%7D.sba%20.spill%7Btext-align%3Acenter%3Bpadding%3A17px%200%3Bfont-size%3A280%25%7D.sba%20ul.pane%7Bpadding%3A5px%7D.sba%20%5Bdata-plugin%3Dsurrender%5D%20.pane%7Bpadding%3A10px%205px%7D.sba%20label%7Bcursor%3Apointer%3Bposition%3Arelative%3Bline-height%3A19px%7D.sba%20label%20input%7Bposition%3Arelative%3Btop%3A2px%3Bmargin%3A0%2010px%200%200%7D%5Cn'.replace(%2F(%5CuFEFF%7C%5C%5Cn)%2Fgu%2C%22%22)%7D)%2Ct.on(l(%22destroy%22)%2C(()%3D%3E%7Bthis.ui.remove()%7D))%2Cthis.add()%7D%7D%2CdarkMode%3Aclass%20extends%20h%7Bconstructor(t)%7Bsuper(t%2C%22Dark%20Mode%22%2C%7Boptional%3A!0%2CdefaultEnabled%3A!1%7D)%3Bconst%20a%3Dl(%22dark%22%2C%22d%22)%3Bthis.toggle%3Dt%3D%3E%7Bn(%60options.%24%7Bthis.key%7D%60%2Ct)%2Ce.%24(%22body%22).classList.toggle(a%2Ct)%7D%2Cthis.toggle(this.isEnabled())%2Cthis.add()%7D%7D%2Cheader%3Aclass%20extends%20h%7Bconstructor(t)%7Blet%20a%3Bsuper(t%2Cr(%22title%22)%2C%7Bkey%3A%22header%22%7D)%2Cthis.ui%3De.create()%3Blet%20s%3D!1%3Bconst%20n%3De%3D%3E%7Bconst%20a%3Dt.game.getBoundingClientRect()%2Cs%3De.target.getBoundingClientRect()%2Cr%3Da.top%2Bwindow.pageYOffset%2Cn%3Dthis.ui.parentElement.getBoundingClientRect()%2Ci%3Da.height-(a.top-s.top)-(s.top-n.top)-n.height%3Breturn%7BmaxL%3Adocument.documentElement.clientWidth-s.width%2CminT%3Ar%2CmaxT%3Ar%2Bi%2CoffX%3Ae.screenX-s.x%2CoffY%3Ae.screenY-s.y%2CmargT%3AparseInt(getComputedStyle(e.target).marginTop%2C10)%7D%7D%3Bthis.ui.append(e.create(%7Btext%3Athis.title%2Cattributes%3A%7Btitle%3A%22Hold%20the%20mouse%20down%20to%20drag%22%7D%2CclassNames%3A%5B%22dragger%22%5D%7D))%2Cthis.ui.append(e.create(%7Btag%3A%22span%22%2Ctext%3A%22%C3%97%22%2Cattributes%3A%7Btitle%3A%22Close%22%7D%2CclassNames%3A%5B%22closer%22%5D%2Cevents%3A%7Bclick%3A()%3D%3E%7Bt.trigger(new%20Event(l(%22destroy%22)))%7D%7D%7D))%2Cthis.ui.append(e.create(%7Btag%3A%22span%22%2Cattributes%3A%7Btitle%3A%22Minimize%22%7D%2CclassNames%3A%5B%22minimizer%22%5D%2Cevents%3A%7Bclick%3A()%3D%3E%7Bt.ui.classList.toggle(%22minimized%22)%7D%7D%7D))%2Ct.on(%22pointerdown%22%2C(t%3D%3E%7Bs%3D!!t.target.closest(%60%5Bdata-plugin%3D%22%24%7Bthis.key%7D%22%5D%60)%7D))%2Ct.on(%22pointerup%22%2C(()%3D%3E%7Bs%3D!1%7D))%2C%5Bt.ui%2Ct.game%5D.forEach((t%3D%3E%7Bt.addEventListener(%22dragover%22%2C(t%3D%3E%7Bt.preventDefault()%7D))%7D))%2Ct.on(%22dragstart%22%2C(t%3D%3E%7Bif(!s)return%20t.preventDefault()%2C!1%3Bt.target.style.opacity%3D%22.2%22%2Ca%3Dn(t)%7D)%2C!1)%2Ct.on(%22dragend%22%2C(t%3D%3E%7BObject.assign(t.target.style%2C(t%3D%3E%7Blet%20e%3DMath.max(0%2Ct.screenX-a.offX)%3Be%3DMath.min(e%2Ca.maxL)%2B%22px%22%3Blet%20s%3DMath.max(a.minT%2Ct.screenY%2Bwindow.pageYOffset-a.margT-a.offY)%3Breturn%20s%3DMath.min(s%2Ca.maxT)%2B%22px%22%2C%7Bleft%3Ae%2Ctop%3As%7D%7D)(t))%2Ct.target.style.opacity%3D%221%22%7D))%2Cthis.add()%7D%7D%2CscoreSoFar%3Aclass%20extends%20h%7Bconstructor(t)%7Bsuper(t%2C%22Score%20so%20far%22%2C%7Boptional%3A!0%7D)%2Cthis.ui%3De.create(%7Btag%3A%22details%22%2Ctext%3A%5Bthis.title%2C%22summary%22%5D%2Cattributes%3A%7Bopen%3A!0%7D%2CclassNames%3Athis.isEnabled()%3F%5B%5D%3A%5B%22inactive%22%5D%7D)%3Bconst%20a%3De.create(%7Btag%3A%22table%22%2CclassNames%3A%5B%22pane%22%5D%7D)%2Cs%3De.create(%7Btag%3A%22thead%22%7D)%3Bs.append(e.create(%7Btag%3A%22tr%22%2CcellTag%3A%22th%22%2CcellData%3A%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D%7D))%3Bconst%20r%3De.create(%7Btag%3A%22tbody%22%7D)%3Ba.append(s)%2Ca.append(r)%2Cm(r)%2Cthis.ui.append(a)%2Ct.on(l(%22newWord%22)%2C(t%3D%3E%7Bm(r)%7D))%2Cthis.add()%7D%7D%2Cspoilers%3Aclass%20extends%20h%7Bconstructor(t)%7Bsuper(t%2C%22Spoilers%22%2C%7Boptional%3A!0%7D)%3Bconst%20a%3De.create(%7Btag%3A%22tbody%22%7D)%2Cs%3D()%3D%3E%7Ba.innerHTML%3D%22%22%2C(()%3D%3E%7Bconst%20t%3D%7B%7D%2Ce%3Du(%22pangrams%22)%2Ca%3Du(%22foundPangrams%22)%2Cs%3D%5B%5B%22Pangrams%22%2Ca%2Ce-a%2Ce%5D%5D%3Bg(%22answers%22).forEach((e%3D%3E%7Bt%5Be.length%5D%3Dt%5Be.length%5D%7C%7C%7Bfound%3A0%2Cmissing%3A0%2Ctotal%3A0%7D%2Cg(%22foundTerms%22).includes(e)%3Ft%5Be.length%5D.found%2B%2B%3At%5Be.length%5D.missing%2B%2B%2Ct%5Be.length%5D.total%2B%2B%7D))%3Blet%20r%3DObject.keys(t)%3Breturn%20r.sort(((t%2Ce)%3D%3Et-e))%2Cr.forEach((e%3D%3E%7Bs.push(%5Be%2B%22%20%22%2B(e%3E1%3F%22letters%22%3A%22letter%22)%2Ct%5Be%5D.found%2Ct%5Be%5D.missing%2Ct%5Be%5D.total%5D)%7D))%2Cs%7D)().forEach((t%3D%3E%7Ba.append(e.create(%7Btag%3A%22tr%22%2CcellData%3At%7D))%7D))%7D%3Bthis.ui%3De.create(%7Btag%3A%22details%22%2Ctext%3A%5Bthis.title%2C%22summary%22%5D%2CclassNames%3Athis.isEnabled()%3F%5B%5D%3A%5B%22inactive%22%5D%7D)%3Bconst%20r%3De.create(%7Btag%3A%22table%22%2CclassNames%3A%5B%22pane%22%5D%7D)%2Cn%3De.create(%7Btag%3A%22thead%22%7D)%3Bn.append(e.create(%7Btag%3A%22tr%22%2CcellTag%3A%22th%22%2CcellData%3A%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D%7D))%2Cr.append(n)%2Cr.append(a)%2Cs()%2Cthis.ui.append(r)%2Ct.on(l(%22newWord%22)%2C(()%3D%3E%7Bs()%7D))%2Cthis.add()%7D%7D%2CspillTheBeans%3Aclass%20extends%20h%7Bconstructor(t)%7Bsuper(t%2C%22Spill%20the%20beans%22%2C%7Boptional%3A!0%7D)%3Bthis.ui%3De.create(%7Btag%3A%22details%22%2Ctext%3A%5Bthis.title%2C%22summary%22%5D%2CclassNames%3Athis.isEnabled()%3F%5B%5D%3A%5B%22inactive%22%5D%7D)%3Bconst%20a%3De.create(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Ba.append(e.create(%7Btext%3A%22Watch%20me%20while%20you%20type!%22%2CclassNames%3A%5B%22spill-title%22%5D%7D))%3Bconst%20s%3De.create(%7Btext%3A%22%F0%9F%98%90%22%2CclassNames%3A%5B%22spill%22%5D%7D)%3Ba.append(s)%2Cthis.ui.append(a)%2Cnew%20MutationObserver((t%3D%3E%7Bvar%20e%3Bs.textContent%3D(e%3Dt.pop().target.textContent.trim())%3Fg(%22remainders%22).filter((t%3D%3Et.startsWith(e))).length%3F%22%F0%9F%99%82%22%3A%22%F0%9F%99%81%22%3A%22%F0%9F%98%90%22%7D)).observe(e.%24(%22.sb-hive-input-content%22%2Ct.game)%2C%7BchildList%3A!0%7D)%2Cthis.add()%7D%7D%2CstepsToSuccess%3Aclass%20extends%20h%7Bconstructor(t)%7Blet%20a%3Bsuper(t%2C%22Steps%20to%20success%22%2C%7Boptional%3A!0%7D)%3Bconst%20s%3D%7B%7D%2Cr%3D(t%2Cr)%3D%3E%7Bconst%20i%3Db(%22answers%22)%3Be.%24%24(%22.sb-modal-list%20li%22%2Ct).forEach((t%3D%3E%7Bconst%20e%3Dt.textContent.match(%2F(%5B%5E%5C(%5D%2B)%20%5C((%5Cd%2B)%5C)%2F)%3Bs%5Be%5B1%5D%5D%3DparseInt(e%5B2%5D%2C10)%7D))%2Cs%5B%22Queen%20Bee%22%5D%3Di%2Ct.parentElement.style.opacity%3D0%2Ce.%24(%22.sb-modal-close%22%2Ct).click()%2Ca.disconnect()%2Cn(r)%7D%2Cn%3Dt%3D%3E%7Bt.innerHTML%3D%22%22%3Bconst%20a%3DObject.values(s).filter((t%3D%3Et%3C%3Db(%22foundTerms%22))).pop()%3Bfor(const%5Br%2Cn%5Dof%20Object.entries(s))t.append(e.create(%7Btag%3A%22tr%22%2CclassNames%3An%3D%3D%3Da%3F%5B%22sba-current%22%5D%3A%5B%5D%2CcellTag%3A%22td%22%2CcellData%3A%5Br%2Cn%5D%7D))%7D%3Bthis.ui%3De.create(%7Btag%3A%22details%22%2Ctext%3A%5Bthis.title%2C%22summary%22%5D%2CclassNames%3Athis.isEnabled()%3F%5B%5D%3A%5B%22inactive%22%5D%7D)%3Bconst%20i%3De.create(%7Btag%3A%22table%22%2CclassNames%3A%5B%22pane%22%5D%7D)%2Co%3De.create(%7Btag%3A%22tbody%22%7D)%3Bi.append(o)%3Bconst%20c%3De.%24(%22.sb-modal-buttons-section%20.pz-button__wrapper%3Ebutton%2C%20sb-modal-close%22%2Ce.%24(%22.sb-modal-wrapper%22))%3Bc%26%26c.click()%3Bconst%20d%3De.%24(%22.sb-modal-wrapper%22)%3Ba%3D((t%2Ca)%3D%3E%7Bconst%20s%3Dnew%20MutationObserver((s%3D%3E%7Bconst%20n%3Ds.pop().target%2Ci%3De.%24(%22.sb-modal-title%22%2Cn)%3Bi%26%26%22Rankings%22%3D%3D%3Di.textContent.trim()%26%26(t.parentElement.style.opacity%3D0%2Cr(t%2Ca))%7D))%3Breturn%20s.observe(t%2C%7BchildList%3A!0%7D)%2Cs%7D)(d%2Co)%2Ce.%24(%22.sb-progress%22%2Ct.game).click()%2Cthis.ui.append(i)%2Ct.on(l(%22newWord%22)%2C(()%3D%3E%7Bn(o)%7D))%2Cthis.add()%7D%7D%2Csurrender%3Aclass%20extends%20h%7Bconstructor(t)%7Bsuper(t%2C%22Surrender%22%2C%7Boptional%3A!0%7D)%3Blet%20a%3D!1%3Bconst%20s%3Ds%3D%3E!a%26%26(t.observer.disconnect()%2Cg(%22remainders%22).forEach((t%3D%3E%7Bs.append((t%3D%3E%7Bconst%20a%3De.create(%7Btag%3A%22li%22%2CclassNames%3Ag(%22pangrams%22).includes(t)%3F%5B%22sb-anagram%22%2C%22sb-pangram%22%5D%3A%5B%22sb-anagram%22%5D%7D)%3Breturn%20a.append(e.create(%7Btag%3A%22a%22%2Ctext%3At%2Cattributes%3A%7Bhref%3A%60https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3D%24%7Bt%7D%60%2Ctarget%3A%22_blank%22%7D%7D))%2Ca%7D)(t))%7D))%2Ca%3D!0%2C!0)%3Bthis.ui%3De.create(%7Btag%3A%22details%22%2Ctext%3A%5Bthis.title%2C%22summary%22%5D%2CclassNames%3Athis.isEnabled()%3F%5B%5D%3A%5B%22inactive%22%5D%7D)%3Bconst%20r%3De.create(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Br.append(e.create(%7Btag%3A%22button%22%2CclassNames%3A%5B%22hive-action%22%5D%2Ctext%3A%22Display%20answers%22%2Cattributes%3A%7Btype%3A%22button%22%7D%2Cevents%3A%7Bclick%3A()%3D%3E%7Bs(e.%24(%22.sb-wordlist-items%22%2Ct.game))%7D%7D%7D))%2Cthis.ui.append(r)%2Cthis.add()%7D%7D%2CsetUp%3Aclass%20extends%20h%7Bconstructor(t)%7Bsuper(t%2C%22Set-up%22)%3Bconst%20a%3De.create(%7Btag%3A%22ul%22%2CclassNames%3A%5B%22pane%22%5D%7D)%3Bthis.ui%3De.create(%7Btag%3A%22details%22%2Ctext%3A%5Bthis.title%2C%22summary%22%5D%2Cevents%3A%7Bclick%3Afunction(e)%7B%22INPUT%22%3D%3D%3De.target.tagName%26%26t.registry.get(e.target.name).toggle(e.target.checked)%7D%7D%7D)%2Cthis.ui.append(a)%2C(a%3D%3E%7Bt.registry.forEach(((t%2Cs)%3D%3E%7Bif(!t.optional)return!1%3Bconst%20r%3De.create(%7Btag%3A%22li%22%7D)%2Cn%3De.create(%7Btag%3A%22input%22%2Ctext%3At.title%2Cattributes%3A%7Btype%3A%22checkbox%22%2Cname%3As%7D%2Cchecked%3At.isEnabled()%7D)%3Br.append(n)%2Ca.append(r)%7D))%7D)(a)%2Cthis.add()%7D%7D%2Cfooter%3Aclass%20extends%20h%7Bconstructor(t)%7Bsuper(t%2C%60%24%7Br(%22label%22)%7D%20%24%7Br(%22version%22)%7D%60%2C%7Bkey%3A%22footer%22%7D)%2Cthis.ui%3De.create(%7Btag%3A%22a%22%2Ctext%3Athis.title%2Cattributes%3A%7Bhref%3Ar(%22url%22)%2Ctarget%3A%22_blank%22%7D%7D)%2Cthis.add()%7D%7D%7D%3Bnew%20class%7Bconstructor(t)%7Bif(!t%7C%7C!window.gameData)return%20console.info(%60This%20bookmarklet%20only%20works%20on%20%24%7Br(%22targetUrl%22)%7D%60)%2C!1%3Bthis.title%3Dr(%22label%22)%2Cthis.key%3Do(this.title)%2Cthis.game%3Dt%3Bconst%20a%3De.%24(%60%5Bdata-id%3D%22%24%7Bthis.key%7D%22%5D%60)%3Ba%26%26a.dispatchEvent(new%20Event(l(%22destroy%22)))%2Cthis.registry%3Dnew%20Map%2Cthis.on%3D(t%2Ce)%3D%3E%7Bthis.ui.addEventListener(t%2Ce)%7D%2Cthis.trigger%3Dt%3D%3E%7Bthis.ui.dispatchEvent(t)%7D%3Bconst%20s%3De.%24(%22.sb-content-box%22%2Ct).getBoundingClientRect()%2Cn%3De.%24(%22.sb-wordlist-items%22%2Ct)%2Ci%3D%7B%7D%3Bi%5Bl(%22destroy%22)%5D%3D()%3D%3E%7Bthis.observer.disconnect()%2Cthis.ui.remove()%7D%2Cthis.ui%3De.create(%7Battributes%3A%7Bdraggable%3A!0%7D%2Cstyle%3A%7Bleft%3As.right%2B10%2B%22px%22%2Ctop%3As.top%2Bwindow.pageYOffset%2B%22px%22%7D%2Cdata%3A%7Bid%3Athis.key%7D%2CclassNames%3A%5Br(%22prefix%22)%5D%2Cevents%3Ai%7D)%2Cp(this%2Cn)%2Cthis.observer%3Dnew%20MutationObserver((()%3D%3E%7Bthis.trigger(new%20Event(l(%22newWord%22)))%7D))%2Cthis.observer.observe(n%2C%7BchildList%3A!0%7D)%2Cthis.registerPlugins%3Dt%3D%3E%7Bfor(const%5Be%2Ca%5Dof%20Object.entries(t))this.registry.set(e%2Cnew%20a(this))%7D%2Ce.%24(%22body%22).append(this.ui)%7D%7D(e.%24(%22%23pz-game-root%22)).registerPlugins(f)%7D()%3B%0A%7D)()">Spelling Bee Assistant</a> into your browser’s bookmark menu. Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant.</p>
         <p><em>Note: The current version of Spelling Bee Assistant is 2.0.0. If you already have an older version, you may want to delete it immediately (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
       </section>
-      <section>
-        <h2>What’s new in version 2.0?</h2>
-        <ul>
-          <li>Minimize</li>
-          <li>Dark Mode</li>
-          <li>Spill the beans</li>
-          <li>Steps to Success</li>
-          <li>Set-up</li>
-        </ul>
-      </section>
       <section id="pz-game-root">
         <h2>What are the different parts good for?</h2>
-        <ul class="cards">
-          <li><h3>Dark Mode</h3>
-<p>Dark mode</p>
-</li><li><h3>Dark Mode</h3>
-<p>Darkness surrounds you.</p>
-</li><li><h3>Header</h3>
-<p><img src="src/js/plugins/header/assets/header-light.png" alt="Header"> You can grab the Spelling Bee Assistant by the header to drag it anywhere inside the game area. Click on the arrow to minimize it and on <strong>×</strong> to remove it from the game.</p>
-</li><li><h3>Score so far</h3>
-<p><img src="src/js/plugins/scoreSoFar/assets/score-so-far-light.png" alt="Score so far"> How far have you been moving ahead already and long is the way to the top? And - and that's a tiny spoiler - how many points will you need to have to become <em>Queen Bee</em>? That's the sort of question you get answered here.</p>
-</li><li><h3>Spoilers</h3>
-<p><img src="src/js/plugins/spoilers/assets/spoilers-light.png" alt="Spoilers"> So you found a good bunch of words, discovered the Pangram but now you wonder if there are words with four letters left that you've been missing. Maybe there is another Pangram hidden in the hive? Or at least a good long term that moves you to the next level? The <em>Spoiler</em> panel won't tell you the words, but it will tell you, how many of each size lay still ahead.</p>
-</li><li><h3>Spill the beans</h3>
-<p><img src="src/js/plugins/spillTheBeans/assets/spill-the-beans-light.png" alt="Spill the beans"> What was the name of this bird again, that you only know from solving crosswords? You know what it starts with, nut what came after the 3rd letter agin? This little face might know a thing or two that you don't, so watch it while you type! A happy expression <strong>🙂</strong> means you are on the right track, the sad one <strong>🙁</strong> shows when you're barking up the wrong tree. This weirdly indifferent look <strong>😐</strong> appears when you didn't type anything yet - or that you completed the word already and there is no other letter to look for.</p>
-</li><li><h3>Steps to success</h3>
-<p><img src="src/js/plugins/stepsToSuccess/assets/steps-to-success-light.png" alt="Steps to success"> You've certainly seen this one before, which is no wonder, because it's pretty close to the <em>Rankings</em> pop-up that is already part of <em>Spelling Bee</em>. But this one you can keep open while you're playing and - as an added bonus - it reveals how far the road to <em>Queen Bee</em> is. The tier that you're currently in is highlighted.</p>
-</li><li><h3>Surrender</h3>
-<p><img src="src/js/plugins/surrender/assets/surrender-light.png" alt="Surrender"> You aren't ready to declare defeat already, are you?</p>
-<p>Well, if you are, no need to wait until 3:00 a.m. ET anymore - with this button you can resolve the game with a mouse clicks. But don't expect to be crowned <em>Queen Bee</em>! All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
-</li><li><h3>Set-up</h3>
-<p><img src="src/js/plugins/setUp/assets/set-up-light.png" alt="Set-up"> So you like only some of the toys here, but not all of them? Get rid of those you don't like, they won't bother you anymore. Unless of course you use the assistant on another browser, then you'll have to do it all over again.</p>
+        <ul class="card-listing">
+          <li class="card" data-plugin="darkMode"><h3>Dark Mode</h3>
+<div class="img-box">
+<img src="src/js/plugins/darkMode/assets/dark-mode-light.png" alt="Dark Mode" usemap="#darkMode" class="light" />
+<img src="src/js/plugins/darkMode/assets/dark-mode-dark.png" alt="Dark Mode" usemap="#darkMode" class="dark" />
+</div> 
+Have you been staring at the screen for a long time? Your eyes are dry and hurt but you can't stop playing, just this one level! People on social media had suggested to bring Dark Mode to Spelling Bee and the Spelling Bee Assistant does just that. Go to _Set-Up_, check the _Dark Mode_ box and relax! </li><li class="card" data-plugin="scoreSoFar"><h3>Score so far</h3>
+<div class="img-box">
+<img src="src/js/plugins/scoreSoFar/assets/score-so-far-light.png" alt="Score so far" usemap="#scoreSoFar" class="light" />
+<img src="src/js/plugins/scoreSoFar/assets/score-so-far-dark.png" alt="Score so far" usemap="#scoreSoFar" class="dark" />
+</div> 
+How far have you been moving ahead already and long is the way to the top? And - and that's a tiny spoiler - how many points will you need to have to become _Queen Bee_? That's the sort of question you get answered here. </li><li class="card" data-plugin="spoilers"><h3>Spoilers</h3>
+<div class="img-box">
+<img src="src/js/plugins/spoilers/assets/spoilers-light.png" alt="Spoilers" usemap="#spoilers" class="light" />
+<img src="src/js/plugins/spoilers/assets/spoilers-dark.png" alt="Spoilers" usemap="#spoilers" class="dark" />
+</div> So you found a good bunch of words, discovered the Pangram but now you wonder if there are words with four letters left that you've been missing. Maybe there is another Pangram hidden in the hive? Or at least a good long term that moves you to the next level? The *Spoiler* panel won't tell you the words, but it will tell you, how many of each size lay still ahead. </li><li class="card" data-plugin="spillTheBeans"><h3>Spill the beans</h3>
+<div class="img-box">
+<img src="src/js/plugins/spillTheBeans/assets/spill-the-beans-light.png" alt="Spill the beans" usemap="#spillTheBeans" class="light" />
+<img src="src/js/plugins/spillTheBeans/assets/spill-the-beans-dark.png" alt="Spill the beans" usemap="#spillTheBeans" class="dark" />
+</div> What was the name of this bird again, that you only know from solving crosswords? You know what it starts with, but what came after the 3rd letter again? This little face might know a thing or two that you don't, so watch it while you type! A happy expression **🙂** means you are on the right track, the sad one **🙁** shows when you're barking up the wrong tree. This weirdly indifferent look **😐** appears when you didn't type anything yet - or that you completed the word already and there is no other letter to look for. </li><li class="card" data-plugin="stepsToSuccess"><h3>Steps to success</h3>
+<div class="img-box">
+<img src="src/js/plugins/stepsToSuccess/assets/steps-to-success-light.png" alt="Steps to success" usemap="#stepsToSuccess" class="light" />
+<img src="src/js/plugins/stepsToSuccess/assets/steps-to-success-dark.png" alt="Steps to success" usemap="#stepsToSuccess" class="dark" />
+</div> You've certainly seen this one before, which is no wonder, because it's pretty close to the _Rankings_ pop-up that is already part of _Spelling Bee_. But this one you can keep open while you're playing and - as an added bonus - it reveals how far the road to *Queen Bee* is. The tier that you're currently in is highlighted.</li><li class="card" data-plugin="surrender"><h3>Surrender</h3>
+<div class="img-box">
+<img src="src/js/plugins/surrender/assets/surrender-light.png" alt="Surrender" usemap="#surrender" class="light" />
+<img src="src/js/plugins/surrender/assets/surrender-dark.png" alt="Surrender" usemap="#surrender" class="dark" />
+</div> 
+You aren't ready to declare defeat already, are you? Well, if you are, no need to wait until 3:00 a.m. ET anymore - with this button you can resolve the game with a mouse clicks. But don't expect to be crowned *Queen Bee*! All the words you didn't find will be linked to the respective terms in Google. Maybe this will help you next time!
+</li><li class="card" data-plugin="setUp"><h3>Set-up</h3>
+<div class="img-box">
+<img src="src/js/plugins/setUp/assets/set-up-light.png" alt="Set-up" usemap="#setUp" class="light" />
+<img src="src/js/plugins/setUp/assets/set-up-dark.png" alt="Set-up" usemap="#setUp" class="dark" />
+</div> So you like only some of the toys here, but not all of them? Get rid of those you don't like, they won't bother you anymore. Unless of course you use the assistant on another browser, then you'll have to do it all over again.
 <p>Oh, and while you're on it don't miss the Dark Mode!</p>
-</li><li><h3>Footer</h3>
-<p>Click on the link to <a href="https://www.spelling-bee-assistant.app/">visit the homepage</a> of the Spelling Bee Assistant.</p>
-</li>            
+</li><li class="card" data-plugin="header"><h3>Header</h3>
+<div class="img-box">
+<img src="src/js/plugins/header/assets/header-light.png" alt="Header" usemap="#header" class="light" />
+<img src="src/js/plugins/header/assets/header-dark.png" alt="Header" usemap="#header" class="dark" />
+</div> You can grab the Spelling Bee Assistant by the header to drag it anywhere inside the game area. Click on the arrow to minimize it and on **×** to remove it from the game.</li>            
         </ul>
       </section>
       </section>
@@ -95,8 +530,20 @@
         <p>No.</p>
       </section>
     </main>
+    <map name="setUp">
+      <area shape="rect" coords="3,28,106,47" href="#dark-mode">
+    </map> 
     <script>
-      undefined       
+      ((d) => {
+        const dmArea = d.querySelector('[name="setUp"] [href="#dark-mode"]');
+        const bodyClass = d.body.classList;
+        bodyClass.toggle('dark-mode', !!localStorage.getItem('darkMode')); 
+        dmArea.addEventListener('click', evt => {
+          evt.preventDefault();
+          bodyClass.toggle('dark-mode');
+          localStorage.setItem('darkMode', bodyClass.contains('dark-mode'))
+        });
+      })(document)      
     </script>
     <script>
       document.querySelector('.bookmarklet').addEventListener('dragstart', e => {

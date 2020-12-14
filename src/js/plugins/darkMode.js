@@ -1,9 +1,9 @@
-import el from '../../modules/element.js';
+import el from '../modules/element.js';
 import {
     prefix
-} from '../../modules/string.js';
-import plugin from '../../modules/pluginBase.js';
-import settings from '../../modules/settings.js';
+} from '../modules/string.js';
+import plugin from '../modules/pluginBase.js';
+import settings from '../modules/settings.js';
 
 /**
  * Dark Mode plugin

@@ -6,17 +6,15 @@
     "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
     "twitter": "@d_raber",
     "prefix": "sba",
-    "plugins": [
-        "styles",
-        "darkMode",
-        "header",
+    "plugins": [     
+        "darkMode",   
         "scoreSoFar",
         "spoilers",
         "spillTheBeans",
         "stepsToSuccess",
         "surrender",
         "setUp",
-        "footer"
+        "header"
     ],
     "htmlIn": "src/html/index.tpl",
     "htmlOut": "index.html",

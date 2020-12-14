@@ -1,6 +1,6 @@
-import settings from '../../modules/settings.js';
-import el from '../../modules/element.js';
-import plugin from '../../modules/pluginBase.js';
+import settings from '../modules/settings.js';
+import el from '../modules/element.js';
+import plugin from '../modules/pluginBase.js';
 
 /**
  * Footer plugin

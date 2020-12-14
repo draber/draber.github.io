@@ -30,27 +30,22 @@
     <main class="wrapper">
       <section>
         <h2>What is this?</h2>
-        <p><strong>Spelling Bee Assistant</strong> is a JavaScript <a href="#bookmarklet" class="help">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
-      </section>
+        <div class="card">
+          <div class="img-box">
+            <img src="src/img/assistant-closed-light.png" alt="Assistant" class="light">
+            <img src="src/img/assistant-closed-dark.png"  alt="Assistant" class="dark">
+          </div>
+          <p><strong>Spelling Bee Assistant</strong> is a JavaScript <a href="#bookmarklet" class="help">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="nofollow">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
+        </div>
+        </section>
       <section>
-        <h2>Installation</h2>
+        <h2>How do you install it?</h2>
         <p>Drag and drop this bookmarklet {{bookmarklet}} into your browser’s bookmark menu. Next time you are playing Spelling Bee you can click on the bookmarklet to display the assistant.</p>
         <p><em>Note: The current version of Spelling Bee Assistant is {{version}}. If you already have an older version, you may want to delete it immediately (Right-click → Delete), otherwise it might be difficult to tell both versions apart.</em></p>
       </section>
-      <section>
-        <h2>What’s new in version 2.0?</h2>
-        <ul>
-          <li>Minimize</li>
-          <li>Dark Mode</li>
-          <li>Spill the beans</li>
-          <li>Steps to Success</li>
-          <li>Set-up</li>
-        </ul>
-      </section>
       <section id="pz-game-root">
         <h2>What are the different parts good for?</h2>
-        <ul class="cards">
-          {{plugins}}            
+        <ul class="card-listing">
         </ul>
       </section>
       </section>
@@ -73,8 +68,20 @@
         <p>No.</p>
       </section>
     </main>
+    <map name="setUp">
+      <area shape="rect" coords="3,28,106,47" href="#dark-mode">
+    </map> 
     <script>
-      {{siteJs}}       
+      ((d) => {
+        const dmArea = d.querySelector('[name="setUp"] [href="#dark-mode"]');
+        const bodyClass = d.body.classList;
+        bodyClass.toggle('dark-mode', !!localStorage.getItem('darkMode')); 
+        dmArea.addEventListener('click', evt => {
+          evt.preventDefault();
+          bodyClass.toggle('dark-mode');
+          localStorage.setItem('darkMode', bodyClass.contains('dark-mode'))
+        });
+      })(document)      
     </script>
     <script>
       document.querySelector('.bookmarklet').addEventListener('dragstart', e => {

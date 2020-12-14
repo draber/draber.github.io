@@ -1,9 +1,9 @@
-import el from '../../modules/element.js';
-import data from '../../modules/data.js';
+import el from '../modules/element.js';
+import data from '../modules/data.js';
 import {
 	prefix
-} from '../../modules/string.js';
-import plugin from '../../modules/pluginBase.js';
+} from '../modules/string.js';
+import plugin from '../modules/pluginBase.js';
 
 /**
  * Spoilers plugin

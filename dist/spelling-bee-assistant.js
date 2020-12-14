@@ -724,45 +724,32 @@
             super(app, 'Steps to success', {
                 optional: true
             });
-            let observer;
-            const steps = {};
-            const initObserver = (target, frame) => {
-                const observer = new MutationObserver(mutationsList => {
-                    const node = mutationsList.pop().target;
-                    const title = el.$('.sb-modal-title', node);
-                    if (title && title.textContent.trim() === 'Rankings') {
-                        target.parentElement.style.opacity = 0;
-                        retrieveRankings(target, frame);
-                    }
-                });
-                observer.observe(target, {
-                    childList: true
-                });
-                return observer;
-            };
-            const retrieveRankings = (modal, frame) => {
-                const allPoints = data.getPoints('answers');
-                el.$$('.sb-modal-list li', modal).forEach(element => {
-                    const values = element.textContent.match(/([^\(]+) \((\d+)\)/);
-                    steps[values[1]] = parseInt(values[2], 10);
-                });
-                steps['Queen Bee'] = allPoints;
-                modal.parentElement.style.opacity = 0;
-                el.$('.sb-modal-close', modal).click();
-                observer.disconnect();
-                update(frame);
-            };
+            const rankings = new Map([
+                ['Beginner', 0],
+                ['Good Start', 2],
+                ['Moving Up', 5],
+                ['Good', 8],
+                ['Solid', 15],
+                ['Nice', 25],
+                ['Great', 40],
+                ['Amazing', 50],
+                ['Genius', 70],
+                ['Queen Bee', 100]
+            ]);
+            const maxPoints = data.getPoints('answers');
             const update = (frame) => {
                 frame.innerHTML = '';
-                const tier = Object.values(steps).filter(entry => entry <= data.getPoints('foundTerms')).pop();
-                for (const [key, value] of Object.entries(steps)) {
+                const ownPoints = data.getPoints('foundTerms');
+                const tier = Array.from(rankings.values()).filter(entry => entry <= ownPoints).pop();
+                rankings.forEach((perc, label) => {
+                    const value = Math.round(perc / 100 * maxPoints);
                     frame.append(el.create({
                         tag: 'tr',
                         classNames: value === tier ? ['sba-current'] : [],
                         cellTag: 'td',
-                        cellData: [key, value]
+                        cellData: [label, value]
                     }));
-                }
+                });
             };
             this.ui = el.create({
                 tag: 'details',
@@ -776,14 +763,8 @@
             const frame = el.create({
                 tag: 'tbody'
             });
+            update(frame);
             pane.append(frame);
-            const popUpCloser = el.$('.sb-modal-buttons-section .pz-button__wrapper>button, sb-modal-close', el.$('.sb-modal-wrapper'));
-            if(popUpCloser){
-                popUpCloser.click();
-            }
-            const modal = el.$('.sb-modal-wrapper');
-            observer = initObserver(modal, frame);
-            el.$('.sb-progress', app.game).click();
             this.ui.append(pane);
             app.on(prefix$1('newWord'), () => {
                 update(frame);
@@ -792,7 +773,7 @@
         }
     }
 
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px;transform:rotate(-90deg);transform-origin:center;font-size:10px;right:24px;top:1px}.sba .minimizer:before{content:\"❯\"}.sba.minimized details{display:none}.sba.minimized .minimizer{transform:rotate(90deg);right:25px;top:0}.sba details{font-size:90%;margin-bottom:1px;max-height:800px;transition:max-height .25s ease-in}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:9px;top:-1px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td,.sba tr:first-of-type th{border-top:none}.sba tr td:first-of-type{text-align:left}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 0}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
+    var css = "@charset \"UTF-8\";\r\n.pz-game-field {\r\n  background: inherit;\r\n  color: inherit; }\r\n\r\n.sb-wordlist-items .sb-pangram {\r\n  border-bottom: 2px #f8cd05 solid; }\r\n.sb-wordlist-items .sb-anagram a {\r\n  color: #888; }\r\n\r\n.sba-dark {\r\n  background: #111;\r\n  color: #eee; }\r\n  .sba-dark .sba {\r\n    background: #111; }\r\n    .sba-dark .sba summary {\r\n      background: #252525;\r\n      color: #eee; }\r\n  .sba-dark .pz-nav__hamburger-inner,\r\n  .sba-dark .pz-nav__hamburger-inner::before,\r\n  .sba-dark .pz-nav__hamburger-inner::after {\r\n    background-color: #eee; }\r\n  .sba-dark .pz-nav {\r\n    width: 100%;\r\n    background: #111; }\r\n  .sba-dark .pz-nav__logo {\r\n    filter: invert(1); }\r\n  .sba-dark .sb-modal-scrim {\r\n    background: rgba(17, 17, 17, 0.85);\r\n    color: #eee; }\r\n  .sba-dark .pz-modal__title {\r\n    color: #eee; }\r\n  .sba-dark .sb-modal-frame,\r\n  .sba-dark .pz-modal__button.white {\r\n    background: #111;\r\n    color: #eee; }\r\n  .sba-dark .pz-modal__button.white:hover {\r\n    background: #393939; }\r\n  .sba-dark .sb-message {\r\n    background: #393939; }\r\n  .sba-dark .sb-progress-marker .sb-progress-value,\r\n  .sba-dark .hive-cell.center .cell-fill {\r\n    background: #f7c60a;\r\n    fill: #f7c60a;\r\n    color: #111; }\r\n  .sba-dark .sb-input-bright {\r\n    color: #f7c60a; }\r\n  .sba-dark .hive-cell.outer .cell-fill {\r\n    fill: #393939; }\r\n  .sba-dark .cell-fill {\r\n    stroke: #111; }\r\n  .sba-dark .cell-letter {\r\n    fill: #eee; }\r\n  .sba-dark .hive-cell.center .cell-letter {\r\n    fill: #111; }\r\n  .sba-dark .hive-action:not(.hive-action__shuffle) {\r\n    background: #111;\r\n    color: #eee; }\r\n  .sba-dark .hive-action__shuffle {\r\n    filter: invert(100%); }\r\n  .sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current) {\r\n    border-color: #333 !important; }\r\n\r\n.sba {\r\n  position: absolute;\r\n  width: 200px;\r\n  background: inherit;\r\n  box-sizing: border-box;\r\n  z-index: 3;\r\n  margin: 16px 0;\r\n  padding: 0 10px 5px;\r\n  background: #fff;\r\n  border-width: 1px;\r\n  border-color: gainsboro;\r\n  border-radius: 6px;\r\n  border-style: solid; }\r\n  .sba *,\r\n  .sba *:before,\r\n  .sba *:after {\r\n    box-sizing: border-box; }\r\n  .sba *:focus {\r\n    outline: 0; }\r\n  .sba .dragger {\r\n    font-weight: bold;\r\n    cursor: move;\r\n    line-height: 32px; }\r\n  .sba .closer,\r\n  .sba .minimizer {\r\n    font-size: 18px;\r\n    font-weight: bold;\r\n    position: absolute;\r\n    top: 0;\r\n    line-height: 32px;\r\n    padding: 0 10px;\r\n    cursor: pointer; }\r\n  .sba .closer {\r\n    right: 0; }\r\n  .sba .minimizer {\r\n    right: 16px;\r\n    transform: rotate(-90deg);\r\n    transform-origin: center;\r\n    font-size: 10px;\r\n    right: 24px;\r\n    top: 1px; }\r\n    .sba .minimizer:before {\r\n      content: \"❯\"; }\r\n  .sba.minimized details {\r\n    display: none; }\r\n  .sba.minimized .minimizer {\r\n    transform: rotate(90deg);\r\n    right: 25px;\r\n    top: 0; }\r\n  .sba details {\r\n    font-size: 90%;\r\n    margin-bottom: 1px;\r\n    max-height: 800px;\r\n    transition: max-height 0.25s ease-in; }\r\n    .sba details[open] summary:before {\r\n      transform: rotate(-90deg);\r\n      left: 12px;\r\n      top: 0; }\r\n    .sba details.inactive {\r\n      height: 0;\r\n      max-height: 0;\r\n      transition: max-height 0.25s ease-out;\r\n      overflow: hidden;\r\n      margin: 0; }\r\n  .sba summary {\r\n    line-height: 24px;\r\n    padding: 0 15px 0 25px;\r\n    background: #f8cd05;\r\n    cursor: pointer;\r\n    list-style: none;\r\n    position: relative; }\r\n    .sba summary::-webkit-details-marker {\r\n      display: none; }\r\n    .sba summary:before {\r\n      content: \"❯\";\r\n      font-size: 9px;\r\n      position: absolute;\r\n      display: inline-block;\r\n      transform: rotate(90deg);\r\n      transform-origin: center;\r\n      left: 9px;\r\n      top: -1px; }\r\n  .sba .hive-action {\r\n    margin: 0 auto;\r\n    display: block;\r\n    font-size: 100%;\r\n    white-space: nowrap; }\r\n  .sba .pane {\r\n    border: 1px solid gainsboro;\r\n    border-top: none;\r\n    border-collapse: collapse;\r\n    width: 100%;\r\n    font-size: 85%;\r\n    margin-bottom: 4px; }\r\n  .sba tr:first-of-type td,\r\n  .sba tr:first-of-type th {\r\n    border-top: none; }\r\n  .sba tr td:first-of-type {\r\n    text-align: left; }\r\n  .sba tr.sba-current {\r\n    font-weight: bold;\r\n    border-bottom: 2px solid #f8cd05 !important; }\r\n  .sba th,\r\n  .sba td {\r\n    border: 1px solid gainsboro;\r\n    white-space: nowrap; }\r\n  .sba thead th {\r\n    text-align: center;\r\n    padding: 4px 0; }\r\n  .sba tbody th {\r\n    text-align: right; }\r\n  .sba tbody td {\r\n    text-align: center;\r\n    padding: 4px 6px; }\r\n  .sba [data-plugin=\"footer\"] a {\r\n    color: currentColor;\r\n    opacity: .6;\r\n    font-size: 10px;\r\n    text-align: right;\r\n    display: block;\r\n    padding-top: 8px; }\r\n    .sba [data-plugin=\"footer\"] a:hover {\r\n      opacity: .8;\r\n      text-decoration: underline; }\r\n  .sba .spill-title {\r\n    padding: 10px 6px 0px;\r\n    text-align: center; }\r\n  .sba .spill {\r\n    text-align: center;\r\n    padding: 17px 0;\r\n    font-size: 280%; }\r\n  .sba ul.pane {\r\n    padding: 5px; }\r\n  .sba [data-plugin=\"surrender\"] .pane {\r\n    padding: 10px 5px; }\r\n  .sba label {\r\n    cursor: pointer;\r\n    position: relative;\r\n    line-height: 19px; }\r\n    .sba label input {\r\n      position: relative;\r\n      top: 2px;\r\n      margin: 0 10px 0 0; }\r\n";
 
     class styles extends plugin {
         constructor(app) {

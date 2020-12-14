@@ -1,3 +1,0 @@
-# Spill the beans
-
-![Spill the beans](assets/spill-the-beans-light.png) What was the name of this bird again, that you only know from solving crosswords? You know what it starts with, nut what came after the 3rd letter agin? This little face might know a thing or two that you don't, so watch it while you type! A happy expression **🙂** means you are on the right track, the sad one **🙁** shows when you're barking up the wrong tree. This weirdly indifferent look **😐** appears when you didn't type anything yet - or that you completed the word already and there is no other letter to look for. 

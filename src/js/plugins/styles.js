@@ -1,7 +1,7 @@
-import el from '../../modules/element.js';
-import { prefix } from '../../modules/string.js';
-import css from '../../../css/widget.css';
-import plugin from '../../modules/pluginBase.js';
+import el from '../modules/element.js';
+import { prefix } from '../modules/string.js';
+import css from '../../css/widget.css';
+import plugin from '../modules/pluginBase.js';
 
 /**
  * Styles plugin
