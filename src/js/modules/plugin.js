@@ -1,13 +1,11 @@
 import el from './element.js';
 import settings from './settings.js';
-import {
-    camel
-} from './string.js';
+import widget from './widget.js';
 
 /**
  * Plugin base class
  */
-class plugin {
+class plugin extends widget {
 
     /**
      * Not disabled by user, default state
@@ -22,24 +20,6 @@ class plugin {
     optional = false;
 
     /**
-     * Undefined by default, most plugins will overwrite this
-     * @type {undefined|HTMLElement}
-     */
-    ui;
-
-    /**
-     * Used when the plugin is mentioned anywhere in the UI
-     * @type {string}
-     */
-    title;
-
-    /**
-     * Used for instance to register the plugin, mostly the title in camelCase
-     * @type {string}
-     */
-    key;
-
-    /**
      * Parent element of plugin, if applicable
      * @type {undefined|HTMLElement}
      */
@@ -50,14 +30,6 @@ class plugin {
      * @type {app}
      */
     app;
-
-    /**
-     * Some plugins, for instance `darkMode` have no UI
-     * @returns {boolean}
-     */
-    hasUi = () => {
-        return this.ui instanceof HTMLElement;
-    }
 
     /**
      * Tells if the user has disabled a plugin, falls back on default setting
@@ -86,7 +58,7 @@ class plugin {
             return false;
         }
         const target = this.target || el.$(`[data-ui="${this.key}"]`, this.app.ui) || (() => {
-            const _target = el.create({
+            const _target = el.div({
                 data: {
                     plugin: this.key
                 }
@@ -113,12 +85,11 @@ class plugin {
         optional,
         defaultEnabled
     } = {}) {
-        this.app = app;
         if (!app || !title) {
-            throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, only 1 was passed from ${this.constructor.name}`);
+            throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
         }
-        this.title = title;
-        this.key = key || camel(title);
+        super(title, {key})
+        this.app = app;
         this.optional = typeof optional !== 'undefined' ? optional : this.optional;
         this.defaultEnabled = typeof defaultEnabled !== 'undefined' ? defaultEnabled : this.defaultEnabled;
     }

@@ -1,6 +1,6 @@
 import settings from '../modules/settings.js';
 import el from '../modules/element.js';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 
 /**
  * Footer plugin
@@ -15,8 +15,7 @@ class footer extends plugin {
             key: 'footer'
         });
 
-        this.ui = el.create({
-            tag: 'a',
+        this.ui = el.a({
             text: this.title,
             attributes: {
                 href: settings.get('url'),

@@ -1,6 +1,6 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 
 /**
  * Spill the beans plugin
@@ -30,19 +30,22 @@ class spillTheBeans extends plugin {
             return '🙂';
         }
 
-        this.ui = el.create({
-            tag: 'details',
-            text: [this.title, 'summary'],
+        this.ui = el.details({
             classNames: !this.isEnabled() ? ['inactive'] : []
         });
-        const pane = el.create({
+
+        this.ui.append(el.summary({
+            text: this.title
+        }));
+        
+        const pane = el.div({
             classNames: ['pane']
         });
-        pane.append(el.create({
+        pane.append(el.div({
             text: 'Watch me while you type!',
             classNames: ['spill-title']
         }));
-        const reaction = el.create({
+        const reaction = el.div({
             text: '😐',
             classNames: ['spill']
         });

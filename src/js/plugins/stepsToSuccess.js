@@ -3,7 +3,7 @@ import data from '../modules/data.js';
 import {
     prefix
 } from '../modules/string.js';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 
 /**
  * Steps to success plugin
@@ -52,28 +52,30 @@ class stepsToSuccess extends plugin {
             const ownPoints = data.getPoints('foundTerms');
             const tier = rankings.filter(entry => entry[1] <= ownPoints).pop()[1];
             rankings.forEach(value => {
-                frame.append(el.create({
-                    tag: 'tr',
-                    classNames: value[1] === tier ? ['sba-current'] : [],
-                    cellTag: 'td',
-                    cellData: [value[0], value[1]]
-                }));
+                const tr = el.tr({                    
+                    classNames: value[1] === tier ? ['sba-current'] : []
+                });
+                [value[0], value[1]].forEach(cellData => {
+                    tr.append(el.td({
+                        text:cellData
+                    }))
+                })
+                frame.append(tr);
             })
-        }
+        }	
 
-        this.ui = el.create({
-            tag: 'details',
-            text: [this.title, 'summary'],
+        this.ui = el.details({
             classNames: !this.isEnabled() ? ['inactive'] : []
         });
 
-        const pane = el.create({
-            tag: 'table',
+        this.ui.append(el.summary({
+            text: this.title
+        }));
+
+        const pane = el.table({
             classNames: ['pane']
         });
-        const frame = el.create({
-            tag: 'tbody'
-        });
+        const frame = el.tbody();
 
         update(frame);
 
@@ -82,7 +84,7 @@ class stepsToSuccess extends plugin {
         this.ui.append(pane);
 
         // update on demand
-        app.on(prefix('newWord'), () => {
+        app.on(prefix('wordsUpdated'), () => {
             update(frame);
         });
 

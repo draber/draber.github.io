@@ -1,102 +1,31 @@
 (function () {
     'use strict';
 
-    const $ = (expr, container = null) => {
-        return typeof expr === 'string' ? (container || document).querySelector(expr) : expr || null;
-    };
-    const $$ = (expr, container = null) => {
-        return [].slice.call((container || document).querySelectorAll(expr));
-    };
-    const tableRow = ({
-        classNames = [],
-        events = {},
-        cellData = [],
-        cellTag = 'td'
-    } = {}) => {
-        const row = create({
-            tag: 'tr',
-            classNames: classNames,
-            events: events
-        });
-        cellData.forEach(entry => {
-            row.append(create({
-                tag: cellTag,
-                text: entry
-            }));
-        });
-        return row;
-    };
-    const labeledCheckbox = ({
-        text = '',
-        classNames = [],
-        attributes = {},
-        events = {},
-        checked = false
-    } = {}) => {
-        if(checked) {
-            attributes.checked = 'checked';
+    const fn = {
+        $: (expr, container = null) => {
+            return typeof expr === 'string' ? (container || document).querySelector(expr) : expr || null;
+        },
+        $$: (expr, container = null) => {
+            return [].slice.call((container || document).querySelectorAll(expr));
         }
-        const checkbox = create({
-            tag: 'input',
-            attributes: attributes,
-            events: events
-        });
-        const label = create({
-            tag: 'label',
-            text: text,
-            classNames: classNames
-        });
-        label.prepend(checkbox);
-        return label;
     };
-    const create = ({
-        tag = 'div',
+    const create = function ({
+        tag,
         text = '',
         attributes = {},
         style = {},
         data = {},
         events = {},
-        classNames = [],
-        cellData = [],
-        cellTag = 'td',
-        checked = false
-    } = {}) => {
-        if (tag === 'tr' && cellData.length) {
-            return tableRow({
-                classNames,
-                events,
-                cellData,
-                cellTag
-            });
-        }
-        if (tag === 'input' && attributes.type === 'checkbox' && text) {
-            return labeledCheckbox({
-                text,
-                classNames,
-                attributes,
-                events,
-                checked
-            });
-        }
+        classNames = []
+    } = {}) {
         const el = document.createElement(tag);
-        for (const [prop, value] of Object.entries(style)) {
-            el.style[prop] = value;
-        }
-        if (classNames.length) {
-            el.classList.add(...classNames);
-        }
-        if (Array.isArray(text)) {
-            el.append(create({
-                tag: text[1],
-                text: text[0]
-            }));
-        } else {
-            el.textContent = text;
-        }
-        for (const [key, value] of Object.entries(attributes)) {
-            if (value !== '') {
-                el.setAttribute(key, value);
-            }
+        for (const [key, value] of Object.entries({
+                ...{
+                    textContent: text
+                },
+                ...attributes
+            })) {
+            el[key] = value;
         }
         for (const [key, value] of Object.entries(data)) {
             el.dataset[key] = value;
@@ -104,13 +33,29 @@
         for (const [event, fn] of Object.entries(events)) {
             el.addEventListener(event, fn, false);
         }
+        Object.assign(el.style, style);
+        if (classNames.length) {
+            el.classList.add(...classNames);
+        }
         return el;
     };
-    var el = {
-        $,
-        $$,
-        create
-    };
+    const el = new Proxy(fn, {
+        get(target, prop) {
+            return function () {
+                const args = Array.prototype.slice.call(arguments);
+                if (target.hasOwnProperty(prop) && typeof target[prop] === 'function') {
+                    target[prop].bind(target);
+                    return target[prop].apply(null, args);
+                }
+                return create({
+                    ...{
+                        tag: prop
+                    },
+                    ...args.shift()
+                });
+            }
+        }
+    });
 
     var version = "2.0.0";
 
@@ -232,12 +177,12 @@
             }
         });
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.on(new Event(prefix$1('newWord')));
+        app.trigger(new Event(prefix$1('wordsUpdated')));
     };
     const init = (app, resultList) => {
         lists = initLists();
         updateLists(app, resultList);
-        app.on(prefix$1('newWord'), () => {
+        app.on(prefix$1('newWord'), (evt) => {
             updateLists(app, resultList);
         });
     };
@@ -248,26 +193,43 @@
         getPoints
     };
 
-    class app {
+    class widget {
+        ui;
+        title;
+        key;
+        hasUi = () => {
+            return this.ui instanceof HTMLElement;
+        }
+        on = (evt, action) => {
+            this.ui.addEventListener(evt, action);
+        }
+        trigger = (evt) => {
+            this.ui.dispatchEvent(evt);
+        }
+        constructor(title, {
+            key
+        } = {}) {
+            if (!title) {
+                throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at exactly 1 arguments, ${arguments.length} passed from ${this.constructor.name}`);
+            }
+            this.title = title;
+            this.key = key || camel(title);
+        }
+    }
+
+    class app extends widget {
         constructor(game) {
             if (!game || !window.gameData) {
                 console.info(`This bookmarklet only works on ${settings$1.get('targetUrl')}`);
                 return false;
             }
-            this.title = settings$1.get('label');
-            this.key = camel(this.title);
+            super(settings$1.get('label'));
             this.game = game;
             const oldInstance = el.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
                 oldInstance.dispatchEvent(new Event(prefix$1('destroy')));
             }
             this.registry = new Map();
-            this.on = (evt, action) => {
-                this.ui.addEventListener(evt, action);
-            };
-            this.trigger = (evt) => {
-                this.ui.dispatchEvent(evt);
-            };
             const rect = el.$('.sb-content-box', game).getBoundingClientRect();
             const resultList = el.$('.sb-wordlist-items', game);
             const events = {};
@@ -275,7 +237,7 @@
                 this.observer.disconnect();
                 this.ui.remove();
             };
-            this.ui = el.create({
+            this.ui = el.div({
                 attributes: {
                     draggable: true
                 },
@@ -305,17 +267,11 @@
         };
     }
 
-    class plugin {
+    class plugin extends widget {
         defaultEnabled = true;
         optional = false;
-        ui;
-        title;
-        key;
         target;
         app;
-        hasUi = () => {
-            return this.ui instanceof HTMLElement;
-        }
         isEnabled = () => {
             const stored = settings$1.get(`options.${this.key}`);
             return typeof stored !== 'undefined' ? stored : this.defaultEnabled;
@@ -329,7 +285,7 @@
                 return false;
             }
             const target = this.target || el.$(`[data-ui="${this.key}"]`, this.app.ui) || (() => {
-                const _target = el.create({
+                const _target = el.div({
                     data: {
                         plugin: this.key
                     }
@@ -351,12 +307,11 @@
             optional,
             defaultEnabled
         } = {}) {
-            this.app = app;
             if (!app || !title) {
-                throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, only 1 was passed from ${this.constructor.name}`);
+                throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
             }
-            this.title = title;
-            this.key = key || camel(title);
+            super(title, {key});
+            this.app = app;
             this.optional = typeof optional !== 'undefined' ? optional : this.optional;
             this.defaultEnabled = typeof defaultEnabled !== 'undefined' ? defaultEnabled : this.defaultEnabled;
         }
@@ -383,8 +338,7 @@
             super(app, `${settings$1.get('label')} ${settings$1.get('version')}`, {
                 key: 'footer'
             });
-            this.ui = el.create({
-                tag: 'a',
+            this.ui = el.a({
                 text: this.title,
                 attributes: {
                     href: settings$1.get('url'),
@@ -400,7 +354,7 @@
             super(app, settings$1.get('title'), {
                 key: 'header'
             });
-            this.ui = el.create();
+            this.ui = el.div();
             let params;
             let isLastTarget = false;
             const getDragParams = (evt) => {
@@ -447,15 +401,14 @@
                     evt.target.style.opacity = '1';
                 });
             };
-            this.ui.append(el.create({
+            this.ui.append(el.div({
                 text: this.title,
                 attributes: {
                     title: 'Hold the mouse down to drag'
                 },
                 classNames: ['dragger']
             }));
-            this.ui.append(el.create({
-                tag: 'span',
+            this.ui.append(el.span({
                 text: '×',
                 attributes: {
                     title: 'Close'
@@ -467,8 +420,7 @@
                     }
                 }
             }));
-            this.ui.append(el.create({
-                tag: 'span',
+            this.ui.append(el.span({
                 attributes: {
                     title: 'Minimize'
                 },
@@ -505,11 +457,14 @@
                 data.getPoints('remainders'),
                 data.getPoints('answers')
             ]
-        ].forEach(cellData => {
-            tbody.append(el.create({
-                tag: 'tr',
-                cellData: cellData
-            }));
+        ].forEach(rowData => {
+            const tr = el.tr();
+            rowData.forEach(cellData => {
+                tr.append(el.td({
+                    text:cellData
+                }));
+            });
+            tbody.append(tr);
         });
     };
     class scoreSoFar extends plugin {
@@ -517,34 +472,32 @@
             super(app, 'Score so far', {
                 optional: true
             });
-            this.ui = el.create({
-                tag: 'details',
-                text: [this.title, 'summary'],
+            this.ui = el.details({
                 attributes: {
                     open: true
                 },
                 classNames: !this.isEnabled() ? ['inactive'] : []
             });
-            const pane = el.create({
-                tag: 'table',
+            this.ui.append(el.summary({
+                text: this.title
+            }));
+            const pane = el.table({
                 classNames: ['pane']
             });
-            const thead = el.create({
-                tag: 'thead'
+            const thead = el.thead();
+            const tr = el.tr();
+            ['', 'Found', 'Missing', 'Total'].forEach(cellData => {
+                tr.append(el.th({
+                    text: cellData
+                }));
             });
-            thead.append(el.create({
-                tag: 'tr',
-                cellTag: 'th',
-                cellData: ['', 'Found', 'Missing', 'Total']
-            }));
-            const tbody = el.create({
-                tag: 'tbody'
-            });
+            thead.append(tr);
+            const tbody = el.tbody();
             pane.append(thead);
             pane.append(tbody);
             update(tbody);
             this.ui.append(pane);
-            app.on(prefix$1('newWord'), (evt) => {
+            app.on(prefix$1('wordsUpdated'), (evt) => {
                 update(tbody);
             });
             this.add();
@@ -554,34 +507,31 @@
     class setUp extends plugin {
     	constructor(app) {
     		super(app, 'Set-up');
-    		const pane = el.create({
-    			tag: 'ul',
+    		const pane = el.ul({
     			classNames: ['pane']
     		});
     		const populate = (pane) => {
     			app.registry.forEach((plugin, key) => {
-    				if(!plugin.optional){
+    				if (!plugin.optional) {
     					return false;
     				}
-    				const li = el.create({
-    					tag: 'li'
+    				const li = el.li();
+    				const label = el.label({
+    					text: plugin.title
     				});
-    				const labeledCheck = el.create({
-    					tag: 'input',
-    					text: plugin.title,
+    				const check = el.input({
     					attributes: {
     						type: 'checkbox',
-    						name: key
-    					},
-    					checked: plugin.isEnabled()
+    						name: key,
+    						checked: plugin.isEnabled()
+    					}
     				});
-    				li.append(labeledCheck);
+    				label.prepend(check);
+    				li.append(label);
     				pane.append(li);
     			});
     		};
-    		this.ui = el.create({
-    			tag: 'details',
-    			text: [this.title, 'summary'],
+    		this.ui = el.details({
     			events: {
     				click: function (evt) {
     					if (evt.target.tagName === 'INPUT') {
@@ -590,9 +540,12 @@
     				}
     			}
     		});
+    		this.ui.append(el.summary({
+    			text: this.title
+    		}));
     		this.ui.append(pane);
     		populate(pane);
-            this.add();
+    		this.add();
     	}
     }
 
@@ -610,19 +563,20 @@
                 }
                 return '🙂';
             };
-            this.ui = el.create({
-                tag: 'details',
-                text: [this.title, 'summary'],
+            this.ui = el.details({
                 classNames: !this.isEnabled() ? ['inactive'] : []
             });
-            const pane = el.create({
+            this.ui.append(el.summary({
+                text: this.title
+            }));
+            const pane = el.div({
                 classNames: ['pane']
             });
-            pane.append(el.create({
+            pane.append(el.div({
                 text: 'Watch me while you type!',
                 classNames: ['spill-title']
             }));
-            const reaction = el.create({
+            const reaction = el.div({
                 text: '😐',
                 classNames: ['spill']
             });
@@ -642,9 +596,7 @@
     		super(app, 'Spoilers', {
     			optional: true
     		});
-    		const tbody = el.create({
-    			tag: 'tbody'
-    		});
+    		const tbody = el.tbody();
     		const getCellData = () => {
     			const counts = {};
     			const pangramCount = data.getCount('pangrams');
@@ -684,35 +636,38 @@
     		};
     		const update = () => {
     			tbody.innerHTML = '';
-    			getCellData().forEach(cellData => {
-    				tbody.append(el.create({
-    					tag: 'tr',
-    					cellData: cellData
-    				}));
+    			getCellData().forEach(rowData => {
+    				const tr = el.tr();
+    				rowData.forEach(cellData => {
+    					tr.append(el.td({
+    						text:cellData
+    					}));
+    				});
+    				tbody.append(tr);
     			});
     		};
-    		this.ui = el.create({
-    			tag: 'details',
-    			text: [this.title, 'summary'],
+            this.ui = el.details({
                 classNames: !this.isEnabled() ? ['inactive'] : []
-    		});
-    		const pane = el.create({
-    			tag: 'table',
+            });
+            this.ui.append(el.summary({
+                text: this.title
+            }));
+    		const pane = el.table({
     			classNames: ['pane']
     		});
-    		const thead = el.create({
-    			tag: 'thead'
-    		});
-    		thead.append(el.create({
-    			tag: 'tr',
-    			cellTag: 'th',
-    			cellData: ['', 'Found', 'Missing', 'Total']
-    		}));
+    		const thead = el.thead();
+            const tr = el.tr();
+            ['', 'Found', 'Missing', 'Total'].forEach(cellData => {
+                tr.append(el.th({
+                    text: cellData
+                }));
+            });
+            thead.append(tr);
     		pane.append(thead);
     		pane.append(tbody);
     		update();
     		this.ui.append(pane);
-    		app.on(prefix$1('newWord'), () => {
+    		app.on(prefix$1('wordsUpdated'), () => {
     			update();
     		});
     		this.add();
@@ -744,30 +699,31 @@
                 const ownPoints = data.getPoints('foundTerms');
                 const tier = rankings.filter(entry => entry[1] <= ownPoints).pop()[1];
                 rankings.forEach(value => {
-                    frame.append(el.create({
-                        tag: 'tr',
-                        classNames: value[1] === tier ? ['sba-current'] : [],
-                        cellTag: 'td',
-                        cellData: [value[0], value[1]]
-                    }));
+                    const tr = el.tr({
+                        classNames: value[1] === tier ? ['sba-current'] : []
+                    });
+                    [value[0], value[1]].forEach(cellData => {
+                        tr.append(el.td({
+                            text:cellData
+                        }));
+                    });
+                    frame.append(tr);
                 });
             };
-            this.ui = el.create({
-                tag: 'details',
-                text: [this.title, 'summary'],
+            this.ui = el.details({
                 classNames: !this.isEnabled() ? ['inactive'] : []
             });
-            const pane = el.create({
-                tag: 'table',
+            this.ui.append(el.summary({
+                text: this.title
+            }));
+            const pane = el.table({
                 classNames: ['pane']
             });
-            const frame = el.create({
-                tag: 'tbody'
-            });
+            const frame = el.tbody();
             update(frame);
             pane.append(frame);
             this.ui.append(pane);
-            app.on(prefix$1('newWord'), () => {
+            app.on(prefix$1('wordsUpdated'), () => {
                 update(frame);
             });
             this.add();
@@ -780,8 +736,7 @@
         constructor(app) {
             super(app, 'Styles');
             this.target = el.$('head');
-            this.ui = el.create({
-                tag: 'style',
+            this.ui = el.style({
                 text: css.replace(/(\uFEFF|\\n)/gu, '')
             });
             app.on(prefix$1('destroy'), () => {
@@ -798,12 +753,10 @@
     		});
     		let usedOnce = false;
     		const buildEntry = term => {
-    			const entry = el.create({
-    				tag: 'li',
+    			const entry = el.li({
     				classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', 'sb-pangram'] : ['sb-anagram']
     			});
-    			entry.append(el.create({
-    				tag: 'a',
+    			entry.append(el.a({
     				text: term,
     				attributes: {
     					href: `https://www.google.com/search?q=${term}`,
@@ -823,15 +776,16 @@
     			usedOnce = true;
     			return true;
     		};
-    		this.ui = el.create({
-    			tag: 'details',
-    			text: [this.title, 'summary'],
+            this.ui = el.details({
                 classNames: !this.isEnabled() ? ['inactive'] : []
-    		});
-    		const pane = el.create({
+            });
+            this.ui.append(el.summary({
+                text: this.title
+    		}));
+    		const pane = el.div({
     			classNames: ['pane']
     		});
-    		pane.append(el.create({
+    		pane.append(el.button({
     			tag: 'button',
     			classNames: ['hive-action'],
     			text: 'Display answers',

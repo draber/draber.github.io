@@ -1,5 +1,5 @@
 import el from '../modules/element.js';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 
 /**
  * Set-up plugin
@@ -12,8 +12,7 @@ class setUp extends plugin {
 
 		super(app, 'Set-up');
 
-		const pane = el.create({
-			tag: 'ul',
+		const pane = el.ul({
 			classNames: ['pane']
 		});
 
@@ -23,29 +22,27 @@ class setUp extends plugin {
 		 */
 		const populate = (pane) => {
 			app.registry.forEach((plugin, key) => {
-				if(!plugin.optional){
+				if (!plugin.optional) {
 					return false;
 				}
-				const li = el.create({
-					tag: 'li'
-				});
-				const labeledCheck = el.create({
-					tag: 'input',
-					text: plugin.title,
+				const li = el.li();
+				const label = el.label({
+					text: plugin.title
+				})
+				const check = el.input({
 					attributes: {
 						type: 'checkbox',
-						name: key
-					},
-					checked: plugin.isEnabled()
+						name: key,
+						checked: plugin.isEnabled()
+					}
 				});
-				li.append(labeledCheck);
+				label.prepend(check)
+				li.append(label);
 				pane.append(li);
 			})
 		}
 
-		this.ui = el.create({
-			tag: 'details',
-			text: [this.title, 'summary'],
+		this.ui = el.details({
 			events: {
 				click: function (evt) {
 					if (evt.target.tagName === 'INPUT') {
@@ -54,9 +51,14 @@ class setUp extends plugin {
 				}
 			}
 		});
+
+		this.ui.append(el.summary({
+			text: this.title
+		}));
+
 		this.ui.append(pane);
 		populate(pane);
-        this.add();
+		this.add();
 	}
 }
 

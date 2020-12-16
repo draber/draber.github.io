@@ -1,7 +1,7 @@
 import el from '../modules/element.js';
 import { prefix } from '../modules/string.js';
 import css from '../../css/widget.css';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 
 /**
  * Styles plugin
@@ -16,8 +16,7 @@ class styles extends plugin {
 
         this.target = el.$('head');
 
-        this.ui = el.create({
-            tag: 'style',
+        this.ui = el.style({
             // - (Dart) Sass adds a BOM to CSS with Unicode characters
             // - `rollup-plugin-string` converts line-breaks to `\n`
             text: css.replace(/(\uFEFF|\\n)/gu, '')

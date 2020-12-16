@@ -1,6 +1,6 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 
 /**
  * Surrender plugin
@@ -23,12 +23,10 @@ class surrender extends plugin {
 		 * @returns {HTMLElement}
 		 */
 		const buildEntry = term => {
-			const entry = el.create({
-				tag: 'li',
+			const entry = el.li({
 				classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', 'sb-pangram'] : ['sb-anagram']
 			});
-			entry.append(el.create({
-				tag: 'a',
+			entry.append(el.a({
 				text: term,
 				attributes: {
 					href: `https://www.google.com/search?q=${term}`,
@@ -55,16 +53,18 @@ class surrender extends plugin {
 			return true;
 		};
 
-		// add content pane
-		this.ui = el.create({
-			tag: 'details',
-			text: [this.title, 'summary'],
+        this.ui = el.details({
             classNames: !this.isEnabled() ? ['inactive'] : []
-		});
-		const pane = el.create({
+        });
+
+        this.ui.append(el.summary({
+            text: this.title
+		}));
+		
+		const pane = el.div({
 			classNames: ['pane']
 		});
-		pane.append(el.create({
+		pane.append(el.button({
 			tag: 'button',
 			classNames: ['hive-action'],
 			text: 'Display answers',

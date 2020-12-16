@@ -2,7 +2,7 @@ import el from '../modules/element.js';
 import {
     prefix
 } from '../modules/string.js';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 import settings from '../modules/settings.js';
 
 /**

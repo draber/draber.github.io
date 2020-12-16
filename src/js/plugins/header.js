@@ -1,7 +1,7 @@
 import el from '../modules/element.js';
 import { prefix } from '../modules/string.js';
 import settings from '../modules/settings.js';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 
 /**
  * Header plugin
@@ -16,7 +16,7 @@ class header extends plugin {
             key: 'header'
         });
 
-        this.ui = el.create();
+        this.ui = el.div();
 
         /**
          * Drag start parameters
@@ -98,7 +98,7 @@ class header extends plugin {
         }
 
         // add title
-        this.ui.append(el.create({
+        this.ui.append(el.div({
             text: this.title,
             attributes: {
                 title: 'Hold the mouse down to drag'
@@ -107,8 +107,7 @@ class header extends plugin {
         }));
 
         // add closer
-        this.ui.append(el.create({
-            tag: 'span',
+        this.ui.append(el.span({
             text: '×',
             attributes: {
                 title: 'Close'
@@ -122,8 +121,7 @@ class header extends plugin {
         }));
 
         // add minimizer
-        this.ui.append(el.create({
-            tag: 'span',
+        this.ui.append(el.span({
             attributes: {
                 title: 'Minimize'
             },

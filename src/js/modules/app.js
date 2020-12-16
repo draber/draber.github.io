@@ -1,9 +1,9 @@
 import el from './element.js';
 import settings from './settings.js';
 import data from './data.js';
+import widget from './widget.js';
 import {
-    prefix,
-    camel
+    prefix
 } from './string.js';
 
 
@@ -12,15 +12,14 @@ import {
  * @param {HTMLElement} game
  * @returns {app} app
  */
-class app {
+class app extends widget {
     constructor(game) {
         if (!game || !window.gameData) {
             console.info(`This bookmarklet only works on ${settings.get('targetUrl')}`);
             return false;
         }
 
-        this.title = settings.get('label');
-        this.key = camel(this.title);
+        super(settings.get('label'));
         this.game = game;
 
         const oldInstance = el.$(`[data-id="${this.key}"]`);
@@ -30,14 +29,6 @@ class app {
 
         this.registry = new Map();
 
-        this.on = (evt, action) => {
-            this.ui.addEventListener(evt, action);
-        }
-
-        this.trigger = (evt) => {
-            this.ui.dispatchEvent(evt);
-        }
-
         const rect = el.$('.sb-content-box', game).getBoundingClientRect();
 
         const resultList = el.$('.sb-wordlist-items', game);
@@ -46,7 +37,7 @@ class app {
             this.observer.disconnect();
             this.ui.remove();
         };
-        this.ui = el.create({
+        this.ui = el.div({
             attributes: {
                 draggable: true
             },

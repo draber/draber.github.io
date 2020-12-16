@@ -3,7 +3,7 @@ import data from '../modules/data.js';
 import {
 	prefix
 } from '../modules/string.js';
-import plugin from '../modules/pluginBase.js';
+import plugin from '../modules/plugin.js';
 
 /**
  * Spoilers plugin
@@ -22,9 +22,7 @@ class spoilers extends plugin {
 		 * Updatable part of the pane
 		 * @type {HTMLElement}
 		 */
-		const tbody = el.create({
-			tag: 'tbody'
-		});
+		const tbody = el.tbody();
 
 		/**
 		 * Get the data for the table cells
@@ -73,40 +71,44 @@ class spoilers extends plugin {
 		 */
 		const update = () => {
 			tbody.innerHTML = '';
-			getCellData().forEach(cellData => {
-				tbody.append(el.create({
-					tag: 'tr',
-					cellData: cellData
-				}));
+			getCellData().forEach(rowData => {
+				const tr = el.tr();
+				rowData.forEach(cellData => {
+					tr.append(el.td({
+						text:cellData
+					}))
+				})
+				tbody.append(tr);
 			});
-		}
+		}		
 
-		this.ui = el.create({
-			tag: 'details',
-			text: [this.title, 'summary'],
+        this.ui = el.details({
             classNames: !this.isEnabled() ? ['inactive'] : []
-		});
+        });
+
+        this.ui.append(el.summary({
+            text: this.title
+        }));
 
 		// add and populate content pane
-		const pane = el.create({
-			tag: 'table',
+		const pane = el.table({
 			classNames: ['pane']
-		});
-		const thead = el.create({
-			tag: 'thead'
-		});
-		thead.append(el.create({
-			tag: 'tr',
-			cellTag: 'th',
-			cellData: ['', 'Found', 'Missing', 'Total']
-		}));
+		});		
+		const thead = el.thead();
+        const tr = el.tr();
+        ['', 'Found', 'Missing', 'Total'].forEach(cellData => {
+            tr.append(el.th({
+                text: cellData
+            }))
+        })
+        thead.append(tr);
 		pane.append(thead);
 		pane.append(tbody);
 		update();
 		this.ui.append(pane);
 
 		// update on demand
-		app.on(prefix('newWord'), () => {
+		app.on(prefix('wordsUpdated'), () => {
 			update();
 		});
 		this.add();
