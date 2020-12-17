@@ -83,9 +83,7 @@ class spoilers extends plugin {
 			});
 		}
 
-		this.ui = el.details({
-			classNames: !this.isEnabled() ? ['inactive'] : []
-		});
+		this.ui = el.details();
 
 		// add and populate content pane
 		const pane = el.table({

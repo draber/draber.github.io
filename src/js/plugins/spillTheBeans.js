@@ -30,9 +30,7 @@ class spillTheBeans extends plugin {
             return '🙂';
         }
 
-        this.ui = el.details({
-            classNames: !this.isEnabled() ? ['inactive'] : []
-        });
+        this.ui = el.details();
         
         const pane = el.div({
             classNames: ['pane']

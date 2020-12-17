@@ -64,9 +64,7 @@ class stepsToSuccess extends plugin {
             })
         }	
 
-        this.ui = el.details({
-            classNames: !this.isEnabled() ? ['inactive'] : []
-        });
+        this.ui = el.details();
 
         const pane = el.table({
             classNames: ['pane']

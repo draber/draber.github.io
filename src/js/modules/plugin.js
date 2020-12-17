@@ -46,6 +46,9 @@ class plugin extends widget {
      * @returns {widget}
      */
     toggle = state => {
+        if(!this.optional) {
+            return this;
+        }
         settings.set(`options.${this.key}`, state);
         this.ui.classList.toggle('inactive', !state);
         return this;
@@ -60,6 +63,7 @@ class plugin extends widget {
             return this;
         }
         this.ui.dataset.ui = this.key;
+        this.toggle(this.isEnabled());
         (this.target || this.app.ui).append(this.ui);
         return this;
     }

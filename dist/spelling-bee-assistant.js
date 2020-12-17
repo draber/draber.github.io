@@ -281,6 +281,9 @@
             return typeof stored !== 'undefined' ? stored : this.defaultEnabled;
         }
         toggle = state => {
+            if(!this.optional) {
+                return this;
+            }
             settings$1.set(`options.${this.key}`, state);
             this.ui.classList.toggle('inactive', !state);
             return this;
@@ -290,6 +293,7 @@
                 return this;
             }
             this.ui.dataset.ui = this.key;
+            this.toggle(this.isEnabled());
             (this.target || this.app.ui).append(this.ui);
             return this;
         }
@@ -465,8 +469,7 @@
             this.ui = el.details({
                 attributes: {
                     open: true
-                },
-                classNames: !this.isEnabled() ? ['inactive'] : []
+                }
             });
             const pane = el.table({
                 classNames: ['pane']
@@ -540,9 +543,7 @@
                 }
                 return '🙂';
             };
-            this.ui = el.details({
-                classNames: !this.isEnabled() ? ['inactive'] : []
-            });
+            this.ui = el.details();
             const pane = el.div({
                 classNames: ['pane']
             });
@@ -623,9 +624,7 @@
     				tbody.append(tr);
     			});
     		};
-    		this.ui = el.details({
-    			classNames: !this.isEnabled() ? ['inactive'] : []
-    		});
+    		this.ui = el.details();
     		const pane = el.table({
     			classNames: ['pane']
     		});
@@ -675,9 +674,7 @@
                     frame.append(tr);
                 });
             };
-            this.ui = el.details({
-                classNames: !this.isEnabled() ? ['inactive'] : []
-            });
+            this.ui = el.details();
             const pane = el.table({
                 classNames: ['pane']
             });
@@ -734,9 +731,7 @@
     			usedOnce = true;
     			return true;
     		};
-            this.ui = el.details({
-                classNames: !this.isEnabled() ? ['inactive'] : []
-            });
+            this.ui = el.details();
     		const pane = el.div({
     			classNames: ['pane']
     		});
