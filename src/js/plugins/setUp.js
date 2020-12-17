@@ -54,9 +54,8 @@ class setUp extends plugin {
 
 		this.ui.append(el.summary({
 			text: this.title
-		}));
-
-		this.ui.append(pane);
+		}), pane);
+		
 		populate(pane);
 		this.add();
 	}

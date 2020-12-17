@@ -46,9 +46,7 @@ class surrender extends plugin {
 				return false;
 			}
 			app.observer.disconnect();
-			data.getList('remainders').forEach(term => {
-				resultList.append(buildEntry(term));
-			});
+			data.getList('remainders').forEach(term => resultList.append(buildEntry(term)));
 			usedOnce = true;
 			return true;
 		};
@@ -56,10 +54,6 @@ class surrender extends plugin {
         this.ui = el.details({
             classNames: !this.isEnabled() ? ['inactive'] : []
         });
-
-        this.ui.append(el.summary({
-            text: this.title
-		}));
 		
 		const pane = el.div({
 			classNames: ['pane']
@@ -72,12 +66,13 @@ class surrender extends plugin {
 				type: 'button'
 			},
 			events: {
-				click: () => {
-					resolve(el.$('.sb-wordlist-items', app.game));
-				}
+				click: () => resolve(el.$('.sb-wordlist-items', app.game))
 			}
 		}));
-		this.ui.append(pane);
+		this.ui.append(el.summary({
+            text: this.title
+		}), pane);
+		
 		this.add();
 	}
 }

@@ -68,10 +68,6 @@ class stepsToSuccess extends plugin {
             classNames: !this.isEnabled() ? ['inactive'] : []
         });
 
-        this.ui.append(el.summary({
-            text: this.title
-        }));
-
         const pane = el.table({
             classNames: ['pane']
         });
@@ -81,12 +77,12 @@ class stepsToSuccess extends plugin {
 
         pane.append(frame);
 
-        this.ui.append(pane);
+        this.ui.append(el.summary({
+            text: this.title
+        }), pane);
 
         // update on demand
-        app.on(prefix('wordsUpdated'), () => {
-            update(frame);
-        });
+        app.on(prefix('wordsUpdated'), () => update(frame));
 
         this.add();
     }

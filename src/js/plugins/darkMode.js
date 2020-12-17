@@ -22,7 +22,8 @@ class darkMode extends plugin {
         const bodyClass = prefix('dark', 'd');
         this.toggle = state => {
             settings.set(`options.${this.key}`, state);
-            el.$('body').classList.toggle(bodyClass, state)
+            el.$('body').classList.toggle(bodyClass, state);
+            return this;
         }
 
         this.toggle(this.isEnabled());

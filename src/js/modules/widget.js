@@ -35,23 +35,27 @@ class widget {
 
     /**
      * Assign an event to the ui
+     * @returns {widget}
      */
     on = (evt, action) => {
         this.ui.addEventListener(evt, action);
+        return this;
     }
 
     /**
      * Fire an event from the ui
+     * @returns {widget}
      */
-    trigger = (evt) => {
+    trigger = evt => {
         this.ui.dispatchEvent(evt);
+        return this;
     }
 
     constructor(title, {
         key
     } = {}) {
         if (!title) {
-            throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at exactly 1 arguments, ${arguments.length} passed from ${this.constructor.name}`);
+            throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
         }
         this.title = title;
         this.key = key || camel(title);

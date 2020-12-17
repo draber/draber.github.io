@@ -33,10 +33,6 @@ class spillTheBeans extends plugin {
         this.ui = el.details({
             classNames: !this.isEnabled() ? ['inactive'] : []
         });
-
-        this.ui.append(el.summary({
-            text: this.title
-        }));
         
         const pane = el.div({
             classNames: ['pane']
@@ -50,7 +46,9 @@ class spillTheBeans extends plugin {
             classNames: ['spill']
         });
         pane.append(reaction);
-        this.ui.append(pane);
+        this.ui.append(el.summary({
+            text: this.title
+        }), pane);
 
         (new MutationObserver(mutationsList => {
             reaction.textContent = react(mutationsList.pop().target.textContent.trim());

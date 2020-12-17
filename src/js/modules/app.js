@@ -68,6 +68,11 @@ class app extends widget {
             }
         }
 
+        this.toggle = () => {            
+            this.ui.classList.toggle('minimized');
+            return this;
+        }
+
         el.$('body').append(this.ui);
     };
 }

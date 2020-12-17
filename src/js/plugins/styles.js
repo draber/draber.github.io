@@ -21,9 +21,7 @@ class styles extends plugin {
             // - `rollup-plugin-string` converts line-breaks to `\n`
             text: css.replace(/(\uFEFF|\\n)/gu, '')
         });
-        app.on(prefix('destroy'), () => {
-            this.ui.remove();
-        });
+        app.on(prefix('destroy'), () => this.ui.remove());
 
         this.add();
     }

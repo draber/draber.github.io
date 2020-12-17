@@ -64,6 +64,30 @@ const create = function ({
     return el;
 };
 
+/**
+ * Dispatcher for the `create()`, `$` and `$$`
+ * Examples (for $, $$ see docs on the functions):
+ * el.div() returns a div element, where `div` can be any element
+ * el.a({
+ *     text: "My link",
+ *     attributes: {
+ *         href: 'http://example.com'
+ *     },
+ *     style: {
+ *         color: 'red'
+ *     },
+ *     data = {
+ *         foo: 'bar'
+ *     },
+ *     events = {
+ *         click: () => alert('quux')
+ *     },
+ *     classNames = [
+ *         'boom'
+ *     ]
+ * })
+ * returns the element `<a href="http://example.com" style="color: red" data-foo="bar" class="boom">My link</a>` that issues an alert when clicked
+ */
 const el = new Proxy(fn, {
     get(target, prop) {
         return function () {

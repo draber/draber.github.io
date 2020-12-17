@@ -33,6 +33,7 @@ class spoilers extends plugin {
 			const pangramCount = data.getCount('pangrams');
 			const foundPangramCount = data.getCount('foundPangrams');
 			const cellData = [
+				['', 'Found', 'Missing', 'Total'],
 				[
 					'Pangrams',
 					foundPangramCount,
@@ -75,42 +76,29 @@ class spoilers extends plugin {
 				const tr = el.tr();
 				rowData.forEach(cellData => {
 					tr.append(el.td({
-						text:cellData
+						text: cellData
 					}))
 				})
 				tbody.append(tr);
 			});
-		}		
+		}
 
-        this.ui = el.details({
-            classNames: !this.isEnabled() ? ['inactive'] : []
-        });
-
-        this.ui.append(el.summary({
-            text: this.title
-        }));
+		this.ui = el.details({
+			classNames: !this.isEnabled() ? ['inactive'] : []
+		});
 
 		// add and populate content pane
 		const pane = el.table({
 			classNames: ['pane']
-		});		
-		const thead = el.thead();
-        const tr = el.tr();
-        ['', 'Found', 'Missing', 'Total'].forEach(cellData => {
-            tr.append(el.th({
-                text: cellData
-            }))
-        })
-        thead.append(tr);
-		pane.append(thead);
+		});
 		pane.append(tbody);
 		update();
-		this.ui.append(pane);
+		this.ui.append(el.summary({
+			text: this.title
+		}), pane);
 
 		// update on demand
-		app.on(prefix('wordsUpdated'), () => {
-			update();
-		});
+		app.on(prefix('wordsUpdated'), () => update());
 		this.add();
 	}
 }

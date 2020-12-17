@@ -1,5 +1,7 @@
 import el from '../modules/element.js';
-import { prefix } from '../modules/string.js';
+import {
+    prefix
+} from '../modules/string.js';
 import settings from '../modules/settings.js';
 import plugin from '../modules/plugin.js';
 
@@ -75,9 +77,7 @@ class header extends plugin {
 
             // ensure correct drag icon
             [app.ui, app.game].forEach(element => {
-                element.addEventListener('dragover', evt => {
-                    evt.preventDefault();
-                });
+                element.addEventListener('dragover', evt => evt.preventDefault());
             });
 
             // make app more transparent and get coordinates
@@ -97,51 +97,40 @@ class header extends plugin {
             });
         }
 
-        // add title
+        // add title closer and minimizer
         this.ui.append(el.div({
             text: this.title,
             attributes: {
                 title: 'Hold the mouse down to drag'
             },
             classNames: ['dragger']
-        }));
-
-        // add closer
-        this.ui.append(el.span({
+        }), el.span({
+            attributes: {
+                title: 'Minimize'
+            },
+            classNames: ['minimizer'],
+            events: {
+                click: () => app.toggle()
+            }
+        }), el.span({
             text: '×',
             attributes: {
                 title: 'Close'
             },
             classNames: ['closer'],
             events: {
-                click: () => {
-                    app.trigger(new Event(prefix('destroy')));
-                }
-            }
-        }));
-
-        // add minimizer
-        this.ui.append(el.span({
-            attributes: {
-                title: 'Minimize'
-            },
-            classNames: ['minimizer'],
-            events: {
-                click: () => {
-                    app.ui.classList.toggle('minimized');
-                }
+                click: () => app.trigger(new Event(prefix('destroy')))
             }
         }));
 
         app.on('pointerdown', evt => {
             isLastTarget = !!evt.target.closest(`[data-plugin="${this.key}"]`);
-        });
-        app.on('pointerup', () => {
+        }).on('pointerup', () => {
             isLastTarget = false;
         });
 
         makeDraggable();
-        this.add();        
+        this.add();
     }
 }
 

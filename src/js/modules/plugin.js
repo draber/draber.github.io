@@ -43,41 +43,36 @@ class plugin extends widget {
     /**
      * Switches plugins on and off
      * @param {boolean} state
+     * @returns {widget}
      */
     toggle = state => {
         settings.set(`options.${this.key}`, state);
         this.ui.classList.toggle('inactive', !state);
+        return this;
     }
 
     /**
      * Attaches plugins to DOM, creates slot in app if needed
-     * @returns {boolean}
+     * @returns {widget}
      */
     attach = () => {
         if (!this.hasUi()) {
-            return false;
+            return this;
         }
-        const target = this.target || el.$(`[data-ui="${this.key}"]`, this.app.ui) || (() => {
-            const _target = el.div({
-                data: {
-                    plugin: this.key
-                }
-            });
-            this.app.ui.append(_target);
-            return _target;
-        })();
-        target.append(this.ui);
-        return true;
+        this.ui.dataset.ui = this.key;
+        (this.target || this.app.ui).append(this.ui);
+        return this;
     }
 
     /**
      * Adds plugin to DOM and registers state in local storage
+     * @returns {widget}
      */
     add = () => {
-        this.attach();
         if (this.optional) {
             settings.set(`options.${this.key}`, this.isEnabled());
         }
+        return this.attach();
     }
 
     constructor(app, title, {

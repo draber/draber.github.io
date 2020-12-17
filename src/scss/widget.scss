@@ -68,6 +68,10 @@
         background: $cellBg;
     }
 
+    .sb-input-invalid {
+        color: #666
+    }
+
     .sb-progress-marker .sb-progress-value,
     .hive-cell.center .cell-fill {
         background: $yellow;
@@ -226,19 +230,12 @@
             content: "❯";
             font-size: 9px;
             position: absolute;
-            display:inline-block;
+            display: inline-block;
             transform: rotate(90deg);
             transform-origin: center;
             left: 9px;
             top: -1px
         }
-    }
-
-    .hive-action {
-        margin: 0 auto;
-        display: block;
-        font-size: 100%;
-        white-space: nowrap;
     }
 
     .pane {
@@ -253,15 +250,8 @@
     tr {
         &:first-of-type {
 
-            td,
-            th {
+            td {
                 border-top: none;
-            }
-        }
-
-        td {
-            &:first-of-type {
-                text-align: left;
             }
         }
 
@@ -271,31 +261,18 @@
         }
     }
 
-    th,
     td {
         border: 1px solid $colorBorder;
         white-space: nowrap;
-    }
-
-    thead {
-        th {
-            text-align: center;
-            padding: 4px 2px;
+        text-align: center;
+        padding: 4px 3px;
+        &:first-of-type {
+            text-align: left;
         }
     }
 
-    tbody {
-        th {
-            text-align: right;
-        }
 
-        td {
-            text-align: center;
-            padding: 4px 6px;
-        }
-    }
-
-    [data-plugin="footer"] a {
+    [data-ui="footer"] {
         color: currentColor;
         opacity: .6;
         font-size: 10px;
@@ -326,9 +303,17 @@
         }
     }
 
-    [data-plugin="surrender"] {
+    [data-ui="surrender"] {
         .pane {
             padding: 10px 5px;
+        }
+        
+        button {
+            margin: 0 auto;
+            display: block;
+            font-size: 100%;
+            white-space: nowrap;
+            padding: 12px 20px;
         }
     }
 

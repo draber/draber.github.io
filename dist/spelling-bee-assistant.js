@@ -182,9 +182,7 @@
     const init = (app, resultList) => {
         lists = initLists();
         updateLists(app, resultList);
-        app.on(prefix$1('newWord'), (evt) => {
-            updateLists(app, resultList);
-        });
+        app.on(prefix$1('newWord'), (evt) => updateLists(app, resultList));
     };
     var data = {
         init,
@@ -202,15 +200,17 @@
         }
         on = (evt, action) => {
             this.ui.addEventListener(evt, action);
+            return this;
         }
-        trigger = (evt) => {
+        trigger = evt => {
             this.ui.dispatchEvent(evt);
+            return this;
         }
         constructor(title, {
             key
         } = {}) {
             if (!title) {
-                throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at exactly 1 arguments, ${arguments.length} passed from ${this.constructor.name}`);
+                throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
             }
             this.title = title;
             this.key = key || camel(title);
@@ -263,6 +263,10 @@
                     this.registry.set(key, new plugin(this));
                 }
             };
+            this.toggle = () => {
+                this.ui.classList.toggle('minimized');
+                return this;
+            };
             el.$('body').append(this.ui);
         };
     }
@@ -279,28 +283,21 @@
         toggle = state => {
             settings$1.set(`options.${this.key}`, state);
             this.ui.classList.toggle('inactive', !state);
+            return this;
         }
         attach = () => {
             if (!this.hasUi()) {
-                return false;
+                return this;
             }
-            const target = this.target || el.$(`[data-ui="${this.key}"]`, this.app.ui) || (() => {
-                const _target = el.div({
-                    data: {
-                        plugin: this.key
-                    }
-                });
-                this.app.ui.append(_target);
-                return _target;
-            })();
-            target.append(this.ui);
-            return true;
+            this.ui.dataset.ui = this.key;
+            (this.target || this.app.ui).append(this.ui);
+            return this;
         }
         add = () => {
-            this.attach();
             if (this.optional) {
                 settings$1.set(`options.${this.key}`, this.isEnabled());
             }
+            return this.attach();
         }
         constructor(app, title, {
             key,
@@ -327,6 +324,7 @@
             this.toggle = state => {
                 settings$1.set(`options.${this.key}`, state);
                 el.$('body').classList.toggle(bodyClass, state);
+                return this;
             };
             this.toggle(this.isEnabled());
             this.add();
@@ -384,9 +382,7 @@
             };
             const makeDraggable = () => {
                 [app.ui, app.game].forEach(element => {
-                    element.addEventListener('dragover', evt => {
-                        evt.preventDefault();
-                    });
+                    element.addEventListener('dragover', evt => evt.preventDefault());
                 });
                 app.on('dragstart', evt => {
                     if (!isLastTarget) {
@@ -407,34 +403,27 @@
                     title: 'Hold the mouse down to drag'
                 },
                 classNames: ['dragger']
-            }));
-            this.ui.append(el.span({
+            }), el.span({
+                attributes: {
+                    title: 'Minimize'
+                },
+                classNames: ['minimizer'],
+                events: {
+                    click: () => app.toggle()
+                }
+            }), el.span({
                 text: '×',
                 attributes: {
                     title: 'Close'
                 },
                 classNames: ['closer'],
                 events: {
-                    click: () => {
-                        app.trigger(new Event(prefix$1('destroy')));
-                    }
-                }
-            }));
-            this.ui.append(el.span({
-                attributes: {
-                    title: 'Minimize'
-                },
-                classNames: ['minimizer'],
-                events: {
-                    click: () => {
-                        app.ui.classList.toggle('minimized');
-                    }
+                    click: () => app.trigger(new Event(prefix$1('destroy')))
                 }
             }));
             app.on('pointerdown', evt => {
                 isLastTarget = !!evt.target.closest(`[data-plugin="${this.key}"]`);
-            });
-            app.on('pointerup', () => {
+            }).on('pointerup', () => {
                 isLastTarget = false;
             });
             makeDraggable();
@@ -445,6 +434,7 @@
     const update = (tbody) => {
         tbody.innerHTML = '';
         [
+            ['', 'Found', 'Missing', 'Total'],
             [
                 'Words',
                 data.getCount('foundTerms'),
@@ -461,7 +451,7 @@
             const tr = el.tr();
             rowData.forEach(cellData => {
                 tr.append(el.td({
-                    text:cellData
+                    text: cellData
                 }));
             });
             tbody.append(tr);
@@ -478,28 +468,16 @@
                 },
                 classNames: !this.isEnabled() ? ['inactive'] : []
             });
-            this.ui.append(el.summary({
-                text: this.title
-            }));
             const pane = el.table({
                 classNames: ['pane']
             });
-            const thead = el.thead();
-            const tr = el.tr();
-            ['', 'Found', 'Missing', 'Total'].forEach(cellData => {
-                tr.append(el.th({
-                    text: cellData
-                }));
-            });
-            thead.append(tr);
             const tbody = el.tbody();
-            pane.append(thead);
             pane.append(tbody);
             update(tbody);
-            this.ui.append(pane);
-            app.on(prefix$1('wordsUpdated'), (evt) => {
-                update(tbody);
-            });
+            this.ui.append(el.summary({
+                text: this.title
+            }), pane);
+            app.on(prefix$1('wordsUpdated'), () => update(tbody));
             this.add();
         }
     }
@@ -542,8 +520,7 @@
     		});
     		this.ui.append(el.summary({
     			text: this.title
-    		}));
-    		this.ui.append(pane);
+    		}), pane);
     		populate(pane);
     		this.add();
     	}
@@ -566,9 +543,6 @@
             this.ui = el.details({
                 classNames: !this.isEnabled() ? ['inactive'] : []
             });
-            this.ui.append(el.summary({
-                text: this.title
-            }));
             const pane = el.div({
                 classNames: ['pane']
             });
@@ -581,7 +555,9 @@
                 classNames: ['spill']
             });
             pane.append(reaction);
-            this.ui.append(pane);
+            this.ui.append(el.summary({
+                text: this.title
+            }), pane);
             (new MutationObserver(mutationsList => {
                 reaction.textContent = react(mutationsList.pop().target.textContent.trim());
             })).observe(el.$('.sb-hive-input-content', app.game), {
@@ -602,6 +578,7 @@
     			const pangramCount = data.getCount('pangrams');
     			const foundPangramCount = data.getCount('foundPangrams');
     			const cellData = [
+    				['', 'Found', 'Missing', 'Total'],
     				[
     					'Pangrams',
     					foundPangramCount,
@@ -640,36 +617,24 @@
     				const tr = el.tr();
     				rowData.forEach(cellData => {
     					tr.append(el.td({
-    						text:cellData
+    						text: cellData
     					}));
     				});
     				tbody.append(tr);
     			});
     		};
-            this.ui = el.details({
-                classNames: !this.isEnabled() ? ['inactive'] : []
-            });
-            this.ui.append(el.summary({
-                text: this.title
-            }));
+    		this.ui = el.details({
+    			classNames: !this.isEnabled() ? ['inactive'] : []
+    		});
     		const pane = el.table({
     			classNames: ['pane']
     		});
-    		const thead = el.thead();
-            const tr = el.tr();
-            ['', 'Found', 'Missing', 'Total'].forEach(cellData => {
-                tr.append(el.th({
-                    text: cellData
-                }));
-            });
-            thead.append(tr);
-    		pane.append(thead);
     		pane.append(tbody);
     		update();
-    		this.ui.append(pane);
-    		app.on(prefix$1('wordsUpdated'), () => {
-    			update();
-    		});
+    		this.ui.append(el.summary({
+    			text: this.title
+    		}), pane);
+    		app.on(prefix$1('wordsUpdated'), () => update());
     		this.add();
     	}
     }
@@ -713,24 +678,21 @@
             this.ui = el.details({
                 classNames: !this.isEnabled() ? ['inactive'] : []
             });
-            this.ui.append(el.summary({
-                text: this.title
-            }));
             const pane = el.table({
                 classNames: ['pane']
             });
             const frame = el.tbody();
             update(frame);
             pane.append(frame);
-            this.ui.append(pane);
-            app.on(prefix$1('wordsUpdated'), () => {
-                update(frame);
-            });
+            this.ui.append(el.summary({
+                text: this.title
+            }), pane);
+            app.on(prefix$1('wordsUpdated'), () => update(frame));
             this.add();
         }
     }
 
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px;transform:rotate(-90deg);transform-origin:center;font-size:10px;right:24px;top:1px}.sba .minimizer:before{content:\"❯\"}.sba.minimized details{display:none}.sba.minimized .minimizer{transform:rotate(90deg);right:25px;top:0}.sba details{font-size:90%;margin-bottom:1px;max-height:800px;transition:max-height .25s ease-in}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:9px;top:-1px}.sba .hive-action{margin:0 auto;display:block;font-size:100%;white-space:nowrap}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td,.sba tr:first-of-type th{border-top:none}.sba tr td:first-of-type{text-align:left}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba th,.sba td{border:1px solid #dcdcdc;white-space:nowrap}.sba thead th{text-align:center;padding:4px 2px}.sba tbody th{text-align:right}.sba tbody td{text-align:center;padding:4px 6px}.sba [data-plugin=footer] a{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-plugin=footer] a:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-plugin=surrender] .pane{padding:10px 5px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
+    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-input-invalid{color:#666}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px;transform:rotate(-90deg);transform-origin:center;font-size:10px;right:24px;top:1px}.sba .minimizer:before{content:\"❯\"}.sba.minimized details{display:none}.sba.minimized .minimizer{transform:rotate(90deg);right:25px;top:0}.sba details{font-size:90%;margin-bottom:1px;max-height:800px;transition:max-height .25s ease-in}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:9px;top:-1px}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td{border-top:none}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba td{border:1px solid #dcdcdc;white-space:nowrap;text-align:center;padding:4px 3px}.sba td:first-of-type{text-align:left}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 20px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
 
     class styles extends plugin {
         constructor(app) {
@@ -739,9 +701,7 @@
             this.ui = el.style({
                 text: css.replace(/(\uFEFF|\\n)/gu, '')
             });
-            app.on(prefix$1('destroy'), () => {
-                this.ui.remove();
-            });
+            app.on(prefix$1('destroy'), () => this.ui.remove());
             this.add();
         }
     }
@@ -770,18 +730,13 @@
     				return false;
     			}
     			app.observer.disconnect();
-    			data.getList('remainders').forEach(term => {
-    				resultList.append(buildEntry(term));
-    			});
+    			data.getList('remainders').forEach(term => resultList.append(buildEntry(term)));
     			usedOnce = true;
     			return true;
     		};
             this.ui = el.details({
                 classNames: !this.isEnabled() ? ['inactive'] : []
             });
-            this.ui.append(el.summary({
-                text: this.title
-    		}));
     		const pane = el.div({
     			classNames: ['pane']
     		});
@@ -793,12 +748,12 @@
     				type: 'button'
     			},
     			events: {
-    				click: () => {
-    					resolve(el.$('.sb-wordlist-items', app.game));
-    				}
+    				click: () => resolve(el.$('.sb-wordlist-items', app.game))
     			}
     		}));
-    		this.ui.append(pane);
+    		this.ui.append(el.summary({
+                text: this.title
+    		}), pane);
     		this.add();
     	}
     }

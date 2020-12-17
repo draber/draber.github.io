@@ -12,6 +12,7 @@ import plugin from '../modules/plugin.js';
 const update = (tbody) => {
     tbody.innerHTML = '';
     [
+        ['', 'Found', 'Missing', 'Total'],
         [
             'Words',
             data.getCount('foundTerms'),
@@ -28,7 +29,7 @@ const update = (tbody) => {
         const tr = el.tr();
         rowData.forEach(cellData => {
             tr.append(el.td({
-                text:cellData
+                text: cellData
             }))
         })
         tbody.append(tr);
@@ -55,32 +56,20 @@ class scoreSoFar extends plugin {
             classNames: !this.isEnabled() ? ['inactive'] : []
         });
 
-        this.ui.append(el.summary({
-            text: this.title
-        }));
-
         // add and populate content pane        
         const pane = el.table({
             classNames: ['pane']
         });
-        const thead = el.thead();
-        const tr = el.tr();
-        ['', 'Found', 'Missing', 'Total'].forEach(cellData => {
-            tr.append(el.th({
-                text: cellData
-            }))
-        })
-        thead.append(tr);
         const tbody = el.tbody();
-        pane.append(thead);
         pane.append(tbody);
         update(tbody);
-        this.ui.append(pane);
+
+        this.ui.append(el.summary({
+            text: this.title
+        }), pane);
 
         // update on demand
-        app.on(prefix('wordsUpdated'), (evt) => {
-            update(tbody);
-        });
+        app.on(prefix('wordsUpdated'), () => update(tbody));
 
         this.add();
     }
