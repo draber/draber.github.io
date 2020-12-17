@@ -1,5 +1,5 @@
 import el from './element.js';
-import pf from './prefixer.js';
+import { prefix } from './string.js';
 
 /**
  * Word lists
@@ -9,7 +9,7 @@ let lists;
 
 /**
  * Build word lists
- * @return {{remainders: [], answers: object, pangrams: [string], foundPangrams: [], foundTerms: []}}
+ * @returns {{remainders: [], answers: object, pangrams: [string], foundPangrams: [], foundTerms: []}}
  */
 const initLists = () => {
     return {
@@ -23,8 +23,8 @@ const initLists = () => {
 
 /**
  * Returns a list
- * @param type
- * @returns {*}
+ * @param {String} type
+ * @returns {Array}
  */
 const getList = type => {
     return lists[type];
@@ -32,7 +32,7 @@ const getList = type => {
 
 /**
  * Returns the number of words in given list
- * @param type
+ * @param {String} type
  * @returns {number}
  */
 const getCount = type => {
@@ -41,7 +41,7 @@ const getCount = type => {
 
 /**
  * Returns the number of points in given list
- * @param type
+ * @param {String} type
  * @returns {number}
  */
 const getPoints = type => {
@@ -69,6 +69,9 @@ const updateLists = (app, resultList) => {
     lists.foundPangrams = [];
 
     el.$$('li', resultList).forEach(node => {
+        if(el.$('a', node)){
+            return false;
+        }
         const term = node.textContent;
         lists.foundTerms.push(term);
         if (lists.pangrams.includes(term)) {
@@ -77,20 +80,18 @@ const updateLists = (app, resultList) => {
         }
     });
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.dispatchEvent(new Event(pf('updateComplete')));
+    app.trigger(new Event(prefix('wordsUpdated')));
 };
 
 /**
  * Build initial word lists
- * @param {HTMLElement} app
+ * @param {app} app
  * @param {HTMLElement} resultList
  */
 const init = (app, resultList) => {
     lists = initLists();
     updateLists(app, resultList);
-    app.addEventListener(pf('update'), () => {
-        updateLists(app, resultList);
-    });
+    app.on(prefix('newWord'), (evt) => updateLists(app, resultList));
 }
 
 export default {

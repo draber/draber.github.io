@@ -3,20 +3,21 @@
     "title": "Assistant",
     "url": "https://spelling-bee-assistant.app/",
     "repo": "draber/draber.github.io.git",
+    "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
     "twitter": "@d_raber",
     "prefix": "sba",
-    "plugins": [
+    "plugins": [     
+        "darkMode",   
         "scoreSoFar",
         "spoilers",
         "spillTheBeans",
         "stepsToSuccess",
         "surrender",
         "setUp",
-        "header",
-        "footer"
+        "header"
     ],
     "htmlIn": "src/html/index.tpl",
-    "htmlOut": "dist/index.html",
+    "htmlOut": "index.html",
     "ga": {
         "tid": "UA-182372232-1",
         "ec": "SBA Download"

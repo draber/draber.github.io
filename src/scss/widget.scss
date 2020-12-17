@@ -68,6 +68,10 @@
         background: $cellBg;
     }
 
+    .sb-input-invalid {
+        color: #666
+    }
+
     .sb-progress-marker .sb-progress-value,
     .hive-cell.center .cell-fill {
         background: $yellow;
@@ -162,9 +166,14 @@
 
     .minimizer {
         right: 16px;
+        transform: rotate(-90deg);
+        transform-origin: center;
+        font-size: 10px;
+        right: 24px;
+        top: 1px;
 
         &:before {
-            content: "\ff0d";
+            content: "❯";
         }
     }
 
@@ -174,22 +183,34 @@
         }
 
         .minimizer {
-            &:before {
-                content: "\ff0b";
-            }
+            transform: rotate(90deg);
+            right: 25px;
+            top: 0
         }
     }
 
     details {
         font-size: 90%;
         margin-bottom: 1px;
+        max-height: 800px; // intentionally unrealistically high (transition)
+        transition: max-height 0.25s ease-in;
 
         &[open] {
             summary {
                 &:before {
-                    content: "\ff0d";
+                    transform: rotate(-90deg);
+                    left: 12px;
+                    top: 0;
                 }
             }
+        }
+
+        &.inactive {
+            height: 0;
+            max-height: 0;
+            transition: max-height 0.25s ease-out;
+            overflow: hidden;
+            margin: 0
         }
     }
 
@@ -206,17 +227,15 @@
         }
 
         &:before {
-            content: "\ff0b";
+            content: "❯";
+            font-size: 9px;
             position: absolute;
-            left: 8px;
+            display: inline-block;
+            transform: rotate(90deg);
+            transform-origin: center;
+            left: 9px;
+            top: -1px
         }
-    }
-
-    .hive-action {
-        margin: 0 auto;
-        display: block;
-        font-size: 100%;
-        white-space: nowrap;
     }
 
     .pane {
@@ -230,13 +249,9 @@
 
     tr {
         &:first-of-type {
-            td, th {
+
+            td {
                 border-top: none;
-            }
-        }
-        td {
-            &:first-of-type {
-                text-align: left;
             }
         }
 
@@ -246,31 +261,18 @@
         }
     }
 
-    th,
     td {
         border: 1px solid $colorBorder;
         white-space: nowrap;
-    }
-
-    thead {
-        th {
-            text-align: center;
-            padding: 4px 0;
+        text-align: center;
+        padding: 4px 3px;
+        &:first-of-type {
+            text-align: left;
         }
     }
 
-    tbody {
-        th {
-            text-align: right;
-        }
 
-        td {
-            text-align: center;
-            padding: 4px 6px;
-        }
-    }
-
-    [data-plugin="footer"] a {
+    [data-ui="footer"] {
         color: currentColor;
         opacity: .6;
         font-size: 10px;
@@ -301,9 +303,17 @@
         }
     }
 
-    [data-plugin="surrender"] {
+    [data-ui="surrender"] {
         .pane {
             padding: 10px 5px;
+        }
+        
+        button {
+            margin: 0 auto;
+            display: block;
+            font-size: 100%;
+            white-space: nowrap;
+            padding: 12px 20px;
         }
     }
 
@@ -318,5 +328,4 @@
             margin: 0 10px 0 0;
         }
     }
-
 }

@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-const bookmarklet = require('bookmarklet');
 const fs = require('fs');
-const Terser = require('terser');
 const md = require('markdown-it')({
   html: true
 });
@@ -37,24 +35,12 @@ const writeHtml = (replacements = {}, inPath, outPath) => {
   return `Content saved as ${outPath}`;
 };
 
-const pluginCode = () => {
-  const path = `${process.cwd()}/src/js/plugins`;
-  let html = '';
-  config.plugins.forEach(plugin => {
-    html += `<div data-trigger="${plugin}">` 
-         + md.render(getContents(`${path}/${plugin}/readme.md`).replace(/^#/g, '###'))
-         + `</div>`;
-  });
-  return html;
-};
 
 const bmCode = () => {
-  const code = getContents(`${process.cwd()}/dist/spelling-bee-assistant.js`);
-  return `<a class="bookmarklet" onclick="return false" href="${bookmarklet.convert(code, { style: false, script: false})}">${config.label}</a>`;
-};
-
-const widgetJsCode = () => {
-  return getContents(`${process.cwd()}/dist/spelling-bee-assistant.min.js`);
+  let code = getContents(`${process.cwd()}/dist/spelling-bee-assistant.min.js`);
+  code = `(function(){${code}})()`;
+  code = `javascript:${encodeURIComponent(code)}`;
+  return `<a class="bookmarklet" onclick="return false" href="${code}">${config.label}</a>`;
 };
 
 const siteJsCode = () => {
@@ -71,15 +57,11 @@ const cssCode = () => {
   return code;
 }
 
-
 const compile = writeHtml({
     ...config,
     ...{
       css: cssCode(),
-      bookmarklet: bmCode(),
-      plugins: pluginCode(),
-      widgetJs: widgetJsCode(),
-      siteJs: siteJsCode()
+      bookmarklet: bmCode()
     }
   },
   `${process.cwd()}/${config.htmlIn}`,
