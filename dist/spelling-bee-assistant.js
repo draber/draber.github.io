@@ -252,9 +252,7 @@
                 events: events
             });
             data.init(this, resultList);
-            this.observer = new MutationObserver(() => {
-                this.trigger(new Event(prefix$1('newWord')));
-            });
+            this.observer = new MutationObserver(() =>  this.trigger(new Event(prefix$1('newWord'))));
             this.observer.observe(resultList, {
                 childList: true
             });
@@ -263,10 +261,7 @@
                     this.registry.set(key, new plugin(this));
                 }
             };
-            this.toggle = () => {
-                this.ui.classList.toggle('minimized');
-                return this;
-            };
+            this.toggle = () => this.ui.classList.toggle('minimized');
             el.$('body').append(this.ui);
         };
     }
@@ -324,10 +319,9 @@
                 optional: true,
                 defaultEnabled: false
             });
-            const bodyClass = prefix$1('dark', 'd');
             this.toggle = state => {
                 settings$1.set(`options.${this.key}`, state);
-                el.$('body').classList.toggle(bodyClass, state);
+                el.$('body').classList.toggle(prefix$1('dark', 'd'), state);
                 return this;
             };
             this.toggle(this.isEnabled());
@@ -351,56 +345,63 @@
         }
     }
 
+    let params;
+    let isLastTarget = false;
+    const getDragParams = (evt, app, visualContainer, trigger) => {
+        const gRect = visualContainer.getBoundingClientRect();
+        const aRect = app.ui.getBoundingClientRect();
+        const minT = gRect.top + window.pageYOffset;
+        const pRect = trigger.ui.parentElement.getBoundingClientRect();
+        const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
+        return {
+            maxL: document.documentElement.clientWidth - aRect.width,
+            minT: minT,
+            maxT: minT + gAvailH,
+            offX: evt.screenX - aRect.x,
+            offY: evt.screenY - aRect.y,
+            margT: parseInt(getComputedStyle(app.ui).marginTop, 10)
+        };
+    };
+    const getDropPosition = evt => {
+        let left = Math.max(0, (evt.screenX - params.offX));
+        left = Math.min(left, (params.maxL)) + 'px';
+        let top = Math.max(params.minT, (evt.screenY + window.pageYOffset - params.margT - params.offY));
+        top = Math.min(top, params.maxT) + 'px';
+        return {
+            left,
+            top
+        };
+    };
+    const enableDrag = (app, visualContainer, trigger) => {
+        if(!app.ui.draggable){
+            return false;
+        }
+        [app.ui, visualContainer].forEach(element => {
+            element.addEventListener('dragover', evt => evt.preventDefault());
+        });
+        app.on('pointerdown', evt => {
+            isLastTarget = !!evt.target.closest(`[data-ui="${trigger.key}`);
+        }).on('pointerup', () => {
+            isLastTarget = false;
+        }).on('dragend', evt => {
+            Object.assign(app.ui.style, getDropPosition(evt));
+            evt.target.style.opacity = '1';
+        }).on('dragstart', evt => {
+            if (!isLastTarget) {
+                evt.preventDefault();
+                return false;
+            }
+            app.ui.style.opacity = '.2';
+            params = getDragParams(evt, app, visualContainer, trigger);
+        }, false);
+    };
+
     class header extends plugin {
         constructor(app) {
             super(app, settings$1.get('title'), {
                 key: 'header'
             });
             this.ui = el.div();
-            let params;
-            let isLastTarget = false;
-            const getDragParams = (evt) => {
-                const gRect = app.game.getBoundingClientRect();
-                const aRect = evt.target.getBoundingClientRect();
-                const minT = gRect.top + window.pageYOffset;
-                const pRect = this.ui.parentElement.getBoundingClientRect();
-                const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
-                return {
-                    maxL: document.documentElement.clientWidth - aRect.width,
-                    minT: minT,
-                    maxT: minT + gAvailH,
-                    offX: evt.screenX - aRect.x,
-                    offY: evt.screenY - aRect.y,
-                    margT: parseInt(getComputedStyle(evt.target).marginTop, 10)
-                };
-            };
-            const getDropPosition = evt => {
-                let left = Math.max(0, (evt.screenX - params.offX));
-                left = Math.min(left, (params.maxL)) + 'px';
-                let top = Math.max(params.minT, (evt.screenY + window.pageYOffset - params.margT - params.offY));
-                top = Math.min(top, params.maxT) + 'px';
-                return {
-                    left,
-                    top
-                };
-            };
-            const makeDraggable = () => {
-                [app.ui, app.game].forEach(element => {
-                    element.addEventListener('dragover', evt => evt.preventDefault());
-                });
-                app.on('dragstart', evt => {
-                    if (!isLastTarget) {
-                        evt.preventDefault();
-                        return false;
-                    }
-                    evt.target.style.opacity = '.2';
-                    params = getDragParams(evt);
-                }, false);
-                app.on('dragend', evt => {
-                    Object.assign(evt.target.style, getDropPosition(evt));
-                    evt.target.style.opacity = '1';
-                });
-            };
             this.ui.append(el.div({
                 text: this.title,
                 attributes: {
@@ -425,12 +426,7 @@
                     click: () => app.trigger(new Event(prefix$1('destroy')))
                 }
             }));
-            app.on('pointerdown', evt => {
-                isLastTarget = !!evt.target.closest(`[data-plugin="${this.key}"]`);
-            }).on('pointerup', () => {
-                isLastTarget = false;
-            });
-            makeDraggable();
+            enableDrag(app, app.game, this);
             this.add();
         }
     }
@@ -514,7 +510,7 @@
     		};
     		this.ui = el.details({
     			events: {
-    				click: function (evt) {
+    				click: evt => {
     					if (evt.target.tagName === 'INPUT') {
     						app.registry.get(evt.target.name).toggle(evt.target.checked);
     					}

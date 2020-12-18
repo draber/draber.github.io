@@ -4,6 +4,7 @@ import {
 } from '../modules/string.js';
 import settings from '../modules/settings.js';
 import plugin from '../modules/plugin.js';
+import enableDrag from '../modules/draggable.js';
 
 /**
  * Header plugin
@@ -19,83 +20,6 @@ class header extends plugin {
         });
 
         this.ui = el.div();
-
-        /**
-         * Drag start parameters
-         * @type {Object}
-         */
-        let params;
-
-        /**
-         * Start dragging only when initiated on the header
-         * @type {boolean}
-         */
-        let isLastTarget = false;
-
-        /**
-         * Assign drag start parameters
-         * @param evt
-         * @returns {{minT: number, maxT: number, margT, maxL: number, offX: number, offY: number}}
-         */
-        const getDragParams = (evt) => {
-            const gRect = app.game.getBoundingClientRect();
-            const aRect = evt.target.getBoundingClientRect();
-            const minT = gRect.top + window.pageYOffset;
-            const pRect = this.ui.parentElement.getBoundingClientRect();
-            const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
-
-            return {
-                maxL: document.documentElement.clientWidth - aRect.width,
-                minT: minT,
-                maxT: minT + gAvailH,
-                offX: evt.screenX - aRect.x,
-                offY: evt.screenY - aRect.y,
-                margT: parseInt(getComputedStyle(evt.target).marginTop, 10)
-            };
-        }
-
-        /**
-         * Get corrected drop position
-         * @param evt
-         * @returns {{top: string, left: string}}
-         */
-        const getDropPosition = evt => {
-            let left = Math.max(0, (evt.screenX - params.offX));
-            left = Math.min(left, (params.maxL)) + 'px';
-            let top = Math.max(params.minT, (evt.screenY + window.pageYOffset - params.margT - params.offY));
-            top = Math.min(top, params.maxT) + 'px';
-            return {
-                left,
-                top
-            };
-        }
-
-        /**
-         * Implement drag/drop
-         */
-        const makeDraggable = () => {
-
-            // ensure correct drag icon
-            [app.ui, app.game].forEach(element => {
-                element.addEventListener('dragover', evt => evt.preventDefault());
-            });
-
-            // make app more transparent and get coordinates
-            app.on('dragstart', evt => {
-                if (!isLastTarget) {
-                    evt.preventDefault();
-                    return false;
-                }
-                evt.target.style.opacity = '.2';
-                params = getDragParams(evt);
-            }, false);
-
-            // place app at new position and restore opacity
-            app.on('dragend', evt => {
-                Object.assign(evt.target.style, getDropPosition(evt));
-                evt.target.style.opacity = '1';
-            });
-        }
 
         // add title closer and minimizer
         this.ui.append(el.div({
@@ -123,13 +47,8 @@ class header extends plugin {
             }
         }));
 
-        app.on('pointerdown', evt => {
-            isLastTarget = !!evt.target.closest(`[data-plugin="${this.key}"]`);
-        }).on('pointerup', () => {
-            isLastTarget = false;
-        });
+        enableDrag(app, app.game, this);
 
-        makeDraggable();
         this.add();
     }
 }

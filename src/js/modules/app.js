@@ -54,9 +54,7 @@ class app extends widget {
 
         data.init(this, resultList);
 
-        this.observer = new MutationObserver(() => {
-            this.trigger(new Event(prefix('newWord')));
-        })
+        this.observer = new MutationObserver(() =>  this.trigger(new Event(prefix('newWord'))));
 
         this.observer.observe(resultList, {
             childList: true
@@ -68,10 +66,7 @@ class app extends widget {
             }
         }
 
-        this.toggle = () => {            
-            this.ui.classList.toggle('minimized');
-            return this;
-        }
+        this.toggle = () => this.ui.classList.toggle('minimized');
 
         el.$('body').append(this.ui);
     };

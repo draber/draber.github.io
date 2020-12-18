@@ -44,7 +44,7 @@ class setUp extends plugin {
 
 		this.ui = el.details({
 			events: {
-				click: function (evt) {
+				click: evt => {
 					if (evt.target.tagName === 'INPUT') {
 						app.registry.get(evt.target.name).toggle(evt.target.checked);
 					}
