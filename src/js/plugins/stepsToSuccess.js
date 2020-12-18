@@ -1,21 +1,19 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import {
-    prefix
-} from '../modules/string.js';
-import plugin from '../modules/plugin.js';
+import { prefix } from '../modules/string.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Steps to success plugin
  * 
- * @param {app} app
- * @returns {plugin} stepsToSuccess
+ * @param {App} app
+ * @returns {Plugin} StepsToSuccess
  */
-class stepsToSuccess extends plugin {
+class StepsToSuccess extends Plugin {
     constructor(app) {
 
         super(app, 'Steps to success', {
-            optional: true
+            canDeactivate: true
         });
 
         /**
@@ -86,4 +84,4 @@ class stepsToSuccess extends plugin {
     }
 }
 
-export default stepsToSuccess;
+export default StepsToSuccess;

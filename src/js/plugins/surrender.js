@@ -1,18 +1,18 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import plugin from '../modules/plugin.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Surrender plugin
  * 
- * @param {app} app
- * @returns {plugin} surrender
+ * @param {App} app
+ * @returns {Plugin} Surrender
  */
-class surrender extends plugin {
+class Surrender extends Plugin {
 	constructor(app) {
 
 		super(app, 'Surrender', {
-			optional: true
+			canDeactivate: true
 		});
 
 		let usedOnce = false;
@@ -75,4 +75,4 @@ class surrender extends plugin {
 	}
 }
 
-export default surrender;
+export default Surrender;

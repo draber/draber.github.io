@@ -145,7 +145,6 @@
 
     .dragger {
         font-weight: bold;
-        cursor: move;
         line-height: 32px;
     }
 
@@ -177,7 +176,7 @@
         }
     }
 
-    &.minimized {
+    &.inactive {
         details {
             display: none;
         }

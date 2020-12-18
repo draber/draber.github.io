@@ -1,21 +1,19 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import {
-	prefix
-} from '../modules/string.js';
-import plugin from '../modules/plugin.js';
+import { prefix } from '../modules/string.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Spoilers plugin
  * 
- * @param {app} app
- * @returns {plugin} spoilers
+ * @param {App} app
+ * @returns {Plugin} Spoilers
  */
-class spoilers extends plugin {
+class Spoilers extends Plugin {
 	constructor(app) {
 
 		super(app, 'Spoilers', {
-			optional: true
+			canDeactivate: true
 		});
 
 		/**
@@ -101,4 +99,4 @@ class spoilers extends plugin {
 	}
 }
 
-export default spoilers;
+export default Spoilers;

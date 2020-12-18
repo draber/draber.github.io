@@ -1,13 +1,13 @@
 import el from '../modules/element.js';
-import plugin from '../modules/plugin.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Set-up plugin
  * 
- * @param {app} app
- * @returns {plugin} setUp
+ * @param {App} app
+ * @returns {Plugin} SetUp
  */
-class setUp extends plugin {
+class SetUp extends Plugin {
 	constructor(app) {
 
 		super(app, 'Set-up');
@@ -20,9 +20,9 @@ class setUp extends plugin {
 		 * Populate the pane
 		 * @param {HTMLElement} pane
 		 */
-		const populate = (pane) => {
+		const populate = pane => {
 			app.registry.forEach((plugin, key) => {
-				if (!plugin.optional) {
+				if (!plugin.canDeactivate) {
 					return false;
 				}
 				const li = el.li();
@@ -61,4 +61,4 @@ class setUp extends plugin {
 	}
 }
 
-export default setUp;
+export default SetUp;

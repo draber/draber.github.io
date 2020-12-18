@@ -3,16 +3,16 @@ import {
     prefix
 } from '../modules/string.js';
 import settings from '../modules/settings.js';
-import plugin from '../modules/plugin.js';
+import Plugin from '../modules/plugin.js';
 import enableDrag from '../modules/draggable.js';
 
 /**
  * Header plugin
  * 
- * @param {app} app
- * @returns {plugin} header
+ * @param {App} app
+ * @returns {Plugin} Header
  */
-class header extends plugin {
+class Header extends Plugin {
     constructor(app) {
 
         super(app, settings.get('title'), {
@@ -34,7 +34,10 @@ class header extends plugin {
             },
             classNames: ['minimizer'],
             events: {
-                click: () => app.toggle()
+                click: () => {
+                    console.log('toggle app')
+                    app.toggle()
+                }
             }
         }), el.span({
             text: '×',
@@ -48,9 +51,8 @@ class header extends plugin {
         }));
 
         enableDrag(app, app.game, this);
-
         this.add();
     }
 }
 
-export default header;
+export default Header;

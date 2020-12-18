@@ -191,10 +191,20 @@
         getPoints
     };
 
-    class widget {
+    class Widget {
+        defaultActive = true;
         ui;
         title;
         key;
+        canDeactivate = false;
+        toggle = state => {
+            if(!this.canDeactivate) {
+                return this;
+            }
+            settings$1.set(`options.${this.key}`, state);
+            this.ui.classList.toggle('inactive', !state);
+            return this;
+        }
         hasUi = () => {
             return this.ui instanceof HTMLElement;
         }
@@ -207,17 +217,21 @@
             return this;
         }
         constructor(title, {
-            key
+            key,
+            canDeactivate,
+            defaultActive
         } = {}) {
             if (!title) {
                 throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
             }
             this.title = title;
             this.key = key || camel(title);
+            this.canDeactivate = typeof canDeactivate !== 'undefined' ? canDeactivate : this.canDeactivate;
+            this.defaultActive = typeof defaultActive !== 'undefined' ? defaultActive : this.defaultActive;
         }
     }
 
-    class app extends widget {
+    class App extends Widget {
         constructor(game) {
             if (!game || !window.gameData) {
                 console.info(`This bookmarklet only works on ${settings$1.get('targetUrl')}`);
@@ -256,32 +270,22 @@
             this.observer.observe(resultList, {
                 childList: true
             });
-            this.registerPlugins = (plugins) => {
+            this.registerPlugins = plugins => {
                 for (const [key, plugin] of Object.entries(plugins)) {
                     this.registry.set(key, new plugin(this));
                 }
+                return this;
             };
-            this.toggle = () => this.ui.classList.toggle('minimized');
             el.$('body').append(this.ui);
         };
     }
 
-    class plugin extends widget {
-        defaultEnabled = true;
-        optional = false;
+    class Plugin extends Widget {
         target;
         app;
         isEnabled = () => {
             const stored = settings$1.get(`options.${this.key}`);
-            return typeof stored !== 'undefined' ? stored : this.defaultEnabled;
-        }
-        toggle = state => {
-            if(!this.optional) {
-                return this;
-            }
-            settings$1.set(`options.${this.key}`, state);
-            this.ui.classList.toggle('inactive', !state);
-            return this;
+            return typeof stored !== 'undefined' ? stored : this.defaultActive;
         }
         attach = () => {
             if (!this.hasUi()) {
@@ -293,31 +297,29 @@
             return this;
         }
         add = () => {
-            if (this.optional) {
+            if (this.canDeactivate) {
                 settings$1.set(`options.${this.key}`, this.isEnabled());
             }
             return this.attach();
         }
         constructor(app, title, {
             key,
-            optional,
-            defaultEnabled
+            canDeactivate,
+            defaultActive
         } = {}) {
             if (!app || !title) {
                 throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
             }
-            super(title, {key});
+            super(title, { key, canDeactivate, defaultActive });
             this.app = app;
-            this.optional = typeof optional !== 'undefined' ? optional : this.optional;
-            this.defaultEnabled = typeof defaultEnabled !== 'undefined' ? defaultEnabled : this.defaultEnabled;
         }
     }
 
-    class darkMode extends plugin {
+    class DarkMode extends Plugin {
         constructor(app) {
             super(app, 'Dark Mode', {
-                optional: true,
-                defaultEnabled: false
+                canDeactivate: true,
+                defaultActive: false
             });
             this.toggle = state => {
                 settings$1.set(`options.${this.key}`, state);
@@ -329,7 +331,7 @@
         }
     }
 
-    class footer extends plugin {
+    class Footer extends Plugin {
         constructor(app) {
             super(app, `${settings$1.get('label')} ${settings$1.get('version')}`, {
                 key: 'footer'
@@ -372,13 +374,11 @@
             top
         };
     };
-    const enableDrag = (app, visualContainer, trigger) => {
+    const enableDrag = (app, dragArea, trigger) => {
         if(!app.ui.draggable){
             return false;
         }
-        [app.ui, visualContainer].forEach(element => {
-            element.addEventListener('dragover', evt => evt.preventDefault());
-        });
+        trigger.ui.style.cursor = 'move';
         app.on('pointerdown', evt => {
             isLastTarget = !!evt.target.closest(`[data-ui="${trigger.key}`);
         }).on('pointerup', () => {
@@ -387,16 +387,18 @@
             Object.assign(app.ui.style, getDropPosition(evt));
             evt.target.style.opacity = '1';
         }).on('dragstart', evt => {
-            if (!isLastTarget) {
-                evt.preventDefault();
-                return false;
-            }
-            app.ui.style.opacity = '.2';
-            params = getDragParams(evt, app, visualContainer, trigger);
-        }, false);
+                if (!isLastTarget) {
+                    evt.preventDefault();
+                    return false;
+                }
+                app.ui.style.opacity = '.2';
+                params = getDragParams(evt, app, dragArea, trigger);
+            },
+            false).on('dragover', evt => evt.preventDefault());
+        dragArea.addEventListener('dragover', evt => evt.preventDefault());
     };
 
-    class header extends plugin {
+    class Header extends Plugin {
         constructor(app) {
             super(app, settings$1.get('title'), {
                 key: 'header'
@@ -414,7 +416,10 @@
                 },
                 classNames: ['minimizer'],
                 events: {
-                    click: () => app.toggle()
+                    click: () => {
+                        console.log('toggle app');
+                        app.toggle();
+                    }
                 }
             }), el.span({
                 text: '×',
@@ -457,10 +462,10 @@
             tbody.append(tr);
         });
     };
-    class scoreSoFar extends plugin {
+    class ScoreSoFar extends Plugin {
         constructor(app) {
             super(app, 'Score so far', {
-                optional: true
+                canDeactivate: true
             });
             this.ui = el.details({
                 attributes: {
@@ -481,15 +486,15 @@
         }
     }
 
-    class setUp extends plugin {
+    class SetUp extends Plugin {
     	constructor(app) {
     		super(app, 'Set-up');
     		const pane = el.ul({
     			classNames: ['pane']
     		});
-    		const populate = (pane) => {
+    		const populate = pane => {
     			app.registry.forEach((plugin, key) => {
-    				if (!plugin.optional) {
+    				if (!plugin.canDeactivate) {
     					return false;
     				}
     				const li = el.li();
@@ -525,10 +530,10 @@
     	}
     }
 
-    class spillTheBeans extends plugin {
+    class SpillTheBeans extends Plugin {
         constructor(app) {
             super(app, 'Spill the beans', {
-                optional: true
+                canDeactivate: true
             });
             const react = (value) => {
                 if (!value) {
@@ -564,10 +569,10 @@
         }
     }
 
-    class spoilers extends plugin {
+    class Spoilers extends Plugin {
     	constructor(app) {
     		super(app, 'Spoilers', {
-    			optional: true
+    			canDeactivate: true
     		});
     		const tbody = el.tbody();
     		const getCellData = () => {
@@ -634,10 +639,10 @@
     	}
     }
 
-    class stepsToSuccess extends plugin {
+    class StepsToSuccess extends Plugin {
         constructor(app) {
             super(app, 'Steps to success', {
-                optional: true
+                canDeactivate: true
             });
             const maxPoints = data.getPoints('answers');
             const rankings = [
@@ -685,9 +690,9 @@
         }
     }
 
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-input-invalid{color:#666}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px;transform:rotate(-90deg);transform-origin:center;font-size:10px;right:24px;top:1px}.sba .minimizer:before{content:\"❯\"}.sba.minimized details{display:none}.sba.minimized .minimizer{transform:rotate(90deg);right:25px;top:0}.sba details{font-size:90%;margin-bottom:1px;max-height:800px;transition:max-height .25s ease-in}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:9px;top:-1px}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td{border-top:none}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba td{border:1px solid #dcdcdc;white-space:nowrap;text-align:center;padding:4px 3px}.sba td:first-of-type{text-align:left}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 20px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
+    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-input-invalid{color:#666}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px;transform:rotate(-90deg);transform-origin:center;font-size:10px;right:24px;top:1px}.sba .minimizer:before{content:\"❯\"}.sba.inactive details{display:none}.sba.inactive .minimizer{transform:rotate(90deg);right:25px;top:0}.sba details{font-size:90%;margin-bottom:1px;max-height:800px;transition:max-height .25s ease-in}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:9px;top:-1px}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td{border-top:none}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba td{border:1px solid #dcdcdc;white-space:nowrap;text-align:center;padding:4px 3px}.sba td:first-of-type{text-align:left}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 20px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
 
-    class styles extends plugin {
+    class Styles extends Plugin {
         constructor(app) {
             super(app, 'Styles');
             this.target = el.$('head');
@@ -699,10 +704,10 @@
         }
     }
 
-    class surrender extends plugin {
+    class Surrender extends Plugin {
     	constructor(app) {
     		super(app, 'Surrender', {
-    			optional: true
+    			canDeactivate: true
     		});
     		let usedOnce = false;
     		const buildEntry = term => {
@@ -750,18 +755,18 @@
     }
 
     var plugins = {
-        styles,
-        darkMode,
-        header,
-        scoreSoFar,
-        spoilers,
-        spillTheBeans,
-        stepsToSuccess,
-        surrender,
-        setUp,
-        footer
+        Styles,
+        DarkMode,
+        Header,
+        ScoreSoFar,
+        Spoilers,
+        SpillTheBeans,
+        StepsToSuccess,
+        Surrender,
+        SetUp,
+        Footer
     };
 
-    (new app(el.$('#pz-game-root'))).registerPlugins(plugins);
+    (new App(el.$('#pz-game-root'))).registerPlugins(plugins);
 
 }());

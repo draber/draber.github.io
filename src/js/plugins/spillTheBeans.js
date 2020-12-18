@@ -1,18 +1,18 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import plugin from '../modules/plugin.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Spill the beans plugin
  * 
- * @param {app} app
- * @returns {plugin} spillTheBeans
+ * @param {App} app
+ * @returns {Plugin} SpillTheBeans
  */
-class spillTheBeans extends plugin {
+class SpillTheBeans extends Plugin {
     constructor(app) {
 
         super(app, 'Spill the beans', {
-            optional: true
+            canDeactivate: true
         });
 
         /**
@@ -58,4 +58,4 @@ class spillTheBeans extends plugin {
     }
 }
 
-export default spillTheBeans;
+export default SpillTheBeans;

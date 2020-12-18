@@ -1,9 +1,7 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import {
-    prefix
-} from '../modules/string.js';
-import plugin from '../modules/plugin.js';
+import { prefix } from '../modules/string.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Populate/update pane
@@ -39,14 +37,14 @@ const update = (tbody) => {
 /**
  * Score so far plugin
  * 
- * @param {app} app
- * @returns {plugin} scoreSoFar
+ * @param {App} app
+ * @returns {Plugin} ScoreSoFar
  */
-class scoreSoFar extends plugin {
+class ScoreSoFar extends Plugin {
     constructor(app) {
 
         super(app, 'Score so far', {
-            optional: true
+            canDeactivate: true
         });
 
         this.ui = el.details({
@@ -74,4 +72,4 @@ class scoreSoFar extends plugin {
     }
 }
 
-export default scoreSoFar;
+export default ScoreSoFar;

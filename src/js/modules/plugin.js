@@ -1,23 +1,10 @@
-import el from './element.js';
 import settings from './settings.js';
-import widget from './widget.js';
+import Widget from './widget.js';
 
 /**
  * Plugin base class
  */
-class plugin extends widget {
-
-    /**
-     * Not disabled by user, default state
-     * @type {boolean}
-     */
-    defaultEnabled = true;
-
-    /**
-     * Can be disabled
-     * @type {boolean}
-     */
-    optional = false;
+class Plugin extends Widget {
 
     /**
      * Parent element of plugin, if applicable
@@ -37,26 +24,12 @@ class plugin extends widget {
      */
     isEnabled = () => {
         const stored = settings.get(`options.${this.key}`);
-        return typeof stored !== 'undefined' ? stored : this.defaultEnabled;
-    }
-
-    /**
-     * Switches plugins on and off
-     * @param {boolean} state
-     * @returns {widget}
-     */
-    toggle = state => {
-        if(!this.optional) {
-            return this;
-        }
-        settings.set(`options.${this.key}`, state);
-        this.ui.classList.toggle('inactive', !state);
-        return this;
+        return typeof stored !== 'undefined' ? stored : this.defaultActive;
     }
 
     /**
      * Attaches plugins to DOM, creates slot in app if needed
-     * @returns {widget}
+     * @returns {Widget}
      */
     attach = () => {
         if (!this.hasUi()) {
@@ -70,10 +43,10 @@ class plugin extends widget {
 
     /**
      * Adds plugin to DOM and registers state in local storage
-     * @returns {widget}
+     * @returns {Widget}
      */
     add = () => {
-        if (this.optional) {
+        if (this.canDeactivate) {
             settings.set(`options.${this.key}`, this.isEnabled());
         }
         return this.attach();
@@ -81,17 +54,15 @@ class plugin extends widget {
 
     constructor(app, title, {
         key,
-        optional,
-        defaultEnabled
+        canDeactivate,
+        defaultActive
     } = {}) {
         if (!app || !title) {
             throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
         }
-        super(title, {key})
+        super(title, { key, canDeactivate, defaultActive })
         this.app = app;
-        this.optional = typeof optional !== 'undefined' ? optional : this.optional;
-        this.defaultEnabled = typeof defaultEnabled !== 'undefined' ? defaultEnabled : this.defaultEnabled;
     }
 }
 
-export default plugin;
+export default Plugin;

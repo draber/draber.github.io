@@ -1,7 +1,7 @@
 import el from './element.js';
 import settings from './settings.js';
 import data from './data.js';
-import widget from './widget.js';
+import Widget from './widget.js';
 import {
     prefix
 } from './string.js';
@@ -10,9 +10,9 @@ import {
 /**
  * App container
  * @param {HTMLElement} game
- * @returns {app} app
+ * @returns {App} app
  */
-class app extends widget {
+class App extends Widget {
     constructor(game) {
         if (!game || !window.gameData) {
             console.info(`This bookmarklet only works on ${settings.get('targetUrl')}`);
@@ -60,16 +60,14 @@ class app extends widget {
             childList: true
         });
 
-        this.registerPlugins = (plugins) => {
+        this.registerPlugins = plugins => {
             for (const [key, plugin] of Object.entries(plugins)) {
                 this.registry.set(key, new plugin(this));
             }
+            return this;
         }
-
-        this.toggle = () => this.ui.classList.toggle('minimized');
-
         el.$('body').append(this.ui);
     };
 }
 
-export default app;
+export default App;

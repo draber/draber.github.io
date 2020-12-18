@@ -51,17 +51,12 @@ const getDropPosition = evt => {
     };
 }
 
-const enableDrag = (app, visualContainer, trigger) => {
+const enableDrag = (app, dragArea, trigger) => {
 
     if(!app.ui.draggable){
         return false;
     }
-
-    // ensure correct drag icon
-    [app.ui, visualContainer].forEach(element => {
-        element.addEventListener('dragover', evt => evt.preventDefault());
-    });
-
+    trigger.ui.style.cursor = 'move';
     app.on('pointerdown', evt => {
         isLastTarget = !!evt.target.closest(`[data-ui="${trigger.key}`);
     }).on('pointerup', () => {
@@ -70,13 +65,16 @@ const enableDrag = (app, visualContainer, trigger) => {
         Object.assign(app.ui.style, getDropPosition(evt));
         evt.target.style.opacity = '1';
     }).on('dragstart', evt => {
-        if (!isLastTarget) {
-            evt.preventDefault();
-            return false;
-        }
-        app.ui.style.opacity = '.2';
-        params = getDragParams(evt, app, visualContainer, trigger);
-    }, false);
+            if (!isLastTarget) {
+                evt.preventDefault();
+                return false;
+            }
+            app.ui.style.opacity = '.2';
+            params = getDragParams(evt, app, dragArea, trigger);
+        },
+        false).on('dragover', evt => evt.preventDefault());
+
+    dragArea.addEventListener('dragover', evt => evt.preventDefault());
 }
 
 
