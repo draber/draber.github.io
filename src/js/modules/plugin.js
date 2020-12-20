@@ -19,15 +19,6 @@ class Plugin extends Widget {
     app;
 
     /**
-     * Tells if the user has disabled a plugin, falls back on default setting
-     * @returns {boolean}
-     */
-    isEnabled = () => {
-        const stored = settings.get(`options.${this.key}`);
-        return typeof stored !== 'undefined' ? stored : this.defaultActive;
-    }
-
-    /**
      * Attaches plugins to DOM, creates slot in app if needed
      * @returns {Widget}
      */
@@ -36,7 +27,7 @@ class Plugin extends Widget {
             return this;
         }
         this.ui.dataset.ui = this.key;
-        this.toggle(this.isEnabled());
+        this.toggle(this.isActive());
         (this.target || this.app.ui).append(this.ui);
         return this;
     }
@@ -47,7 +38,7 @@ class Plugin extends Widget {
      */
     add = () => {
         if (this.canDeactivate) {
-            settings.set(`options.${this.key}`, this.isEnabled());
+            settings.set(`options.${this.key}`, this.isActive());
         }
         return this.attach();
     }

@@ -15,11 +15,14 @@
     "site-compiler": "file:src/compiler/site-compiler"
   },
   "scripts": {
-    "build": "rollup -c ./rollup/sba.min.js",
-    "dev": "rollup -c ./rollup/sba.js",
-    "watch-sass": "sass --watch src/scss:src/css --style compressed --no-source-map",
-    "sass": "sass src/scss:src/css --style compressed --no-source-map",
-    "build-site": "node ./src/compiler/site-compiler/"
+    "build": "rollup -c ./rollup/iife.min.js",
+    "dev": "rollup -c ./rollup/iife.js",
+    "sba-sass-w": "sass --watch src/scss/widget.scss:src/css/widget.css --style compressed --no-source-map",
+    "sba-sass": "sass src/scss/widget.scss:src/css/widget.css --style compressed --no-source-map",
+    "site-sass-w": "sass --watch src/scss/site.scss:assets/css/site.css --style compressed --no-source-map",
+    "site-sass": "sass src/scss/site.scss:assets/css/site.css --style compressed --no-source-map",
+    "site": "node ./src/compiler/site-compiler/",
+    "site-w": "node ./src/compiler/site-compiler/ -w"
   },
   "files": [
     "dist"
@@ -33,8 +36,5 @@
     "url": "https://github.com/draber/draber.github.io.git/issues"
   },
   "author": "Dieter Raber",
-  "license": "MIT",
-  "dependencies": {
-    "bookmarklet-babel7": "^3.0.0"
-  }
+  "license": "MIT"
 }

@@ -36,7 +36,7 @@ class Header extends Plugin {
             events: {
                 click: () => {
                     console.log('toggle app')
-                    app.toggle()
+                    app.toggle(!app.isActive())
                 }
             }
         }), el.span({

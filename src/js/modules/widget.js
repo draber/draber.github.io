@@ -31,10 +31,19 @@ class Widget {
     key;
 
     /**
-     * Can be hidden, partially hidden (e.g. app) or disabled in the case of !hasUi()
+     * Can be deactivated
      * @type {boolean}
      */
     canDeactivate = false;
+
+    /**
+     * Tells if the user has deactivated a plugin, falls back on default setting
+     * @returns {boolean}
+     */
+    isActive = () => {
+        const stored = settings.get(`options.${this.key}`);
+        return typeof stored !== 'undefined' ? stored : this.defaultActive;
+    }
 
     /**
      * Switches plugins on and off

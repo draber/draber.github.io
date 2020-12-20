@@ -33,7 +33,7 @@ class SetUp extends Plugin {
 					attributes: {
 						type: 'checkbox',
 						name: key,
-						checked: plugin.isEnabled()
+						checked: plugin.isActive()
 					}
 				});
 				label.prepend(check)

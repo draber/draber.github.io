@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dieter Raber",
-  "license": "MIT",  
+  "license": "MIT",
   "dependencies": {
-    "markdown-it": "^12.0.2"
+    "minimist": "^1.2.5"
   }
 }

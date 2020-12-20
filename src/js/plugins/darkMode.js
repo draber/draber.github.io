@@ -23,7 +23,7 @@ class DarkMode extends Plugin {
             return this;
         }
 
-        this.toggle(this.isEnabled());
+        this.toggle(this.isActive());
         this.add();
     }
 }

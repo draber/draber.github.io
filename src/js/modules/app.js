@@ -19,7 +19,9 @@ class App extends Widget {
             return false;
         }
 
-        super(settings.get('label'));
+        super(settings.get('label'), {
+            canDeactivate: true
+        });
         this.game = game;
 
         const oldInstance = el.$(`[data-id="${this.key}"]`);

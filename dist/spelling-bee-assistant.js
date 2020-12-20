@@ -197,6 +197,10 @@
         title;
         key;
         canDeactivate = false;
+        isActive = () => {
+            const stored = settings$1.get(`options.${this.key}`);
+            return typeof stored !== 'undefined' ? stored : this.defaultActive;
+        }
         toggle = state => {
             if(!this.canDeactivate) {
                 return this;
@@ -237,7 +241,9 @@
                 console.info(`This bookmarklet only works on ${settings$1.get('targetUrl')}`);
                 return false;
             }
-            super(settings$1.get('label'));
+            super(settings$1.get('label'), {
+                canDeactivate: true
+            });
             this.game = game;
             const oldInstance = el.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
@@ -283,22 +289,18 @@
     class Plugin extends Widget {
         target;
         app;
-        isEnabled = () => {
-            const stored = settings$1.get(`options.${this.key}`);
-            return typeof stored !== 'undefined' ? stored : this.defaultActive;
-        }
         attach = () => {
             if (!this.hasUi()) {
                 return this;
             }
             this.ui.dataset.ui = this.key;
-            this.toggle(this.isEnabled());
+            this.toggle(this.isActive());
             (this.target || this.app.ui).append(this.ui);
             return this;
         }
         add = () => {
             if (this.canDeactivate) {
-                settings$1.set(`options.${this.key}`, this.isEnabled());
+                settings$1.set(`options.${this.key}`, this.isActive());
             }
             return this.attach();
         }
@@ -326,7 +328,7 @@
                 el.$('body').classList.toggle(prefix$1('dark', 'd'), state);
                 return this;
             };
-            this.toggle(this.isEnabled());
+            this.toggle(this.isActive());
             this.add();
         }
     }
@@ -418,7 +420,7 @@
                 events: {
                     click: () => {
                         console.log('toggle app');
-                        app.toggle();
+                        app.toggle(!app.isActive());
                     }
                 }
             }), el.span({
@@ -505,7 +507,7 @@
     					attributes: {
     						type: 'checkbox',
     						name: key,
-    						checked: plugin.isEnabled()
+    						checked: plugin.isActive()
     					}
     				});
     				label.prepend(check);
