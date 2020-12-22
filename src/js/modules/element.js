@@ -40,17 +40,18 @@ const create = function ({
     style = {},
     data = {},
     events = {},
-    classNames = []
+    classNames = [],
+    svg
 } = {}) {
-    const el = document.createElement(tag);
-    for (const [key, value] of Object.entries({
-            ...{
-                textContent: text
-            },
-            ...attributes
-        })) {
-        el[key] = value;
-    }
+    const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
+    el.textContent = text;
+    for (const [key, value] of Object.entries(attributes)) {
+        if (svg) {
+            el.setAttributeNS(null, key, value);
+        } else {
+            el[key] = value;
+        }
+    }    
     for (const [key, value] of Object.entries(data)) {
         el.dataset[key] = value;
     }

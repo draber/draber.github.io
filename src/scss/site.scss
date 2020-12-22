@@ -137,7 +137,7 @@ header {
 
     .github {
         img {
-            filter: invert(1)
+            filter: invert(100%)
         }
     }
 
@@ -174,7 +174,7 @@ header {
 
 .wrapper {
     margin: 0 auto;
-    max-width: 1024px;
+    max-width: 102.4rem;
     padding: 0 2rem;
     position: relative;
 }
@@ -182,11 +182,11 @@ header {
 .intro {
     display: flex;
     align-items: flex-start;
-    padding-top: 40px;
+    padding-top: 4rem;
 
     .intro-text {
         flex-grow: 2;
-        margin-right: 20px;
+        margin-right: 2rem;
     }
 
     .img-box {
@@ -200,8 +200,8 @@ header {
 
 
     .installer {
-        min-width: 200px;
-        height: 276px;
+        min-width: 20rem;
+        height: 27.6rem;
         padding-top: 1.5rem;
 
         &:hover {
@@ -240,7 +240,7 @@ section {
     margin: .5rem 2rem .3rem 0;
 
     border: {
-        width: 1px;
+        width: .1rem;
         color: $colorBorder;
         style: solid;
         radius: .8rem;
@@ -303,7 +303,7 @@ $cardMargin: 2rem;
 
 .card {
     border: {
-        width: 1px;
+        width: .1rem;
         color: #eee;
         style: solid;
         radius: .9rem
@@ -323,7 +323,7 @@ $cardMargin: 2rem;
 .card-listing {
     display: grid;
     justify-content: space-between;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     column-gap: $cardMargin;
     position: relative;
     overflow: hidden;
@@ -351,8 +351,39 @@ ul {
     margin: 0;
 }
 
-@media screen and (max-width: 1024px) {
-    .cards {
+.mobile-only {
+    display: none;
+}
+
+@media screen and (max-width: 830px) {
+    .card-listing {
+        display: block
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .mobile-only {
         display: block;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    .intro {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 400px) {
+
+    .img-box {
+        float: none;
+        display: inline-block;
+        margin-bottom: 1.5rem
     }
 }

@@ -6,6 +6,24 @@ import {
     prefix
 } from './string.js';
 
+const getEntryCoords = () => {
+    const breakPoints = [
+        '(max-width: 350px)',
+        '(max-width: 370px)',
+        '(max-width: 443.98px)',
+        '(max-width: 991.98px)',
+        '(min-width: 444px)',
+        '(min-width: 768px)'
+    ]
+
+    breakPoints.forEach(point => {
+        if (window.matchMedia(point)) {
+            console.loh(point)
+        }
+    })
+}
+
+
 
 /**
  * App container
@@ -31,22 +49,43 @@ class App extends Widget {
 
         this.registry = new Map();
 
-        const rect = el.$('.sb-content-box', game).getBoundingClientRect();
+        this.parent = el.$('.sb-content-box', game);
 
-        const resultList = el.$('.sb-wordlist-items', game);
+        /**
+         * Reposition app on load , window.resize, window.orientationchange
+         */
+        const reposition = () => {
+            const oldState = this.isActive();
+            const rect = this.parent.getBoundingClientRect();
+            let position;
+            position = {
+                left: '10px',
+                top: (rect.top + window.pageYOffset) + 'px'
+            }
+            // if(document.documentElement.clientWidth < this.appRect.left + this.appRect.width){
+            //     this.toggle(false);
+            //     position = {
+            //         left: (rect.left + 200) + 'px',
+            //         top: (rect.top + window.pageYOffset) + 'px'
+            //     }
+            // }
+            // else {
+            //     this.toggle(oldState);
+            //     position = {
+            //         left: (rect.right + 10) + 'px',
+            //         top: (rect.top + window.pageYOffset) + 'px'
+            //     }
+            // }
+            Object.assign(this.ui.style, position);
+        }
+
+        const resultList = el.$('.sb-wordlist-items', game);        
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
             this.ui.remove();
         };
         this.ui = el.div({
-            attributes: {
-                draggable: true
-            },
-            style: {
-                left: (rect.right + 10) + 'px',
-                top: (rect.top + window.pageYOffset) + 'px',
-            },
             data: {
                 id: this.key
             },
@@ -56,7 +95,7 @@ class App extends Widget {
 
         data.init(this, resultList);
 
-        this.observer = new MutationObserver(() =>  this.trigger(new Event(prefix('newWord'))));
+        this.observer = new MutationObserver(() => this.trigger(new Event(prefix('newWord'))));
 
         this.observer.observe(resultList, {
             childList: true
@@ -69,6 +108,14 @@ class App extends Widget {
             return this;
         }
         el.$('body').append(this.ui);
+
+        this.appRect = this.ui.getBoundingClientRect();
+        reposition();
+
+        window.addEventListener('orientationchange', () => {
+            reposition();
+        })
+        //getEntryCoords();
     };
 }
 

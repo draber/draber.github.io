@@ -2,15 +2,12 @@ import el from '../modules/element.js';
 import data from '../modules/data.js';
 import { prefix } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
+import tbl from '../modules/tables.js';
 
-/**
- * Populate/update pane
- * @param {HTMLElement} tbody
- */
-const update = (tbody) => {
-    tbody.innerHTML = '';
-    [
-        ['', 'Found', 'Missing', 'Total'],
+
+const getData = () => {
+    return [
+		['', '✓', '?', '∑'],
         [
             'Words',
             data.getCount('foundTerms'),
@@ -23,15 +20,7 @@ const update = (tbody) => {
             data.getPoints('remainders'),
             data.getPoints('answers')
         ]
-    ].forEach(rowData => {
-        const tr = el.tr();
-        rowData.forEach(cellData => {
-            tr.append(el.td({
-                text: cellData
-            }))
-        })
-        tbody.append(tr);
-    });
+    ];
 }
 
 /**
@@ -54,19 +43,16 @@ class ScoreSoFar extends Plugin {
         });
 
         // add and populate content pane        
-        const pane = el.table({
-            classNames: ['pane']
-        });
-        const tbody = el.tbody();
-        pane.append(tbody);
-        update(tbody);
+        const pane = tbl.build(getData());
 
         this.ui.append(el.summary({
             text: this.title
         }), pane);
 
         // update on demand
-        app.on(prefix('wordsUpdated'), () => update(tbody));
+		app.on(prefix('wordsUpdated'), () => {
+            tbl.refresh(getData(), pane);
+		})
 
         this.add();
     }

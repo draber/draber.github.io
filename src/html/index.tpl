@@ -65,15 +65,16 @@
       </figure>
       <p><span class="emoji">Spelling Bee Assistant</span> is a JavaScript <a href="#bookmarklet" class="help">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener" target="_blank">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
       <p>It's a great game but if you need the tiniest hint, you are on your own. If you don't make it to the end - and honestly, how often did you you see the <em>Queen Bee</em> screen come up - you'll have to wait to the next day to find out which words you've been missing.</p>
-      <p>For those of you who play on a laptop or a desktop computer, the Spelling Bee Assistant can offer a bit of support. It comes with a whole range of tools that can help you to succeed without spoiling the fun. Oh, and before we forget: it brings the long promised <a href="#dark-mode">dark mode</a> to the game!</p>
-      <p>The installation couldn't be easier: drag and drop the picture at the right into your browser’s bookmark menu and you're done. Next time you are playing, just click on the bookmarklet to display the assistant.</p>
+      <p>For those of you who play on a laptop or a desktop computer, the Spelling Bee Assistant can offer a bit of support. It comes with a whole range of tools that can help you to succeed without spoiling the fun.</p>
+      <p class="desktop-only">To install, drag and drop the picture at the right into your browser’s bookmark menu. Next time you are playing, click on the bookmarklet to launch the assistant.</p>
     </div>
-    <figure class="installer assistant-closed img-box"> 
+    <figure class="installer assistant-closed img-box desktop-only"> 
       <a class="bookmarklet" rel="nofollow" onclick="return false" href="{{bookmarklet}}">
         <img src="assets/img/assistant-closed-light.png" alt="{{label}}">
       </a>
       <figcaption>Drag this to your bookmarks</figcaption>
     </figure>
+    <p class="mobile-only">Spelling Bee Assistant can only run on desktop computers and laptops with a screen size of at least 700 pixels.</p>
   </section>
   <section> 
     <h2>Features</h2>
@@ -137,9 +138,9 @@
         <h3>Set-up</h3>
         <figure class="img-box set-up">
           <img src="assets/img/set-up-light.png?{{version}}" alt="Set-up" usemap="#setUp" />
-          <figcaption>Configuration options</figcaption>
+          <figcaption>Use only what you like</figcaption>
         </figure>
-        <p>So you like only some of the toys here, but not all of them? Get rid of those you don’t like, they won't bother you anymore. Unless of course you use the assistant on another browser, then you'll have to do it all over again.</p>
+        <p>You like only some of these features, but not all of them? Get rid of those you don’t like, they won't bother you anymore. Unless of course you use the assistant on another browser, then you'll have to do it all over again.</p>
       </li>
       <li class="card extras">
         <h3>Little extras</h3>
@@ -148,13 +149,13 @@
             <figure class="img-box header">
               <img src="assets/img/header-light.png?{{version}}" alt="Assitant can be dragged" />
             </figure>
-            <p>You can grab the Spelling Bee Assistant by the header to drag it anywhere inside the game area. Click on the arrow to minimize it and on <strong>×</strong> to remove it from the game.</p>
+            <p>The assistant can be dragged anywhere inside the game area and be minimized by clicking on the <svg width="9" height="10" viewBox="0 0 6.6718 4.5789" xmlns="http://www.w3.org/2000/svg"><path d="m6.6718 4.579-3.3342-3.07-3.3377 3.07v-1.659l3.2262-2.92h0.22025l3.2254 2.91z"/></svg> symbol.</p>
           </li>
           <li>
             <figure class="img-box pangram-underline">
               <img src="assets/img/pangram-underline-light.png?{{version}}" alt="Pangrams are underlined" />
             </figure>
-            <p>Pangrams are underlined</p>
+            <p>In the result list pangrams are marked with a yellow underline.</p>
           </li>
         </ul>
       </li>
@@ -164,19 +165,25 @@
     <h2 id="bookmarklet">What is a bookmarklet?</h2>
     <figure class="img-box bookmarklet">
       <img src="assets/img/bookmarklet-light.png?{{version}}" alt="Bookmarklet" />
-      <figcaption>Bookmarklet toolbar with regular bookmarks and the Spelling Bee Assitant</figcaption>
+      <figcaption>Regular bookmarks along with the Spelling Bee Assistant</figcaption>
     </figure>
     <p>Bookmarklets are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks, in your browser’s bookmark menu. Unfortunately, there is no straightforward way to assign an icon to them. </p>
     <p class="rgt"><a href="#">Back to top</a></p>
   </section>
   <section>
     <h2>Does it work everywhere?</h2>
-    <p>The assistant is not suitable for the mobile devices and has only been tested with the desktop version of the game. It requires a modern browser and won’t work in Internet Explorer.</p>
+    <p>Spelling Bee Assistant works only with modern browsers and has been built with laptops or desktop computers in mind. Installing bookmarklets on a phone or a tablet is a bit complex but can be done according to <a href="https://www.google.com/search?q=Installing+bookmarklets+on+a+moblie+device" rel="noopener" target="_blank">Google</a>. There is a good chance it will work on larger mobile devices but this has not been tested. It can't be installed on the NYT app though.</p>
+  </section>
+  <section>
     <h2>Does it not spoil the game?</h2>
     <p>Other people have been creating <a href="https://www.shunn.net/bee/">tools with a similar purpose</a> which - according to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html">this article</a> - the Spelling Bee community seems to like well.</p>
     <p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the <em>Spoilers</em> panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
+  </section>
+  <section>
     <h2>I discovered a bug | I’d like to ask for a new feature</h2>
     <p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
+  </section>
+  <section>
     <h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
     <p>No.</p>
   </section>

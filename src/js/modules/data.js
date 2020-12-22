@@ -91,7 +91,7 @@ const updateLists = (app, resultList) => {
 const init = (app, resultList) => {
     lists = initLists();
     updateLists(app, resultList);
-    app.on(prefix('newWord'), (evt) => updateLists(app, resultList));
+    app.on(prefix('newWord'), () => updateLists(app, resultList));
 }
 
 export default {
