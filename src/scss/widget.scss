@@ -147,6 +147,19 @@
         display: flex;
         gap: 8px;
 
+        .toolbar {
+            display: flex;
+            align-items: stretch;
+            gap: 1px;
+            
+            div {
+                padding: 10px 3px 2px 3px;
+                &:last-of-type {
+                    padding-top: 8px;
+                }
+            }
+        }
+
         svg {
             width: 11px;
             cursor: pointer;
@@ -162,8 +175,10 @@
     }
 
     .minimizer {
-        transform: rotate(-180deg);
+        transform: rotate(180deg);
         transform-origin: center;
+        position: relative;
+        top: 2px
     }
 
     &.inactive {
@@ -175,6 +190,7 @@
 
         .minimizer {
             transform: rotate(0deg);
+            top: 0
         }
     }
 

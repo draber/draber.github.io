@@ -79,7 +79,7 @@ class App extends Widget {
             Object.assign(this.ui.style, position);
         }
 
-        const resultList = el.$('.sb-wordlist-items', game);        
+        const resultList = el.$('.sb-wordlist-items', game);
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
@@ -107,6 +107,23 @@ class App extends Widget {
             }
             return this;
         }
+
+        this.registerTools = () => {
+            const toolbar = el.div({
+                classNames: ['toolbar']
+            })
+            this.registry.forEach(plugin => {
+                if (plugin.tool) {
+                    toolbar.append(plugin.tool)
+                }
+            })
+            this.enableTool('arrowDown', 'Maximize', 'Minimize');
+            this.tool.classList.add('minimizer');
+            toolbar.append(this.tool);
+            this.registry.get('Header').ui.append(toolbar)
+            return this;
+        }
+
         el.$('body').append(this.ui);
 
         this.appRect = this.ui.getBoundingClientRect();

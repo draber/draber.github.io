@@ -22,6 +22,8 @@ class DarkMode extends Plugin {
             el.$('body').classList.toggle(prefix('dark', 'd'), state);
             return this;
         }
+        
+        this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
 
         this.toggle(this.isActive());
         this.add();

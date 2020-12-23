@@ -1,5 +1,9 @@
-import { camel } from './string.js';
+import {
+    camel
+} from './string.js';
 import settings from './settings.js';
+import getIcon from './icons.js';
+import el from './element.js';
 
 /**
  * Plugin base class
@@ -51,12 +55,27 @@ class Widget {
      * @returns {Widget}
      */
     toggle = state => {
-        if(!this.canDeactivate) {
+        if (!this.canDeactivate) {
             return this;
         }
         settings.set(`options.${this.key}`, state);
         this.ui.classList.toggle('inactive', !state);
         return this;
+    }
+
+    enableTool = (iconKey, textToActivate, textToDeactivate) => {
+        this.tool = el.div({
+            events: {
+                click: () => {
+                    this.toggle(!this.isActive());
+                    this.tool.title = this.isActive() ? textToDeactivate : textToActivate;
+                }
+            },
+            attributes: {
+                title: this.isActive() ? textToDeactivate : textToActivate
+            }
+        })
+        this.tool.append(getIcon(iconKey));
     }
 
     /**
@@ -65,7 +84,7 @@ class Widget {
      */
     hasUi = () => {
         return this.ui instanceof HTMLElement;
-    }    
+    }
 
     /**
      * Assign an event to the ui

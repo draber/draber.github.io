@@ -10,7 +10,10 @@ import Plugin from '../modules/plugin.js';
 class SetUp extends Plugin {
 	constructor(app) {
 
-		super(app, 'Set-up');
+		super(app, 'Set-up', {
+            canDeactivate: true,
+            defaultActive: false
+        });
 
 		const pane = el.ul({
 			classNames: ['pane']
@@ -22,7 +25,7 @@ class SetUp extends Plugin {
 		 */
 		const populate = pane => {
 			app.registry.forEach((plugin, key) => {
-				if (!plugin.canDeactivate) {
+				if (!plugin.canDeactivate || plugin.tool) {
 					return false;
 				}
 				const li = el.li();
@@ -51,6 +54,15 @@ class SetUp extends Plugin {
 				}
 			}
 		});
+
+		const _toggle = this.toggle;
+
+		this.toggle = state => {
+			_toggle(state);
+			this.ui.open = this.isActive();
+		}
+        
+        this.enableTool('options', 'Show settings', 'Hide settings');
 
 		this.ui.append(el.summary({
 			text: this.title
