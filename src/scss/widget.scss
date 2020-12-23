@@ -72,6 +72,10 @@
         color: #666
     }
 
+    .sb-toggle-expand {
+        box-shadow: none;
+    }
+
     .sb-progress-marker .sb-progress-value,
     .hive-cell.center .cell-fill {
         background: $yellow;
@@ -117,7 +121,6 @@
 .sba {
     position: absolute;
     width: 160px;
-    background: inherit;
     box-sizing: border-box;
     z-index: 3;
     margin: 16px 0;
@@ -350,4 +353,39 @@
             margin: 0 10px 0 0;
         }
     }
+}
+
+
+// // '(max-width: 350px)',// left: 12px; top: 735px; minimized
+// // '(max-width: 370px)',// left: 12px; top: 735px; minimized
+// // '(max-width: 443.98px)', // left: 12px; top: 654px; minimized
+
+// @media only screen and (max-width: 350px) {
+//     .sba {
+//         left: 12px;
+//         top: 735px;
+//     }
+// }
+
+// @media only screen and (max-width: 370px) {
+//     .sba {
+//         left: 12px;
+//         top: 735px;
+//     }
+// }
+
+// @media only screen and (max-width: 443.98px) {
+//     .sba {
+//         left: 12px;
+//         top: 654px;
+//     }
+// }
+
+@media only screen and (max-width: 991.98px) {
+}
+
+@media only screen and (min-width: 444px) {
+}
+
+@media only screen and (min-width: 768px) {
 }

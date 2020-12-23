@@ -313,15 +313,24 @@
                 oldInstance.dispatchEvent(new Event(prefix$1('destroy')));
             }
             this.registry = new Map();
+            this.toolButtons = new Map();
             this.parent = el.$('.sb-content-box', game);
             const reposition = () => {
                 const oldState = this.isActive();
-                const rect = this.parent.getBoundingClientRect();
+                const appRect = this.ui.getBoundingClientRect();
+                const toolbar = el.$('#portal-game-toolbar');
+                const toolbarRect = toolbar.getBoundingClientRect();
                 let position;
-                position = {
-                    left: '10px',
-                    top: (rect.top + window.pageYOffset) + 'px'
-                };
+                let relRect;
+                if (document.documentElement.clientWidth < 768) {
+                    relRect = el.$('.sb-wordlist-box', this.game).getBoundingClientRect();
+                    toolbar.style.justifyContent = 'left';
+                    position = {
+                        left: relRect.right - appRect.width + 'px',
+                        top: (toolbarRect.top + window.pageYOffset) - 8 + 'px'
+                    };
+                    this.toggle(false);
+                }
                 Object.assign(this.ui.style, position);
             };
             const resultList = el.$('.sb-wordlist-items', game);
@@ -346,33 +355,44 @@
                 for (const [key, plugin] of Object.entries(plugins)) {
                     this.registry.set(key, new plugin(this));
                 }
-                return this;
+                this.trigger(new CustomEvent(prefix$1('pluginsReady'), {
+                    detail: this.registry
+                }));
+                return this.registerTools();
             };
             this.registerTools = () => {
-                const toolbar = el.div({
-                    classNames: ['toolbar']
-                });
                 this.registry.forEach(plugin => {
                     if (plugin.tool) {
-                        toolbar.append(plugin.tool);
+                        this.toolButtons.set(plugin.key, plugin.tool);
                     }
                 });
-                this.enableTool('arrowDown', 'Maximize', 'Minimize');
+                this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
                 this.tool.classList.add('minimizer');
-                toolbar.append(this.tool);
-                this.registry.get('Header').ui.append(toolbar);
-                return this;
+                this.toolButtons.set(this.key, this.tool);
+                return this.trigger(new CustomEvent(prefix$1('toolsReady'), {
+                    detail: this.toolButtons
+                }))
             };
-            el.$('body').append(this.ui);
-            this.appRect = this.ui.getBoundingClientRect();
-            reposition();
+            const observer = new MutationObserver(mutationsList => {
+                mutationsList.forEach(mutation => {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.isEqualNode(this.ui)) {
+                            reposition();
+                        }
+                    });
+                });
+            });
+            observer.observe(document.body, {
+                childList: true
+            });
+            document.body.append(this.ui);
             window.addEventListener('orientationchange', () => {
                 reposition();
             });
         };
     }
 
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-input-invalid{color:#666}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:160px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive [data-ui=footer]{display:none}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:22px;padding:0 15px 0 21px;background:#f8cd05;background:#e6e6e6;cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:-1px}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:2px}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba td{border:1px solid #dcdcdc;border-top:none;white-space:nowrap;text-align:center;padding:4px 2px;width:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba td:first-of-type{text-align:left;width:auto}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td{font-weight:bold}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
+    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-input-invalid{color:#666}.sba-dark .sb-toggle-expand{box-shadow:none}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:160px;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive [data-ui=footer]{display:none}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:22px;padding:0 15px 0 21px;background:#f8cd05;background:#e6e6e6;cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:-1px}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:2px}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba td{border:1px solid #dcdcdc;border-top:none;white-space:nowrap;text-align:center;padding:4px 2px;width:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba td:first-of-type{text-align:left;width:auto}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td{font-weight:bold}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}@media only screen and (max-width: 350px){.sba{left:12px;top:735px}}@media only screen and (max-width: 370px){.sba{left:12px;top:735px}}@media only screen and (max-width: 443.98px){.sba{left:12px;top:654px}}\n";
 
     class Plugin extends Widget {
         target;
@@ -445,8 +465,76 @@
                     classNames: ['header']
                 })
             );
+    		app.on(prefix$1('toolsReady'), evt => {
+                const toolbar = el.div({
+                    classNames: ['toolbar']
+                });
+    			evt.detail.forEach(tool => {
+                    toolbar.append(tool);
+                });
+                this.ui.append(toolbar);
+                return this;
+            });
             this.add();
         }
+    }
+
+    class SetUp extends Plugin {
+    	constructor(app) {
+    		super(app, 'Set-up', {
+    			canDeactivate: true,
+    			defaultActive: false
+    		});
+    		const pane = el.ul({
+    			classNames: ['pane']
+    		});
+    		this.ui = el.details({
+    			events: {
+    				click: evt => {
+    					if (evt.target.tagName === 'INPUT') {
+    						app.registry.get(evt.target.name).toggle(evt.target.checked);
+    					}
+    				},
+    				toggle: evt => {
+    					if (!evt.target.open) {
+    						this.toggle(false);
+    					}
+    				}
+    			}
+    		});
+    		const _toggle = this.toggle;
+    		this.toggle = state => {
+    			_toggle(state);
+    			this.ui.open = this.isActive();
+    		};
+    		this.enableTool('options', 'Show set-up', 'Hide set-up');
+    		app.on(prefix$1('pluginsReady'), evt => {
+    			evt.detail.forEach((plugin, key) => {
+    				if (!plugin.canDeactivate || plugin.tool) {
+    					return false;
+    				}
+    				const li = el.li();
+    				const label = el.label({
+    					text: plugin.title
+    				});
+    				const check = el.input({
+    					attributes: {
+    						type: 'checkbox',
+    						name: key,
+    						checked: plugin.isActive()
+    					}
+    				});
+    				label.prepend(check);
+    				li.append(label);
+    				pane.append(li);
+    			});
+    		});
+    		this.ui.append(el.summary({
+    			text: this.title
+    		}), pane);
+    		this.toggle(false);
+    		this.add();
+    	}
     }
 
     const refresh = (data, table) => {
@@ -702,59 +790,6 @@
     	}
     }
 
-    class SetUp extends Plugin {
-    	constructor(app) {
-    		super(app, 'Set-up', {
-                canDeactivate: true,
-                defaultActive: false
-            });
-    		const pane = el.ul({
-    			classNames: ['pane']
-    		});
-    		const populate = pane => {
-    			app.registry.forEach((plugin, key) => {
-    				if (!plugin.canDeactivate || plugin.tool) {
-    					return false;
-    				}
-    				const li = el.li();
-    				const label = el.label({
-    					text: plugin.title
-    				});
-    				const check = el.input({
-    					attributes: {
-    						type: 'checkbox',
-    						name: key,
-    						checked: plugin.isActive()
-    					}
-    				});
-    				label.prepend(check);
-    				li.append(label);
-    				pane.append(li);
-    			});
-    		};
-    		this.ui = el.details({
-    			events: {
-    				click: evt => {
-    					if (evt.target.tagName === 'INPUT') {
-    						app.registry.get(evt.target.name).toggle(evt.target.checked);
-    					}
-    				}
-    			}
-    		});
-    		const _toggle = this.toggle;
-    		this.toggle = state => {
-    			_toggle(state);
-    			this.ui.open = this.isActive();
-    		};
-            this.enableTool('options', 'Show settings', 'Hide settings');
-    		this.ui.append(el.summary({
-    			text: this.title
-    		}), pane);
-    		populate(pane);
-    		this.add();
-    	}
-    }
-
     class Footer extends Plugin {
         constructor(app) {
             super(app, `${settings$1.get('label')} ${settings$1.get('version')}`, {
@@ -775,15 +810,15 @@
          Styles,
          DarkMode,
          Header,
+         SetUp,
          ScoreSoFar,
          Spoilers,
          SpillTheBeans,
          StepsToSuccess,
          Surrender,
-         SetUp,
          Footer
     };
 
-    (new App(el.$('#pz-game-root'))).registerPlugins(plugins).registerTools();
+    (new App(el.$('#pz-game-root'))).registerPlugins(plugins);
 
 }());

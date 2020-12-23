@@ -8,9 +8,9 @@ import {
 
 const getEntryCoords = () => {
     const breakPoints = [
-        '(max-width: 350px)',
-        '(max-width: 370px)',
-        '(max-width: 443.98px)',
+        '(max-width: 350px)', // left: 12px; top: 735px; minimized
+        '(max-width: 370px)', // left: 12px; top: 735px; minimized
+        '(max-width: 443.98px)', // left: 12px; top: 654px; minimized
         '(max-width: 991.98px)',
         '(min-width: 444px)',
         '(min-width: 768px)'
@@ -48,6 +48,7 @@ class App extends Widget {
         }
 
         this.registry = new Map();
+        this.toolButtons = new Map();
 
         this.parent = el.$('.sb-content-box', game);
 
@@ -56,26 +57,20 @@ class App extends Widget {
          */
         const reposition = () => {
             const oldState = this.isActive();
-            const rect = this.parent.getBoundingClientRect();
+            const appRect = this.ui.getBoundingClientRect();
+            const toolbar = el.$('#portal-game-toolbar');
+            const toolbarRect = toolbar.getBoundingClientRect();
             let position;
-            position = {
-                left: '10px',
-                top: (rect.top + window.pageYOffset) + 'px'
+            let relRect
+            if (document.documentElement.clientWidth < 768) {
+                relRect = el.$('.sb-wordlist-box', this.game).getBoundingClientRect();
+                toolbar.style.justifyContent = 'left';
+                position = {
+                    left: relRect.right - appRect.width + 'px',
+                    top: (toolbarRect.top + window.pageYOffset) - 8 + 'px'
+                }
+                this.toggle(false);
             }
-            // if(document.documentElement.clientWidth < this.appRect.left + this.appRect.width){
-            //     this.toggle(false);
-            //     position = {
-            //         left: (rect.left + 200) + 'px',
-            //         top: (rect.top + window.pageYOffset) + 'px'
-            //     }
-            // }
-            // else {
-            //     this.toggle(oldState);
-            //     position = {
-            //         left: (rect.right + 10) + 'px',
-            //         top: (rect.top + window.pageYOffset) + 'px'
-            //     }
-            // }
             Object.assign(this.ui.style, position);
         }
 
@@ -105,34 +100,46 @@ class App extends Widget {
             for (const [key, plugin] of Object.entries(plugins)) {
                 this.registry.set(key, new plugin(this));
             }
-            return this;
+            this.trigger(new CustomEvent(prefix('pluginsReady'), {
+                detail: this.registry
+            }))
+            return this.registerTools();
         }
 
         this.registerTools = () => {
-            const toolbar = el.div({
-                classNames: ['toolbar']
-            })
             this.registry.forEach(plugin => {
                 if (plugin.tool) {
-                    toolbar.append(plugin.tool)
+                    this.toolButtons.set(plugin.key, plugin.tool);
                 }
             })
-            this.enableTool('arrowDown', 'Maximize', 'Minimize');
+            this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
             this.tool.classList.add('minimizer');
-            toolbar.append(this.tool);
-            this.registry.get('Header').ui.append(toolbar)
-            return this;
+            this.toolButtons.set(this.key, this.tool);
+            return this.trigger(new CustomEvent(prefix('toolsReady'), {
+                detail: this.toolButtons
+            }))
         }
 
-        el.$('body').append(this.ui);
+        const observer = new MutationObserver(mutationsList => {
+            mutationsList.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    if (node.isEqualNode(this.ui)) {
+                        reposition();
+                    }
+                })
+            });
 
-        this.appRect = this.ui.getBoundingClientRect();
-        reposition();
+        })
+
+        observer.observe(document.body, {
+            childList: true
+        });
+
+        document.body.append(this.ui);
 
         window.addEventListener('orientationchange', () => {
             reposition();
         })
-        //getEntryCoords();
     };
 }
 
