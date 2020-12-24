@@ -1,5 +1,9 @@
 @import './inc/colors';
 
+#pz-game-root .sb-content-box {
+    position: relative;
+}
+
 .pz-game-field {
     background: inherit;
     color: inherit;
@@ -118,9 +122,14 @@
 
 }
 
+$appWidth: 160;
+$sideGap: 12;
+
 .sba {
     position: absolute;
-    width: 160px;
+    left: 100%;
+    top: 48px;    
+    width: $appWidth * 1px;
     box-sizing: border-box;
     z-index: 3;
     margin: 16px 0;
@@ -355,37 +364,61 @@
     }
 }
 
+@media (max-width: 1444px) {
+    .sba {
+        top: -8px;
+        left: -77px;
+    }
+}
+
+@media (max-width: 1266px) {
+    .sba {
+        top: -8px;
+        left: -42px;
+    }
+}
+
+@media (max-width: 1197px) {
+    .sba {
+        top: -8px;
+        left: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sba {
+        top: 94px;
+    }
+}
+
 
 // // '(max-width: 350px)',// left: 12px; top: 735px; minimized
 // // '(max-width: 370px)',// left: 12px; top: 735px; minimized
 // // '(max-width: 443.98px)', // left: 12px; top: 654px; minimized
 
-// @media only screen and (max-width: 350px) {
+// @media (max-width: 350px) {
 //     .sba {
 //         left: 12px;
 //         top: 735px;
 //     }
 // }
 
-// @media only screen and (max-width: 370px) {
+// @media (max-width: 370px) {
 //     .sba {
 //         left: 12px;
 //         top: 735px;
 //     }
 // }
 
-// @media only screen and (max-width: 443.98px) {
+// @media (max-width: 443.98px) {
 //     .sba {
 //         left: 12px;
 //         top: 654px;
 //     }
 // }
 
-@media only screen and (max-width: 991.98px) {
+@media (max-width: 991.98px) {
 }
 
-@media only screen and (min-width: 444px) {
-}
-
-@media only screen and (min-width: 768px) {
+@media (min-width: 444px) {
 }

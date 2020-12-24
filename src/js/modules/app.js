@@ -6,24 +6,6 @@ import {
     prefix
 } from './string.js';
 
-const getEntryCoords = () => {
-    const breakPoints = [
-        '(max-width: 350px)', // left: 12px; top: 735px; minimized
-        '(max-width: 370px)', // left: 12px; top: 735px; minimized
-        '(max-width: 443.98px)', // left: 12px; top: 654px; minimized
-        '(max-width: 991.98px)',
-        '(min-width: 444px)',
-        '(min-width: 768px)'
-    ]
-
-    breakPoints.forEach(point => {
-        if (window.matchMedia(point)) {
-            console.loh(point)
-        }
-    })
-}
-
-
 
 /**
  * App container
@@ -51,28 +33,6 @@ class App extends Widget {
         this.toolButtons = new Map();
 
         this.parent = el.$('.sb-content-box', game);
-
-        /**
-         * Reposition app on load , window.resize, window.orientationchange
-         */
-        const reposition = () => {
-            const oldState = this.isActive();
-            const appRect = this.ui.getBoundingClientRect();
-            const toolbar = el.$('#portal-game-toolbar');
-            const toolbarRect = toolbar.getBoundingClientRect();
-            let position;
-            let relRect
-            if (document.documentElement.clientWidth < 768) {
-                relRect = el.$('.sb-wordlist-box', this.game).getBoundingClientRect();
-                toolbar.style.justifyContent = 'left';
-                position = {
-                    left: relRect.right - appRect.width + 'px',
-                    top: (toolbarRect.top + window.pageYOffset) - 8 + 'px'
-                }
-                this.toggle(false);
-            }
-            Object.assign(this.ui.style, position);
-        }
 
         const resultList = el.$('.sb-wordlist-items', game);
         const events = {};
@@ -120,26 +80,17 @@ class App extends Widget {
             }))
         }
 
-        const observer = new MutationObserver(mutationsList => {
-            mutationsList.forEach(mutation => {
-                mutation.addedNodes.forEach(node => {
-                    if (node.isEqualNode(this.ui)) {
-                        reposition();
-                    }
-                })
-            });
+        // minimize on smaller screens
+        const mql = window.matchMedia('(max-width: 1196.98px)');
+        mql.addEventListener('change', evt => this.toggle(!evt.matches));
+        mql.dispatchEvent(new Event('change'));
 
+        const wordlistToggle = el.$('.sb-toggle-icon');
+        el.$('.sb-toggle-expand').addEventListener('click', evt => {
+            this.ui.style.display = wordlistToggle.classList.contains('sb-toggle-icon-expanded') ? 'none' : 'block';
         })
 
-        observer.observe(document.body, {
-            childList: true
-        });
-
-        document.body.append(this.ui);
-
-        window.addEventListener('orientationchange', () => {
-            reposition();
-        })
+        this.parent.append(this.ui);
     };
 }
 

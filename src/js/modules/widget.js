@@ -76,6 +76,7 @@ class Widget {
             }
         })
         this.tool.append(getIcon(iconKey));
+        return this;
     }
 
     /**

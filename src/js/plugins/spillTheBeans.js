@@ -36,7 +36,7 @@ class SpillTheBeans extends Plugin {
             classNames: ['pane']
         });
         pane.append(el.div({
-            text: 'Watch me while you type!',
+            text: 'Watch my reaction!',
             classNames: ['spill-title']
         }));
         const reaction = el.div({
