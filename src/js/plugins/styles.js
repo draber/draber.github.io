@@ -1,15 +1,15 @@
 import el from '../modules/element.js';
 import { prefix } from '../modules/string.js';
 import css from '../../css/widget.css';
-import plugin from '../modules/plugin.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Styles plugin
  * 
- * @param {app} app
- * @returns {plugin} styles
+ * @param {App} app
+ * @returns {Plugin} Styles
  */
-class styles extends plugin {
+class Styles extends Plugin {
     constructor(app) {
 
         super(app, 'Styles');
@@ -27,4 +27,4 @@ class styles extends plugin {
     }
 }
 
-export default styles;
+export default Styles;

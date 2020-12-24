@@ -1,5 +1,5 @@
 import el from './modules/element.js';
-import app from './modules/app.js';
+import App from './modules/app.js';
 import plugins from './modules/importer.js';
 
-(new app(el.$('#pz-game-root'))).registerPlugins(plugins);
+(new App(el.$('#pz-game-root'))).registerPlugins(plugins);

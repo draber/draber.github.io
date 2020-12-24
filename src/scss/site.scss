@@ -14,33 +14,11 @@ html {
     box-sizing: inherit;
 }
 
-
-@keyframes fadeIn {
-    0% {
-        opacity: 0
-    }
-
-    100% {
-        opacity: 1
-    }
-}
-
-@keyframes fadeOut {
-    0% {
-        opacity: 1
-    }
-
-    100% {
-        opacity: 0
-    }
-}
-
 body {
     margin: 0;
     font-size: 1.6rem;
     line-height: 1.6;
-    // @see https://css-tricks.com/snippets/css/system-font-stack/
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    font-family: 'Open Sans', sans-serif;
 }
 
 main {
@@ -61,11 +39,18 @@ h3 {
     margin: 1.5rem 0 .8rem
 }
 
-
 p,
 ul,
 ol {
     margin: 0 0 1rem;
+}
+
+.rgt {
+    text-align: right;
+}
+
+:target {
+    scroll-margin-top: 120px;
 }
 
 a {
@@ -81,8 +66,11 @@ a {
     }
 }
 
-strong {
+.emoji {
     font-weight: bolder;
+    font-size: 1.6rem;
+    // @see https://css-tricks.com/snippets/css/system-font-stack/
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
 img {
@@ -130,7 +118,7 @@ header {
     top: -.5rem
 }
 
-.dark-mode {
+[data-theme="dark"] {
     background: $bg;
     color: rgba($txt, .85);
 
@@ -143,22 +131,18 @@ header {
         background: $cellBg;
     }
 
-
     .img-box {
-        background: $bg;
+        background-color: $bg;
     }
 
     .github {
         img {
-            filter: invert(1)
+            filter: invert(100%)
         }
     }
 
     img {
-
-        &.light {
-            animation: fadeOut ease .5s forwards;
-        }
+        opacity: 0;
     }
 
     a {
@@ -166,7 +150,6 @@ header {
 
         &:hover {
             color: #8dc6f8;
-
         }
     }
 
@@ -174,12 +157,10 @@ header {
         border-color: #333 !important
     }
 
-
     .hive-box {
         .cells {
             path:not(.center) {
                 fill: $cellBg;
-
             }
         }
 
@@ -191,10 +172,9 @@ header {
     }
 }
 
-
 .wrapper {
     margin: 0 auto;
-    max-width: 1024px;
+    max-width: 102.4rem;
     padding: 0 2rem;
     position: relative;
 }
@@ -202,60 +182,117 @@ header {
 .intro {
     display: flex;
     align-items: flex-start;
-    padding-top: 40px;
+    padding-top: 4rem;
 
     .intro-text {
         flex-grow: 2;
-        margin-right: 20px;
+        margin-right: 2rem;
     }
 
     .img-box {
         margin: 0;
-    }
+        background-position-y: 1.5rem;
 
-    .installer {
-        min-width: 200px;
-        height: 276px;
-        padding-top: 1.5rem;
-
-        a {
-            &:hover {
-                box-shadow: 0 0 1.5rem .8rem rgba($colorHighlight, .35);
-            }
-
-            &:focus {
-                box-shadow: 0 0 1.5rem .8rem rgba($colorHighlight, .7);
-            }
+        img {
+            margin-top: 0;
         }
     }
 
+
+    .installer {
+        min-width: 20rem;
+        height: 27.6rem;
+        padding-top: 1.5rem;
+
+        &:hover {
+            box-shadow: 0 0 1.5rem .8rem rgba($colorHighlight, .35);
+        }
+
+        &:focus {
+            box-shadow: 0 0 1.5rem .8rem rgba($colorHighlight, .7);
+        }
+    }
 
     .bookmarklet {
         cursor: move;
     }
 }
 
+.extras {
+    .img-box {
+        float: none;
+        display: inline-block;
+    }
+}
 
+section {
+    &:after {
+        content: '';
+        clear: left;
+        display: block;
+    }
+}
 
-figure {
+.img-box {
     margin: 0;
+    float: left;
+    position: relative;
+    margin: .5rem 2rem .3rem 0;
+
+    border: {
+        width: .1rem;
+        color: $colorBorder;
+        style: solid;
+        radius: .8rem;
+    }
+
+    background: {
+        repeat: no-repeat;
+        position: center 1rem;
+        color: white;
+    }
+
+    img {
+        display: block;
+        margin: 1rem;
+    }
 
     &.hive-box {
         shape-outside: circle(55% at 42% 44%);
         padding: 1.5rem 4rem 4rem 0;
         float: left;
+        position: static;
+        border: none;
     }
 
     svg {
-        width: 200px;
+        width: 20rem;
     }
 
-    figcaption {
-        font-size: 1.2rem;
-        text-align: center;
+    $features: assistant-closed,
+    bookmarklet,
+    dark-mode,
+    header,
+    pangram-underline,
+    score-so-far,
+    set-up,
+    spill-the-beans,
+    spoilers,
+    steps-to-success,
+    surrender;
+
+    @each $feature in $features {
+        &.#{$feature} {
+            background-image: url(../img/#{$feature}-dark.png)
+        }
     }
+
 }
 
+figcaption {
+    font-size: 1.2rem;
+    padding: 0 0 .6rem 1.5rem;
+}
 
 .help {
     cursor: help;
@@ -263,42 +300,10 @@ figure {
 
 $cardMargin: 2rem;
 
-.img-box {
-    float: left;
-    position: relative;
-    margin: .5rem 2rem .3rem 0;
-    background: white;
-
-    border: {
-        width: 1px;
-        color: $colorBorder;
-        style: solid;
-        radius: .8rem;
-    }
-
-    img {
-        display: block;
-        margin: 1rem;
-
-        &.light {
-            animation: fadeIn ease .5s forwards;
-            position: relative;
-            z-index: 1;
-        }
-
-        &.dark {
-            position: absolute;
-            left: 0;
-            top: 0;
-            z-index: 0;
-        }
-    }
-
-}
 
 .card {
     border: {
-        width: 1px;
+        width: .1rem;
         color: #eee;
         style: solid;
         radius: .9rem
@@ -313,14 +318,12 @@ $cardMargin: 2rem;
         clear: left;
         display: block;
     }
-
-
 }
 
 .card-listing {
     display: grid;
     justify-content: space-between;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     column-gap: $cardMargin;
     position: relative;
     overflow: hidden;
@@ -328,9 +331,8 @@ $cardMargin: 2rem;
     line-height: 1.5;
 
     h3 {
-        position: absolute;
-        left: -100rem;
-        top: -100rem;
+        margin-top: 0;
+        font-size: 1.5rem;
     }
 }
 
@@ -349,8 +351,39 @@ ul {
     margin: 0;
 }
 
-@media screen and (max-width: 1024px) {
-    .cards {
+.mobile-only {
+    display: none;
+}
+
+@media screen and (max-width: 830px) {
+    .card-listing {
+        display: block
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .mobile-only {
         display: block;
+    }
+
+    .desktop-only {
+        display: none;
+    }
+
+    h1 {
+        font-size: 2.2rem;
+    }
+
+    .intro {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 400px) {
+
+    .img-box {
+        float: none;
+        display: inline-block;
+        margin-bottom: 1.5rem
     }
 }

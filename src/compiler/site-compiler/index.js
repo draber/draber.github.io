@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const md = require('markdown-it')({
-  html: true
-});
+const minimist = require('minimist');
+
+const args = minimist(process.argv.slice(2));
 
 const packageJson = require(__dirname + '/../../../package.json');
 const configJs = require(__dirname + '/../../config/config.json');
 const config = Object.assign(packageJson, configJs);
+
+
 
 const getContents = path => {
   return fs.readFileSync(path, 'utf8', (err, data) => {
@@ -39,33 +41,43 @@ const writeHtml = (replacements = {}, inPath, outPath) => {
 const bmCode = () => {
   let code = getContents(`${process.cwd()}/dist/spelling-bee-assistant.min.js`);
   code = `(function(){${code}})()`;
-  code = `javascript:${encodeURIComponent(code)}`;
-  return `<a class="bookmarklet" onclick="return false" href="${code}">${config.label}</a>`;
+  return `javascript:${encodeURIComponent(code)}`;
 };
 
-const siteJsCode = () => {
-  const code = getContents(`${process.cwd()}/src/js/site.js`);
-  return code;
+const build = () => {
+  writeHtml({
+      ...config,
+      ...{
+        bookmarklet: bmCode()
+      }
+    },
+    `${process.cwd()}/${config.htmlIn}`,
+    `${process.cwd()}/${config.htmlOut}`
+  );
+
+  console.log('\x1b[32m%s\x1b[0m', `Compiled ${config.htmlIn} to ${config.htmlOut}`);
 }
 
-const cssCode = () => {
-  const path = `${process.cwd()}/src/css`;
-  let code = '';
-  ['site', 'widget'].forEach(type => {
-    code += getContents(`${path}/${type}.css`).trim().replace(/(\uFEFF|\\n)/gu, '');
-  })
-  return code;
-}
-
-const compile = writeHtml({
-    ...config,
-    ...{
-      css: cssCode(),
-      bookmarklet: bmCode()
+const watch = () => {
+  let fsWait = false;
+  fs.watchFile(`${process.cwd()}/${config.htmlIn}`, (event, filename) => {
+    if (filename) {
+      if (fsWait) return;
+      fsWait = setTimeout(() => {
+        fsWait = false;
+      }, 100);
+      build();
     }
-  },
-  `${process.cwd()}/${config.htmlIn}`,
-  `${process.cwd()}/${config.htmlOut}`
-);
+  });
+}
 
-module.exports = compile;
+const defaultExport = (() => {
+  if (args.w) {
+    console.log(`Watching ${config.htmlIn} for changes`);
+    watch();
+  } else {
+    build();
+  }
+})();
+
+module.exports = defaultExport;

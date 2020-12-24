@@ -16,16 +16,17 @@
         style = {},
         data = {},
         events = {},
-        classNames = []
+        classNames = [],
+        svg
     } = {}) {
-        const el = document.createElement(tag);
-        for (const [key, value] of Object.entries({
-                ...{
-                    textContent: text
-                },
-                ...attributes
-            })) {
-            el[key] = value;
+        const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
+        el.textContent = text;
+        for (const [key, value] of Object.entries(attributes)) {
+            if (svg) {
+                el.setAttributeNS(null, key, value);
+            } else {
+                el[key] = value;
+            }
         }
         for (const [key, value] of Object.entries(data)) {
             el.dataset[key] = value;
@@ -182,7 +183,7 @@
     const init = (app, resultList) => {
         lists = initLists();
         updateLists(app, resultList);
-        app.on(prefix$1('newWord'), (evt) => updateLists(app, resultList));
+        app.on(prefix$1('newWord'), () => updateLists(app, resultList));
     };
     var data = {
         init,
@@ -191,10 +192,87 @@
         getPoints
     };
 
-    class widget {
+    const icons = {
+        options: {
+            children: {
+                path: 'M16 14c0-2.203-1.797-4-4-4s-4 1.797-4 4 1.797 4 4 4 4-1.797 4-4zm8-1.703v3.469c0 .234-.187.516-.438.562l-2.891.438a8.86 8.86 0 01-.609 1.422c.531.766 1.094 1.453 1.672 2.156.094.109.156.25.156.391s-.047.25-.141.359c-.375.5-2.484 2.797-3.016 2.797a.795.795 0 01-.406-.141l-2.156-1.687a9.449 9.449 0 01-1.422.594c-.109.953-.203 1.969-.453 2.906a.573.573 0 01-.562.438h-3.469c-.281 0-.531-.203-.562-.469l-.438-2.875a9.194 9.194 0 01-1.406-.578l-2.203 1.672c-.109.094-.25.141-.391.141s-.281-.063-.391-.172c-.828-.75-1.922-1.719-2.578-2.625a.607.607 0 01.016-.718c.531-.719 1.109-1.406 1.641-2.141a8.324 8.324 0 01-.641-1.547l-2.859-.422A.57.57 0 010 15.705v-3.469c0-.234.187-.516.422-.562l2.906-.438c.156-.5.359-.969.609-1.437a37.64 37.64 0 00-1.672-2.156c-.094-.109-.156-.234-.156-.375s.063-.25.141-.359c.375-.516 2.484-2.797 3.016-2.797.141 0 .281.063.406.156L7.828 5.94a9.449 9.449 0 011.422-.594c.109-.953.203-1.969.453-2.906a.573.573 0 01.562-.438h3.469c.281 0 .531.203.562.469l.438 2.875c.484.156.953.344 1.406.578l2.219-1.672c.094-.094.234-.141.375-.141s.281.063.391.156c.828.766 1.922 1.734 2.578 2.656a.534.534 0 01.109.344c0 .141-.047.25-.125.359-.531.719-1.109 1.406-1.641 2.141.266.5.484 1.016.641 1.531l2.859.438a.57.57 0 01.453.562z'
+            },
+            width: 24,
+            height: 28
+        },
+        arrowDown: {
+            children: {
+                path: 'M16.797 11.5a.54.54 0 01-.156.359L9.36 19.14c-.094.094-.234.156-.359.156s-.266-.063-.359-.156l-7.281-7.281c-.094-.094-.156-.234-.156-.359s.063-.266.156-.359l.781-.781a.508.508 0 01.359-.156.54.54 0 01.359.156l6.141 6.141 6.141-6.141c.094-.094.234-.156.359-.156s.266.063.359.156l.781.781a.536.536 0 01.156.359z'
+            },
+            width: 18,
+            height: 28
+        },
+        darkMode: {
+            children: {
+                path: 'M12.018 1.982A12.018 12.018 0 000 14a12.018 12.018 0 0012.018 12.018A12.018 12.018 0 0024.036 14 12.018 12.018 0 0012.018 1.982zm0 3.293A8.725 8.725 0 0120.743 14a8.725 8.725 0 01-8.725 8.725z'
+            },
+            width: 24,
+            height: 28
+        }
+    };
+    const getIcon = key => {
+        if (!icons[key]) {
+            console.error(`Icon ${key} doesn't exist`);
+            return false;
+        }
+        const icon = icons[key];
+        const svg = el.svg({
+            attributes: {
+                ...{
+                    viewBox: `0 0 ${icon.width} ${icon.height}`
+                }
+            },
+            svg: true
+        });
+        for (const [type, d] of Object.entries(icon.children)) {
+            svg.append(el[type]({
+                attributes: {
+                    d
+                },
+                svg: true
+            }));
+        }
+        return svg;
+    };
+
+    class Widget {
+        defaultActive = true;
         ui;
         title;
         key;
+        canDeactivate = false;
+        isActive = () => {
+            const stored = settings$1.get(`options.${this.key}`);
+            return typeof stored !== 'undefined' ? stored : this.defaultActive;
+        }
+        toggle = state => {
+            if (!this.canDeactivate) {
+                return this;
+            }
+            settings$1.set(`options.${this.key}`, state);
+            this.ui.classList.toggle('inactive', !state);
+            return this;
+        }
+        enableTool = (iconKey, textToActivate, textToDeactivate) => {
+            this.tool = el.div({
+                events: {
+                    click: () => {
+                        this.toggle(!this.isActive());
+                        this.tool.title = this.isActive() ? textToDeactivate : textToActivate;
+                    }
+                },
+                attributes: {
+                    title: this.isActive() ? textToDeactivate : textToActivate
+                }
+            });
+            this.tool.append(getIcon(iconKey));
+            return this;
+        }
         hasUi = () => {
             return this.ui instanceof HTMLElement;
         }
@@ -207,30 +285,37 @@
             return this;
         }
         constructor(title, {
-            key
+            key,
+            canDeactivate,
+            defaultActive
         } = {}) {
             if (!title) {
                 throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
             }
             this.title = title;
             this.key = key || camel(title);
+            this.canDeactivate = typeof canDeactivate !== 'undefined' ? canDeactivate : this.canDeactivate;
+            this.defaultActive = typeof defaultActive !== 'undefined' ? defaultActive : this.defaultActive;
         }
     }
 
-    class app extends widget {
+    class App extends Widget {
         constructor(game) {
             if (!game || !window.gameData) {
                 console.info(`This bookmarklet only works on ${settings$1.get('targetUrl')}`);
                 return false;
             }
-            super(settings$1.get('label'));
+            super(settings$1.get('label'), {
+                canDeactivate: true
+            });
             this.game = game;
             const oldInstance = el.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
                 oldInstance.dispatchEvent(new Event(prefix$1('destroy')));
             }
             this.registry = new Map();
-            const rect = el.$('.sb-content-box', game).getBoundingClientRect();
+            this.toolButtons = new Map();
+            this.parent = el.$('.sb-content-box', game);
             const resultList = el.$('.sb-wordlist-items', game);
             const events = {};
             events[prefix$1('destroy')] = () => {
@@ -238,13 +323,6 @@
                 this.ui.remove();
             };
             this.ui = el.div({
-                attributes: {
-                    draggable: true
-                },
-                style: {
-                    left: (rect.right + 10) + 'px',
-                    top: (rect.top + window.pageYOffset) + 'px',
-                },
                 data: {
                     id: this.key
                 },
@@ -252,193 +330,217 @@
                 events: events
             });
             data.init(this, resultList);
-            this.observer = new MutationObserver(() => {
-                this.trigger(new Event(prefix$1('newWord')));
-            });
+            this.observer = new MutationObserver(() => this.trigger(new Event(prefix$1('newWord'))));
             this.observer.observe(resultList, {
                 childList: true
             });
-            this.registerPlugins = (plugins) => {
+            this.registerPlugins = plugins => {
                 for (const [key, plugin] of Object.entries(plugins)) {
                     this.registry.set(key, new plugin(this));
                 }
+                this.trigger(new CustomEvent(prefix$1('pluginsReady'), {
+                    detail: this.registry
+                }));
+                return this.registerTools();
             };
-            this.toggle = () => {
-                this.ui.classList.toggle('minimized');
-                return this;
+            this.registerTools = () => {
+                this.registry.forEach(plugin => {
+                    if (plugin.tool) {
+                        this.toolButtons.set(plugin.key, plugin.tool);
+                    }
+                });
+                this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
+                this.tool.classList.add('minimizer');
+                this.toolButtons.set(this.key, this.tool);
+                return this.trigger(new CustomEvent(prefix$1('toolsReady'), {
+                    detail: this.toolButtons
+                }))
             };
-            el.$('body').append(this.ui);
+            const mql = window.matchMedia('(max-width: 1196.98px)');
+            mql.addEventListener('change', evt => this.toggle(!evt.matches));
+            mql.dispatchEvent(new Event('change'));
+            const wordlistToggle = el.$('.sb-toggle-icon');
+            el.$('.sb-toggle-expand').addEventListener('click', evt => {
+                this.ui.style.display = wordlistToggle.classList.contains('sb-toggle-icon-expanded') ? 'none' : 'block';
+            });
+            this.parent.append(this.ui);
         };
     }
 
-    class plugin extends widget {
-        defaultEnabled = true;
-        optional = false;
+    var css = "﻿#pz-game-root .sb-content-box{position:relative}.sb-wordlist-box{background-color:#fff}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-input-invalid{color:#666}.sba-dark .sb-toggle-expand{box-shadow:none}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;left:100%;top:48px;width:160px;box-sizing:border-box;z-index:0;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive [data-ui=footer]{display:none}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:22px;padding:0 15px 0 21px;background:#f8cd05;background:#e6e6e6;cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:-1px}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:2px}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba td{border:1px solid #dcdcdc;border-top:none;white-space:nowrap;text-align:center;padding:4px 2px;width:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba td:first-of-type{text-align:left;width:auto}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td{font-weight:bold}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}@media(max-width: 1444px){.sba{top:-8px;left:-77px}}@media(max-width: 1266px){.sba{top:-8px;left:-42px}}@media(max-width: 1197px){.sba{top:-8px;left:12px}}@media(max-width: 768px){.sba{top:94px}}\n";
+
+    class Plugin extends Widget {
         target;
         app;
-        isEnabled = () => {
-            const stored = settings$1.get(`options.${this.key}`);
-            return typeof stored !== 'undefined' ? stored : this.defaultEnabled;
-        }
-        toggle = state => {
-            if(!this.optional) {
-                return this;
-            }
-            settings$1.set(`options.${this.key}`, state);
-            this.ui.classList.toggle('inactive', !state);
-            return this;
-        }
         attach = () => {
             if (!this.hasUi()) {
                 return this;
             }
             this.ui.dataset.ui = this.key;
-            this.toggle(this.isEnabled());
+            this.toggle(this.isActive());
             (this.target || this.app.ui).append(this.ui);
             return this;
         }
         add = () => {
-            if (this.optional) {
-                settings$1.set(`options.${this.key}`, this.isEnabled());
+            if (this.canDeactivate) {
+                settings$1.set(`options.${this.key}`, this.isActive());
             }
             return this.attach();
         }
         constructor(app, title, {
             key,
-            optional,
-            defaultEnabled
+            canDeactivate,
+            defaultActive
         } = {}) {
             if (!app || !title) {
                 throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
             }
-            super(title, {key});
+            super(title, { key, canDeactivate, defaultActive });
             this.app = app;
-            this.optional = typeof optional !== 'undefined' ? optional : this.optional;
-            this.defaultEnabled = typeof defaultEnabled !== 'undefined' ? defaultEnabled : this.defaultEnabled;
         }
     }
 
-    class darkMode extends plugin {
+    class Styles extends Plugin {
+        constructor(app) {
+            super(app, 'Styles');
+            this.target = el.$('head');
+            this.ui = el.style({
+                text: css.replace(/(\uFEFF|\\n)/gu, '')
+            });
+            app.on(prefix$1('destroy'), () => this.ui.remove());
+            this.add();
+        }
+    }
+
+    class DarkMode extends Plugin {
         constructor(app) {
             super(app, 'Dark Mode', {
-                optional: true,
-                defaultEnabled: false
+                canDeactivate: true,
+                defaultActive: false
             });
-            const bodyClass = prefix$1('dark', 'd');
             this.toggle = state => {
                 settings$1.set(`options.${this.key}`, state);
-                el.$('body').classList.toggle(bodyClass, state);
+                el.$('body').classList.toggle(prefix$1('dark', 'd'), state);
                 return this;
             };
-            this.toggle(this.isEnabled());
+            this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
+            this.toggle(this.isActive());
             this.add();
         }
     }
 
-    class footer extends plugin {
-        constructor(app) {
-            super(app, `${settings$1.get('label')} ${settings$1.get('version')}`, {
-                key: 'footer'
-            });
-            this.ui = el.a({
-                text: this.title,
-                attributes: {
-                    href: settings$1.get('url'),
-                    target: '_blank'
-                }
-            });
-            this.add();
-        }
-    }
-
-    class header extends plugin {
+    class Header extends Plugin {
         constructor(app) {
             super(app, settings$1.get('title'), {
                 key: 'header'
             });
             this.ui = el.div();
-            let params;
-            let isLastTarget = false;
-            const getDragParams = (evt) => {
-                const gRect = app.game.getBoundingClientRect();
-                const aRect = evt.target.getBoundingClientRect();
-                const minT = gRect.top + window.pageYOffset;
-                const pRect = this.ui.parentElement.getBoundingClientRect();
-                const gAvailH = gRect.height - (gRect.top - aRect.top) - (aRect.top - pRect.top) - pRect.height;
-                return {
-                    maxL: document.documentElement.clientWidth - aRect.width,
-                    minT: minT,
-                    maxT: minT + gAvailH,
-                    offX: evt.screenX - aRect.x,
-                    offY: evt.screenY - aRect.y,
-                    margT: parseInt(getComputedStyle(evt.target).marginTop, 10)
-                };
-            };
-            const getDropPosition = evt => {
-                let left = Math.max(0, (evt.screenX - params.offX));
-                left = Math.min(left, (params.maxL)) + 'px';
-                let top = Math.max(params.minT, (evt.screenY + window.pageYOffset - params.margT - params.offY));
-                top = Math.min(top, params.maxT) + 'px';
-                return {
-                    left,
-                    top
-                };
-            };
-            const makeDraggable = () => {
-                [app.ui, app.game].forEach(element => {
-                    element.addEventListener('dragover', evt => evt.preventDefault());
-                });
-                app.on('dragstart', evt => {
-                    if (!isLastTarget) {
-                        evt.preventDefault();
-                        return false;
-                    }
-                    evt.target.style.opacity = '.2';
-                    params = getDragParams(evt);
-                }, false);
-                app.on('dragend', evt => {
-                    Object.assign(evt.target.style, getDropPosition(evt));
-                    evt.target.style.opacity = '1';
-                });
-            };
             this.ui.append(el.div({
-                text: this.title,
-                attributes: {
-                    title: 'Hold the mouse down to drag'
-                },
-                classNames: ['dragger']
-            }), el.span({
-                attributes: {
-                    title: 'Minimize'
-                },
-                classNames: ['minimizer'],
-                events: {
-                    click: () => app.toggle()
-                }
-            }), el.span({
-                text: '×',
-                attributes: {
-                    title: 'Close'
-                },
-                classNames: ['closer'],
-                events: {
-                    click: () => app.trigger(new Event(prefix$1('destroy')))
-                }
-            }));
-            app.on('pointerdown', evt => {
-                isLastTarget = !!evt.target.closest(`[data-plugin="${this.key}"]`);
-            }).on('pointerup', () => {
-                isLastTarget = false;
+                    text: this.title,
+                    classNames: ['header']
+                })
+            );
+    		app.on(prefix$1('toolsReady'), evt => {
+                const toolbar = el.div({
+                    classNames: ['toolbar']
+                });
+    			evt.detail.forEach(tool => {
+                    toolbar.append(tool);
+                });
+                this.ui.append(toolbar);
+                return this;
             });
-            makeDraggable();
             this.add();
         }
     }
 
-    const update = (tbody) => {
-        tbody.innerHTML = '';
-        [
-            ['', 'Found', 'Missing', 'Total'],
+    class SetUp extends Plugin {
+    	constructor(app) {
+    		super(app, 'Set-up', {
+    			canDeactivate: true,
+    			defaultActive: false
+    		});
+    		const pane = el.ul({
+    			classNames: ['pane']
+    		});
+    		this.ui = el.details({
+    			events: {
+    				click: evt => {
+    					if (evt.target.tagName === 'INPUT') {
+    						app.registry.get(evt.target.name).toggle(evt.target.checked);
+    					}
+    				},
+    				toggle: evt => {
+    					if (!evt.target.open) {
+    						this.toggle(false);
+    					}
+    				}
+    			}
+    		});
+    		const _toggle = this.toggle;
+    		this.toggle = state => {
+    			_toggle(state);
+    			this.ui.open = this.isActive();
+    		};
+    		this.enableTool('options', 'Show set-up', 'Hide set-up');
+    		app.on(prefix$1('pluginsReady'), evt => {
+    			evt.detail.forEach((plugin, key) => {
+    				if (!plugin.canDeactivate || plugin.tool) {
+    					return false;
+    				}
+    				const li = el.li();
+    				const label = el.label({
+    					text: plugin.title
+    				});
+    				const check = el.input({
+    					attributes: {
+    						type: 'checkbox',
+    						name: key,
+    						checked: plugin.isActive()
+    					}
+    				});
+    				label.prepend(check);
+    				li.append(label);
+    				pane.append(li);
+    			});
+    		});
+    		this.ui.append(el.summary({
+    			text: this.title
+    		}), pane);
+    		this.toggle(false);
+    		this.add();
+    	}
+    }
+
+    const refresh = (data, table) => {
+        table.innerHTML = '';
+        const tbody = el.tbody();
+        data.forEach((rowData) => {
+            const tr = el.tr();
+            rowData.forEach((cellData) => {
+                tr.append(el.td({
+                    text: cellData
+                }));
+            });
+            tbody.append(tr);
+        });
+        table.append(tbody);
+    };
+    const build = data => {
+        const table = el.table({
+            classNames: ['pane']
+        });
+        refresh(data, table);
+        return table;
+    };
+    var tbl = {
+        build,
+        refresh
+    };
+
+    const getData = () => {
+        return [
+    		['', '✓', '?', '∑'],
             [
                 'Words',
                 data.getCount('foundTerms'),
@@ -451,88 +553,33 @@
                 data.getPoints('remainders'),
                 data.getPoints('answers')
             ]
-        ].forEach(rowData => {
-            const tr = el.tr();
-            rowData.forEach(cellData => {
-                tr.append(el.td({
-                    text: cellData
-                }));
-            });
-            tbody.append(tr);
-        });
+        ];
     };
-    class scoreSoFar extends plugin {
+    class ScoreSoFar extends Plugin {
         constructor(app) {
             super(app, 'Score so far', {
-                optional: true
+                canDeactivate: true
             });
             this.ui = el.details({
                 attributes: {
                     open: true
                 }
             });
-            const pane = el.table({
-                classNames: ['pane']
-            });
-            const tbody = el.tbody();
-            pane.append(tbody);
-            update(tbody);
+            const pane = tbl.build(getData());
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
-            app.on(prefix$1('wordsUpdated'), () => update(tbody));
+    		app.on(prefix$1('wordsUpdated'), () => {
+                tbl.refresh(getData(), pane);
+    		});
             this.add();
         }
     }
 
-    class setUp extends plugin {
-    	constructor(app) {
-    		super(app, 'Set-up');
-    		const pane = el.ul({
-    			classNames: ['pane']
-    		});
-    		const populate = (pane) => {
-    			app.registry.forEach((plugin, key) => {
-    				if (!plugin.optional) {
-    					return false;
-    				}
-    				const li = el.li();
-    				const label = el.label({
-    					text: plugin.title
-    				});
-    				const check = el.input({
-    					attributes: {
-    						type: 'checkbox',
-    						name: key,
-    						checked: plugin.isEnabled()
-    					}
-    				});
-    				label.prepend(check);
-    				li.append(label);
-    				pane.append(li);
-    			});
-    		};
-    		this.ui = el.details({
-    			events: {
-    				click: function (evt) {
-    					if (evt.target.tagName === 'INPUT') {
-    						app.registry.get(evt.target.name).toggle(evt.target.checked);
-    					}
-    				}
-    			}
-    		});
-    		this.ui.append(el.summary({
-    			text: this.title
-    		}), pane);
-    		populate(pane);
-    		this.add();
-    	}
-    }
-
-    class spillTheBeans extends plugin {
+    class SpillTheBeans extends Plugin {
         constructor(app) {
             super(app, 'Spill the beans', {
-                optional: true
+                canDeactivate: true
             });
             const react = (value) => {
                 if (!value) {
@@ -548,7 +595,7 @@
                 classNames: ['pane']
             });
             pane.append(el.div({
-                text: 'Watch me while you type!',
+                text: 'Watch my reaction!',
                 classNames: ['spill-title']
             }));
             const reaction = el.div({
@@ -568,145 +615,110 @@
         }
     }
 
-    class spoilers extends plugin {
+    const getData$1 = () => {
+    	const counts = {};
+    	const pangramCount = data.getCount('pangrams');
+    	const foundPangramCount = data.getCount('foundPangrams');
+    	const cellData = [
+    		['', '✓', '?', '∑'],
+    		[
+    			'Pangrams',
+    			foundPangramCount,
+    			pangramCount - foundPangramCount,
+    			pangramCount
+    		]
+    	];
+    	data.getList('answers').forEach(term => {
+    		counts[term.length] = counts[term.length] || {
+    			found: 0,
+    			missing: 0,
+    			total: 0
+    		};
+    		if (data.getList('foundTerms').includes(term)) {
+    			counts[term.length].found++;
+    		} else {
+    			counts[term.length].missing++;
+    		}
+    		counts[term.length].total++;
+    	});
+    	let keys = Object.keys(counts);
+    	keys.sort((a, b) => a - b);
+    	keys.forEach(count => {
+    		cellData.push([
+    			count + ' ' + (count > 1 ? 'letters' : 'letter'),
+    			counts[count].found,
+    			counts[count].missing,
+    			counts[count].total
+    		]);
+    	});
+    	return cellData;
+    };
+    class Spoilers extends Plugin {
     	constructor(app) {
     		super(app, 'Spoilers', {
-    			optional: true
+    			canDeactivate: true
     		});
-    		const tbody = el.tbody();
-    		const getCellData = () => {
-    			const counts = {};
-    			const pangramCount = data.getCount('pangrams');
-    			const foundPangramCount = data.getCount('foundPangrams');
-    			const cellData = [
-    				['', 'Found', 'Missing', 'Total'],
-    				[
-    					'Pangrams',
-    					foundPangramCount,
-    					pangramCount - foundPangramCount,
-    					pangramCount
-    				]
-    			];
-    			data.getList('answers').forEach(term => {
-    				counts[term.length] = counts[term.length] || {
-    					found: 0,
-    					missing: 0,
-    					total: 0
-    				};
-    				if (data.getList('foundTerms').includes(term)) {
-    					counts[term.length].found++;
-    				} else {
-    					counts[term.length].missing++;
-    				}
-    				counts[term.length].total++;
-    			});
-    			let keys = Object.keys(counts);
-    			keys.sort((a, b) => a - b);
-    			keys.forEach(count => {
-    				cellData.push([
-    					count + ' ' + (count > 1 ? 'letters' : 'letter'),
-    					counts[count].found,
-    					counts[count].missing,
-    					counts[count].total
-    				]);
-    			});
-    			return cellData;
-    		};
-    		const update = () => {
-    			tbody.innerHTML = '';
-    			getCellData().forEach(rowData => {
-    				const tr = el.tr();
-    				rowData.forEach(cellData => {
-    					tr.append(el.td({
-    						text: cellData
-    					}));
-    				});
-    				tbody.append(tr);
-    			});
-    		};
     		this.ui = el.details();
-    		const pane = el.table({
-    			classNames: ['pane']
-    		});
-    		pane.append(tbody);
-    		update();
+    		const pane = tbl.build(getData$1());
     		this.ui.append(el.summary({
     			text: this.title
     		}), pane);
-    		app.on(prefix$1('wordsUpdated'), () => update());
+    		app.on(prefix$1('wordsUpdated'), () => {
+                tbl.refresh(getData$1(), pane);
+    		});
     		this.add();
     	}
     }
 
-    class stepsToSuccess extends plugin {
+    const getData$2 = () => {
+        const maxPoints = data.getPoints('answers');
+        return [
+            ['Beginner', 0],
+            ['Good Start', 2],
+            ['Moving Up', 5],
+            ['Good', 8],
+            ['Solid', 15],
+            ['Nice', 25],
+            ['Great', 40],
+            ['Amazing', 50],
+            ['Genius', 70],
+            ['Queen Bee', 100]
+        ].map(entry => {
+            return [entry[0], Math.round(entry[1] / 100 * maxPoints)];
+        })
+    };
+    const markCurrentTier = pane => {
+        const ownPoints = data.getPoints('foundTerms');
+        const currentTier = getData$2().filter(entry => entry[1] <= ownPoints).pop()[1];
+        el.$$('td', pane).forEach(cell => {
+            cell.parentNode.classList.remove('sba-current');
+            if(parseInt(cell.textContent) === currentTier) {
+                cell.parentNode.classList.add('sba-current');
+            }
+        });
+    };
+    class StepsToSuccess extends Plugin {
         constructor(app) {
             super(app, 'Steps to success', {
-                optional: true
+                canDeactivate: true
             });
-            const maxPoints = data.getPoints('answers');
-            const rankings = [
-                ['Beginner', 0],
-                ['Good Start', 2],
-                ['Moving Up', 5],
-                ['Good', 8],
-                ['Solid', 15],
-                ['Nice', 25],
-                ['Great', 40],
-                ['Amazing', 50],
-                ['Genius', 70],
-                ['Queen Bee', 100]
-            ].map(entry => {
-                return [entry[0], Math.round(entry[1] / 100 * maxPoints)];
-            });
-            const update = (frame) => {
-                frame.innerHTML = '';
-                const ownPoints = data.getPoints('foundTerms');
-                const tier = rankings.filter(entry => entry[1] <= ownPoints).pop()[1];
-                rankings.forEach(value => {
-                    const tr = el.tr({
-                        classNames: value[1] === tier ? ['sba-current'] : []
-                    });
-                    [value[0], value[1]].forEach(cellData => {
-                        tr.append(el.td({
-                            text:cellData
-                        }));
-                    });
-                    frame.append(tr);
-                });
-            };
             this.ui = el.details();
-            const pane = el.table({
-                classNames: ['pane']
-            });
-            const frame = el.tbody();
-            update(frame);
-            pane.append(frame);
+            const pane = tbl.build(getData$2());
+            markCurrentTier(pane);
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
-            app.on(prefix$1('wordsUpdated'), () => update(frame));
+            app.on(prefix$1('wordsUpdated'), () => {
+                markCurrentTier(pane);
+    		});
             this.add();
         }
     }
 
-    var css = "﻿.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-input-invalid{color:#666}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;width:200px;background:inherit;box-sizing:border-box;z-index:3;margin:16px 0;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba .dragger{font-weight:bold;cursor:move;line-height:32px}.sba .closer,.sba .minimizer{font-size:18px;font-weight:bold;position:absolute;top:0;line-height:32px;padding:0 10px;cursor:pointer}.sba .closer{right:0}.sba .minimizer{right:16px;transform:rotate(-90deg);transform-origin:center;font-size:10px;right:24px;top:1px}.sba .minimizer:before{content:\"❯\"}.sba.minimized details{display:none}.sba.minimized .minimizer{transform:rotate(90deg);right:25px;top:0}.sba details{font-size:90%;margin-bottom:1px;max-height:800px;transition:max-height .25s ease-in}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{line-height:24px;padding:0 15px 0 25px;background:#f8cd05;cursor:pointer;list-style:none;position:relative}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:9px;top:-1px}.sba .pane{border:1px solid #dcdcdc;border-top:none;border-collapse:collapse;width:100%;font-size:85%;margin-bottom:4px}.sba tr:first-of-type td{border-top:none}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba td{border:1px solid #dcdcdc;white-space:nowrap;text-align:center;padding:4px 3px}.sba td:first-of-type{text-align:left}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 20px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}\n";
-
-    class styles extends plugin {
-        constructor(app) {
-            super(app, 'Styles');
-            this.target = el.$('head');
-            this.ui = el.style({
-                text: css.replace(/(\uFEFF|\\n)/gu, '')
-            });
-            app.on(prefix$1('destroy'), () => this.ui.remove());
-            this.add();
-        }
-    }
-
-    class surrender extends plugin {
+    class Surrender extends Plugin {
     	constructor(app) {
     		super(app, 'Surrender', {
-    			optional: true
+    			canDeactivate: true
     		});
     		let usedOnce = false;
     		const buildEntry = term => {
@@ -753,19 +765,35 @@
     	}
     }
 
+    class Footer extends Plugin {
+        constructor(app) {
+            super(app, `${settings$1.get('label')} ${settings$1.get('version')}`, {
+                key: 'footer'
+            });
+            this.ui = el.a({
+                text: this.title,
+                attributes: {
+                    href: settings$1.get('url'),
+                    target: '_blank'
+                }
+            });
+            this.add();
+        }
+    }
+
     var plugins = {
-        styles,
-        darkMode,
-        header,
-        scoreSoFar,
-        spoilers,
-        spillTheBeans,
-        stepsToSuccess,
-        surrender,
-        setUp,
-        footer
+         Styles,
+         DarkMode,
+         Header,
+         SetUp,
+         ScoreSoFar,
+         Spoilers,
+         SpillTheBeans,
+         StepsToSuccess,
+         Surrender,
+         Footer
     };
 
-    (new app(el.$('#pz-game-root'))).registerPlugins(plugins);
+    (new App(el.$('#pz-game-root'))).registerPlugins(plugins);
 
 }());

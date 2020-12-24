@@ -1,5 +1,9 @@
 @import './inc/colors';
 
+#pz-game-root .sb-content-box {
+    position: relative;
+}
+
 .pz-game-field {
     background: inherit;
     color: inherit;
@@ -72,6 +76,10 @@
         color: #666
     }
 
+    .sb-toggle-expand {
+        box-shadow: none;
+    }
+
     .sb-progress-marker .sb-progress-value,
     .hive-cell.center .cell-fill {
         background: $yellow;
@@ -114,10 +122,14 @@
 
 }
 
+$appWidth: 160;
+$sideGap: 12;
+
 .sba {
     position: absolute;
-    width: 200px;
-    background: inherit;
+    left: 100%;
+    top: 48px;    
+    width: $appWidth * 1px;
     box-sizing: border-box;
     z-index: 3;
     margin: 16px 0;
@@ -143,57 +155,62 @@
         }
     }
 
-    .dragger {
-        font-weight: bold;
-        cursor: move;
-        line-height: 32px;
-    }
+    [data-ui="header"] {
+        display: flex;
+        gap: 8px;
 
-    .closer,
-    .minimizer {
-        font-size: 18px;
-        font-weight: bold;
-        position: absolute;
-        top: 0;
-        line-height: 32px;
-        padding: 0 10px;
-        cursor: pointer;
-    }
+        .toolbar {
+            display: flex;
+            align-items: stretch;
+            gap: 1px;
+            
+            div {
+                padding: 10px 3px 2px 3px;
+                &:last-of-type {
+                    padding-top: 8px;
+                }
+            }
+        }
 
-    .closer {
-        right: 0;
-    }
-
-    .minimizer {
-        right: 16px;
-        transform: rotate(-90deg);
-        transform-origin: center;
-        font-size: 10px;
-        right: 24px;
-        top: 1px;
-
-        &:before {
-            content: "❯";
+        svg {
+            width: 11px;
+            cursor: pointer;
+            fill:currentColor
         }
     }
 
-    &.minimized {
-        details {
+
+    .header {
+        font-weight: bold;
+        line-height: 32px;
+        flex-grow: 2;
+    }
+
+    .minimizer {
+        transform: rotate(180deg);
+        transform-origin: center;
+        position: relative;
+        top: 2px
+    }
+
+    &.inactive {
+
+        details,
+        [data-ui="footer"] {
             display: none;
         }
 
         .minimizer {
-            transform: rotate(90deg);
-            right: 25px;
+            transform: rotate(0deg);
             top: 0
         }
     }
 
     details {
         font-size: 90%;
-        margin-bottom: 1px;
         max-height: 800px; // intentionally unrealistically high (transition)
         transition: max-height 0.25s ease-in;
+        margin-bottom: 1px;
 
         &[open] {
             summary {
@@ -215,12 +232,17 @@
     }
 
     summary {
-        line-height: 24px;
-        padding: 0 15px 0 25px;
+        font-size: 13px;
+        line-height: 22px;
+        padding: 0 15px 0 21px;
         background: $colorHighlight;
+        background: #e6e6e6;
         cursor: pointer;
         list-style: none;
         position: relative;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         &::-webkit-details-marker {
             display: none
@@ -233,7 +255,7 @@
             display: inline-block;
             transform: rotate(90deg);
             transform-origin: center;
-            left: 9px;
+            left: 7px;
             top: -1px
         }
     }
@@ -244,17 +266,10 @@
         border-collapse: collapse;
         width: 100%;
         font-size: 85%;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
 
     tr {
-        &:first-of-type {
-
-            td {
-                border-top: none;
-            }
-        }
-
         &.sba-current {
             font-weight: bold;
             border-bottom: 2px solid $colorHighlight !important;
@@ -263,14 +278,33 @@
 
     td {
         border: 1px solid $colorBorder;
+        border-top: none;
         white-space: nowrap;
         text-align: center;
-        padding: 4px 3px;
+        padding: 4px 2px;
+        width: 30px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
         &:first-of-type {
             text-align: left;
+            width: auto;
         }
     }
 
+    [data-ui="scoreSoFar"],
+    [data-ui="spoilers"] {
+        tbody {
+            tr {
+                &:first-child {
+                    td {
+                        font-weight: bold
+                    }
+                }
+            }
+        }
+    }
 
     [data-ui="footer"] {
         color: currentColor;
@@ -307,13 +341,13 @@
         .pane {
             padding: 10px 5px;
         }
-        
+
         button {
             margin: 0 auto;
             display: block;
             font-size: 100%;
             white-space: nowrap;
-            padding: 12px 20px;
+            padding: 12px 10px;
         }
     }
 
@@ -328,4 +362,63 @@
             margin: 0 10px 0 0;
         }
     }
+}
+
+@media (max-width: 1444px) {
+    .sba {
+        top: -8px;
+        left: -77px;
+    }
+}
+
+@media (max-width: 1266px) {
+    .sba {
+        top: -8px;
+        left: -42px;
+    }
+}
+
+@media (max-width: 1197px) {
+    .sba {
+        top: -8px;
+        left: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sba {
+        top: 94px;
+    }
+}
+
+
+// // '(max-width: 350px)',// left: 12px; top: 735px; minimized
+// // '(max-width: 370px)',// left: 12px; top: 735px; minimized
+// // '(max-width: 443.98px)', // left: 12px; top: 654px; minimized
+
+// @media (max-width: 350px) {
+//     .sba {
+//         left: 12px;
+//         top: 735px;
+//     }
+// }
+
+// @media (max-width: 370px) {
+//     .sba {
+//         left: 12px;
+//         top: 735px;
+//     }
+// }
+
+// @media (max-width: 443.98px) {
+//     .sba {
+//         left: 12px;
+//         top: 654px;
+//     }
+// }
+
+@media (max-width: 991.98px) {
+}
+
+@media (min-width: 444px) {
 }

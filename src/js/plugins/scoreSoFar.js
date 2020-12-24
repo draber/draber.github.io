@@ -1,18 +1,13 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import {
-    prefix
-} from '../modules/string.js';
-import plugin from '../modules/plugin.js';
+import { prefix } from '../modules/string.js';
+import Plugin from '../modules/plugin.js';
+import tbl from '../modules/tables.js';
 
-/**
- * Populate/update pane
- * @param {HTMLElement} tbody
- */
-const update = (tbody) => {
-    tbody.innerHTML = '';
-    [
-        ['', 'Found', 'Missing', 'Total'],
+
+const getData = () => {
+    return [
+		['', '✓', '?', '∑'],
         [
             'Words',
             data.getCount('foundTerms'),
@@ -25,28 +20,20 @@ const update = (tbody) => {
             data.getPoints('remainders'),
             data.getPoints('answers')
         ]
-    ].forEach(rowData => {
-        const tr = el.tr();
-        rowData.forEach(cellData => {
-            tr.append(el.td({
-                text: cellData
-            }))
-        })
-        tbody.append(tr);
-    });
+    ];
 }
 
 /**
  * Score so far plugin
  * 
- * @param {app} app
- * @returns {plugin} scoreSoFar
+ * @param {App} app
+ * @returns {Plugin} ScoreSoFar
  */
-class scoreSoFar extends plugin {
+class ScoreSoFar extends Plugin {
     constructor(app) {
 
         super(app, 'Score so far', {
-            optional: true
+            canDeactivate: true
         });
 
         this.ui = el.details({
@@ -56,22 +43,19 @@ class scoreSoFar extends plugin {
         });
 
         // add and populate content pane        
-        const pane = el.table({
-            classNames: ['pane']
-        });
-        const tbody = el.tbody();
-        pane.append(tbody);
-        update(tbody);
+        const pane = tbl.build(getData());
 
         this.ui.append(el.summary({
             text: this.title
         }), pane);
 
         // update on demand
-        app.on(prefix('wordsUpdated'), () => update(tbody));
+		app.on(prefix('wordsUpdated'), () => {
+            tbl.refresh(getData(), pane);
+		})
 
         this.add();
     }
 }
 
-export default scoreSoFar;
+export default ScoreSoFar;

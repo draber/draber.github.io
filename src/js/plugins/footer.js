@@ -1,14 +1,14 @@
 import settings from '../modules/settings.js';
 import el from '../modules/element.js';
-import plugin from '../modules/plugin.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Footer plugin
  * 
- * @param {app} app
- * @returns {plugin} footer
+ * @param {App} app
+ * @returns {Plugin} Footer
  */
-class footer extends plugin {
+class Footer extends Plugin {
     constructor(app) {
 
         super(app, `${settings.get('label')} ${settings.get('version')}`, {
@@ -26,4 +26,4 @@ class footer extends plugin {
     }
 }
 
-export default footer;
+export default Footer;

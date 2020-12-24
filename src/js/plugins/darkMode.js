@@ -1,34 +1,33 @@
 import el from '../modules/element.js';
-import {
-    prefix
-} from '../modules/string.js';
-import plugin from '../modules/plugin.js';
+import { prefix } from '../modules/string.js';
+import Plugin from '../modules/plugin.js';
 import settings from '../modules/settings.js';
 
 /**
  * Dark Mode plugin
  *
- * @param {app} app
- * @returns {plugin} darkMode
+ * @param {App} app
+ * @returns {Plugin} DarkMode
  */
-class darkMode extends plugin {
+class DarkMode extends Plugin {
     constructor(app) {
 
         super(app, 'Dark Mode', {
-            optional: true,
-            defaultEnabled: false
+            canDeactivate: true,
+            defaultActive: false
         });
 
-        const bodyClass = prefix('dark', 'd');
         this.toggle = state => {
             settings.set(`options.${this.key}`, state);
-            el.$('body').classList.toggle(bodyClass, state);
+            el.$('body').classList.toggle(prefix('dark', 'd'), state);
             return this;
         }
+        
+        this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
 
-        this.toggle(this.isEnabled());
+        this.toggle(this.isActive());
         this.add();
     }
 }
 
-export default darkMode;
+export default DarkMode;
