@@ -1,5 +1,7 @@
 import el from '../modules/element.js';
-import { prefix } from '../modules/string.js';
+import {
+    prefix
+} from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
 import settings from '../modules/settings.js';
 
@@ -10,6 +12,13 @@ import settings from '../modules/settings.js';
  * @returns {Plugin} DarkMode
  */
 class DarkMode extends Plugin {
+
+    toggle(state) {
+        settings.set(`options.${this.key}`, state);
+        el.$('body').classList.toggle(prefix('dark', 'd'), state);
+        return this;
+    }
+
     constructor(app) {
 
         super(app, 'Dark Mode', {
@@ -17,12 +26,6 @@ class DarkMode extends Plugin {
             defaultActive: false
         });
 
-        this.toggle = state => {
-            settings.set(`options.${this.key}`, state);
-            el.$('body').classList.toggle(prefix('dark', 'd'), state);
-            return this;
-        }
-        
         this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
 
         this.toggle(this.isActive());

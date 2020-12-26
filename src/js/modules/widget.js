@@ -44,7 +44,7 @@ class Widget {
      * Tells if the user has deactivated a plugin, falls back on default setting
      * @returns {boolean}
      */
-    isActive = () => {
+    isActive() {
         const stored = settings.get(`options.${this.key}`);
         return typeof stored !== 'undefined' ? stored : this.defaultActive;
     }
@@ -54,7 +54,7 @@ class Widget {
      * @param {boolean} state
      * @returns {Widget}
      */
-    toggle = state => {
+    toggle(state) {
         if (!this.canDeactivate) {
             return this;
         }
@@ -63,7 +63,7 @@ class Widget {
         return this;
     }
 
-    enableTool = (iconKey, textToActivate, textToDeactivate) => {
+    enableTool(iconKey, textToActivate, textToDeactivate) {
         this.tool = el.div({
             events: {
                 click: () => {
@@ -83,7 +83,7 @@ class Widget {
      * Some plugins, for instance `darkMode` have no UI
      * @returns {boolean}
      */
-    hasUi = () => {
+    hasUi() {
         return this.ui instanceof HTMLElement;
     }
 
@@ -91,7 +91,7 @@ class Widget {
      * Assign an event to the ui
      * @returns {Widget}
      */
-    on = (evt, action) => {
+    on(evt, action) {
         this.ui.addEventListener(evt, action);
         return this;
     }
@@ -100,7 +100,7 @@ class Widget {
      * Fire an event from the ui
      * @returns {Widget}
      */
-    trigger = evt => {
+    trigger(evt) {
         this.ui.dispatchEvent(evt);
         return this;
     }

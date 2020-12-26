@@ -13,6 +13,31 @@ import {
  * @returns {App} app
  */
 class App extends Widget {
+
+    registerPlugins(plugins) {
+        for (const [key, plugin] of Object.entries(plugins)) {
+            this.registry.set(key, new plugin(this));
+        }
+        this.trigger(new CustomEvent(prefix('pluginsReady'), {
+            detail: this.registry
+        }))
+        return this.registerTools();
+    }
+
+    registerTools() {
+        this.registry.forEach(plugin => {
+            if (plugin.tool) {
+                this.toolButtons.set(plugin.key, plugin.tool);
+            }
+        })
+        this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
+        this.tool.classList.add('minimizer');
+        this.toolButtons.set(this.key, this.tool);
+        return this.trigger(new CustomEvent(prefix('toolsReady'), {
+            detail: this.toolButtons
+        }))
+    }
+
     constructor(game) {
         if (!game || !window.gameData) {
             console.info(`This bookmarklet only works on ${settings.get('targetUrl')}`);
@@ -32,13 +57,13 @@ class App extends Widget {
         this.registry = new Map();
         this.toolButtons = new Map();
 
-        this.parent = el.$('.sb-content-box', game);
-
+        this.parent = el.div({classNames: [prefix('container')]});
+        
         const resultList = el.$('.sb-wordlist-items', game);
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
-            this.ui.remove();
+            this.parent.remove();
         };
         this.ui = el.div({
             data: {
@@ -56,41 +81,30 @@ class App extends Widget {
             childList: true
         });
 
-        this.registerPlugins = plugins => {
-            for (const [key, plugin] of Object.entries(plugins)) {
-                this.registry.set(key, new plugin(this));
-            }
-            this.trigger(new CustomEvent(prefix('pluginsReady'), {
-                detail: this.registry
-            }))
-            return this.registerTools();
-        }
+/*
+@todo 
+pre launch:
+if body has pz-mobile {
+    append to header
+}
+else append to game
 
-        this.registerTools = () => {
-            this.registry.forEach(plugin => {
-                if (plugin.tool) {
-                    this.toolButtons.set(plugin.key, plugin.tool);
-                }
-            })
-            this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
-            this.tool.classList.add('minimizer');
-            this.toolButtons.set(this.key, this.tool);
-            return this.trigger(new CustomEvent(prefix('toolsReady'), {
-                detail: this.toolButtons
-            }))
-        }
-
+*/
         // minimize on smaller screens
-        const mql = window.matchMedia('(max-width: 1196.98px)');
-        mql.addEventListener('change', evt => this.toggle(!evt.matches));
+        const mql = window.matchMedia('(max-width: 1196px)');
+        mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));
         mql.dispatchEvent(new Event('change'));
 
-        const wordlistToggle = el.$('.sb-toggle-icon');
-        el.$('.sb-toggle-expand').addEventListener('click', evt => {
-            this.ui.style.display = wordlistToggle.classList.contains('sb-toggle-icon-expanded') ? 'none' : 'block';
+        const wordlistToggle = el.$('.sb-toggle-expand');
+        wordlistToggle.addEventListener('click', evt => {
+            this.ui.style.display = el.$('.sb-toggle-icon-expanded', wordlistToggle) ? 'none' : 'block';
         })
+        if(el.$('.sb-toggle-icon-expanded', wordlistToggle)){
+            wordlistToggle.dispatchEvent(new Event('click'));
+        }
 
         this.parent.append(this.ui);
+        game.before(this.parent);
     };
 }
 

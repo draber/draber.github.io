@@ -9,29 +9,30 @@ import Plugin from '../modules/plugin.js';
  * @returns {Plugin} SpillTheBeans
  */
 class SpillTheBeans extends Plugin {
+
+    /**
+     * Check per letter the typed letters still fit a word in the remainder list
+     * @param {String} value
+     * @returns {string}
+     */
+    react(value) {
+        if (!value) {
+            return '😐';
+        }
+        if (!data.getList('remainders').filter(term => term.startsWith(value)).length) {
+            return '🙁';
+        }
+        return '🙂';
+    }
+
     constructor(app) {
 
         super(app, 'Spill the beans', {
             canDeactivate: true
         });
 
-        /**
-         * Check per letter the typed letters still fit a word in the remainder list
-         * @param {String} value
-         * @returns {string}
-         */
-        const react = (value) => {
-            if (!value) {
-                return '😐';
-            }
-            if (!data.getList('remainders').filter(term => term.startsWith(value)).length) {
-                return '🙁';
-            }
-            return '🙂';
-        }
-
         this.ui = el.details();
-        
+
         const pane = el.div({
             classNames: ['pane']
         });
@@ -49,7 +50,7 @@ class SpillTheBeans extends Plugin {
         }), pane);
 
         (new MutationObserver(mutationsList => {
-            reaction.textContent = react(mutationsList.pop().target.textContent.trim());
+            reaction.textContent = this.react(mutationsList.pop().target.textContent.trim());
         })).observe(el.$('.sb-hive-input-content', app.game), {
             childList: true
         });

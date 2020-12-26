@@ -22,6 +22,7 @@ class Footer extends Plugin {
                 target: '_blank'
             }
         });
+        
         this.add();
     }
 }

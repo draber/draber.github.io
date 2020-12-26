@@ -22,7 +22,7 @@ class Plugin extends Widget {
      * Attaches plugins to DOM, creates slot in app if needed
      * @returns {Widget}
      */
-    attach = () => {
+    attach() {
         if (!this.hasUi()) {
             return this;
         }
@@ -36,7 +36,7 @@ class Plugin extends Widget {
      * Adds plugin to DOM and registers state in local storage
      * @returns {Widget}
      */
-    add = () => {
+    add() {
         if (this.canDeactivate) {
             settings.set(`options.${this.key}`, this.isActive());
         }
@@ -51,7 +51,11 @@ class Plugin extends Widget {
         if (!app || !title) {
             throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
         }
-        super(title, { key, canDeactivate, defaultActive })
+        super(title, {
+            key,
+            canDeactivate,
+            defaultActive
+        })
         this.app = app;
     }
 }

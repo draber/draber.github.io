@@ -1,6 +1,8 @@
 import el from '../modules/element.js';
 import Plugin from '../modules/plugin.js';
-import { prefix } from '../modules/string.js';
+import {
+	prefix
+} from '../modules/string.js';
 
 /**
  * Set-up plugin
@@ -9,6 +11,13 @@ import { prefix } from '../modules/string.js';
  * @returns {Plugin} SetUp
  */
 class SetUp extends Plugin {
+
+
+	toggle(state) {
+		super.toggle(state);
+		this.ui.open = this.isActive();
+	}
+
 	constructor(app) {
 
 		super(app, 'Set-up', {
@@ -34,13 +43,6 @@ class SetUp extends Plugin {
 				}
 			}
 		});
-
-		const _toggle = this.toggle;
-
-		this.toggle = state => {
-			_toggle(state);
-			this.ui.open = this.isActive();
-		}
 
 		this.enableTool('options', 'Show set-up', 'Hide set-up');
 
