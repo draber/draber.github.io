@@ -80,16 +80,7 @@ class App extends Widget {
         this.observer.observe(resultList, {
             childList: true
         });
-
-/*
-@todo 
-pre launch:
-if body has pz-mobile {
-    append to header
-}
-else append to game
-
-*/
+        
         // minimize on smaller screens
         const mql = window.matchMedia('(max-width: 1196px)');
         mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));

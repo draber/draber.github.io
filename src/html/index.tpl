@@ -68,12 +68,14 @@
       <p>For those of you who play on a laptop or a desktop computer, the Spelling Bee Assistant can offer a bit of support. It comes with a whole range of tools that can help you to succeed without spoiling the fun.</p>
       <p class="desktop-only">To install, drag and drop the picture at the right into your browser’s bookmark menu. Next time you are playing, click on the bookmarklet to launch the assistant.</p>
     </div>
+    <div class="lft">
     <figure class="installer assistant-closed img-box desktop-only"> 
       <a class="bookmarklet" rel="nofollow" onclick="return false" href="{{bookmarklet}}">
-        <img src="assets/img/assistant-closed-light.png" alt="{{label}}">
+        <img src="assets/img/closed-light.png" alt="{{label}}">
       </a>
-      <figcaption>Drag this to your bookmarks</figcaption>
     </figure>
+    <figcaption>Drag this to your bookmarks</figcaption>
+    </div>
     <p class="mobile-only">Spelling Bee Assistant can only run on desktop computers and laptops with a screen size of at least 700 pixels.</p>
   </section>
   <section> 
@@ -81,38 +83,44 @@
     <ul class="card-listing">
       <li class="card">
         <h3>Dark Mode</h3> 
-        <a href="#dark-mode">
+        <a href="#dark-mode" class="lft">
           <figure class="img-box dark-mode">
             <img src="assets/img/dark-mode-light.png?{{version}}" alt="Dark Mode" />
-            <figcaption>What does it look like?</figcaption>
           </figure>
+            <figcaption>What does it look like?</figcaption>
         </a>          
         <p>Have you been staring at the screen for a long time? Your eyes are dry and hurt but you can't stop playing, just this one level! People on social media had suggested to bring Dark Mode to Spelling Bee and the Spelling Bee Assistant does just that. Go to <em>Set-Up</em>, check the <em>Dark Mode</em> box and relax!</p>
       </li>
       <li class="card">
         <h3>Score so far</h3>
+    <div class="lft">
         <figure class="img-box score-so-far">
           <img src="assets/img/score-so-far-light.png?{{version}}" alt="Score so far" />
-          <figcaption>What you already bagged</figcaption>
         </figure>
+          <figcaption>What you already bagged</figcaption>
+        </div>
         <p>How far have you been moving ahead already and long is the way to the top? And - and that's a tiny spoiler - how many points will you need to have to become <em>Queen Bee</em>? That's the sort of question you get answered here.</p>
       </li>
       <li class="card">
         <h3>Spoilers</h3>
+    <div class="lft">
         <figure class="img-box spoilers">
           <img src="assets/img/spoilers-light.png?{{version}}" alt="Spoilers" />
-          <figcaption>What you still need to find</figcaption>
         </figure>
+          <figcaption>What you still need to find</figcaption>
+        </div>
         <p>So you found a good bunch of words, discovered the Pangram but now you wonder if there are words with four letters left that you've been missing. Maybe there is another Pangram hidden in the hive? Or at least a good long term that moves you to the next level? The <em>Spoiler</em> panel won't tell you the words, but it will tell you, how many of each size lay still ahead.</p>
       </li>
       <li class="card">
         <h3>Spill the beans</h3>
+    <div class="lft">
         <figure class="img-box spill-the-beans">
           <img src="assets/img/spill-the-beans-light.png?{{version}}" alt="Spill the beans" />
-          <figcaption>Crumbs of help, letter by letter</figcaption>
         </figure>
+          <figcaption>Crumbs of help, letter-wise</figcaption>
+        </div>
         <p>What was the name of this bird again, that you only know from solving crosswords? You know what it starts with, but what came after the 3rd letter again? This little face might know a thing or two that you don't, so watch it while you type!</p>
-        <ul>
+        <ul class="clr">
           <li><span class="emoji">🙂</span> a smile means you are on the right track</li>
           <li><span class="emoji">🙁</span> a sad face says you're barking up the wrong tree.</li>
           <li><span class="emoji">😐</span> no emotion means there is nothing to say; either you didn't type anything yet - or the complete word is already right in front of you.</li>
@@ -120,41 +128,51 @@
       </li>
       <li class="card">
         <h3>Steps to success</h3>
+    <div class="lft">
         <figure class="img-box steps-to-success">
           <img src="assets/img/steps-to-success-light.png?{{version}}" alt="Steps to success" />
-          <figcaption>Where to go next</figcaption>
         </figure>
+          <figcaption>Where to go next</figcaption>
+        </div>
         <p>You’ve certainly seen this one before, which is no wonder, because it's pretty close to the <em>Rankings</em> pop-up that is already part of <em>Spelling Bee</em>. But this one you can keep open while you're playing and - as an added bonus - it reveals how far the road to <em>Queen Bee</em> is. The tier that you’re currently in is highlighted.</p>
       </li>
       <li class="card">
         <h3>Surrender</h3>
+    <div class="lft">
         <figure class="img-box surrender">
           <img src="assets/img/surrender-light.png?{{version}}" alt="Surrender" />
-          <figcaption>Ready to give up?</figcaption>
         </figure>
+          <figcaption>Ready to give up?</figcaption>
+        </div>
         <p>You aren’t ready to declare defeat already, are you? Well, if you are, no need to wait until 3:00 a.m. ET anymore - with this button you can resolve the game with a mouse clicks. But don't expect to be crowned <em>Queen Bee</em>! All the words you didn’t find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
       </li>
       <li class="card">
         <h3>Set-up</h3>
+    <div class="lft">
         <figure class="img-box set-up">
           <img src="assets/img/set-up-light.png?{{version}}" alt="Set-up" usemap="#setUp" />
-          <figcaption>Use only what you like</figcaption>
         </figure>
+          <figcaption>Use only what you like</figcaption>
+        </div>
         <p>You like only some of these features, but not all of them? Get rid of those you don’t like, they won't bother you anymore. Unless of course you use the assistant on another browser, then you'll have to do it all over again.</p>
       </li>
       <li class="card extras">
         <h3>Little extras</h3>
         <ul>
           <li>
+    <div class="lft">
             <figure class="img-box header">
-              <img src="assets/img/header-light.png?{{version}}" alt="Assitant can be dragged" />
+              <img src="assets/img/header-light.png?{{version}}" alt="Assistant can be dragged" />
             </figure>
+            </div>
             <p>The assistant can be dragged anywhere inside the game area and be minimized by clicking on the <svg width="9" height="10" viewBox="0 0 6.6718 4.5789" xmlns="http://www.w3.org/2000/svg"><path d="m6.6718 4.579-3.3342-3.07-3.3377 3.07v-1.659l3.2262-2.92h0.22025l3.2254 2.91z"/></svg> symbol.</p>
           </li>
           <li>
+    <div class="lft">
             <figure class="img-box pangram-underline">
               <img src="assets/img/pangram-underline-light.png?{{version}}" alt="Pangrams are underlined" />
             </figure>
+            </div>
             <p>In the result list pangrams are marked with a yellow underline.</p>
           </li>
         </ul>
@@ -163,10 +181,12 @@
   </section>
   <section>
     <h2 id="bookmarklet">What is a bookmarklet?</h2>
+    <div class="lft">
     <figure class="img-box bookmarklet">
       <img src="assets/img/bookmarklet-light.png?{{version}}" alt="Bookmarklet" />
-      <figcaption>Regular bookmarks along with the Spelling Bee Assistant</figcaption>
     </figure>
+      <figcaption>Regular bookmarks along with the Spelling Bee Assistant</figcaption>
+    </div>
     <p>Bookmarklets are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks, in your browser’s bookmark menu. Unfortunately, there is no straightforward way to assign an icon to them. </p>
     <p class="rgt"><a href="#">Back to top</a></p>
   </section>

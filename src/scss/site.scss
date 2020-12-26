@@ -200,8 +200,8 @@ header {
 
 
     .installer {
-        min-width: 20rem;
-        height: 27.6rem;
+        min-width: 16rem;
+        height: 24.6rem;
         padding-top: 1.5rem;
 
         &:hover {
@@ -233,11 +233,18 @@ section {
     }
 }
 
+.lft {
+    float: left;
+    margin: .5rem 2rem .3rem 0;
+}
+
+.clr {
+    clear: both;
+}
+
 .img-box {
     margin: 0;
-    float: left;
     position: relative;
-    margin: .5rem 2rem .3rem 0;
 
     border: {
         width: .1rem;
@@ -269,7 +276,7 @@ section {
         width: 20rem;
     }
 
-    $features: assistant-closed,
+    $features: closed,
     bookmarklet,
     dark-mode,
     header,
@@ -291,7 +298,8 @@ section {
 
 figcaption {
     font-size: 1.2rem;
-    padding: 0 0 .6rem 1.5rem;
+    padding: .3rem 0 .6rem 0;
+    text-align: center;
 }
 
 .help {
