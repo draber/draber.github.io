@@ -191,6 +191,11 @@
 <map name="setUp">
   <area shape="rect" coords="3,28,106,47" href="#dark-mode">
 </map>
+	<map id="header-links">
+	  <area shape="rect" coords="86,0,102,12" href="#dark-mode">
+	  <area shape="rect" coords="104,0,119,12" href="#set-up">
+	  <area shape="rect" coords="121,0,136,12" href="#minimize">
+    </map>
 <script>
   ((d) => {
     d.body.dataset.theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'; 
