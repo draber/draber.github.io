@@ -45,7 +45,7 @@ class App extends Widget {
         }
 
         super(settings.get('label'), {
-            canDeactivate: true
+            canChangeState: true
         });
         this.game = game;
 
@@ -57,7 +57,9 @@ class App extends Widget {
         this.registry = new Map();
         this.toolButtons = new Map();
 
-        this.parent = el.div({classNames: [prefix('container')]});
+        this.parent = el.div({
+            classNames: [prefix('container')]
+        });
         
         const resultList = el.$('.sb-wordlist-items', game);
         const events = {};
@@ -65,7 +67,14 @@ class App extends Widget {
             this.observer.disconnect();
             this.parent.remove();
         };
+
+        this.isDraggable = true;
+        this.dragArea = this.game;
+
         this.ui = el.div({
+            attributes: {
+                draggable: this.isDraggable
+            },
             data: {
                 id: this.key
             },
@@ -75,7 +84,9 @@ class App extends Widget {
 
         data.init(this, resultList);
 
-        this.observer = new MutationObserver(() => this.trigger(new Event(prefix('newWord'))));
+        this.observer = new MutationObserver(mutationsList => this.trigger(new CustomEvent(prefix('newWord'), {
+            detail: mutationsList.pop().textContent.trim()
+        })));
 
         this.observer.observe(resultList, {
             childList: true

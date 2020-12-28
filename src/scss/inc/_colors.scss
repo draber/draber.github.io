@@ -1,9 +1,34 @@
-$colorHighlight: rgb(248, 205, 5);
-$colorBorder: rgb(220, 220, 220);
-$colorPaleText: #888;
+// add new themes here
+// you can add any key as long as you do it in all themes
+// CSS variables will be '--' + key name + 'color' => foo becomes --foo-color
+$themeColors: (
+    light: (
+        text: #000,
+        link: #0f79bf,
+        body-bg: #fff,
+        modal-bg:rgba(255,255,255, .85),
+        border:#dcdcdc,
+        area-bg: #e6e6e6,
+        invalid: #dcdcdc
+    ),
+    dark: (
+        text: #e7eae1,
+        link: #0f79bf,
+        body-bg: #111,
+        modal-bg:rgba(17,17,17, .85),
+        border: #333,
+        area-bg: #393939,
+        invalid: #666
+    )
+);
 
-// invert
-$bg : #111;
-$txt: #eee;
-$yellow: #f7c60a;
-$cellBg: #393939;
+@each $theme, $colors in $themeColors {
+    [data-sba-theme="#{$theme}"] {
+        @each $purpose, $color in $colors {
+            #{'--' + $purpose + '-color'} : $color;
+        }
+    }
+}
+html {    
+    --highlight-color: rgb(248, 205, 5);
+}

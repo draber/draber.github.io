@@ -34,7 +34,7 @@ class ScoreSoFar extends Plugin {
     constructor(app) {
 
         super(app, 'Score so far', {
-            canDeactivate: true
+            canChangeState: true
         });
 
         this.ui = el.details({

@@ -134,14 +134,26 @@
     };
 
     let lists;
-    const initLists = () => {
-        return {
+    const initLists = resultList => {
+        lists = {
             answers: window.gameData.today.answers,
             pangrams: window.gameData.today.pangrams,
             foundTerms: [],
             foundPangrams: [],
             remainders: []
-        }
+        };
+        el.$$('li', resultList).forEach(node => {
+            if (el.$('a', node)) {
+                return false;
+            }
+            const term = node.textContent;
+            lists.foundTerms.push(term);
+            if (lists.pangrams.includes(term)) {
+                lists.foundPangrams.push(term);
+                node.classList.add('sb-pangram');
+            }
+        });
+        lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
     };
     const getList = type => {
         return lists[type];
@@ -163,27 +175,20 @@
         });
         return points;
     };
-    const updateLists = (app, resultList) => {
-        lists.foundTerms = [];
-        lists.foundPangrams = [];
-        el.$$('li', resultList).forEach(node => {
-            if(el.$('a', node)){
-                return false;
-            }
-            const term = node.textContent;
-            lists.foundTerms.push(term);
-            if (lists.pangrams.includes(term)) {
-                lists.foundPangrams.push(term);
-                node.classList.add('sb-pangram');
-            }
-        });
+    const updateLists = (app, term) => {
+        lists.foundTerms.push(term);
+        if (lists.pangrams.includes(term)) {
+            lists.foundPangrams.push(term);
+            node.classList.add('sb-pangram');
+        }
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
         app.trigger(new Event(prefix$1('wordsUpdated')));
     };
     const init = (app, resultList) => {
-        lists = initLists();
-        updateLists(app, resultList);
-        app.on(prefix$1('newWord'), () => updateLists(app, resultList));
+        initLists(resultList);
+        app.on(prefix$1('newWord'), (evt) => {
+            updateLists(app, evt.detail);
+        });
     };
     var data = {
         init,
@@ -241,33 +246,38 @@
     };
 
     class Widget {
-        defaultActive = true;
+        defaultState = true;
         ui;
         title;
         key;
-        canDeactivate = false;
-        isActive() {
+        canChangeState = false;
+        getState() {
             const stored = settings$1.get(`options.${this.key}`);
-            return typeof stored !== 'undefined' ? stored : this.defaultActive;
+            return typeof stored !== 'undefined' ? stored : this.defaultState;
         }
         toggle(state) {
-            if (!this.canDeactivate) {
+            if (!this.canChangeState) {
                 return this;
             }
             settings$1.set(`options.${this.key}`, state);
-            this.ui.classList.toggle('inactive', !state);
+            if(this.hasUi()){
+                this.ui.classList.toggle('inactive', !state);
+            }
             return this;
         }
         enableTool(iconKey, textToActivate, textToDeactivate) {
             this.tool = el.div({
                 events: {
                     click: () => {
-                        this.toggle(!this.isActive());
-                        this.tool.title = this.isActive() ? textToDeactivate : textToActivate;
+                        this.toggle(!this.getState());
+                        this.tool.title = this.getState() ? textToDeactivate : textToActivate;
                     }
                 },
                 attributes: {
-                    title: this.isActive() ? textToDeactivate : textToActivate
+                    title: this.getState() ? textToDeactivate : textToActivate
+                },
+                data: {
+                    tool: this.key
                 }
             });
             this.tool.append(getIcon(iconKey));
@@ -286,16 +296,16 @@
         }
         constructor(title, {
             key,
-            canDeactivate,
-            defaultActive
+            canChangeState,
+            defaultState
         } = {}) {
             if (!title) {
                 throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
             }
             this.title = title;
             this.key = key || camel(title);
-            this.canDeactivate = typeof canDeactivate !== 'undefined' ? canDeactivate : this.canDeactivate;
-            this.defaultActive = typeof defaultActive !== 'undefined' ? defaultActive : this.defaultActive;
+            this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : this.canChangeState;
+            this.defaultState = typeof defaultState !== 'undefined' ? defaultState : this.defaultState;
         }
     }
 
@@ -328,7 +338,7 @@
                 return false;
             }
             super(settings$1.get('label'), {
-                canDeactivate: true
+                canChangeState: true
             });
             this.game = game;
             const oldInstance = el.$(`[data-id="${this.key}"]`);
@@ -337,14 +347,21 @@
             }
             this.registry = new Map();
             this.toolButtons = new Map();
-            this.parent = el.div({classNames: [prefix$1('container')]});
+            this.parent = el.div({
+                classNames: [prefix$1('container')]
+            });
             const resultList = el.$('.sb-wordlist-items', game);
             const events = {};
             events[prefix$1('destroy')] = () => {
                 this.observer.disconnect();
                 this.parent.remove();
             };
+            this.isDraggable = true;
+            this.dragArea = this.game;
             this.ui = el.div({
+                attributes: {
+                    draggable: this.isDraggable
+                },
                 data: {
                     id: this.key
                 },
@@ -352,7 +369,9 @@
                 events: events
             });
             data.init(this, resultList);
-            this.observer = new MutationObserver(() => this.trigger(new Event(prefix$1('newWord'))));
+            this.observer = new MutationObserver(mutationsList => this.trigger(new CustomEvent(prefix$1('newWord'), {
+                detail: mutationsList.pop().textContent.trim()
+            })));
             this.observer.observe(resultList, {
                 childList: true
             });
@@ -371,7 +390,7 @@
         };
     }
 
-    var css = "﻿#pz-game-root .sb-content-box{position:relative}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px #f8cd05 solid}.sb-wordlist-items .sb-anagram a{color:#888}.sba-dark{background:#111;color:#eee}.sba-dark .sba{background:#111}.sba-dark .sba summary{background:#252525;color:#eee}.sba-dark .pz-nav__hamburger-inner,.sba-dark .pz-nav__hamburger-inner::before,.sba-dark .pz-nav__hamburger-inner::after{background-color:#eee}.sba-dark .pz-nav{width:100%;background:#111}.sba-dark .pz-nav__logo{filter:invert(1)}.sba-dark .sb-modal-scrim{background:rgba(17,17,17,.85);color:#eee}.sba-dark .pz-modal__title{color:#eee}.sba-dark .sb-modal-frame,.sba-dark .pz-modal__button.white{background:#111;color:#eee}.sba-dark .pz-modal__button.white:hover{background:#393939}.sba-dark .sb-message{background:#393939}.sba-dark .sb-input-invalid{color:#666}.sba-dark .sb-toggle-expand{box-shadow:none}.sba-dark .sb-progress-marker .sb-progress-value,.sba-dark .hive-cell.center .cell-fill{background:#f7c60a;fill:#f7c60a;color:#111}.sba-dark .sb-input-bright{color:#f7c60a}.sba-dark .hive-cell.outer .cell-fill{fill:#393939}.sba-dark .cell-fill{stroke:#111}.sba-dark .cell-letter{fill:#eee}.sba-dark .hive-cell.center .cell-letter{fill:#111}.sba-dark .hive-action:not(.hive-action__shuffle){background:#111;color:#eee}.sba-dark .hive-action__shuffle{filter:invert(100%)}.sba-dark *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:#333 !important}.sba{position:absolute;z-index:3;width:160px;box-sizing:border-box;padding:0 10px 5px;background:#fff;border-width:1px;border-color:#dcdcdc;border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive [data-ui=footer]{display:none}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:12px;top:0}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:22px;padding:0 15px 0 21px;background:#e6e6e6;cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:-1px}.sba .pane{border:1px solid #dcdcdc;border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid #f8cd05 !important}.sba td{border:1px solid #dcdcdc;border-top:none;white-space:nowrap;text-align:center;padding:4px 0;width:26px;white-space:nowrap}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;text-overflow:ellipsis;padding:4px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td{font-weight:bold}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}@media(min-width: 768px){.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0px;overflow-y:visible;position:relative;z-index:5}.sba{left:100%;top:64px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 768px){.sba{top:167px}}\n";
+    var css = "﻿[data-sba-theme=light]{--text-color:#000;--link-color:#0f79bf;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#dcdcdc}[data-sba-theme=dark]{--text-color:#e7eae1;--link-color:#0f79bf;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666}html{--highlight-color: rgb(248, 205, 5)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items .sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:var(--border-color) !important}.sba{position:absolute;z-index:3;width:160px;box-sizing:border-box;padding:0 10px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive [data-ui=footer]{display:none}.sba.inactive [data-tool=setUp]{position:relative;pointer-events:none}.sba.inactive [data-tool=setUp]:before{content:\"\";width:100%;height:100%;background-color:var(--modal-bg-color);cursor:default;display:block;position:absolute;top:0;left:0}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:22px;padding:1px 15px 0 21px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:4px 0;width:26px;white-space:nowrap}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;text-overflow:ellipsis;padding:4px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td{font-weight:bold}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0px;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}@media(min-width: 768px){.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0px;overflow-y:visible;position:relative;z-index:5}.sba{left:100%;top:64px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 768px){.sba{top:167px}}\n";
 
     class Plugin extends Widget {
         target;
@@ -381,28 +400,28 @@
                 return this;
             }
             this.ui.dataset.ui = this.key;
-            this.toggle(this.isActive());
+            this.toggle(this.getState());
             (this.target || this.app.ui).append(this.ui);
             return this;
         }
         add() {
-            if (this.canDeactivate) {
-                settings$1.set(`options.${this.key}`, this.isActive());
+            if (this.canChangeState) {
+                settings$1.set(`options.${this.key}`, this.getState());
             }
             return this.attach();
         }
         constructor(app, title, {
             key,
-            canDeactivate,
-            defaultActive
+            canChangeState,
+            defaultState
         } = {}) {
             if (!app || !title) {
                 throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
             }
             super(title, {
                 key,
-                canDeactivate,
-                defaultActive
+                canChangeState,
+                defaultState
             });
             this.app = app;
         }
@@ -422,17 +441,17 @@
 
     class DarkMode extends Plugin {
         toggle(state) {
-            settings$1.set(`options.${this.key}`, state);
-            el.$('body').classList.toggle(prefix$1('dark', 'd'), state);
+            super.toggle(state);
+            document.body.dataset[prefix$1('theme')] = state ? 'dark' : 'light';
             return this;
         }
         constructor(app) {
             super(app, 'Dark Mode', {
-                canDeactivate: true,
-                defaultActive: false
+                canChangeState: true,
+                defaultState: false
             });
             this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
-            this.toggle(this.isActive());
+            this.toggle(this.getState());
             this.add();
         }
     }
@@ -443,16 +462,16 @@
                 key: 'header'
             });
             this.ui = el.div();
-            this.ui.append(el.div({
-                    text: this.title,
-                    classNames: ['header']
-                })
-            );
-    		app.on(prefix$1('toolsReady'), evt => {
+            app.dragTrigger = el.div({
+                text: this.title,
+                classNames: ['header']
+            });
+            this.ui.append(app.dragTrigger);
+            app.on(prefix$1('toolsReady'), evt => {
                 const toolbar = el.div({
                     classNames: ['toolbar']
                 });
-    			evt.detail.forEach(tool => {
+                evt.detail.forEach(tool => {
                     toolbar.append(tool);
                 });
                 this.ui.append(toolbar);
@@ -465,12 +484,12 @@
     class SetUp extends Plugin {
     	toggle(state) {
     		super.toggle(state);
-    		this.ui.open = this.isActive();
+    		this.ui.open = this.getState();
     	}
     	constructor(app) {
     		super(app, 'Set-up', {
-    			canDeactivate: true,
-    			defaultActive: false
+    			canChangeState: true,
+    			defaultState: false
     		});
     		const pane = el.ul({
     			classNames: ['pane']
@@ -492,7 +511,7 @@
     		this.enableTool('options', 'Show set-up', 'Hide set-up');
     		app.on(prefix$1('pluginsReady'), evt => {
     			evt.detail.forEach((plugin, key) => {
-    				if (!plugin.canDeactivate || plugin.tool) {
+    				if (!plugin.canChangeState || plugin.tool) {
     					return false;
     				}
     				const li = el.li();
@@ -503,7 +522,7 @@
     					attributes: {
     						type: 'checkbox',
     						name: key,
-    						checked: plugin.isActive()
+    						checked: plugin.getState()
     					}
     				});
     				label.prepend(check);
@@ -565,7 +584,7 @@
         }
         constructor(app) {
             super(app, 'Score so far', {
-                canDeactivate: true
+                canChangeState: true
             });
             this.ui = el.details({
                 attributes: {
@@ -595,7 +614,7 @@
         }
         constructor(app) {
             super(app, 'Spill the beans', {
-                canDeactivate: true
+                canChangeState: true
             });
             this.ui = el.details();
             const pane = el.div({
@@ -663,7 +682,7 @@
     	};
     	constructor(app) {
     		super(app, 'Spoilers', {
-    			canDeactivate: true
+    			canChangeState: true
     		});
     		this.ui = el.details();
     		const pane = tbl.build(this.getData());
@@ -707,7 +726,7 @@
         }
         constructor(app) {
             super(app, 'Steps to success', {
-                canDeactivate: true
+                canChangeState: true
             });
             this.ui = el.details();
             const pane = tbl.build(this.getData());
@@ -741,14 +760,14 @@
     		if (this.usedOnce) {
     			return false;
     		}
-    		app.observer.disconnect();
+    		this.app.observer.disconnect();
     		data.getList('remainders').forEach(term => resultList.append(this.buildEntry(term)));
     		this.usedOnce = true;
     		return true;
     	};
     	constructor(app) {
     		super(app, 'Surrender', {
-    			canDeactivate: true
+    			canChangeState: true
     		});
     		this.ui = el.details();
     		const pane = el.div({
@@ -788,6 +807,116 @@
         }
     }
 
+    class Positioning extends Plugin {
+        position;
+        boundaries;
+        mouse = {
+            old: undefined,
+            new: undefined
+        }
+        isLastTarget = false;
+        offset = {
+            top: 12,
+            right: 12,
+            bottom: 12,
+            left: 12
+        };
+        calculateBoundaries() {
+            const areaRect = this.app.dragArea.getBoundingClientRect();
+            const parentRect = this.app.ui.parentNode.getBoundingClientRect();
+            const appRect = this.app.ui.getBoundingClientRect();
+            this.boundaries = {
+                minTop: this.offset.top,
+                maxTop: areaRect.height - appRect.height - this.offset.bottom,
+                minLeft: this.offset.left - parentRect.left,
+                maxLeft: areaRect.width - parentRect.left - appRect.width - this.offset.right
+            };
+            return this;
+        }
+        calculateMousePosition(evt, age) {
+            this.mouse[age] = {
+                left: evt.screenX,
+                top: evt.screenY
+            };
+            return this;
+        }
+        calculateNewPosition(evt) {
+            this.calculateMousePosition(evt, 'new');
+            this.position.left += this.mouse.new.left - this.mouse.old.left;
+            this.position.top += this.mouse.new.top - this.mouse.old.top;
+            return this.reposition();
+        }
+        calculateOldPosition() {
+            const stored = settings$1.get('options.positioning');
+            if (stored && !Object.prototype.toString.call(stored) === '[object Object]') {
+                this.position = stored;
+            } else {
+                const style = getComputedStyle(this.app.ui);
+                this.position = {
+                    top: parseInt(style.top),
+                    left: parseInt(style.left)
+                };
+            }
+            return this;
+        }
+        reposition() {
+            if (!this.position) {
+                this.calculateOldPosition();
+            }
+            this.calculateBoundaries();
+            this.position.left = Math.min(this.boundaries.maxLeft, Math.max(this.boundaries.minLeft, this.position.left));
+            this.position.top = Math.min(this.boundaries.maxTop, Math.max(this.boundaries.minTop, this.position.top));
+            Object.assign(this.app.ui.style, {
+                left: this.position.left + 'px',
+                top: this.position.top + 'px'
+            });
+            if(this.getState()){
+                settings$1.set('options.positioning', this.position);
+            }
+            return this;
+        }
+        enableDrag() {
+            const trigger = this.app.dragTrigger || this.app.ui;
+            trigger.style.cursor = 'move';
+            this.app.on('pointerdown', evt => {
+                    this.isLastTarget = evt.target.isSameNode(trigger);
+                }).on('pointerup', () => {
+                    this.isLastTarget = false;
+                }).on('dragend', evt => {
+                    this.calculateNewPosition(evt);
+                    evt.target.style.opacity = '1';
+                }).on('dragstart', evt => {
+                        if (!this.isLastTarget) {
+                            evt.preventDefault();
+                            return false;
+                        }
+                        evt.target.style.opacity = '.2';
+                        this.calculateOldPosition().calculateMousePosition(evt, 'old');
+                    },
+                    false)
+                .on('dragover', evt => evt.preventDefault());
+            this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
+            return this;
+        }
+        toggle(state) {
+            return super.toggle(state || this.position);
+        }
+        constructor(app) {
+            super(app, 'Memorize position', {
+                key: 'positioning',
+                canChangeState: true
+            });
+            if (this.app.isDraggable) {
+                this.enableDrag();
+                this.add();
+                if (this.getState()) {
+                    this.reposition();
+                }
+                window.addEventListener('orientationchange', this.reposition());
+            }
+        }
+    }
+
     var plugins = {
          Styles,
          DarkMode,
@@ -798,7 +927,8 @@
          SpillTheBeans,
          StepsToSuccess,
          Surrender,
-         Footer
+         Footer,
+         Positioning
     };
 
     (new App(el.$('#pz-game-root'))).registerPlugins(plugins);

@@ -27,7 +27,7 @@ class Plugin extends Widget {
             return this;
         }
         this.ui.dataset.ui = this.key;
-        this.toggle(this.isActive());
+        this.toggle(this.getState());
         (this.target || this.app.ui).append(this.ui);
         return this;
     }
@@ -37,24 +37,24 @@ class Plugin extends Widget {
      * @returns {Widget}
      */
     add() {
-        if (this.canDeactivate) {
-            settings.set(`options.${this.key}`, this.isActive());
+        if (this.canChangeState) {
+            settings.set(`options.${this.key}`, this.getState());
         }
         return this.attach();
     }
 
     constructor(app, title, {
         key,
-        canDeactivate,
-        defaultActive
+        canChangeState,
+        defaultState
     } = {}) {
         if (!app || !title) {
             throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
         }
         super(title, {
             key,
-            canDeactivate,
-            defaultActive
+            canChangeState,
+            defaultState
         })
         this.app = app;
     }

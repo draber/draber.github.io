@@ -14,7 +14,7 @@ class Widget {
      * Cannot be hidden or otherwise disabled by user, default state
      * @type {boolean}
      */
-    defaultActive = true;
+    defaultState = true;
 
     /**
      * Undefined by default, most plugins will overwrite this
@@ -38,15 +38,15 @@ class Widget {
      * Can be deactivated
      * @type {boolean}
      */
-    canDeactivate = false;
+    canChangeState = false;
 
     /**
      * Tells if the user has deactivated a plugin, falls back on default setting
      * @returns {boolean}
      */
-    isActive() {
+    getState() {
         const stored = settings.get(`options.${this.key}`);
-        return typeof stored !== 'undefined' ? stored : this.defaultActive;
+        return typeof stored !== 'undefined' ? stored : this.defaultState;
     }
 
     /**
@@ -55,11 +55,13 @@ class Widget {
      * @returns {Widget}
      */
     toggle(state) {
-        if (!this.canDeactivate) {
+        if (!this.canChangeState) {
             return this;
         }
         settings.set(`options.${this.key}`, state);
-        this.ui.classList.toggle('inactive', !state);
+        if(this.hasUi()){
+            this.ui.classList.toggle('inactive', !state);
+        }
         return this;
     }
 
@@ -67,13 +69,17 @@ class Widget {
         this.tool = el.div({
             events: {
                 click: () => {
-                    this.toggle(!this.isActive());
-                    this.tool.title = this.isActive() ? textToDeactivate : textToActivate;
+                    this.toggle(!this.getState());
+                    this.tool.title = this.getState() ? textToDeactivate : textToActivate;
                 }
             },
             attributes: {
-                title: this.isActive() ? textToDeactivate : textToActivate
+                title: this.getState() ? textToDeactivate : textToActivate
+            },
+            data: {
+                tool: this.key
             }
+            
         })
         this.tool.append(getIcon(iconKey));
         return this;
@@ -107,16 +113,16 @@ class Widget {
 
     constructor(title, {
         key,
-        canDeactivate,
-        defaultActive
+        canChangeState,
+        defaultState
     } = {}) {
         if (!title) {
             throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
         }
         this.title = title;
         this.key = key || camel(title);
-        this.canDeactivate = typeof canDeactivate !== 'undefined' ? canDeactivate : this.canDeactivate;
-        this.defaultActive = typeof defaultActive !== 'undefined' ? defaultActive : this.defaultActive;
+        this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : this.canChangeState;
+        this.defaultState = typeof defaultState !== 'undefined' ? defaultState : this.defaultState;
     }
 }
 

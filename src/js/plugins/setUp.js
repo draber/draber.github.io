@@ -15,14 +15,14 @@ class SetUp extends Plugin {
 
 	toggle(state) {
 		super.toggle(state);
-		this.ui.open = this.isActive();
+		this.ui.open = this.getState();
 	}
 
 	constructor(app) {
 
 		super(app, 'Set-up', {
-			canDeactivate: true,
-			defaultActive: false
+			canChangeState: true,
+			defaultState: false
 		});
 
 		const pane = el.ul({
@@ -48,7 +48,7 @@ class SetUp extends Plugin {
 
 		app.on(prefix('pluginsReady'), evt => {
 			evt.detail.forEach((plugin, key) => {
-				if (!plugin.canDeactivate || plugin.tool) {
+				if (!plugin.canChangeState || plugin.tool) {
 					return false;
 				}
 				const li = el.li();
@@ -59,7 +59,7 @@ class SetUp extends Plugin {
 					attributes: {
 						type: 'checkbox',
 						name: key,
-						checked: plugin.isActive()
+						checked: plugin.getState()
 					}
 				});
 				label.prepend(check)

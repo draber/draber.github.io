@@ -60,7 +60,7 @@ class Spoilers extends Plugin {
 	constructor(app) {
 
 		super(app, 'Spoilers', {
-			canDeactivate: true
+			canChangeState: true
 		});
 
 		this.ui = el.details();

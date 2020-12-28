@@ -80,12 +80,12 @@ img {
 }
 
 ::selection {
-    background: $colorHighlight;
+    background: var(--highlight-color);
 }
 
 header {
     position: fixed;
-    border-bottom: 1px solid $colorBorder;
+    border-bottom: 1px solid var(--border-color);
     width: 100%;
     background: white;
     padding: 2rem 0;
@@ -119,20 +119,20 @@ header {
 }
 
 [data-theme="dark"] {
-    background: $bg;
-    color: rgba($txt, .85);
+    background: var(--body-bg-color);
+    color: rgba(var(--text-color), .85);
 
     header {
-        background: $bg;
-        color: rgba($txt, .85);
+        background: var(--body-bg-color);
+        color: rgba(var(--text-color), .85);
     }
 
     .card {
-        background: $cellBg;
+        background: var(--area-bg-color);
     }
 
     .img-box {
-        background-color: $bg;
+        background-color: var(--body-bg-color);
     }
 
     .github {
@@ -141,8 +141,10 @@ header {
         }
     }
 
-    img {
-        opacity: 0;
+    main {       
+        img {
+            opacity: 0;
+        } 
     }
 
     a {
@@ -160,13 +162,13 @@ header {
     .hive-box {
         .cells {
             path:not(.center) {
-                fill: $cellBg;
+                fill: var(--area-bg-color);
             }
         }
 
         .text {
             path:not(.center) {
-                fill: $txt;
+                fill: var(--text-color);
             }
         }
     }
@@ -205,11 +207,11 @@ header {
         padding-top: 1.5rem;
 
         &:hover {
-            box-shadow: 0 0 1.5rem .8rem rgba($colorHighlight, .35);
+            box-shadow: 0 0 1.5rem .8rem rgba(var(--highlight-color), .35);
         }
 
         &:focus {
-            box-shadow: 0 0 1.5rem .8rem rgba($colorHighlight, .7);
+            box-shadow: 0 0 1.5rem .8rem rgba(var(--highlight-color), .7);
         }
     }
 
@@ -248,7 +250,7 @@ section {
 
     border: {
         width: .1rem;
-        color: $colorBorder;
+        color: var(--border-color);
         style: solid;
         radius: .8rem;
     }
@@ -319,7 +321,7 @@ $cardMargin: 2rem;
 
     padding: 1.1rem 1.5rem;
     margin-bottom: $cardMargin;
-    background: rgba($colorHighlight, .1);
+    background: rgba(var(--highlight-color), .1);
 
     &:after {
         content: '';

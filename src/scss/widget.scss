@@ -1,9 +1,5 @@
 @import './inc/colors';
 
-#pz-game-root .sb-content-box {
-    position: relative;
-}
-
 .pz-game-field {
     background: inherit;
     color: inherit;
@@ -11,38 +7,33 @@
 
 .sb-wordlist-items {
     .sb-pangram {
-        border-bottom: 2px $colorHighlight solid;
+        border-bottom: 2px var(--highlight-color) solid;
     }
 
     .sb-anagram {
         a {
-            color: $colorPaleText;
+            color: var(--invalid-color);
         }
     }
 }
 
-.sba-dark {
-    background: $bg;
-    color: $txt;
+.sb-modal-scrim {
+    z-index: 6;
+}
 
-    .sba {
-        background: $bg;
-
-        summary {
-            background: #252525;
-            color: $txt;
-        }
-    }
+[data-sba-theme="dark"] {
+    background: var(--body-bg-color);
+    color: var(--text-color);
 
     .pz-nav__hamburger-inner,
     .pz-nav__hamburger-inner::before,
     .pz-nav__hamburger-inner::after {
-        background-color: $txt;
+        background-color: var(--text-color);
     }
 
     .pz-nav {
         width: 100%;
-        background: $bg;
+        background: var(--body-bg-color);
     }
 
     .pz-nav__logo {
@@ -50,30 +41,30 @@
     }
 
     .sb-modal-scrim {
-        background: rgba($bg, .85);
-        color: $txt;
+        background:  var(--modal-bg-color);
+        color: var(--text-color);
     }
 
     .pz-modal__title {
-        color: $txt;
+        color: var(--text-color);
     }
 
     .sb-modal-frame,
     .pz-modal__button.white {
-        background: $bg;
-        color: $txt;
+        background: var(--body-bg-color);
+        color: var(--text-color);
     }
 
     .pz-modal__button.white:hover {
-        background: $cellBg;
+        background: var(--area-bg-color);
     }
 
     .sb-message {
-        background: $cellBg;
+        background: var(--area-bg-color);
     }
 
     .sb-input-invalid {
-        color: #666
+        color:var(--invalid-color)
     }
 
     .sb-toggle-expand {
@@ -82,34 +73,34 @@
 
     .sb-progress-marker .sb-progress-value,
     .hive-cell.center .cell-fill {
-        background: $yellow;
-        fill: $yellow;
-        color: $bg
+        background: var(--highlight-color);
+        fill: var(--highlight-color);
+        color: var(--body-bg-color);
     }
 
     .sb-input-bright {
-        color: $yellow
+        color: var(--highlight-color)
     }
 
     .hive-cell.outer .cell-fill {
-        fill: $cellBg;
+        fill: var(--area-bg-color);
     }
 
     .cell-fill {
-        stroke: $bg;
+        stroke: var(--body-bg-color);
     }
 
     .cell-letter {
-        fill: $txt;
+        fill: var(--text-color);
     }
 
     .hive-cell.center .cell-letter {
-        fill: $bg;
+        fill: var(--body-bg-color);
     }
 
     .hive-action:not(.hive-action__shuffle) {
-        background: $bg;
-        color: $txt;
+        background: var(--body-bg-color);
+        color: var(--text-color);
     }
 
     .hive-action__shuffle {
@@ -117,20 +108,13 @@
     }
 
     *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current) {
-        border-color: #333 !important
+        border-color: var(--border-color) !important
     }
 
 }
 
 $appWidth: 160;
 $pluginWidth: 138;
-
-.pz-mobile {
-    .pz-header {
-        //position: relative
-    }
-}
-
 
 
 .sba {
@@ -139,11 +123,11 @@ $pluginWidth: 138;
     width: $appWidth * 1px;
     box-sizing: border-box;
     padding: 0 10px 5px;
-    background: #fff;
+    background: var(--body-bg-color);
 
     border: {
         width: 1px;
-        color: $colorBorder;
+        color: var(--border-color);
         radius: 6px;
         style: solid
     }
@@ -206,6 +190,22 @@ $pluginWidth: 138;
             display: none;
         }
 
+        [data-tool="setUp"]{
+            position: relative;
+            pointer-events: none;
+            &:before {
+                content: '';
+                width: 100%;
+                height: 100%;
+                background-color: var(--modal-bg-color);
+                cursor: default;
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
+
         .minimizer {
             transform: rotate(0deg);
             top: 0
@@ -222,8 +222,8 @@ $pluginWidth: 138;
             summary {
                 &:before {
                     transform: rotate(-90deg);
-                    left: 12px;
-                    top: 0;
+                    left: 10px;
+                    top: 1px;
                 }
             }
         }
@@ -240,8 +240,9 @@ $pluginWidth: 138;
     summary {
         font-size: 13px;
         line-height: 22px;
-        padding: 0 15px 0 21px;
-        background: #e6e6e6;
+        padding: 1px 15px 0 21px;
+        background: var(--area-bg-color);
+        color: var(--text-color);
         cursor: pointer;
         list-style: none;
         position: relative;
@@ -261,12 +262,12 @@ $pluginWidth: 138;
             transform: rotate(90deg);
             transform-origin: center;
             left: 7px;
-            top: -1px
+            top: 0
         }
     }
 
     .pane {
-        border: 1px solid $colorBorder;
+        border: 1px solid var(--border-color);
         border-top: none;
         width: 100%;
         font-size: 85%;
@@ -281,12 +282,12 @@ $pluginWidth: 138;
     tr {
         &.sba-current {
             font-weight: bold;
-            border-bottom: 2px solid $colorHighlight !important;
+            border-bottom: 2px solid var(--highlight-color) !important;
         }
     }
 
     td {
-        border: 1px solid $colorBorder;
+        border: 1px solid var(--border-color);
         border-top: none;
         white-space: nowrap;
         text-align: center;

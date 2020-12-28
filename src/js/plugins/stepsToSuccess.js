@@ -53,7 +53,7 @@ class StepsToSuccess extends Plugin {
     constructor(app) {
 
         super(app, 'Steps to success', {
-            canDeactivate: true
+            canChangeState: true
         });
 
         this.ui = el.details();

@@ -1,7 +1,9 @@
 import el from '../modules/element.js';
 import settings from '../modules/settings.js';
 import Plugin from '../modules/plugin.js';
-import { prefix } from '../modules/string.js';
+import {
+    prefix
+} from '../modules/string.js';
 
 /**
  * Header plugin
@@ -19,17 +21,18 @@ class Header extends Plugin {
         this.ui = el.div();
 
         // add title closer and minimizer
-        this.ui.append(el.div({
-                text: this.title,
-                classNames: ['header']
-            })
-        );
+        app.dragTrigger = el.div({
+            text: this.title,
+            classNames: ['header']
+        })
 
-		app.on(prefix('toolsReady'), evt => {     
+        this.ui.append(app.dragTrigger);
+        
+        app.on(prefix('toolsReady'), evt => {
             const toolbar = el.div({
                 classNames: ['toolbar']
-            })     
-			evt.detail.forEach(tool => {
+            })
+            evt.detail.forEach(tool => {
                 toolbar.append(tool);
             })
             this.ui.append(toolbar)

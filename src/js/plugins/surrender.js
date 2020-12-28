@@ -10,7 +10,6 @@ import Plugin from '../modules/plugin.js';
  */
 class Surrender extends Plugin {
 
-
 	usedOnce = false;
 
 	/**
@@ -41,7 +40,7 @@ class Surrender extends Plugin {
 		if (this.usedOnce) {
 			return false;
 		}
-		app.observer.disconnect();
+		this.app.observer.disconnect();
 		data.getList('remainders').forEach(term => resultList.append(this.buildEntry(term)));
 		this.usedOnce = true;
 		return true;
@@ -50,7 +49,7 @@ class Surrender extends Plugin {
 	constructor(app) {
 
 		super(app, 'Surrender', {
-			canDeactivate: true
+			canChangeState: true
 		});
 
 		this.ui = el.details();

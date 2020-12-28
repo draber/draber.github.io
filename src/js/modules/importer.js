@@ -8,6 +8,7 @@ import Spoilers from '../plugins/spoilers.js';
 import StepsToSuccess from '../plugins/stepsToSuccess.js';
 import Surrender from '../plugins/surrender.js';
 import Footer from '../plugins/footer.js';
+import Positioning from '../plugins/positioning.js';
 
 /**
  * All available plugins ready for loading
@@ -22,5 +23,6 @@ export default {
      SpillTheBeans,
      StepsToSuccess,
      Surrender,
-     Footer
+     Footer,
+     Positioning
 }

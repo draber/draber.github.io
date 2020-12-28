@@ -28,7 +28,7 @@ class SpillTheBeans extends Plugin {
     constructor(app) {
 
         super(app, 'Spill the beans', {
-            canDeactivate: true
+            canChangeState: true
         });
 
         this.ui = el.details();
