@@ -12,7 +12,10 @@ import {
  */
 class SetUp extends Plugin {
 
-
+	/**
+	 * Override default toggle mechanism
+	 * @param state
+	 */
 	toggle(state) {
 		super.toggle(state);
 		this.ui.open = this.getState();
@@ -59,7 +62,7 @@ class SetUp extends Plugin {
 					attributes: {
 						type: 'checkbox',
 						name: key,
-						checked: plugin.getState()
+						checked: !!plugin.getState()
 					}
 				});
 				label.prepend(check)
@@ -73,7 +76,6 @@ class SetUp extends Plugin {
 		}), pane);
 
 		this.toggle(false);
-
 		this.add();
 	}
 }

@@ -3,7 +3,7 @@ import el from './element.js';
 /**
  * Populate a table with data
  * @param {Array} data in the format [[ "1st row, 1st cell", ... ], [ "2nd row, 1st cell", ... ], ...]
- * @returns (HTMLElement) the populated table
+ * @param {HTMLElement} table
  */
 const refresh = (data, table) => { 
     table.innerHTML = '';

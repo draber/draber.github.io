@@ -1,5 +1,9 @@
 import el from './element.js';
 
+/**
+ * SVG coordinates
+ * @type {{options: {children: {path: string}, width: number, height: number}, arrowDown: {children: {path: string}, width: number, height: number}, darkMode: {children: {path: string}, width: number, height: number}}}
+ */
 const icons = {
     options: {
         children: {
@@ -23,7 +27,11 @@ const icons = {
         height: 28
     }
 }
-
+/**
+ * Build an icon based on the key
+ * @param key
+ * @returns {boolean|*}
+ */
 const getIcon = key => {
     if (!icons[key]) {
         console.error(`Icon ${key} doesn't exist`);

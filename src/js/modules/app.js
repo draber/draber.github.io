@@ -14,16 +14,29 @@ import {
  */
 class App extends Widget {
 
+    /**
+     * The element that is used to drag the app
+     * @type {HTMLElement}
+     */
+    dragHandle;
+
+    /**
+     * Register all plugins
+     * @param plugins
+     * @returns {Widget}
+     */
     registerPlugins(plugins) {
         for (const [key, plugin] of Object.entries(plugins)) {
             this.registry.set(key, new plugin(this));
         }
-        this.trigger(new CustomEvent(prefix('pluginsReady'), {
-            detail: this.registry
-        }))
+        this.trigger(prefix('pluginsReady'), this.registry);
         return this.registerTools();
     }
 
+    /**
+     * Register tools for tool bar
+     * @returns {Widget}
+     */
     registerTools() {
         this.registry.forEach(plugin => {
             if (plugin.tool) {
@@ -33,19 +46,18 @@ class App extends Widget {
         this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
         this.tool.classList.add('minimizer');
         this.toolButtons.set(this.key, this.tool);
-        return this.trigger(new CustomEvent(prefix('toolsReady'), {
-            detail: this.toolButtons
-        }))
+        return this.trigger(prefix('toolsReady'), this.toolButtons);
     }
 
+    /**
+     * Builds the app
+     * @param {HTMLElement} game
+     */
     constructor(game) {
-        if (!game || !window.gameData) {
-            console.info(`This bookmarklet only works on ${settings.get('targetUrl')}`);
-            return false;
-        }
 
         super(settings.get('label'), {
-            canChangeState: true
+            canChangeState: true,
+            key: prefix('app'),
         });
         this.game = game;
 
@@ -60,7 +72,7 @@ class App extends Widget {
         this.parent = el.div({
             classNames: [prefix('container')]
         });
-        
+
         const resultList = el.$('.sb-wordlist-items', game);
         const events = {};
         events[prefix('destroy')] = () => {
@@ -69,7 +81,6 @@ class App extends Widget {
         };
 
         this.isDraggable = true;
-        this.dragArea = this.game;
 
         this.ui = el.div({
             attributes: {
@@ -82,29 +93,33 @@ class App extends Widget {
             events: events
         });
 
+        this.dragHandle = this.ui;
+        this.dragArea = this.game;
+
         data.init(this, resultList);
 
-        this.observer = new MutationObserver(mutationsList => this.trigger(new CustomEvent(prefix('newWord'), {
-            detail: mutationsList.pop().textContent.trim()
-        })));
+        this.observer = (() => {
+            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop()));
+            observer.observe(resultList, {
+                childList: true
+            });
+            return observer;
+        })();
 
-        this.observer.observe(resultList, {
-            childList: true
-        });
-        
         // minimize on smaller screens
         const mql = window.matchMedia('(max-width: 1196px)');
         mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));
         mql.dispatchEvent(new Event('change'));
 
         const wordlistToggle = el.$('.sb-toggle-expand');
-        wordlistToggle.addEventListener('click', evt => {
+        wordlistToggle.addEventListener('click', () => {
             this.ui.style.display = el.$('.sb-toggle-icon-expanded', wordlistToggle) ? 'none' : 'block';
         })
-        if(el.$('.sb-toggle-icon-expanded', wordlistToggle)){
+        if (el.$('.sb-toggle-icon-expanded', wordlistToggle)) {
             wordlistToggle.dispatchEvent(new Event('click'));
         }
 
+        this.toggle(this.getState());
         this.parent.append(this.ui);
         game.before(this.parent);
     };

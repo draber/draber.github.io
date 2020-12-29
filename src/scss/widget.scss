@@ -147,7 +147,6 @@ $pluginWidth: 138;
     [data-ui="header"] {
         display: flex;
         gap: 8px;
-
         .toolbar {
             display: flex;
             align-items: stretch;
@@ -155,7 +154,6 @@ $pluginWidth: 138;
 
             div {
                 padding: 10px 3px 2px 3px;
-
                 &:last-of-type {
                     padding-top: 8px;
                 }
@@ -293,7 +291,6 @@ $pluginWidth: 138;
         text-align: center;
         padding: 4px 0;
         width: 26px;
-        white-space: nowrap;
 
         &:first-of-type {
             text-align: left;
@@ -332,7 +329,7 @@ $pluginWidth: 138;
     }
 
     .spill-title {
-        padding: 10px 6px 0px;
+        padding: 10px 6px 0;
         text-align: center;
     }
 
@@ -380,7 +377,7 @@ $pluginWidth: 138;
         width: 100%;
         max-width: 1080px;
         margin: 0 auto;
-        height: 0px;
+        height: 0;
         overflow-y: visible;
         position: relative;
         z-index: 5;

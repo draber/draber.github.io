@@ -9,17 +9,16 @@ import settings from '../modules/settings.js';
  */
 class Positioning extends Plugin {
 
+    /**
+     * Absolute position of the draggable object
+     * @type {{top: Number, left: Number}}
+     */
     position;
 
-    boundaries;
-
-    mouse = {
-        old: undefined,
-        new: undefined
-    }
-
-    isLastTarget = false;
-
+    /**
+     * How close the draggable object can come to the edges of the drag area
+     * @type {{top: Number, right: Number, bottom: number, left: Number}}
+     */
     offset = {
         top: 12,
         right: 12,
@@ -27,6 +26,31 @@ class Positioning extends Plugin {
         left: 12
     };
 
+    /**
+     * Translation of the boundaries to left and top
+     * @type {{minTop: Number, maxTop: Number, minLeft: number, maxLeft: Number}}
+     */
+    boundaries;
+
+    /**
+     * Mouse position, new = on drag start, old on dragend
+     * @type {{new: any, old: any}}
+     */
+    mouse = {
+        old: undefined,
+        new: undefined
+    }
+
+    /**
+     * Helps to determine if the the draggable object has been dragged by the handle
+     * @type {boolean}
+     */
+    isLastTarget = false;
+
+    /**
+     * Translate offset to boundaries
+     * @returns {Positioning}
+     */
     calculateBoundaries() {
         const areaRect = this.app.dragArea.getBoundingClientRect();
         const parentRect = this.app.ui.parentNode.getBoundingClientRect();
@@ -42,7 +66,7 @@ class Positioning extends Plugin {
     }
 
     /**
-     *
+     * Computes the mouse position
      * @param {Event} evt
      * @param {String} age old|new as in at dragStart|dragEnd
      * @returns {Positioning}
@@ -73,7 +97,7 @@ class Positioning extends Plugin {
      */
     calculateOldPosition() {
         const stored = settings.get('options.positioning');
-        if (stored && !Object.prototype.toString.call(stored) === '[object Object]') {
+        if (stored && Object.prototype.toString.call(stored) === '[object Object]') {
             this.position = stored;
         } else {
             const style = getComputedStyle(this.app.ui);
@@ -101,9 +125,7 @@ class Positioning extends Plugin {
             left: this.position.left + 'px',
             top: this.position.top + 'px'
         });
-        if(this.getState()){
-            settings.set('options.positioning', this.position);
-        }
+        this.toggle(this.getState() ? this.position : false);
         return this;
     }
 
@@ -113,11 +135,9 @@ class Positioning extends Plugin {
      */
     enableDrag() {
 
-        const trigger = this.app.dragTrigger || this.app.ui;
-        trigger.style.cursor = 'move';
-
+        this.app.dragHandle.style.cursor = 'move';
         this.app.on('pointerdown', evt => {
-                this.isLastTarget = evt.target.isSameNode(trigger);
+                this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
             }).on('pointerup', () => {
                 this.isLastTarget = false;
             }).on('dragend', evt => {
@@ -144,9 +164,13 @@ class Positioning extends Plugin {
      * @returns {Widget}
      */
     toggle(state) {
-        return super.toggle(state || this.position);
+        return super.toggle(state ? this.position : state);
     }
 
+    /**
+     * Make app draggable
+     * @param app
+     */
     constructor(app) {
 
         super(app, 'Memorize position', {
@@ -160,7 +184,7 @@ class Positioning extends Plugin {
             if (this.getState()) {
                 this.reposition();
             }
-            window.addEventListener('orientationchange', this.reposition());
+            window.addEventListener('orientationchange', () => this.reposition());
         }
     }
 }

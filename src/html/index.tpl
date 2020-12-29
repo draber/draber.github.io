@@ -27,7 +27,7 @@
 			<h1>Spelling Bee Assistant</h1>
 			<ul class="social">
 				<li class="github">
-					<a href="https://github.com/draber/draber.github.io" rel="noopener" target="_blank"><img alt="GitHub Respository" src="assets/img/GitHub-Mark-32px.png"></a>
+					<a href="https://github.com/draber/draber.github.io" rel="noopener" target="_blank"><img alt="GitHub Repository" src="assets/img/GitHub-Mark-32px.png"></a>
 				</li>
 				<li class="twitter">
 					<a class="twitter-share-button" data-show-count="false" href="https://twitter.com/share?ref_src=twsrc%5Etfw" rel="noopener">Tweet</a> 
@@ -221,11 +221,12 @@
 			<p>No.</p>
 		</section>
 	</main><map id="setUp" name="setUp">
-		<area coords="3,28,106,47" href="#dark-mode" shape="rect">
-	</map> <map id="header-links" name="header-links">
-		<area coords="86,0,102,12" href="#dark-mode" shape="rect">
-		<area coords="104,0,119,12" href="#set-up" shape="rect">
-		<area coords="121,0,136,12" href="#minimize" shape="rect">
+		<area alt="Dark Mode" coords="3,28,106,47" href="#dark-mode" shape="rect">
+	</map>
+	<map id="header-links" name="header-links">
+		<area alt="Dark Mode" coords="86,0,102,12" href="#dark-mode" shape="rect">
+		<area alt="Set-up" coords="104,0,119,12" href="#set-up" shape="rect">
+		<area alt="Minimize" coords="121,0,136,12" href="#minimize" shape="rect">
 	</map> 
 	<script>
 	 ((d) => {

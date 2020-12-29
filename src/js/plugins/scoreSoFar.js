@@ -14,6 +14,10 @@ import tbl from '../modules/tables.js';
  */
 class ScoreSoFar extends Plugin {
 
+    /**
+     * Build table data set
+     * @returns {(string[]|(string|number)[])[]}
+     */
     getData() {
         return [
             ['', '✓', '?', '∑'],
@@ -31,6 +35,11 @@ class ScoreSoFar extends Plugin {
             ]
         ];
     }
+
+    /**
+     * Build plugin
+     * @param app
+     */
     constructor(app) {
 
         super(app, 'Score so far', {

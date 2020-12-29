@@ -5,6 +5,7 @@ import settings from './settings.js';
 import getIcon from './icons.js';
 import el from './element.js';
 
+// noinspection JSUnresolvedFunction
 /**
  * Plugin base class
  */
@@ -42,7 +43,7 @@ class Widget {
 
     /**
      * Tells if the user has deactivated a plugin, falls back on default setting
-     * @returns {boolean}
+     * @returns {Boolean|String}
      */
     getState() {
         const stored = settings.get(`options.${this.key}`);
@@ -59,12 +60,19 @@ class Widget {
             return this;
         }
         settings.set(`options.${this.key}`, state);
-        if(this.hasUi()){
+        if (this.hasUi()) {
             this.ui.classList.toggle('inactive', !state);
         }
         return this;
     }
 
+    /**
+     * Build a tool for the tool bar
+     * @param {String} iconKey
+     * @param {String} textToActivate
+     * @param {String} textToDeactivate
+     * @returns {Widget}
+     */
     enableTool(iconKey, textToActivate, textToDeactivate) {
         this.tool = el.div({
             events: {
@@ -79,7 +87,7 @@ class Widget {
             data: {
                 tool: this.key
             }
-            
+
         })
         this.tool.append(getIcon(iconKey));
         return this;
@@ -95,22 +103,33 @@ class Widget {
 
     /**
      * Assign an event to the ui
+     * @param type
+     * @param action
      * @returns {Widget}
      */
-    on(evt, action) {
-        this.ui.addEventListener(evt, action);
+    on(type, action) {
+        this.ui.addEventListener(type, action);
         return this;
     }
 
     /**
      * Fire an event from the ui
+     * @param type
+     * @param data
      * @returns {Widget}
      */
-    trigger(evt) {
-        this.ui.dispatchEvent(evt);
+    trigger(type, data) {
+        this.ui.dispatchEvent(data ? new CustomEvent(type, {
+            detail: data
+        }) : new Event(type));
         return this;
     }
 
+    /**
+     * Build an instance of the widget
+     * @param {String} title
+     * @param {{key: String, canChangeState: Boolean, defaultState: *}}
+     */
     constructor(title, {
         key,
         canChangeState,

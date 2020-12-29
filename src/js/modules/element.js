@@ -25,12 +25,7 @@ const fn = {
 
 /**
  * Create elements conveniently
- * @param {String} tag
- * @param {String} text
- * @param {Object} attributes
- * @param {Object} style
- * @param {Object} data
- * @param {Object} events
+ * @param {{tag: String, text: String, attributes: Object, style: Object, data: Object, events: Object, classNames: Array, svg: Boolean}}
  * @returns {HTMLElement}
  */
 const create = function ({
@@ -90,6 +85,12 @@ const create = function ({
  * returns the element `<a href="http://example.com" style="color: red" data-foo="bar" class="boom">My link</a>` that issues an alert when clicked
  */
 const el = new Proxy(fn, {
+    /**
+     * Either build an element or retrieve one or multiple from the DOM
+     * @param target
+     * @param prop
+     * @returns {function(): (*)}
+     */
     get(target, prop) {
         return function () {
             const args = Array.prototype.slice.call(arguments);

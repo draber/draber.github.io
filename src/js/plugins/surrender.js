@@ -10,6 +10,10 @@ import Plugin from '../modules/plugin.js';
  */
 class Surrender extends Plugin {
 
+	/**
+	 * Helps to make sure that the missing terms can only be appended once
+	 * @type {boolean}
+	 */
 	usedOnce = false;
 
 	/**

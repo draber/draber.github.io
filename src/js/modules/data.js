@@ -76,22 +76,23 @@ const getPoints = type => {
 
 /**
  * Update word lists
- * @param {HTMLElement} app
- * @param {String} term
+ * @param {App} app
+ * @param {HTMLElement} node
  */
-const updateLists = (app, term) => {
+const updateLists = (app, node) => {
+    const term = node.textContent.trim()
     lists.foundTerms.push(term);
     if (lists.pangrams.includes(term)) {
         lists.foundPangrams.push(term);
         node.classList.add('sb-pangram');
     }
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.trigger(new Event(prefix('wordsUpdated')));
+    app.trigger(prefix('wordsUpdated'));
 };
 
 /**
  * Build initial word lists
- * @param {app} app
+ * @param {App} app
  * @param {HTMLElement} resultList
  */
 const init = (app, resultList) => {

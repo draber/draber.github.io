@@ -20,13 +20,12 @@ class Header extends Plugin {
 
         this.ui = el.div();
 
-        // add title closer and minimizer
-        app.dragTrigger = el.div({
+        app.dragHandle = el.div({
             text: this.title,
             classNames: ['header']
         })
 
-        this.ui.append(app.dragTrigger);
+        this.ui.append(app.dragHandle);
         
         app.on(prefix('toolsReady'), evt => {
             const toolbar = el.div({

@@ -14,7 +14,7 @@ class Plugin extends Widget {
 
     /**
      * App container object, not the app UI!
-     * @type {app}
+     * @type {App}
      */
     app;
 
@@ -23,11 +23,11 @@ class Plugin extends Widget {
      * @returns {Widget}
      */
     attach() {
+        this.toggle(this.getState());
         if (!this.hasUi()) {
             return this;
         }
         this.ui.dataset.ui = this.key;
-        this.toggle(this.getState());
         (this.target || this.app.ui).append(this.ui);
         return this;
     }
@@ -43,14 +43,17 @@ class Plugin extends Widget {
         return this.attach();
     }
 
+    /**
+     * Build an instance of a plugin
+     * @param {App} app
+     * @param {String} title
+     * @param {{key: String, canChangeState: Boolean, defaultState: *}}
+     */
     constructor(app, title, {
         key,
         canChangeState,
         defaultState
     } = {}) {
-        if (!app || !title) {
-            throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
-        }
         super(title, {
             key,
             canChangeState,

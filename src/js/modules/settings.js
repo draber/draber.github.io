@@ -3,7 +3,7 @@ import * as config from '../../config/config.json';
 
 /**
  * Collection of data from `package.json`, `config.json` and `localStorage`
- * @type {{repo: string, options: object, label: string, title: string, version: string, url: string}}
+ * @type {{prefix: string, repo: string, options: object, label: string, title: string, targetUrl: string, version: string, url: string}}
  */
 const settings = {
     label: config.label,
@@ -18,7 +18,7 @@ const settings = {
 
 /**
  * Returns a value based on a key, can also be `foo.bar`
- * @param key
+ * @param {String} key
  * @returns {String|undefined}
  */
 const get = key => {
@@ -34,8 +34,8 @@ const get = key => {
 
 /**
  * Assign a new value to a key in settings
- * @param key
- * @param value
+ * @param {String} key
+ * @param {*} value
  */
 const set = (key, value) => {
     const keys = key.split('.');
@@ -45,7 +45,7 @@ const set = (key, value) => {
         if (!current[part]) {
             current[part] = {};
         }
-        if (!Object.prototype.toString.call(current) === '[object Object]') {
+        if (Object.prototype.toString.call(current) !== '[object Object]') {
             console.error(`${part} is not of the type Object`);
             return false;
         }

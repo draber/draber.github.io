@@ -95,7 +95,7 @@
             if (!current[part]) {
                 current[part] = {};
             }
-            if (!Object.prototype.toString.call(current) === '[object Object]') {
+            if (Object.prototype.toString.call(current) !== '[object Object]') {
                 console.error(`${part} is not of the type Object`);
                 return false;
             }
@@ -175,14 +175,15 @@
         });
         return points;
     };
-    const updateLists = (app, term) => {
+    const updateLists = (app, node) => {
+        const term = node.textContent.trim();
         lists.foundTerms.push(term);
         if (lists.pangrams.includes(term)) {
             lists.foundPangrams.push(term);
             node.classList.add('sb-pangram');
         }
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.trigger(new Event(prefix$1('wordsUpdated')));
+        app.trigger(prefix$1('wordsUpdated'));
     };
     const init = (app, resultList) => {
         initLists(resultList);
@@ -260,7 +261,7 @@
                 return this;
             }
             settings$1.set(`options.${this.key}`, state);
-            if(this.hasUi()){
+            if (this.hasUi()) {
                 this.ui.classList.toggle('inactive', !state);
             }
             return this;
@@ -286,12 +287,14 @@
         hasUi() {
             return this.ui instanceof HTMLElement;
         }
-        on(evt, action) {
-            this.ui.addEventListener(evt, action);
+        on(type, action) {
+            this.ui.addEventListener(type, action);
             return this;
         }
-        trigger(evt) {
-            this.ui.dispatchEvent(evt);
+        trigger(type, data) {
+            this.ui.dispatchEvent(data ? new CustomEvent(type, {
+                detail: data
+            }) : new Event(type));
             return this;
         }
         constructor(title, {
@@ -310,13 +313,12 @@
     }
 
     class App extends Widget {
+        dragHandle;
         registerPlugins(plugins) {
             for (const [key, plugin] of Object.entries(plugins)) {
                 this.registry.set(key, new plugin(this));
             }
-            this.trigger(new CustomEvent(prefix$1('pluginsReady'), {
-                detail: this.registry
-            }));
+            this.trigger(prefix$1('pluginsReady'), this.registry);
             return this.registerTools();
         }
         registerTools() {
@@ -328,17 +330,12 @@
             this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
             this.tool.classList.add('minimizer');
             this.toolButtons.set(this.key, this.tool);
-            return this.trigger(new CustomEvent(prefix$1('toolsReady'), {
-                detail: this.toolButtons
-            }))
+            return this.trigger(prefix$1('toolsReady'), this.toolButtons);
         }
         constructor(game) {
-            if (!game || !window.gameData) {
-                console.info(`This bookmarklet only works on ${settings$1.get('targetUrl')}`);
-                return false;
-            }
             super(settings$1.get('label'), {
-                canChangeState: true
+                canChangeState: true,
+                key: prefix$1('app'),
             });
             this.game = game;
             const oldInstance = el.$(`[data-id="${this.key}"]`);
@@ -357,7 +354,6 @@
                 this.parent.remove();
             };
             this.isDraggable = true;
-            this.dragArea = this.game;
             this.ui = el.div({
                 attributes: {
                     draggable: this.isDraggable
@@ -368,23 +364,27 @@
                 classNames: [settings$1.get('prefix')],
                 events: events
             });
+            this.dragHandle = this.ui;
+            this.dragArea = this.game;
             data.init(this, resultList);
-            this.observer = new MutationObserver(mutationsList => this.trigger(new CustomEvent(prefix$1('newWord'), {
-                detail: mutationsList.pop().textContent.trim()
-            })));
-            this.observer.observe(resultList, {
-                childList: true
-            });
+            this.observer = (() => {
+                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop()));
+                observer.observe(resultList, {
+                    childList: true
+                });
+                return observer;
+            })();
             const mql = window.matchMedia('(max-width: 1196px)');
             mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));
             mql.dispatchEvent(new Event('change'));
             const wordlistToggle = el.$('.sb-toggle-expand');
-            wordlistToggle.addEventListener('click', evt => {
+            wordlistToggle.addEventListener('click', () => {
                 this.ui.style.display = el.$('.sb-toggle-icon-expanded', wordlistToggle) ? 'none' : 'block';
             });
-            if(el.$('.sb-toggle-icon-expanded', wordlistToggle)){
+            if (el.$('.sb-toggle-icon-expanded', wordlistToggle)) {
                 wordlistToggle.dispatchEvent(new Event('click'));
             }
+            this.toggle(this.getState());
             this.parent.append(this.ui);
             game.before(this.parent);
         };
@@ -396,11 +396,11 @@
         target;
         app;
         attach() {
+            this.toggle(this.getState());
             if (!this.hasUi()) {
                 return this;
             }
             this.ui.dataset.ui = this.key;
-            this.toggle(this.getState());
             (this.target || this.app.ui).append(this.ui);
             return this;
         }
@@ -415,9 +415,6 @@
             canChangeState,
             defaultState
         } = {}) {
-            if (!app || !title) {
-                throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
-            }
             super(title, {
                 key,
                 canChangeState,
@@ -451,7 +448,9 @@
                 defaultState: false
             });
             this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
-            this.toggle(this.getState());
+            app.on(prefix$1('destroy'), () => {
+                delete document.body.dataset[prefix$1('theme')];
+            });
             this.add();
         }
     }
@@ -462,11 +461,11 @@
                 key: 'header'
             });
             this.ui = el.div();
-            app.dragTrigger = el.div({
+            app.dragHandle = el.div({
                 text: this.title,
                 classNames: ['header']
             });
-            this.ui.append(app.dragTrigger);
+            this.ui.append(app.dragHandle);
             app.on(prefix$1('toolsReady'), evt => {
                 const toolbar = el.div({
                     classNames: ['toolbar']
@@ -522,7 +521,7 @@
     					attributes: {
     						type: 'checkbox',
     						name: key,
-    						checked: plugin.getState()
+    						checked: !!plugin.getState()
     					}
     				});
     				label.prepend(check);
@@ -809,18 +808,18 @@
 
     class Positioning extends Plugin {
         position;
-        boundaries;
-        mouse = {
-            old: undefined,
-            new: undefined
-        }
-        isLastTarget = false;
         offset = {
             top: 12,
             right: 12,
             bottom: 12,
             left: 12
         };
+        boundaries;
+        mouse = {
+            old: undefined,
+            new: undefined
+        }
+        isLastTarget = false;
         calculateBoundaries() {
             const areaRect = this.app.dragArea.getBoundingClientRect();
             const parentRect = this.app.ui.parentNode.getBoundingClientRect();
@@ -848,7 +847,7 @@
         }
         calculateOldPosition() {
             const stored = settings$1.get('options.positioning');
-            if (stored && !Object.prototype.toString.call(stored) === '[object Object]') {
+            if (stored && Object.prototype.toString.call(stored) === '[object Object]') {
                 this.position = stored;
             } else {
                 const style = getComputedStyle(this.app.ui);
@@ -870,16 +869,13 @@
                 left: this.position.left + 'px',
                 top: this.position.top + 'px'
             });
-            if(this.getState()){
-                settings$1.set('options.positioning', this.position);
-            }
+            this.toggle(this.getState() ? this.position : false);
             return this;
         }
         enableDrag() {
-            const trigger = this.app.dragTrigger || this.app.ui;
-            trigger.style.cursor = 'move';
+            this.app.dragHandle.style.cursor = 'move';
             this.app.on('pointerdown', evt => {
-                    this.isLastTarget = evt.target.isSameNode(trigger);
+                    this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
                 }).on('pointerup', () => {
                     this.isLastTarget = false;
                 }).on('dragend', evt => {
@@ -899,7 +895,7 @@
             return this;
         }
         toggle(state) {
-            return super.toggle(state || this.position);
+            return super.toggle(state ? this.position : state);
         }
         constructor(app) {
             super(app, 'Memorize position', {
@@ -912,7 +908,7 @@
                 if (this.getState()) {
                     this.reposition();
                 }
-                window.addEventListener('orientationchange', this.reposition());
+                window.addEventListener('orientationchange', () => this.reposition());
             }
         }
     }

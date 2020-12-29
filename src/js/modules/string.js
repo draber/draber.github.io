@@ -21,7 +21,7 @@ export const camel = term => {
 /**
  * Convert a string to dash-case
  * @see https://stackoverflow.com/a/52964182 with some modifications
- * @param term
+ * @param {String} term
  * @returns {string}
  */
 export const dash = term => {
@@ -33,8 +33,8 @@ export const dash = term => {
 
 /**
  * Prefix a key and format the result as either camelCase or dash-case
- * @param term
- * @param mode
+ * @param {String} term
+ * @param {String} mode `c` for camelCase | `d` for dash-case
  * @returns {string}
  */
 export const prefix = (term, mode = 'c') => {
