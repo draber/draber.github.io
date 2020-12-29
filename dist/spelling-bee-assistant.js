@@ -815,54 +815,43 @@
             left: 12
         };
         boundaries;
-        mouse = {
-            old: undefined,
-            new: undefined
-        }
+        mouse;
         isLastTarget = false;
-        calculateBoundaries() {
+        getBoundaries() {
             const areaRect = this.app.dragArea.getBoundingClientRect();
             const parentRect = this.app.ui.parentNode.getBoundingClientRect();
             const appRect = this.app.ui.getBoundingClientRect();
-            this.boundaries = {
+            return {
                 minTop: this.offset.top,
                 maxTop: areaRect.height - appRect.height - this.offset.bottom,
                 minLeft: this.offset.left - parentRect.left,
                 maxLeft: areaRect.width - parentRect.left - appRect.width - this.offset.right
-            };
-            return this;
+            }
         }
-        calculateMousePosition(evt, age) {
-            this.mouse[age] = {
+        getMouse(evt) {
+            return {
                 left: evt.screenX,
                 top: evt.screenY
-            };
-            return this;
+            }
         }
-        calculateNewPosition(evt) {
-            this.calculateMousePosition(evt, 'new');
-            this.position.left += this.mouse.new.left - this.mouse.old.left;
-            this.position.top += this.mouse.new.top - this.mouse.old.top;
-            return this.reposition();
-        }
-        calculateOldPosition() {
-            const stored = settings$1.get('options.positioning');
-            if (stored && Object.prototype.toString.call(stored) === '[object Object]') {
-                this.position = stored;
-            } else {
+        getPosition(evt) {
+            if (evt) {
+                const mouse = this.getMouse(evt);
+                return {
+                    left: this.position.left + mouse.left - this.mouse.left,
+                    top: this.position.top += mouse.top - this.mouse.top
+                }
+            }
+            else {
                 const style = getComputedStyle(this.app.ui);
-                this.position = {
+                return {
                     top: parseInt(style.top),
                     left: parseInt(style.left)
-                };
+                }
             }
-            return this;
         }
         reposition() {
-            if (!this.position) {
-                this.calculateOldPosition();
-            }
-            this.calculateBoundaries();
+            this.boundaries = this.getBoundaries();
             this.position.left = Math.min(this.boundaries.maxLeft, Math.max(this.boundaries.minLeft, this.position.left));
             this.position.top = Math.min(this.boundaries.maxTop, Math.max(this.boundaries.minTop, this.position.top));
             Object.assign(this.app.ui.style, {
@@ -879,7 +868,8 @@
                 }).on('pointerup', () => {
                     this.isLastTarget = false;
                 }).on('dragend', evt => {
-                    this.calculateNewPosition(evt);
+                    this.position = this.getPosition(evt);
+                    this.reposition();
                     evt.target.style.opacity = '1';
                 }).on('dragstart', evt => {
                         if (!this.isLastTarget) {
@@ -887,7 +877,8 @@
                             return false;
                         }
                         evt.target.style.opacity = '.2';
-                        this.calculateOldPosition().calculateMousePosition(evt, 'old');
+                        this.position = this.getPosition();
+                        this.mouse = this.getMouse(evt);
                     },
                     false)
                 .on('dragover', evt => evt.preventDefault());
@@ -902,14 +893,18 @@
                 key: 'positioning',
                 canChangeState: true
             });
-            if (this.app.isDraggable) {
-                this.enableDrag();
-                this.add();
-                if (this.getState()) {
-                    this.reposition();
-                }
-                window.addEventListener('orientationchange', () => this.reposition());
+            if (!this.app.isDraggable) {
+                return this;
             }
+            this.position = this.getPosition();
+            const stored = this.getState();
+            if (stored && Object.prototype.toString.call(stored) === '[object Object]') {
+                this.position = stored;
+                this.reposition();
+            }
+            this.enableDrag();
+            this.add();
+            window.addEventListener('orientationchange', () => this.reposition());
         }
     }
 

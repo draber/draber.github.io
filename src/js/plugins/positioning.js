@@ -34,12 +34,9 @@ class Positioning extends Plugin {
 
     /**
      * Mouse position, new = on drag start, old on dragend
-     * @type {{new: any, old: any}}
+     * @type {{left: Number, top: Number}}
      */
-    mouse = {
-        old: undefined,
-        new: undefined
-    }
+    mouse;
 
     /**
      * Helps to determine if the the draggable object has been dragged by the handle
@@ -49,64 +46,54 @@ class Positioning extends Plugin {
 
     /**
      * Translate offset to boundaries
-     * @returns {Positioning}
+     * @returns {{minTop: Number, maxTop: Number, minLeft: Number, maxLeft: Number}}
      */
-    calculateBoundaries() {
+    getBoundaries() {
         const areaRect = this.app.dragArea.getBoundingClientRect();
         const parentRect = this.app.ui.parentNode.getBoundingClientRect();
         const appRect = this.app.ui.getBoundingClientRect();
 
-        this.boundaries = {
+        return {
             minTop: this.offset.top,
             maxTop: areaRect.height - appRect.height - this.offset.bottom,
             minLeft: this.offset.left - parentRect.left,
             maxLeft: areaRect.width - parentRect.left - appRect.width - this.offset.right
         }
-        return this;
     }
 
     /**
      * Computes the mouse position
      * @param {Event} evt
-     * @param {String} age old|new as in at dragStart|dragEnd
-     * @returns {Positioning}
+     * @returns {{left: Number, top: Number}}
      */
-    calculateMousePosition(evt, age) {
-        this.mouse[age] = {
+    getMouse(evt) {
+        return {
             left: evt.screenX,
             top: evt.screenY
         }
-        return this;
     }
 
     /**
-     * Get position at dragEnd, can be subject to correction in this.reposition()
+     * w/o evt: position at launch or dragStart
+     * w/ evt: position at dragEnd, can be subject to boundary correction in this.reposition()
      * @param evt
-     * @returns {Positioning}
+     * @returns {Object}
      */
-    calculateNewPosition(evt) {
-        this.calculateMousePosition(evt, 'new');
-        this.position.left += this.mouse.new.left - this.mouse.old.left;
-        this.position.top += this.mouse.new.top - this.mouse.old.top;
-        return this.reposition();
-    }
-
-    /**
-     * Position at launch or dragStart
-     * @returns {Positioning}
-     */
-    calculateOldPosition() {
-        const stored = settings.get('options.positioning');
-        if (stored && Object.prototype.toString.call(stored) === '[object Object]') {
-            this.position = stored;
-        } else {
+    getPosition(evt) {
+        if (evt) {
+            const mouse = this.getMouse(evt);
+            return {
+                left: this.position.left + mouse.left - this.mouse.left,
+                top: this.position.top += mouse.top - this.mouse.top
+            }
+        }
+        else {           
             const style = getComputedStyle(this.app.ui);
-            this.position = {
+            return {
                 top: parseInt(style.top),
                 left: parseInt(style.left)
             }
         }
-        return this;
     }
 
     /**
@@ -114,10 +101,7 @@ class Positioning extends Plugin {
      * @returns {Positioning}
      */
     reposition() {
-        if (!this.position) {
-            this.calculateOldPosition();
-        }
-        this.calculateBoundaries();
+        this.boundaries = this.getBoundaries();
         this.position.left = Math.min(this.boundaries.maxLeft, Math.max(this.boundaries.minLeft, this.position.left));
         this.position.top = Math.min(this.boundaries.maxTop, Math.max(this.boundaries.minTop, this.position.top));
 
@@ -141,7 +125,8 @@ class Positioning extends Plugin {
             }).on('pointerup', () => {
                 this.isLastTarget = false;
             }).on('dragend', evt => {
-                this.calculateNewPosition(evt);
+                this.position = this.getPosition(evt);
+                this.reposition()
                 evt.target.style.opacity = '1';
             }).on('dragstart', evt => {
                     if (!this.isLastTarget) {
@@ -149,7 +134,8 @@ class Positioning extends Plugin {
                         return false;
                     }
                     evt.target.style.opacity = '.2';
-                    this.calculateOldPosition().calculateMousePosition(evt, 'old');
+                    this.position = this.getPosition();
+                    this.mouse = this.getMouse(evt);
                 },
                 false)
             .on('dragover', evt => evt.preventDefault());
@@ -178,14 +164,23 @@ class Positioning extends Plugin {
             canChangeState: true
         });
 
-        if (this.app.isDraggable) {
-            this.enableDrag();
-            this.add();
-            if (this.getState()) {
-                this.reposition();
-            }
-            window.addEventListener('orientationchange', () => this.reposition());
+        if (!this.app.isDraggable) {
+            return this;
         }
+
+        // current physical position
+        this.position = this.getPosition();
+
+        // possibly stored position from previous session
+        const stored = this.getState();
+        if (stored && Object.prototype.toString.call(stored) === '[object Object]') {
+            this.position = stored;
+            this.reposition();
+        }
+
+        this.enableDrag();
+        this.add();
+        window.addEventListener('orientationchange', () => this.reposition());
     }
 }
 
