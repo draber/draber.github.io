@@ -14,7 +14,7 @@ class Plugin extends Widget {
 
     /**
      * App container object, not the app UI!
-     * @type {app}
+     * @type {App}
      */
     app;
 
@@ -22,12 +22,12 @@ class Plugin extends Widget {
      * Attaches plugins to DOM, creates slot in app if needed
      * @returns {Widget}
      */
-    attach = () => {
+    attach() {
+        this.toggle(this.getState());
         if (!this.hasUi()) {
             return this;
         }
         this.ui.dataset.ui = this.key;
-        this.toggle(this.isActive());
         (this.target || this.app.ui).append(this.ui);
         return this;
     }
@@ -36,22 +36,29 @@ class Plugin extends Widget {
      * Adds plugin to DOM and registers state in local storage
      * @returns {Widget}
      */
-    add = () => {
-        if (this.canDeactivate) {
-            settings.set(`options.${this.key}`, this.isActive());
+    add() {
+        if (this.canChangeState) {
+            settings.set(`options.${this.key}`, this.getState());
         }
         return this.attach();
     }
 
+    /**
+     * Build an instance of a plugin
+     * @param {App} app
+     * @param {String} title
+     * @param {{key: String, canChangeState: Boolean, defaultState: *}}
+     */
     constructor(app, title, {
         key,
-        canDeactivate,
-        defaultActive
+        canChangeState,
+        defaultState
     } = {}) {
-        if (!app || !title) {
-            throw new TypeError(`${Object.getPrototypeOf(this.constructor).name} expects at least 2 arguments, 'app' or 'title' missing from ${this.constructor.name}`);
-        }
-        super(title, { key, canDeactivate, defaultActive })
+        super(title, {
+            key,
+            canChangeState,
+            defaultState
+        })
         this.app = app;
     }
 }

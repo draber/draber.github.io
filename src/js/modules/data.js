@@ -1,5 +1,7 @@
 import el from './element.js';
-import { prefix } from './string.js';
+import {
+    prefix
+} from './string.js';
 
 /**
  * Word lists
@@ -9,16 +11,30 @@ let lists;
 
 /**
  * Build word lists
- * @returns {{remainders: [], answers: object, pangrams: [string], foundPangrams: [], foundTerms: []}}
+ * @param {HTMLElement} resultList
  */
-const initLists = () => {
-    return {
+const initLists = resultList => {
+    // noinspection JSUnresolvedVariable,JSUnresolvedVariable,JSUnresolvedVariable,JSUnresolvedVariable
+    lists = {
         answers: window.gameData.today.answers,
         pangrams: window.gameData.today.pangrams,
         foundTerms: [],
         foundPangrams: [],
         remainders: []
     }
+
+    el.$$('li', resultList).forEach(node => {
+        if (el.$('a', node)) {
+            return false;
+        }
+        const term = node.textContent;
+        lists.foundTerms.push(term);
+        if (lists.pangrams.includes(term)) {
+            lists.foundPangrams.push(term);
+            node.classList.add('sb-pangram');
+        }
+    });
+    lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
 }
 
 /**
@@ -61,37 +77,30 @@ const getPoints = type => {
 
 /**
  * Update word lists
- * @param {HTMLElement} app
- * @param {HTMLElement} resultList
+ * @param {App} app
+ * @param {HTMLElement} node
  */
-const updateLists = (app, resultList) => {
-    lists.foundTerms = [];
-    lists.foundPangrams = [];
-
-    el.$$('li', resultList).forEach(node => {
-        if(el.$('a', node)){
-            return false;
-        }
-        const term = node.textContent;
-        lists.foundTerms.push(term);
-        if (lists.pangrams.includes(term)) {
-            lists.foundPangrams.push(term);
-            node.classList.add('sb-pangram');
-        }
-    });
+const updateLists = (app, node) => {
+    const term = node.textContent.trim()
+    lists.foundTerms.push(term);
+    if (lists.pangrams.includes(term)) {
+        lists.foundPangrams.push(term);
+        node.classList.add('sb-pangram');
+    }
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.trigger(new Event(prefix('wordsUpdated')));
+    app.trigger(prefix('wordsUpdated'));
 };
 
 /**
  * Build initial word lists
- * @param {app} app
+ * @param {App} app
  * @param {HTMLElement} resultList
  */
 const init = (app, resultList) => {
-    lists = initLists();
-    updateLists(app, resultList);
-    app.on(prefix('newWord'), () => updateLists(app, resultList));
+    initLists(resultList);
+    app.on(prefix('newWord'), (evt) => {
+        updateLists(app, evt.detail)
+    });
 }
 
 export default {

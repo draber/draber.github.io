@@ -3,218 +3,254 @@
 <head>
 	<meta charset="utf-8">
 	<title>Spelling Bee Assistant</title>
-	<meta name="description" content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle">
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta property="og:title" content="Spelling Bee Assistant" />
-	<meta property="og:description" content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle" />
-	<meta property="og:image" content="https://spelling-bee-assistant.app/assets/img/social.png?2.0.0" />
-	<meta property="og:url" content="https://spelling-bee-assistant.app/" />
-	<meta property="og:site_name" content="Spelling Bee Assistant" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:site" content="@d_raber" />
-	<meta name="twitter:image" content="https://spelling-bee-assistant.app/assets/img/social.png?2.0.0" />
-	<meta name="twitter:image:alt" content="Spelling Bee Assistant" />
-	<meta name="google-site-verification" content="xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU" />
-	<meta name="google-site-verification" content="7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8" />
-	<link rel="icon" href="assets/img/favicon.png?2.0.0" type="image/png" />
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="assets/css/site.css?2.0.0">
+	<meta content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle" name="description">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<meta content="Spelling Bee Assistant" property="og:title">
+	<meta content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle" property="og:description">
+	<meta content="https://spelling-bee-assistant.app/assets/img/social.png?2.0.0" property="og:image">
+	<meta content="https://spelling-bee-assistant.app/" property="og:url">
+	<meta content="Spelling Bee Assistant" property="og:site_name">
+	<meta content="summary_large_image" name="twitter:card">
+	<meta content="@d_raber" name="twitter:site">
+	<meta content="https://spelling-bee-assistant.app/assets/img/social.png?2.0.0" name="twitter:image">
+	<meta content="Spelling Bee Assistant" name="twitter:image:alt">
+	<meta content="xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU" name="google-site-verification">
+	<meta content="7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8" name="google-site-verification">
+	<link href="assets/img/favicon.png?2.0.0" rel="icon" type="image/png">
+	<link href="https://fonts.gstatic.com" rel="preconnect">
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+	<link href="assets/css/site.css?2.0.0" rel="stylesheet">
 </head>
 <body>
-<header>
-  <div class="wrapper">
-    <h1>Spelling Bee Assistant</h1>
-    <ul class="social">
-      <li class="github">
-        <a href="https://github.com/draber/draber.github.io" rel="noopener" target="_blank">
-          <img src="assets/img/GitHub-Mark-32px.png" alt="GitHub Respository">
-        </a>
-      </li>
-      <li class="twitter">
-        <a class="twitter-share-button" rel="noopener" data-show-count="false" href="https://twitter.com/share?ref_src=twsrc%5Etfw">Tweet</a> 
-        <script async charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
-      </li>
-    </ul>
-  </div>
-</header>
-<main class="wrapper">
-  <section class="intro">
-    <div class="intro-text">
-      <figure class="hive-box img-box">
-        <svg viewBox="0 0 190.5 199" xmlns="http://www.w3.org/2000/svg">
-          <g fill="#e6e6e6" class="cells">
-            <path class="center" fill="#f8cd0f" d="M77.099 67.763L58.674 99.511l18.141 31.748h36.566l18.425-31.748-18.141-31.748z" />
-            <path d="M135.85 101.73l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z" />
-            <path d="M77.099 135.61l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z" />
-            <path d="M18.388 101.68L-.037 133.428l18.141 31.748H54.67l18.425-31.748-18.141-31.748z" />
-            <path d="M18.388 33.832L-.037 65.58l18.141 31.748H54.67L73.095 65.58 54.954 33.832z" />
-            <path d="M77.099-.09L58.674 31.656l18.141 31.748h36.566l18.425-31.748L113.665-.09z" />
-            <path d="M135.85 33.879l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z" />
-          </g>
-          <g class="text">
-            <path class="center" d="M103.04 99.41q0 2.01-.918 3.606-.919 1.586-2.32 2.436-1.055.639-2.311.89-1.257.251-2.978.251h-5.076V92.197h5.22q1.76 0 3.037.3 1.276.29 2.146.831 1.489.91 2.34 2.456.86 1.537.86 3.626zm-3.838-.029q0-1.421-.522-2.427-.513-1.015-1.634-1.585-.57-.28-1.17-.377-.59-.107-1.789-.107h-.937v9.011h.937q1.325 0 1.944-.116.618-.126 1.208-.445 1.015-.58 1.49-1.547.473-.976.473-2.407z" />
-            <path d="M44.825 140.54h-3.838l-.996-2.91h-5.337l-.996 2.91h-3.741l5.317-14.396h4.274zm-5.733-5.55l-1.77-5.162-1.768 5.163z" />
-            <path d="M95.498 160.05h3.7148v14.395h-3.7148z"/>
-            <path d="M160.05 140.56h-10.383v-14.396h3.712v11.611h6.671z" />
-            <path d="M161.03 62.859q0 .967-.338 1.895-.339.918-.967 1.547-.86.85-1.924 1.286-1.054.435-2.63.435h-2.31v4.689h-3.713V58.315h6.11q1.373 0 2.31.241.948.232 1.674.706.87.57 1.324 1.46.464.89.464 2.137zm-3.838.087q0-.61-.329-1.044-.329-.445-.764-.619-.58-.232-1.13-.251-.552-.03-1.47-.03h-.638v4.313h1.063q.947 0 1.557-.116.618-.116 1.034-.464.358-.31.512-.735.165-.435.165-1.054z" />
-            <path d="M97.708 28.753q0-.541-.222-.928-.223-.387-.764-.61-.377-.154-.88-.183-.503-.039-1.17-.039h-1.344v3.877h1.141q.89 0 1.49-.087t1.005-.396q.386-.3.56-.657.184-.368.184-.977zm5.791 9.987h-4.534l-3.925-5.279h-1.712v5.279h-3.693V24.344h6.226q1.277 0 2.195.145.918.145 1.72.628.813.484 1.287 1.257.483.764.483 1.924 0 1.595-.744 2.6-.735 1.006-2.108 1.673z" />
-            <path d="M44.793 58.315l-5.308 8.827v5.569h-3.712v-5.395l-5.395-9h4.215l3.113 5.568 3.007-5.569z" />
-          </g>
-        </svg>
-      </figure>
-      <p><span class="emoji">Spelling Bee Assistant</span> is a JavaScript <a href="#bookmarklet" class="help">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener" target="_blank">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
-      <p>It's a great game but if you need the tiniest hint, you are on your own. If you don't make it to the end - and honestly, how often did you you see the <em>Queen Bee</em> screen come up - you'll have to wait to the next day to find out which words you've been missing.</p>
-      <p>For those of you who play on a laptop or a desktop computer, the Spelling Bee Assistant can offer a bit of support. It comes with a whole range of tools that can help you to succeed without spoiling the fun.</p>
-      <p class="desktop-only">To install, drag and drop the picture at the right into your browser’s bookmark menu. Next time you are playing, click on the bookmarklet to launch the assistant.</p>
-    </div>
-    <figure class="installer assistant-closed img-box desktop-only"> 
-      <a class="bookmarklet" rel="nofollow" onclick="return false" href="javascript:(function()%7B!function()%7B%22use%20strict%22%3Bconst%20t%3Dfunction(%7Btag%3At%2Ctext%3Ae%3D%22%22%2Cattributes%3As%3D%7B%7D%2Cstyle%3Aa%3D%7B%7D%2Cdata%3Ai%3D%7B%7D%2Cevents%3Ar%3D%7B%7D%2CclassNames%3An%3D%5B%5D%7D%3D%7B%7D)%7Bconst%20o%3Ddocument.createElement(t)%3Bfor(const%5Bt%2Ca%5Dof%20Object.entries(%7BtextContent%3Ae%2C...s%7D))o%5Bt%5D%3Da%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(i))o.dataset%5Bt%5D%3De%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(r))o.addEventListener(t%2Ce%2C!1)%3Breturn%20Object.assign(o.style%2Ca)%2Cn.length%26%26o.classList.add(...n)%2Co%7D%2Ce%3Dnew%20Proxy(%7B%24%3A(t%2Ce%3Dnull)%3D%3E%22string%22%3D%3Dtypeof%20t%3F(e%7C%7Cdocument).querySelector(t)%3At%7C%7Cnull%2C%24%24%3A(t%2Ce%3Dnull)%3D%3E%5B%5D.slice.call((e%7C%7Cdocument).querySelectorAll(t))%7D%2C%7Bget%3A(e%2Cs)%3D%3Efunction()%7Bconst%20a%3DArray.prototype.slice.call(arguments)%3Breturn%20e.hasOwnProperty(s)%26%26%22function%22%3D%3Dtypeof%20e%5Bs%5D%3F(e%5Bs%5D.bind(e)%2Ce%5Bs%5D.apply(null%2Ca))%3At(%7Btag%3As%2C...a.shift()%7D)%7D%7D)%3Bvar%20s%3D%22sba%22%3Bconst%20a%3D%7Blabel%3A%22Spelling%20Bee%20Assistant%22%2Ctitle%3A%22Assistant%22%2Curl%3A%22https%3A%2F%2Fspelling-bee-assistant.app%2F%22%2Cprefix%3As%2Crepo%3A%22draber%2Fdraber.github.io.git%22%2CtargetUrl%3A%22https%3A%2F%2Fwww.nytimes.com%2Fpuzzles%2Fspelling-bee%22%2Cversion%3A%222.0.0%22%2Coptions%3AJSON.parse(localStorage.getItem(%22sba-settings%22)%7C%7C%22%7B%7D%22)%7D%3Bvar%20i%3Dt%3D%3E%7Blet%20e%3DObject.create(a)%3Bfor(let%20s%20of%20t.split(%22.%22))%7Bif(void%200%3D%3D%3De%5Bs%5D)return%3Be%3De%5Bs%5D%7Dreturn%20e%7D%2Cr%3D(t%2Ce)%3D%3E%7Bconst%20s%3Dt.split(%22.%22)%2Ci%3Ds.pop()%3Blet%20r%3Da%3Bfor(let%20t%20of%20s)%7Bif(r%5Bt%5D%7C%7C(r%5Bt%5D%3D%7B%7D)%2C%22%5Bobject%20Object%5D%22%3D%3D%3D!Object.prototype.toString.call(r))return%20console.error(%60%24%7Bt%7D%20is%20not%20of%20the%20type%20Object%60)%2C!1%3Br%3Dr%5Bt%5D%7Dr%5Bi%5D%3De%2ClocalStorage.setItem(%22sba-settings%22%2CJSON.stringify(a.options))%7D%3Bconst%20n%3Di(%22prefix%22)%2Co%3Dt%3D%3Et.replace(%2F%5B_-%5D%2B%2F%2C%22%20%22).replace(%2F(%3F%3A%5E%5B%5Cw%5D%7C%5BA-Z%5D%7C%5Cb%5Cw%7C%5Cs%2B)%2Fg%2C(function(t%2Ce)%7Breturn%200%3D%3D%2Bt%3F%22%22%3A0%3D%3D%3De%3Ft.toLowerCase()%3At.toUpperCase()%7D))%2Cl%3D(t%2Ce%3D%22c%22)%3D%3E%7Bswitch(e)%7Bcase%22c%22%3Areturn%20o(n%2B%22_%22%2Bt)%3Bcase%22d%22%3Areturn(t%3D%3Et.replace(%2F%5B%5CW_%5D%2B%2Fg%2C%22%20%22).split(%2F%20%7C%5CB(%3F%3D%5BA-Z%5D)%2F).map((t%3D%3Et.toLowerCase())).join(%22-%22))(n%2Bt.charAt(0).toUpperCase()%2Bt.slice(1))%3Bdefault%3Areturn%20n%2Bt%7D%7D%3Blet%20c%3Bconst%20d%3D(t%2Cs)%3D%3E%7Bc.foundTerms%3D%5B%5D%2Cc.foundPangrams%3D%5B%5D%2Ce.%24%24(%22li%22%2Cs).forEach((t%3D%3E%7Bif(e.%24(%22a%22%2Ct))return!1%3Bconst%20s%3Dt.textContent%3Bc.foundTerms.push(s)%2Cc.pangrams.includes(s)%26%26(c.foundPangrams.push(s)%2Ct.classList.add(%22sb-pangram%22))%7D))%2Cc.remainders%3Dc.answers.filter((t%3D%3E!c.foundTerms.includes(t)))%2Ct.trigger(new%20Event(l(%22wordsUpdated%22)))%7D%3Bvar%20p%3D(t%2Ce)%3D%3E%7Bc%3D%7Banswers%3Awindow.gameData.today.answers%2Cpangrams%3Awindow.gameData.today.pangrams%2CfoundTerms%3A%5B%5D%2CfoundPangrams%3A%5B%5D%2Cremainders%3A%5B%5D%7D%2Cd(t%2Ce)%2Ct.on(l(%22newWord%22)%2C(s%3D%3Ed(t%2Ce)))%7D%2Cu%3Dt%3D%3Ec%5Bt%5D%2Cg%3Dt%3D%3Ec%5Bt%5D.length%2Ch%3Dt%3D%3E%7Bconst%20e%3Dc%5Bt%5D%3Blet%20s%3D0%3Breturn%20e.forEach((t%3D%3E%7Bc.pangrams.includes(t)%3Fs%2B%3Dt.length%2B7%3At.length%3E4%3Fs%2B%3Dt.length%3As%2B%3D1%7D))%2Cs%7D%3Bclass%20b%7BdefaultActive%3D!0%3Bui%3Btitle%3Bkey%3BcanDeactivate%3D!1%3BisActive%3D()%3D%3E%7Bconst%20t%3Di(%60options.%24%7Bthis.key%7D%60)%3Breturn%20void%200!%3D%3Dt%3Ft%3Athis.defaultActive%7D%3Btoggle%3Dt%3D%3Ethis.canDeactivate%3F(r(%60options.%24%7Bthis.key%7D%60%2Ct)%2Cthis.ui.classList.toggle(%22inactive%22%2C!t)%2Cthis)%3Athis%3BhasUi%3D()%3D%3Ethis.ui%20instanceof%20HTMLElement%3Bon%3D(t%2Ce)%3D%3E(this.ui.addEventListener(t%2Ce)%2Cthis)%3Btrigger%3Dt%3D%3E(this.ui.dispatchEvent(t)%2Cthis)%3Bconstructor(t%2C%7Bkey%3Ae%2CcanDeactivate%3As%2CdefaultActive%3Aa%7D%3D%7B%7D)%7Bif(!t)throw%20new%20TypeError(%60Missing%20'title'%20from%20%24%7Bthis.constructor.name%7D%60)%3Bthis.title%3Dt%2Cthis.key%3De%7C%7Co(t)%2Cthis.canDeactivate%3Dvoid%200!%3D%3Ds%3Fs%3Athis.canDeactivate%2Cthis.defaultActive%3Dvoid%200!%3D%3Da%3Fa%3Athis.defaultActive%7D%7Dclass%20m%20extends%20b%7Btarget%3Bapp%3Battach%3D()%3D%3Ethis.hasUi()%3F(this.ui.dataset.ui%3Dthis.key%2Cthis.toggle(this.isActive())%2C(this.target%7C%7Cthis.app.ui).append(this.ui)%2Cthis)%3Athis%3Badd%3D()%3D%3E(this.canDeactivate%26%26r(%60options.%24%7Bthis.key%7D%60%2Cthis.isActive())%2Cthis.attach())%3Bconstructor(t%2Ce%2C%7Bkey%3As%2CcanDeactivate%3Aa%2CdefaultActive%3Ai%7D%3D%7B%7D)%7Bif(!t%7C%7C!e)throw%20new%20TypeError(%60%24%7BObject.getPrototypeOf(this.constructor).name%7D%20expects%20at%20least%202%20arguments%2C%20'app'%20or%20'title'%20missing%20from%20%24%7Bthis.constructor.name%7D%60)%3Bsuper(e%2C%7Bkey%3As%2CcanDeactivate%3Aa%2CdefaultActive%3Ai%7D)%2Cthis.app%3Dt%7D%7Dlet%20f%2Cx%3D!1%3Bconst%20v%3D(t%2Ce%2Cs)%3D%3E%7Bif(!t.ui.draggable)return!1%3Bs.ui.style.cursor%3D%22move%22%2Ct.on(%22pointerdown%22%2C(t%3D%3E%7Bx%3D!!t.target.closest(%60%5Bdata-ui%3D%22%24%7Bs.key%7D%60)%7D)).on(%22pointerup%22%2C(()%3D%3E%7Bx%3D!1%7D)).on(%22dragend%22%2C(e%3D%3E%7BObject.assign(t.ui.style%2C(t%3D%3E%7Blet%20e%3DMath.max(0%2Ct.screenX-f.offX)%3Be%3DMath.min(e%2Cf.maxL)%2B%22px%22%3Blet%20s%3DMath.max(f.minT%2Ct.screenY%2Bwindow.pageYOffset-f.margT-f.offY)%3Breturn%20s%3DMath.min(s%2Cf.maxT)%2B%22px%22%2C%7Bleft%3Ae%2Ctop%3As%7D%7D)(e))%2Ce.target.style.opacity%3D%221%22%7D)).on(%22dragstart%22%2C(a%3D%3E%7Bif(!x)return%20a.preventDefault()%2C!1%3Bt.ui.style.opacity%3D%22.2%22%2Cf%3D((t%2Ce%2Cs%2Ca)%3D%3E%7Bconst%20i%3Ds.getBoundingClientRect()%2Cr%3De.ui.getBoundingClientRect()%2Cn%3Di.top%2Bwindow.pageYOffset%2Co%3Da.ui.parentElement.getBoundingClientRect()%2Cl%3Di.height-(i.top-r.top)-(r.top-o.top)-o.height%3Breturn%7BmaxL%3Adocument.documentElement.clientWidth-r.width%2CminT%3An%2CmaxT%3An%2Bl%2CoffX%3At.screenX-r.x%2CoffY%3At.screenY-r.y%2CmargT%3AparseInt(getComputedStyle(e.ui).marginTop%2C10)%7D%7D)(a%2Ct%2Ce%2Cs)%7D)%2C!1).on(%22dragover%22%2C(t%3D%3Et.preventDefault()))%2Ce.addEventListener(%22dragover%22%2C(t%3D%3Et.preventDefault()))%7D%3Bconst%20y%3Dt%3D%3E%7Bt.innerHTML%3D%22%22%2C%5B%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D%2C%5B%22Words%22%2Cg(%22foundTerms%22)%2Cg(%22remainders%22)%2Cg(%22answers%22)%5D%2C%5B%22Points%22%2Ch(%22foundTerms%22)%2Ch(%22remainders%22)%2Ch(%22answers%22)%5D%5D.forEach((s%3D%3E%7Bconst%20a%3De.tr()%3Bs.forEach((t%3D%3E%7Ba.append(e.td(%7Btext%3At%7D))%7D))%2Ct.append(a)%7D))%7D%3Bvar%20k%3D%7BStyles%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%22Styles%22)%2Cthis.target%3De.%24(%22head%22)%2Cthis.ui%3De.style(%7Btext%3A'%5Cufeff.pz-game-field%7Bbackground%3Ainherit%3Bcolor%3Ainherit%7D.sb-wordlist-items%20.sb-pangram%7Bborder-bottom%3A2px%20%23f8cd05%20solid%7D.sb-wordlist-items%20.sb-anagram%20a%7Bcolor%3A%23888%7D.sba-dark%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.sba%7Bbackground%3A%23111%7D.sba-dark%20.sba%20summary%7Bbackground%3A%23252525%3Bcolor%3A%23eee%7D.sba-dark%20.pz-nav__hamburger-inner%2C.sba-dark%20.pz-nav__hamburger-inner%3A%3Abefore%2C.sba-dark%20.pz-nav__hamburger-inner%3A%3Aafter%7Bbackground-color%3A%23eee%7D.sba-dark%20.pz-nav%7Bwidth%3A100%25%3Bbackground%3A%23111%7D.sba-dark%20.pz-nav__logo%7Bfilter%3Ainvert(1)%7D.sba-dark%20.sb-modal-scrim%7Bbackground%3Argba(17%2C17%2C17%2C.85)%3Bcolor%3A%23eee%7D.sba-dark%20.pz-modal__title%7Bcolor%3A%23eee%7D.sba-dark%20.sb-modal-frame%2C.sba-dark%20.pz-modal__button.white%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.pz-modal__button.white%3Ahover%7Bbackground%3A%23393939%7D.sba-dark%20.sb-message%7Bbackground%3A%23393939%7D.sba-dark%20.sb-input-invalid%7Bcolor%3A%23666%7D.sba-dark%20.sb-progress-marker%20.sb-progress-value%2C.sba-dark%20.hive-cell.center%20.cell-fill%7Bbackground%3A%23f7c60a%3Bfill%3A%23f7c60a%3Bcolor%3A%23111%7D.sba-dark%20.sb-input-bright%7Bcolor%3A%23f7c60a%7D.sba-dark%20.hive-cell.outer%20.cell-fill%7Bfill%3A%23393939%7D.sba-dark%20.cell-fill%7Bstroke%3A%23111%7D.sba-dark%20.cell-letter%7Bfill%3A%23eee%7D.sba-dark%20.hive-cell.center%20.cell-letter%7Bfill%3A%23111%7D.sba-dark%20.hive-action%3Anot(.hive-action__shuffle)%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.hive-action__shuffle%7Bfilter%3Ainvert(100%25)%7D.sba-dark%20*%3Anot(.hive-action__shuffle)%3Anot(.sb-pangram)%3Anot(.sba-current)%7Bborder-color%3A%23333%20!important%7D.sba%7Bposition%3Aabsolute%3Bwidth%3A200px%3Bbackground%3Ainherit%3Bbox-sizing%3Aborder-box%3Bz-index%3A3%3Bmargin%3A16px%200%3Bpadding%3A0%2010px%205px%3Bbackground%3A%23fff%3Bborder-width%3A1px%3Bborder-color%3A%23dcdcdc%3Bborder-radius%3A6px%3Bborder-style%3Asolid%7D.sba%20*%2C.sba%20*%3Abefore%2C.sba%20*%3Aafter%7Bbox-sizing%3Aborder-box%7D.sba%20*%3Afocus%7Boutline%3A0%7D.sba%20.dragger%7Bfont-weight%3Abold%3Bline-height%3A32px%7D.sba%20.closer%2C.sba%20.minimizer%7Bfont-size%3A18px%3Bfont-weight%3Abold%3Bposition%3Aabsolute%3Btop%3A0%3Bline-height%3A32px%3Bpadding%3A0%2010px%3Bcursor%3Apointer%7D.sba%20.closer%7Bright%3A0%7D.sba%20.minimizer%7Bright%3A16px%3Btransform%3Arotate(-90deg)%3Btransform-origin%3Acenter%3Bfont-size%3A10px%3Bright%3A24px%3Btop%3A1px%7D.sba%20.minimizer%3Abefore%7Bcontent%3A%22%E2%9D%AF%22%7D.sba.inactive%20details%7Bdisplay%3Anone%7D.sba.inactive%20.minimizer%7Btransform%3Arotate(90deg)%3Bright%3A25px%3Btop%3A0%7D.sba%20details%7Bfont-size%3A90%25%3Bmargin-bottom%3A1px%3Bmax-height%3A800px%3Btransition%3Amax-height%20.25s%20ease-in%7D.sba%20details%5Bopen%5D%20summary%3Abefore%7Btransform%3Arotate(-90deg)%3Bleft%3A12px%3Btop%3A0%7D.sba%20details.inactive%7Bheight%3A0%3Bmax-height%3A0%3Btransition%3Amax-height%20.25s%20ease-out%3Boverflow%3Ahidden%3Bmargin%3A0%7D.sba%20summary%7Bline-height%3A24px%3Bpadding%3A0%2015px%200%2025px%3Bbackground%3A%23f8cd05%3Bcursor%3Apointer%3Blist-style%3Anone%3Bposition%3Arelative%7D.sba%20summary%3A%3A-webkit-details-marker%7Bdisplay%3Anone%7D.sba%20summary%3Abefore%7Bcontent%3A%22%E2%9D%AF%22%3Bfont-size%3A9px%3Bposition%3Aabsolute%3Bdisplay%3Ainline-block%3Btransform%3Arotate(90deg)%3Btransform-origin%3Acenter%3Bleft%3A9px%3Btop%3A-1px%7D.sba%20.pane%7Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-top%3Anone%3Bborder-collapse%3Acollapse%3Bwidth%3A100%25%3Bfont-size%3A85%25%3Bmargin-bottom%3A4px%7D.sba%20tr%3Afirst-of-type%20td%7Bborder-top%3Anone%7D.sba%20tr.sba-current%7Bfont-weight%3Abold%3Bborder-bottom%3A2px%20solid%20%23f8cd05%20!important%7D.sba%20td%7Bborder%3A1px%20solid%20%23dcdcdc%3Bwhite-space%3Anowrap%3Btext-align%3Acenter%3Bpadding%3A4px%203px%7D.sba%20td%3Afirst-of-type%7Btext-align%3Aleft%7D.sba%20%5Bdata-ui%3Dfooter%5D%7Bcolor%3AcurrentColor%3Bopacity%3A.6%3Bfont-size%3A10px%3Btext-align%3Aright%3Bdisplay%3Ablock%3Bpadding-top%3A8px%7D.sba%20%5Bdata-ui%3Dfooter%5D%3Ahover%7Bopacity%3A.8%3Btext-decoration%3Aunderline%7D.sba%20.spill-title%7Bpadding%3A10px%206px%200px%3Btext-align%3Acenter%7D.sba%20.spill%7Btext-align%3Acenter%3Bpadding%3A17px%200%3Bfont-size%3A280%25%7D.sba%20ul.pane%7Bpadding%3A5px%7D.sba%20%5Bdata-ui%3Dsurrender%5D%20.pane%7Bpadding%3A10px%205px%7D.sba%20%5Bdata-ui%3Dsurrender%5D%20button%7Bmargin%3A0%20auto%3Bdisplay%3Ablock%3Bfont-size%3A100%25%3Bwhite-space%3Anowrap%3Bpadding%3A12px%2020px%7D.sba%20label%7Bcursor%3Apointer%3Bposition%3Arelative%3Bline-height%3A19px%7D.sba%20label%20input%7Bposition%3Arelative%3Btop%3A2px%3Bmargin%3A0%2010px%200%200%7D%5Cn'.replace(%2F(%5CuFEFF%7C%5C%5Cn)%2Fgu%2C%22%22)%7D)%2Ct.on(l(%22destroy%22)%2C(()%3D%3Ethis.ui.remove()))%2Cthis.add()%7D%7D%2CDarkMode%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%22Dark%20Mode%22%2C%7BcanDeactivate%3A!0%2CdefaultActive%3A!1%7D)%2Cthis.toggle%3Dt%3D%3E(r(%60options.%24%7Bthis.key%7D%60%2Ct)%2Ce.%24(%22body%22).classList.toggle(l(%22dark%22%2C%22d%22)%2Ct)%2Cthis)%2Cthis.toggle(this.isActive())%2Cthis.add()%7D%7D%2CHeader%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2Ci(%22title%22)%2C%7Bkey%3A%22header%22%7D)%2Cthis.ui%3De.div()%2Cthis.ui.append(e.div(%7Btext%3Athis.title%2Cattributes%3A%7Btitle%3A%22Hold%20the%20mouse%20down%20to%20drag%22%7D%2CclassNames%3A%5B%22dragger%22%5D%7D)%2Ce.span(%7Battributes%3A%7Btitle%3A%22Minimize%22%7D%2CclassNames%3A%5B%22minimizer%22%5D%2Cevents%3A%7Bclick%3A()%3D%3E%7Bconsole.log(%22toggle%20app%22)%2Ct.toggle(!t.isActive())%7D%7D%7D)%2Ce.span(%7Btext%3A%22%C3%97%22%2Cattributes%3A%7Btitle%3A%22Close%22%7D%2CclassNames%3A%5B%22closer%22%5D%2Cevents%3A%7Bclick%3A()%3D%3Et.trigger(new%20Event(l(%22destroy%22)))%7D%7D))%2Cv(t%2Ct.game%2Cthis)%2Cthis.add()%7D%7D%2CScoreSoFar%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%22Score%20so%20far%22%2C%7BcanDeactivate%3A!0%7D)%2Cthis.ui%3De.details(%7Battributes%3A%7Bopen%3A!0%7D%7D)%3Bconst%20s%3De.table(%7BclassNames%3A%5B%22pane%22%5D%7D)%2Ca%3De.tbody()%3Bs.append(a)%2Cy(a)%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2Ct.on(l(%22wordsUpdated%22)%2C(()%3D%3Ey(a)))%2Cthis.add()%7D%7D%2CSpoilers%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%22Spoilers%22%2C%7BcanDeactivate%3A!0%7D)%3Bconst%20s%3De.tbody()%2Ca%3D()%3D%3E%7Bs.innerHTML%3D%22%22%2C(()%3D%3E%7Bconst%20t%3D%7B%7D%2Ce%3Dg(%22pangrams%22)%2Cs%3Dg(%22foundPangrams%22)%2Ca%3D%5B%5B%22%22%2C%22Found%22%2C%22Missing%22%2C%22Total%22%5D%2C%5B%22Pangrams%22%2Cs%2Ce-s%2Ce%5D%5D%3Bu(%22answers%22).forEach((e%3D%3E%7Bt%5Be.length%5D%3Dt%5Be.length%5D%7C%7C%7Bfound%3A0%2Cmissing%3A0%2Ctotal%3A0%7D%2Cu(%22foundTerms%22).includes(e)%3Ft%5Be.length%5D.found%2B%2B%3At%5Be.length%5D.missing%2B%2B%2Ct%5Be.length%5D.total%2B%2B%7D))%3Blet%20i%3DObject.keys(t)%3Breturn%20i.sort(((t%2Ce)%3D%3Et-e))%2Ci.forEach((e%3D%3E%7Ba.push(%5Be%2B%22%20%22%2B(e%3E1%3F%22letters%22%3A%22letter%22)%2Ct%5Be%5D.found%2Ct%5Be%5D.missing%2Ct%5Be%5D.total%5D)%7D))%2Ca%7D)().forEach((t%3D%3E%7Bconst%20a%3De.tr()%3Bt.forEach((t%3D%3E%7Ba.append(e.td(%7Btext%3At%7D))%7D))%2Cs.append(a)%7D))%7D%3Bthis.ui%3De.details()%3Bconst%20i%3De.table(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Bi.append(s)%2Ca()%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Ci)%2Ct.on(l(%22wordsUpdated%22)%2C(()%3D%3Ea()))%2Cthis.add()%7D%7D%2CSpillTheBeans%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%22Spill%20the%20beans%22%2C%7BcanDeactivate%3A!0%7D)%3Bthis.ui%3De.details()%3Bconst%20s%3De.div(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Bs.append(e.div(%7Btext%3A%22Watch%20me%20while%20you%20type!%22%2CclassNames%3A%5B%22spill-title%22%5D%7D))%3Bconst%20a%3De.div(%7Btext%3A%22%F0%9F%98%90%22%2CclassNames%3A%5B%22spill%22%5D%7D)%3Bs.append(a)%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2Cnew%20MutationObserver((t%3D%3E%7Bvar%20e%3Ba.textContent%3D(e%3Dt.pop().target.textContent.trim())%3Fu(%22remainders%22).filter((t%3D%3Et.startsWith(e))).length%3F%22%F0%9F%99%82%22%3A%22%F0%9F%99%81%22%3A%22%F0%9F%98%90%22%7D)).observe(e.%24(%22.sb-hive-input-content%22%2Ct.game)%2C%7BchildList%3A!0%7D)%2Cthis.add()%7D%7D%2CStepsToSuccess%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%22Steps%20to%20success%22%2C%7BcanDeactivate%3A!0%7D)%3Bconst%20s%3Dh(%22answers%22)%2Ca%3D%5B%5B%22Beginner%22%2C0%5D%2C%5B%22Good%20Start%22%2C2%5D%2C%5B%22Moving%20Up%22%2C5%5D%2C%5B%22Good%22%2C8%5D%2C%5B%22Solid%22%2C15%5D%2C%5B%22Nice%22%2C25%5D%2C%5B%22Great%22%2C40%5D%2C%5B%22Amazing%22%2C50%5D%2C%5B%22Genius%22%2C70%5D%2C%5B%22Queen%20Bee%22%2C100%5D%5D.map((t%3D%3E%5Bt%5B0%5D%2CMath.round(t%5B1%5D%2F100*s)%5D))%2Ci%3Dt%3D%3E%7Bt.innerHTML%3D%22%22%3Bconst%20s%3Dh(%22foundTerms%22)%2Ci%3Da.filter((t%3D%3Et%5B1%5D%3C%3Ds)).pop()%5B1%5D%3Ba.forEach((s%3D%3E%7Bconst%20a%3De.tr(%7BclassNames%3As%5B1%5D%3D%3D%3Di%3F%5B%22sba-current%22%5D%3A%5B%5D%7D)%3B%5Bs%5B0%5D%2Cs%5B1%5D%5D.forEach((t%3D%3E%7Ba.append(e.td(%7Btext%3At%7D))%7D))%2Ct.append(a)%7D))%7D%3Bthis.ui%3De.details()%3Bconst%20r%3De.table(%7BclassNames%3A%5B%22pane%22%5D%7D)%2Cn%3De.tbody()%3Bi(n)%2Cr.append(n)%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cr)%2Ct.on(l(%22wordsUpdated%22)%2C(()%3D%3Ei(n)))%2Cthis.add()%7D%7D%2CSurrender%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%22Surrender%22%2C%7BcanDeactivate%3A!0%7D)%3Blet%20s%3D!1%3Bconst%20a%3Da%3D%3E!s%26%26(t.observer.disconnect()%2Cu(%22remainders%22).forEach((t%3D%3Ea.append((t%3D%3E%7Bconst%20s%3De.li(%7BclassNames%3Au(%22pangrams%22).includes(t)%3F%5B%22sb-anagram%22%2C%22sb-pangram%22%5D%3A%5B%22sb-anagram%22%5D%7D)%3Breturn%20s.append(e.a(%7Btext%3At%2Cattributes%3A%7Bhref%3A%60https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3D%24%7Bt%7D%60%2Ctarget%3A%22_blank%22%7D%7D))%2Cs%7D)(t))))%2Cs%3D!0%2C!0)%3Bthis.ui%3De.details()%3Bconst%20i%3De.div(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Bi.append(e.button(%7Btag%3A%22button%22%2CclassNames%3A%5B%22hive-action%22%5D%2Ctext%3A%22Display%20answers%22%2Cattributes%3A%7Btype%3A%22button%22%7D%2Cevents%3A%7Bclick%3A()%3D%3Ea(e.%24(%22.sb-wordlist-items%22%2Ct.game))%7D%7D))%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Ci)%2Cthis.add()%7D%7D%2CSetUp%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%22Set-up%22)%3Bconst%20s%3De.ul(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Bthis.ui%3De.details(%7Bevents%3A%7Bclick%3Ae%3D%3E%7B%22INPUT%22%3D%3D%3De.target.tagName%26%26t.registry.get(e.target.name).toggle(e.target.checked)%7D%7D%7D)%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2C(s%3D%3E%7Bt.registry.forEach(((t%2Ca)%3D%3E%7Bif(!t.canDeactivate)return!1%3Bconst%20i%3De.li()%2Cr%3De.label(%7Btext%3At.title%7D)%2Cn%3De.input(%7Battributes%3A%7Btype%3A%22checkbox%22%2Cname%3Aa%2Cchecked%3At.isActive()%7D%7D)%3Br.prepend(n)%2Ci.append(r)%2Cs.append(i)%7D))%7D)(s)%2Cthis.add()%7D%7D%2CFooter%3Aclass%20extends%20m%7Bconstructor(t)%7Bsuper(t%2C%60%24%7Bi(%22label%22)%7D%20%24%7Bi(%22version%22)%7D%60%2C%7Bkey%3A%22footer%22%7D)%2Cthis.ui%3De.a(%7Btext%3Athis.title%2Cattributes%3A%7Bhref%3Ai(%22url%22)%2Ctarget%3A%22_blank%22%7D%7D)%2Cthis.add()%7D%7D%7D%3Bnew%20class%20extends%20b%7Bconstructor(t)%7Bif(!t%7C%7C!window.gameData)return%20console.info(%60This%20bookmarklet%20only%20works%20on%20%24%7Bi(%22targetUrl%22)%7D%60)%2C!1%3Bsuper(i(%22label%22)%2C%7BcanDeactivate%3A!0%7D)%2Cthis.game%3Dt%3Bconst%20s%3De.%24(%60%5Bdata-id%3D%22%24%7Bthis.key%7D%22%5D%60)%3Bs%26%26s.dispatchEvent(new%20Event(l(%22destroy%22)))%2Cthis.registry%3Dnew%20Map%3Bconst%20a%3De.%24(%22.sb-content-box%22%2Ct).getBoundingClientRect()%2Cr%3De.%24(%22.sb-wordlist-items%22%2Ct)%2Cn%3D%7B%7D%3Bn%5Bl(%22destroy%22)%5D%3D()%3D%3E%7Bthis.observer.disconnect()%2Cthis.ui.remove()%7D%2Cthis.ui%3De.div(%7Battributes%3A%7Bdraggable%3A!0%7D%2Cstyle%3A%7Bleft%3Aa.right%2B10%2B%22px%22%2Ctop%3Aa.top%2Bwindow.pageYOffset%2B%22px%22%7D%2Cdata%3A%7Bid%3Athis.key%7D%2CclassNames%3A%5Bi(%22prefix%22)%5D%2Cevents%3An%7D)%2Cp(this%2Cr)%2Cthis.observer%3Dnew%20MutationObserver((()%3D%3Ethis.trigger(new%20Event(l(%22newWord%22)))))%2Cthis.observer.observe(r%2C%7BchildList%3A!0%7D)%2Cthis.registerPlugins%3Dt%3D%3E%7Bfor(const%5Be%2Cs%5Dof%20Object.entries(t))this.registry.set(e%2Cnew%20s(this))%3Breturn%20this%7D%2Ce.%24(%22body%22).append(this.ui)%7D%7D(e.%24(%22%23pz-game-root%22)).registerPlugins(k)%7D()%3B%0A%7D)()">
-        <img src="assets/img/assistant-closed-light.png" alt="Spelling Bee Assistant">
-      </a>
-      <figcaption>Drag this to your bookmarks</figcaption>
-    </figure>
-    <p class="mobile-only">Spelling Bee Assistant can only run on desktop computers and laptops with a screen size of at least 700 pixels.</p>
-  </section>
-  <section> 
-    <h2>Features</h2>
-    <ul class="card-listing">
-      <li class="card">
-        <h3>Dark Mode</h3> 
-        <a href="#dark-mode">
-          <figure class="img-box dark-mode">
-            <img src="assets/img/dark-mode-light.png?2.0.0" alt="Dark Mode" />
-            <figcaption>What does it look like?</figcaption>
-          </figure>
-        </a>          
-        <p>Have you been staring at the screen for a long time? Your eyes are dry and hurt but you can't stop playing, just this one level! People on social media had suggested to bring Dark Mode to Spelling Bee and the Spelling Bee Assistant does just that. Go to <em>Set-Up</em>, check the <em>Dark Mode</em> box and relax!</p>
-      </li>
-      <li class="card">
-        <h3>Score so far</h3>
-        <figure class="img-box score-so-far">
-          <img src="assets/img/score-so-far-light.png?2.0.0" alt="Score so far" />
-          <figcaption>What you already bagged</figcaption>
-        </figure>
-        <p>How far have you been moving ahead already and long is the way to the top? And - and that's a tiny spoiler - how many points will you need to have to become <em>Queen Bee</em>? That's the sort of question you get answered here.</p>
-      </li>
-      <li class="card">
-        <h3>Spoilers</h3>
-        <figure class="img-box spoilers">
-          <img src="assets/img/spoilers-light.png?2.0.0" alt="Spoilers" />
-          <figcaption>What you still need to find</figcaption>
-        </figure>
-        <p>So you found a good bunch of words, discovered the Pangram but now you wonder if there are words with four letters left that you've been missing. Maybe there is another Pangram hidden in the hive? Or at least a good long term that moves you to the next level? The <em>Spoiler</em> panel won't tell you the words, but it will tell you, how many of each size lay still ahead.</p>
-      </li>
-      <li class="card">
-        <h3>Spill the beans</h3>
-        <figure class="img-box spill-the-beans">
-          <img src="assets/img/spill-the-beans-light.png?2.0.0" alt="Spill the beans" />
-          <figcaption>Crumbs of help, letter by letter</figcaption>
-        </figure>
-        <p>What was the name of this bird again, that you only know from solving crosswords? You know what it starts with, but what came after the 3rd letter again? This little face might know a thing or two that you don't, so watch it while you type!</p>
-        <ul>
-          <li><span class="emoji">🙂</span> a smile means you are on the right track</li>
-          <li><span class="emoji">🙁</span> a sad face says you're barking up the wrong tree.</li>
-          <li><span class="emoji">😐</span> no emotion means there is nothing to say; either you didn't type anything yet - or the complete word is already right in front of you.</li>
-          </ul>
-      </li>
-      <li class="card">
-        <h3>Steps to success</h3>
-        <figure class="img-box steps-to-success">
-          <img src="assets/img/steps-to-success-light.png?2.0.0" alt="Steps to success" />
-          <figcaption>Where to go next</figcaption>
-        </figure>
-        <p>You’ve certainly seen this one before, which is no wonder, because it's pretty close to the <em>Rankings</em> pop-up that is already part of <em>Spelling Bee</em>. But this one you can keep open while you're playing and - as an added bonus - it reveals how far the road to <em>Queen Bee</em> is. The tier that you’re currently in is highlighted.</p>
-      </li>
-      <li class="card">
-        <h3>Surrender</h3>
-        <figure class="img-box surrender">
-          <img src="assets/img/surrender-light.png?2.0.0" alt="Surrender" />
-          <figcaption>Ready to give up?</figcaption>
-        </figure>
-        <p>You aren’t ready to declare defeat already, are you? Well, if you are, no need to wait until 3:00 a.m. ET anymore - with this button you can resolve the game with a mouse clicks. But don't expect to be crowned <em>Queen Bee</em>! All the words you didn’t find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
-      </li>
-      <li class="card">
-        <h3>Set-up</h3>
-        <figure class="img-box set-up">
-          <img src="assets/img/set-up-light.png?2.0.0" alt="Set-up" usemap="#setUp" />
-          <figcaption>Use only what you like</figcaption>
-        </figure>
-        <p>You like only some of these features, but not all of them? Get rid of those you don’t like, they won't bother you anymore. Unless of course you use the assistant on another browser, then you'll have to do it all over again.</p>
-      </li>
-      <li class="card extras">
-        <h3>Little extras</h3>
-        <ul>
-          <li>
-            <figure class="img-box header">
-              <img src="assets/img/header-light.png?2.0.0" alt="Assitant can be dragged" />
-            </figure>
-            <p>The assistant can be dragged anywhere inside the game area and be minimized by clicking on the <svg width="9" height="10" viewBox="0 0 6.6718 4.5789" xmlns="http://www.w3.org/2000/svg"><path d="m6.6718 4.579-3.3342-3.07-3.3377 3.07v-1.659l3.2262-2.92h0.22025l3.2254 2.91z"/></svg> symbol.</p>
-          </li>
-          <li>
-            <figure class="img-box pangram-underline">
-              <img src="assets/img/pangram-underline-light.png?2.0.0" alt="Pangrams are underlined" />
-            </figure>
-            <p>In the result list pangrams are marked with a yellow underline.</p>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2 id="bookmarklet">What is a bookmarklet?</h2>
-    <figure class="img-box bookmarklet">
-      <img src="assets/img/bookmarklet-light.png?2.0.0" alt="Bookmarklet" />
-      <figcaption>Regular bookmarks along with the Spelling Bee Assistant</figcaption>
-    </figure>
-    <p>Bookmarklets are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks, in your browser’s bookmark menu. Unfortunately, there is no straightforward way to assign an icon to them. </p>
-    <p class="rgt"><a href="#">Back to top</a></p>
-  </section>
-  <section>
-    <h2>Does it work everywhere?</h2>
-    <p>Spelling Bee Assistant works only with modern browsers and has been built with laptops or desktop computers in mind. Installing bookmarklets on a phone or a tablet is a bit complex but can be done according to <a href="https://www.google.com/search?q=Installing+bookmarklets+on+a+moblie+device" rel="noopener" target="_blank">Google</a>. There is a good chance it will work on larger mobile devices but this has not been tested. It can't be installed on the NYT app though.</p>
-  </section>
-  <section>
-    <h2>Does it not spoil the game?</h2>
-    <p>Other people have been creating <a href="https://www.shunn.net/bee/">tools with a similar purpose</a> which - according to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html">this article</a> - the Spelling Bee community seems to like well.</p>
-    <p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the <em>Spoilers</em> panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
-  </section>
-  <section>
-    <h2>I discovered a bug | I’d like to ask for a new feature</h2>
-    <p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
-  </section>
-  <section>
-    <h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
-    <p>No.</p>
-  </section>
-</main>
-<map name="setUp">
-  <area shape="rect" coords="3,28,106,47" href="#dark-mode">
-</map>
-<script>
-  ((d) => {
-    d.body.dataset.theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'; 
-    d.querySelectorAll('[href="#dark-mode"]').forEach(toggle => {
-      toggle.addEventListener('click', evt => {	
-        evt.preventDefault();
-        d.body.dataset.theme = d.body.dataset.theme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('theme', d.body.dataset.theme);
-      })
-    })
-	  
-    d.querySelector('.bookmarklet').addEventListener('dragstart', e => {
-        window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams({
-            v: 1,
-            tid: 'UA-182372232-1',
-            cid: Date.now(),
-            t: 'event',
-            aip: '1',
-            ec: 'SBA Download',
-            ea: e.type,
-            el: '2.0.0'
-        }).toString());
-    }, false);
-  })(document)      
-</script>
+	<header>
+		<div class="wrapper">
+			<h1>Spelling Bee Assistant</h1>
+			<ul class="social">
+				<li class="github">
+					<a href="https://github.com/draber/draber.github.io" rel="noopener" target="_blank"><img alt="GitHub Respository" src="assets/img/GitHub-Mark-32px.png"></a>
+				</li>
+				<li class="twitter">
+					<a class="twitter-share-button" data-show-count="false" href="https://twitter.com/share?ref_src=twsrc%5Etfw" rel="noopener">Tweet</a> 
+					<script async charset="utf-8" src="https://platform.twitter.com/widgets.js">
+					</script>
+				</li>
+			</ul>
+		</div>
+	</header>
+	<main class="wrapper">
+		<section class="intro">
+			<div class="intro-text">
+				<figure class="hive-box img-box">
+					<svg viewbox="0 0 190.5 199" xmlns="http://www.w3.org/2000/svg">
+					<g class="cells" fill="#e6e6e6">
+						<path class="center" d="M77.099 67.763L58.674 99.511l18.141 31.748h36.566l18.425-31.748-18.141-31.748z" fill="#f8cd0f"></path>
+						<path d="M135.85 101.73l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z"></path>
+						<path d="M77.099 135.61l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z"></path>
+						<path d="M18.388 101.68L-.037 133.428l18.141 31.748H54.67l18.425-31.748-18.141-31.748z"></path>
+						<path d="M18.388 33.832L-.037 65.58l18.141 31.748H54.67L73.095 65.58 54.954 33.832z"></path>
+						<path d="M77.099-.09L58.674 31.656l18.141 31.748h36.566l18.425-31.748L113.665-.09z"></path>
+						<path d="M135.85 33.879l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z"></path>
+					</g>
+					<g class="text">
+						<path class="center" d="M103.04 99.41q0 2.01-.918 3.606-.919 1.586-2.32 2.436-1.055.639-2.311.89-1.257.251-2.978.251h-5.076V92.197h5.22q1.76 0 3.037.3 1.276.29 2.146.831 1.489.91 2.34 2.456.86 1.537.86 3.626zm-3.838-.029q0-1.421-.522-2.427-.513-1.015-1.634-1.585-.57-.28-1.17-.377-.59-.107-1.789-.107h-.937v9.011h.937q1.325 0 1.944-.116.618-.126 1.208-.445 1.015-.58 1.49-1.547.473-.976.473-2.407z"></path>
+						<path d="M44.825 140.54h-3.838l-.996-2.91h-5.337l-.996 2.91h-3.741l5.317-14.396h4.274zm-5.733-5.55l-1.77-5.162-1.768 5.163z"></path>
+						<path d="M95.498 160.05h3.7148v14.395h-3.7148z"></path>
+						<path d="M160.05 140.56h-10.383v-14.396h3.712v11.611h6.671z"></path>
+						<path d="M161.03 62.859q0 .967-.338 1.895-.339.918-.967 1.547-.86.85-1.924 1.286-1.054.435-2.63.435h-2.31v4.689h-3.713V58.315h6.11q1.373 0 2.31.241.948.232 1.674.706.87.57 1.324 1.46.464.89.464 2.137zm-3.838.087q0-.61-.329-1.044-.329-.445-.764-.619-.58-.232-1.13-.251-.552-.03-1.47-.03h-.638v4.313h1.063q.947 0 1.557-.116.618-.116 1.034-.464.358-.31.512-.735.165-.435.165-1.054z"></path>
+						<path d="M97.708 28.753q0-.541-.222-.928-.223-.387-.764-.61-.377-.154-.88-.183-.503-.039-1.17-.039h-1.344v3.877h1.141q.89 0 1.49-.087t1.005-.396q.386-.3.56-.657.184-.368.184-.977zm5.791 9.987h-4.534l-3.925-5.279h-1.712v5.279h-3.693V24.344h6.226q1.277 0 2.195.145.918.145 1.72.628.813.484 1.287 1.257.483.764.483 1.924 0 1.595-.744 2.6-.735 1.006-2.108 1.673z"></path>
+						<path d="M44.793 58.315l-5.308 8.827v5.569h-3.712v-5.395l-5.395-9h4.215l3.113 5.568 3.007-5.569z"></path>
+					</g></svg>
+				</figure>
+				<p><span class="emoji">Spelling Bee Assistant</span> is a JavaScript <a class="help" href="#bookmarklet">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener" target="_blank">Spelling Bee</a>, the New York Times’ popular word puzzle.</p>
+				<p>It's a great game but if you need the tiniest hint, you are on your own. If you don't make it to the end - and honestly, how often did you you see the <em>Queen Bee</em> screen come up - you'll have to wait to the next day to find out which words you've been missing.</p>
+				<p>For those of you who play on a laptop or a desktop computer, the Spelling Bee Assistant can offer a bit of support. It comes with a whole range of tools that can help you to succeed without spoiling the fun.</p>
+				<p class="desktop-only">To install, drag and drop the picture at the right into your browser’s bookmark menu. Next time you are playing, click on the bookmarklet to launch the assistant.</p>
+			</div>
+			<div class="lft">
+				<figure class="installer closed img-box desktop-only">
+					<a class="bookmarklet" href="javascript:(function()%7B!function()%7B%22use%20strict%22%3Bconst%20t%3Dfunction(%7Btag%3At%2Ctext%3Ae%3D%22%22%2Cattributes%3As%3D%7B%7D%2Cstyle%3Aa%3D%7B%7D%2Cdata%3Ai%3D%7B%7D%2Cevents%3Ar%3D%7B%7D%2CclassNames%3Ao%3D%5B%5D%2Csvg%3An%7D%3D%7B%7D)%7Bconst%20l%3Dn%3Fdocument.createElementNS(%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2Ct)%3Adocument.createElement(t)%3Bl.textContent%3De%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(s))n%3Fl.setAttributeNS(null%2Ct%2Ce)%3Al%5Bt%5D%3De%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(i))l.dataset%5Bt%5D%3De%3Bfor(const%5Bt%2Ce%5Dof%20Object.entries(r))l.addEventListener(t%2Ce%2C!1)%3Breturn%20Object.assign(l.style%2Ca)%2Co.length%26%26l.classList.add(...o)%2Cl%7D%2Ce%3Dnew%20Proxy(%7B%24%3A(t%2Ce%3Dnull)%3D%3E%22string%22%3D%3Dtypeof%20t%3F(e%7C%7Cdocument).querySelector(t)%3At%7C%7Cnull%2C%24%24%3A(t%2Ce%3Dnull)%3D%3E%5B%5D.slice.call((e%7C%7Cdocument).querySelectorAll(t))%7D%2C%7Bget%3A(e%2Cs)%3D%3Efunction()%7Bconst%20a%3DArray.prototype.slice.call(arguments)%3Breturn%20e.hasOwnProperty(s)%26%26%22function%22%3D%3Dtypeof%20e%5Bs%5D%3F(e%5Bs%5D.bind(e)%2Ce%5Bs%5D.apply(null%2Ca))%3At(%7Btag%3As%2C...a.shift()%7D)%7D%7D)%3Bvar%20s%3D%22sba%22%3Bconst%20a%3D%7Blabel%3A%22Spelling%20Bee%20Assistant%22%2Ctitle%3A%22Assistant%22%2Curl%3A%22https%3A%2F%2Fspelling-bee-assistant.app%2F%22%2Cprefix%3As%2Crepo%3A%22draber%2Fdraber.github.io.git%22%2CtargetUrl%3A%22https%3A%2F%2Fwww.nytimes.com%2Fpuzzles%2Fspelling-bee%22%2Cversion%3A%222.0.0%22%2Coptions%3AJSON.parse(localStorage.getItem(%22sba-settings%22)%7C%7C%22%7B%7D%22)%7D%3Bvar%20i%3Dt%3D%3E%7Blet%20e%3DObject.create(a)%3Bfor(let%20s%20of%20t.split(%22.%22))%7Bif(void%200%3D%3D%3De%5Bs%5D)return%3Be%3De%5Bs%5D%7Dreturn%20e%7D%2Cr%3D(t%2Ce)%3D%3E%7Bconst%20s%3Dt.split(%22.%22)%2Ci%3Ds.pop()%3Blet%20r%3Da%3Bfor(let%20t%20of%20s)%7Bif(r%5Bt%5D%7C%7C(r%5Bt%5D%3D%7B%7D)%2C%22%5Bobject%20Object%5D%22%3D%3D%3D!Object.prototype.toString.call(r))return%20console.error(%60%24%7Bt%7D%20is%20not%20of%20the%20type%20Object%60)%2C!1%3Br%3Dr%5Bt%5D%7Dr%5Bi%5D%3De%2ClocalStorage.setItem(%22sba-settings%22%2CJSON.stringify(a.options))%7D%3Bconst%20o%3Di(%22prefix%22)%2Cn%3Dt%3D%3Et.replace(%2F%5B_-%5D%2B%2F%2C%22%20%22).replace(%2F(%3F%3A%5E%5B%5Cw%5D%7C%5BA-Z%5D%7C%5Cb%5Cw%7C%5Cs%2B)%2Fg%2C(function(t%2Ce)%7Breturn%200%3D%3D%2Bt%3F%22%22%3A0%3D%3D%3De%3Ft.toLowerCase()%3At.toUpperCase()%7D))%2Cl%3D(t%2Ce%3D%22c%22)%3D%3E%7Bswitch(e)%7Bcase%22c%22%3Areturn%20n(o%2B%22_%22%2Bt)%3Bcase%22d%22%3Areturn(t%3D%3Et.replace(%2F%5B%5CW_%5D%2B%2Fg%2C%22%20%22).split(%2F%20%7C%5CB(%3F%3D%5BA-Z%5D)%2F).map((t%3D%3Et.toLowerCase())).join(%22-%22))(o%2Bt.charAt(0).toUpperCase()%2Bt.slice(1))%3Bdefault%3Areturn%20o%2Bt%7D%7D%3Blet%20d%3Bconst%20c%3D(t%2Cs)%3D%3E%7Bd.foundTerms%3D%5B%5D%2Cd.foundPangrams%3D%5B%5D%2Ce.%24%24(%22li%22%2Cs).forEach((t%3D%3E%7Bif(e.%24(%22a%22%2Ct))return!1%3Bconst%20s%3Dt.textContent%3Bd.foundTerms.push(s)%2Cd.pangrams.includes(s)%26%26(d.foundPangrams.push(s)%2Ct.classList.add(%22sb-pangram%22))%7D))%2Cd.remainders%3Dd.answers.filter((t%3D%3E!d.foundTerms.includes(t)))%2Ct.trigger(new%20Event(l(%22wordsUpdated%22)))%7D%3Bvar%20p%3D(t%2Ce)%3D%3E%7Bd%3D%7Banswers%3Awindow.gameData.today.answers%2Cpangrams%3Awindow.gameData.today.pangrams%2CfoundTerms%3A%5B%5D%2CfoundPangrams%3A%5B%5D%2Cremainders%3A%5B%5D%7D%2Cc(t%2Ce)%2Ct.on(l(%22newWord%22)%2C(()%3D%3Ec(t%2Ce)))%7D%2Ch%3Dt%3D%3Ed%5Bt%5D%2Cu%3Dt%3D%3Ed%5Bt%5D.length%2Cg%3Dt%3D%3E%7Bconst%20e%3Dd%5Bt%5D%3Blet%20s%3D0%3Breturn%20e.forEach((t%3D%3E%7Bd.pangrams.includes(t)%3Fs%2B%3Dt.length%2B7%3At.length%3E4%3Fs%2B%3Dt.length%3As%2B%3D1%7D))%2Cs%7D%3Bconst%20b%3D%7Boptions%3A%7Bchildren%3A%7Bpath%3A%22M16%2014c0-2.203-1.797-4-4-4s-4%201.797-4%204%201.797%204%204%204%204-1.797%204-4zm8-1.703v3.469c0%20.234-.187.516-.438.562l-2.891.438a8.86%208.86%200%2001-.609%201.422c.531.766%201.094%201.453%201.672%202.156.094.109.156.25.156.391s-.047.25-.141.359c-.375.5-2.484%202.797-3.016%202.797a.795.795%200%2001-.406-.141l-2.156-1.687a9.449%209.449%200%2001-1.422.594c-.109.953-.203%201.969-.453%202.906a.573.573%200%2001-.562.438h-3.469c-.281%200-.531-.203-.562-.469l-.438-2.875a9.194%209.194%200%2001-1.406-.578l-2.203%201.672c-.109.094-.25.141-.391.141s-.281-.063-.391-.172c-.828-.75-1.922-1.719-2.578-2.625a.607.607%200%2001.016-.718c.531-.719%201.109-1.406%201.641-2.141a8.324%208.324%200%2001-.641-1.547l-2.859-.422A.57.57%200%20010%2015.705v-3.469c0-.234.187-.516.422-.562l2.906-.438c.156-.5.359-.969.609-1.437a37.64%2037.64%200%2000-1.672-2.156c-.094-.109-.156-.234-.156-.375s.063-.25.141-.359c.375-.516%202.484-2.797%203.016-2.797.141%200%20.281.063.406.156L7.828%205.94a9.449%209.449%200%20011.422-.594c.109-.953.203-1.969.453-2.906a.573.573%200%2001.562-.438h3.469c.281%200%20.531.203.562.469l.438%202.875c.484.156.953.344%201.406.578l2.219-1.672c.094-.094.234-.141.375-.141s.281.063.391.156c.828.766%201.922%201.734%202.578%202.656a.534.534%200%2001.109.344c0%20.141-.047.25-.125.359-.531.719-1.109%201.406-1.641%202.141.266.5.484%201.016.641%201.531l2.859.438a.57.57%200%2001.453.562z%22%7D%2Cwidth%3A24%2Cheight%3A28%7D%2CarrowDown%3A%7Bchildren%3A%7Bpath%3A%22M16.797%2011.5a.54.54%200%2001-.156.359L9.36%2019.14c-.094.094-.234.156-.359.156s-.266-.063-.359-.156l-7.281-7.281c-.094-.094-.156-.234-.156-.359s.063-.266.156-.359l.781-.781a.508.508%200%2001.359-.156.54.54%200%2001.359.156l6.141%206.141%206.141-6.141c.094-.094.234-.156.359-.156s.266.063.359.156l.781.781a.536.536%200%2001.156.359z%22%7D%2Cwidth%3A18%2Cheight%3A28%7D%2CdarkMode%3A%7Bchildren%3A%7Bpath%3A%22M12.018%201.982A12.018%2012.018%200%20000%2014a12.018%2012.018%200%200012.018%2012.018A12.018%2012.018%200%200024.036%2014%2012.018%2012.018%200%200012.018%201.982zm0%203.293A8.725%208.725%200%200120.743%2014a8.725%208.725%200%2001-8.725%208.725z%22%7D%2Cwidth%3A24%2Cheight%3A28%7D%7D%3Bclass%20m%7BdefaultActive%3D!0%3Bui%3Btitle%3Bkey%3BcanDeactivate%3D!1%3BisActive()%7Bconst%20t%3Di(%60options.%24%7Bthis.key%7D%60)%3Breturn%20void%200!%3D%3Dt%3Ft%3Athis.defaultActive%7Dtoggle(t)%7Breturn%20this.canDeactivate%3F(r(%60options.%24%7Bthis.key%7D%60%2Ct)%2Cthis.ui.classList.toggle(%22inactive%22%2C!t)%2Cthis)%3Athis%7DenableTool(t%2Cs%2Ca)%7Breturn%20this.tool%3De.div(%7Bevents%3A%7Bclick%3A()%3D%3E%7Bthis.toggle(!this.isActive())%2Cthis.tool.title%3Dthis.isActive()%3Fa%3As%7D%7D%2Cattributes%3A%7Btitle%3Athis.isActive()%3Fa%3As%7D%7D)%2Cthis.tool.append((t%3D%3E%7Bif(!b%5Bt%5D)return%20console.error(%60Icon%20%24%7Bt%7D%20doesn't%20exist%60)%2C!1%3Bconst%20s%3Db%5Bt%5D%2Ca%3De.svg(%7Battributes%3A%7BviewBox%3A%600%200%20%24%7Bs.width%7D%20%24%7Bs.height%7D%60%7D%2Csvg%3A!0%7D)%3Bfor(const%5Bt%2Ci%5Dof%20Object.entries(s.children))a.append(e%5Bt%5D(%7Battributes%3A%7Bd%3Ai%7D%2Csvg%3A!0%7D))%3Breturn%20a%7D)(t))%2Cthis%7DhasUi()%7Breturn%20this.ui%20instanceof%20HTMLElement%7Don(t%2Ce)%7Breturn%20this.ui.addEventListener(t%2Ce)%2Cthis%7Dtrigger(t)%7Breturn%20this.ui.dispatchEvent(t)%2Cthis%7Dconstructor(t%2C%7Bkey%3Ae%2CcanDeactivate%3As%2CdefaultActive%3Aa%7D%3D%7B%7D)%7Bif(!t)throw%20new%20TypeError(%60Missing%20'title'%20from%20%24%7Bthis.constructor.name%7D%60)%3Bthis.title%3Dt%2Cthis.key%3De%7C%7Cn(t)%2Cthis.canDeactivate%3Dvoid%200!%3D%3Ds%3Fs%3Athis.canDeactivate%2Cthis.defaultActive%3Dvoid%200!%3D%3Da%3Fa%3Athis.defaultActive%7D%7Dclass%20f%20extends%20m%7Btarget%3Bapp%3Battach()%7Breturn%20this.hasUi()%3F(this.ui.dataset.ui%3Dthis.key%2Cthis.toggle(this.isActive())%2C(this.target%7C%7Cthis.app.ui).append(this.ui)%2Cthis)%3Athis%7Dadd()%7Breturn%20this.canDeactivate%26%26r(%60options.%24%7Bthis.key%7D%60%2Cthis.isActive())%2Cthis.attach()%7Dconstructor(t%2Ce%2C%7Bkey%3As%2CcanDeactivate%3Aa%2CdefaultActive%3Ai%7D%3D%7B%7D)%7Bif(!t%7C%7C!e)throw%20new%20TypeError(%60%24%7BObject.getPrototypeOf(this.constructor).name%7D%20expects%20at%20least%202%20arguments%2C%20'app'%20or%20'title'%20missing%20from%20%24%7Bthis.constructor.name%7D%60)%3Bsuper(e%2C%7Bkey%3As%2CcanDeactivate%3Aa%2CdefaultActive%3Ai%7D)%2Cthis.app%3Dt%7D%7Dconst%20v%3D(t%2Cs)%3D%3E%7Bs.innerHTML%3D%22%22%3Bconst%20a%3De.tbody()%3Bt.forEach((t%3D%3E%7Bconst%20s%3De.tr()%3Bt.forEach((t%3D%3E%7Bs.append(e.td(%7Btext%3At%7D))%7D))%2Ca.append(s)%7D))%2Cs.append(a)%7D%3Bvar%20x%3Dt%3D%3E%7Bconst%20s%3De.table(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Breturn%20v(t%2Cs)%2Cs%7D%2Cw%3Dv%3Bvar%20k%3D%7BStyles%3Aclass%20extends%20f%7Bconstructor(t)%7Bsuper(t%2C%22Styles%22)%2Cthis.target%3De.%24(%22head%22)%2Cthis.ui%3De.style(%7Btext%3A'%5Cufeff%23pz-game-root%20.sb-content-box%7Bposition%3Arelative%7D.pz-game-field%7Bbackground%3Ainherit%3Bcolor%3Ainherit%7D.sb-wordlist-items%20.sb-pangram%7Bborder-bottom%3A2px%20%23f8cd05%20solid%7D.sb-wordlist-items%20.sb-anagram%20a%7Bcolor%3A%23888%7D.sba-dark%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.sba%7Bbackground%3A%23111%7D.sba-dark%20.sba%20summary%7Bbackground%3A%23252525%3Bcolor%3A%23eee%7D.sba-dark%20.pz-nav__hamburger-inner%2C.sba-dark%20.pz-nav__hamburger-inner%3A%3Abefore%2C.sba-dark%20.pz-nav__hamburger-inner%3A%3Aafter%7Bbackground-color%3A%23eee%7D.sba-dark%20.pz-nav%7Bwidth%3A100%25%3Bbackground%3A%23111%7D.sba-dark%20.pz-nav__logo%7Bfilter%3Ainvert(1)%7D.sba-dark%20.sb-modal-scrim%7Bbackground%3Argba(17%2C17%2C17%2C.85)%3Bcolor%3A%23eee%7D.sba-dark%20.pz-modal__title%7Bcolor%3A%23eee%7D.sba-dark%20.sb-modal-frame%2C.sba-dark%20.pz-modal__button.white%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.pz-modal__button.white%3Ahover%7Bbackground%3A%23393939%7D.sba-dark%20.sb-message%7Bbackground%3A%23393939%7D.sba-dark%20.sb-input-invalid%7Bcolor%3A%23666%7D.sba-dark%20.sb-toggle-expand%7Bbox-shadow%3Anone%7D.sba-dark%20.sb-progress-marker%20.sb-progress-value%2C.sba-dark%20.hive-cell.center%20.cell-fill%7Bbackground%3A%23f7c60a%3Bfill%3A%23f7c60a%3Bcolor%3A%23111%7D.sba-dark%20.sb-input-bright%7Bcolor%3A%23f7c60a%7D.sba-dark%20.hive-cell.outer%20.cell-fill%7Bfill%3A%23393939%7D.sba-dark%20.cell-fill%7Bstroke%3A%23111%7D.sba-dark%20.cell-letter%7Bfill%3A%23eee%7D.sba-dark%20.hive-cell.center%20.cell-letter%7Bfill%3A%23111%7D.sba-dark%20.hive-action%3Anot(.hive-action__shuffle)%7Bbackground%3A%23111%3Bcolor%3A%23eee%7D.sba-dark%20.hive-action__shuffle%7Bfilter%3Ainvert(100%25)%7D.sba-dark%20*%3Anot(.hive-action__shuffle)%3Anot(.sb-pangram)%3Anot(.sba-current)%7Bborder-color%3A%23333%20!important%7D.sba%7Bposition%3Aabsolute%3Bz-index%3A3%3Bwidth%3A160px%3Bbox-sizing%3Aborder-box%3Bpadding%3A0%2010px%205px%3Bbackground%3A%23fff%3Bborder-width%3A1px%3Bborder-color%3A%23dcdcdc%3Bborder-radius%3A6px%3Bborder-style%3Asolid%7D.sba%20*%2C.sba%20*%3Abefore%2C.sba%20*%3Aafter%7Bbox-sizing%3Aborder-box%7D.sba%20*%3Afocus%7Boutline%3A0%7D.sba%20%5Bdata-ui%3Dheader%5D%7Bdisplay%3Aflex%3Bgap%3A8px%7D.sba%20%5Bdata-ui%3Dheader%5D%20.toolbar%7Bdisplay%3Aflex%3Balign-items%3Astretch%3Bgap%3A1px%7D.sba%20%5Bdata-ui%3Dheader%5D%20.toolbar%20div%7Bpadding%3A10px%203px%202px%203px%7D.sba%20%5Bdata-ui%3Dheader%5D%20.toolbar%20div%3Alast-of-type%7Bpadding-top%3A8px%7D.sba%20%5Bdata-ui%3Dheader%5D%20svg%7Bwidth%3A11px%3Bcursor%3Apointer%3Bfill%3AcurrentColor%7D.sba%20.header%7Bfont-weight%3Abold%3Bline-height%3A32px%3Bflex-grow%3A2%7D.sba%20.minimizer%7Btransform%3Arotate(180deg)%3Btransform-origin%3Acenter%3Bposition%3Arelative%3Btop%3A2px%7D.sba.inactive%20details%2C.sba.inactive%20%5Bdata-ui%3Dfooter%5D%7Bdisplay%3Anone%7D.sba.inactive%20.minimizer%7Btransform%3Arotate(0deg)%3Btop%3A0%7D.sba%20details%7Bfont-size%3A90%25%3Bmax-height%3A800px%3Btransition%3Amax-height%20.25s%20ease-in%3Bmargin-bottom%3A1px%7D.sba%20details%5Bopen%5D%20summary%3Abefore%7Btransform%3Arotate(-90deg)%3Bleft%3A12px%3Btop%3A0%7D.sba%20details.inactive%7Bheight%3A0%3Bmax-height%3A0%3Btransition%3Amax-height%20.25s%20ease-out%3Boverflow%3Ahidden%3Bmargin%3A0%7D.sba%20summary%7Bfont-size%3A13px%3Bline-height%3A22px%3Bpadding%3A0%2015px%200%2021px%3Bbackground%3A%23e6e6e6%3Bcursor%3Apointer%3Blist-style%3Anone%3Bposition%3Arelative%3Bwhite-space%3Anowrap%3Boverflow%3Ahidden%3Btext-overflow%3Aellipsis%7D.sba%20summary%3A%3A-webkit-details-marker%7Bdisplay%3Anone%7D.sba%20summary%3Abefore%7Bcontent%3A%22%E2%9D%AF%22%3Bfont-size%3A9px%3Bposition%3Aabsolute%3Bdisplay%3Ainline-block%3Btransform%3Arotate(90deg)%3Btransform-origin%3Acenter%3Bleft%3A7px%3Btop%3A-1px%7D.sba%20.pane%7Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-top%3Anone%3Bwidth%3A100%25%3Bfont-size%3A85%25%3Bmargin-bottom%3A2px%7D.sba%20table%7Bborder-collapse%3Acollapse%3Btable-layout%3Afixed%7D.sba%20tr.sba-current%7Bfont-weight%3Abold%3Bborder-bottom%3A2px%20solid%20%23f8cd05%20!important%7D.sba%20td%7Bborder%3A1px%20solid%20%23dcdcdc%3Bborder-top%3Anone%3Bwhite-space%3Anowrap%3Btext-align%3Acenter%3Bpadding%3A4px%200%3Bwidth%3A26px%3Bwhite-space%3Anowrap%7D.sba%20td%3Afirst-of-type%7Btext-align%3Aleft%3Bwidth%3Aauto%3Boverflow%3Ahidden%3Btext-overflow%3Aellipsis%3Bpadding%3A4px%203px%7D.sba%20%5Bdata-ui%3DscoreSoFar%5D%20tbody%20tr%3Afirst-child%20td%2C.sba%20%5Bdata-ui%3Dspoilers%5D%20tbody%20tr%3Afirst-child%20td%7Bfont-weight%3Abold%7D.sba%20%5Bdata-ui%3Dfooter%5D%7Bcolor%3AcurrentColor%3Bopacity%3A.6%3Bfont-size%3A10px%3Btext-align%3Aright%3Bdisplay%3Ablock%3Bpadding-top%3A8px%7D.sba%20%5Bdata-ui%3Dfooter%5D%3Ahover%7Bopacity%3A.8%3Btext-decoration%3Aunderline%7D.sba%20.spill-title%7Bpadding%3A10px%206px%200px%3Btext-align%3Acenter%7D.sba%20.spill%7Btext-align%3Acenter%3Bpadding%3A17px%200%3Bfont-size%3A280%25%7D.sba%20ul.pane%7Bpadding%3A5px%7D.sba%20%5Bdata-ui%3Dsurrender%5D%20.pane%7Bpadding%3A10px%205px%7D.sba%20%5Bdata-ui%3Dsurrender%5D%20button%7Bmargin%3A0%20auto%3Bdisplay%3Ablock%3Bfont-size%3A100%25%3Bwhite-space%3Anowrap%3Bpadding%3A12px%2010px%7D.sba%20label%7Bcursor%3Apointer%3Bposition%3Arelative%3Bline-height%3A19px%7D.sba%20label%20input%7Bposition%3Arelative%3Btop%3A2px%3Bmargin%3A0%2010px%200%200%7D%40media(min-width%3A%20768px)%7B.sbaContainer%7Bwidth%3A100%25%3Bmax-width%3A1080px%3Bmargin%3A0%20auto%3Bheight%3A0px%3Boverflow-y%3Avisible%3Bposition%3Arelative%3Bz-index%3A5%7D.sba%7Bleft%3A100%25%3Btop%3A64px%7D%7D%40media(max-width%3A%201444px)%7B.sbaContainer%7Bmax-width%3Anone%7D.sba%7Btop%3A16px%3Bleft%3A12px%7D%7D%40media(max-width%3A%20768px)%7B.sba%7Btop%3A167px%7D%7D%5Cn'.replace(%2F(%5CuFEFF%7C%5C%5Cn)%2Fgu%2C%22%22)%7D)%2Ct.on(l(%22destroy%22)%2C(()%3D%3Ethis.ui.remove()))%2Cthis.add()%7D%7D%2CDarkMode%3Aclass%20extends%20f%7Btoggle(t)%7Breturn%20r(%60options.%24%7Bthis.key%7D%60%2Ct)%2Ce.%24(%22body%22).classList.toggle(l(%22dark%22%2C%22d%22)%2Ct)%2Cthis%7Dconstructor(t)%7Bsuper(t%2C%22Dark%20Mode%22%2C%7BcanDeactivate%3A!0%2CdefaultActive%3A!1%7D)%2Cthis.enableTool(%22darkMode%22%2C%22Dark%20mode%20on%22%2C%22Dark%20mode%20off%22)%2Cthis.toggle(this.isActive())%2Cthis.add()%7D%7D%2CHeader%3Aclass%20extends%20f%7Bconstructor(t)%7Bsuper(t%2Ci(%22title%22)%2C%7Bkey%3A%22header%22%7D)%2Cthis.ui%3De.div()%2Cthis.ui.append(e.div(%7Btext%3Athis.title%2CclassNames%3A%5B%22header%22%5D%7D))%2Ct.on(l(%22toolsReady%22)%2C(t%3D%3E%7Bconst%20s%3De.div(%7BclassNames%3A%5B%22toolbar%22%5D%7D)%3Breturn%20t.detail.forEach((t%3D%3E%7Bs.append(t)%7D))%2Cthis.ui.append(s)%2Cthis%7D))%2Cthis.add()%7D%7D%2CSetUp%3Aclass%20extends%20f%7Btoggle(t)%7Bsuper.toggle(t)%2Cthis.ui.open%3Dthis.isActive()%7Dconstructor(t)%7Bsuper(t%2C%22Set-up%22%2C%7BcanDeactivate%3A!0%2CdefaultActive%3A!1%7D)%3Bconst%20s%3De.ul(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Bthis.ui%3De.details(%7Bevents%3A%7Bclick%3Ae%3D%3E%7B%22INPUT%22%3D%3D%3De.target.tagName%26%26t.registry.get(e.target.name).toggle(e.target.checked)%7D%2Ctoggle%3At%3D%3E%7Bt.target.open%7C%7Cthis.toggle(!1)%7D%7D%7D)%2Cthis.enableTool(%22options%22%2C%22Show%20set-up%22%2C%22Hide%20set-up%22)%2Ct.on(l(%22pluginsReady%22)%2C(t%3D%3E%7Bt.detail.forEach(((t%2Ca)%3D%3E%7Bif(!t.canDeactivate%7C%7Ct.tool)return!1%3Bconst%20i%3De.li()%2Cr%3De.label(%7Btext%3At.title%7D)%2Co%3De.input(%7Battributes%3A%7Btype%3A%22checkbox%22%2Cname%3Aa%2Cchecked%3At.isActive()%7D%7D)%3Br.prepend(o)%2Ci.append(r)%2Cs.append(i)%7D))%7D))%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2Cthis.toggle(!1)%2Cthis.add()%7D%7D%2CScoreSoFar%3Aclass%20extends%20f%7BgetData()%7Breturn%5B%5B%22%22%2C%22%E2%9C%93%22%2C%22%3F%22%2C%22%E2%88%91%22%5D%2C%5B%22Words%22%2Cu(%22foundTerms%22)%2Cu(%22remainders%22)%2Cu(%22answers%22)%5D%2C%5B%22Points%22%2Cg(%22foundTerms%22)%2Cg(%22remainders%22)%2Cg(%22answers%22)%5D%5D%7Dconstructor(t)%7Bsuper(t%2C%22Score%20so%20far%22%2C%7BcanDeactivate%3A!0%7D)%2Cthis.ui%3De.details(%7Battributes%3A%7Bopen%3A!0%7D%7D)%3Bconst%20s%3Dx(this.getData())%3Bthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2Ct.on(l(%22wordsUpdated%22)%2C(()%3D%3E%7Bw(this.getData()%2Cs)%7D))%2Cthis.add()%7D%7D%2CSpoilers%3Aclass%20extends%20f%7BgetData()%7Bconst%20t%3D%7B%7D%2Ce%3Du(%22pangrams%22)%2Cs%3Du(%22foundPangrams%22)%2Ca%3D%5B%5B%22%22%2C%22%E2%9C%93%22%2C%22%3F%22%2C%22%E2%88%91%22%5D%2C%5B%22Pangrams%22%2Cs%2Ce-s%2Ce%5D%5D%3Bh(%22answers%22).forEach((e%3D%3E%7Bt%5Be.length%5D%3Dt%5Be.length%5D%7C%7C%7Bfound%3A0%2Cmissing%3A0%2Ctotal%3A0%7D%2Ch(%22foundTerms%22).includes(e)%3Ft%5Be.length%5D.found%2B%2B%3At%5Be.length%5D.missing%2B%2B%2Ct%5Be.length%5D.total%2B%2B%7D))%3Blet%20i%3DObject.keys(t)%3Breturn%20i.sort(((t%2Ce)%3D%3Et-e))%2Ci.forEach((e%3D%3E%7Ba.push(%5Be%2B%22%20%22%2B(e%3E1%3F%22letters%22%3A%22letter%22)%2Ct%5Be%5D.found%2Ct%5Be%5D.missing%2Ct%5Be%5D.total%5D)%7D))%2Ca%7Dconstructor(t)%7Bsuper(t%2C%22Spoilers%22%2C%7BcanDeactivate%3A!0%7D)%2Cthis.ui%3De.details()%3Bconst%20s%3Dx(this.getData())%3Bthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2Ct.on(l(%22wordsUpdated%22)%2C(()%3D%3E%7Bw(this.getData()%2Cs)%7D))%2Cthis.add()%7D%7D%2CSpillTheBeans%3Aclass%20extends%20f%7Breact(t)%7Breturn%20t%3Fh(%22remainders%22).filter((e%3D%3Ee.startsWith(t))).length%3F%22%F0%9F%99%82%22%3A%22%F0%9F%99%81%22%3A%22%F0%9F%98%90%22%7Dconstructor(t)%7Bsuper(t%2C%22Spill%20the%20beans%22%2C%7BcanDeactivate%3A!0%7D)%2Cthis.ui%3De.details()%3Bconst%20s%3De.div(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Bs.append(e.div(%7Btext%3A%22Watch%20my%20reaction!%22%2CclassNames%3A%5B%22spill-title%22%5D%7D))%3Bconst%20a%3De.div(%7Btext%3A%22%F0%9F%98%90%22%2CclassNames%3A%5B%22spill%22%5D%7D)%3Bs.append(a)%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2Cnew%20MutationObserver((t%3D%3E%7Ba.textContent%3Dthis.react(t.pop().target.textContent.trim())%7D)).observe(e.%24(%22.sb-hive-input-content%22%2Ct.game)%2C%7BchildList%3A!0%7D)%2Cthis.add()%7D%7D%2CStepsToSuccess%3Aclass%20extends%20f%7BgetData()%7Bconst%20t%3Dg(%22answers%22)%3Breturn%5B%5B%22Beginner%22%2C0%5D%2C%5B%22Good%20Start%22%2C2%5D%2C%5B%22Moving%20Up%22%2C5%5D%2C%5B%22Good%22%2C8%5D%2C%5B%22Solid%22%2C15%5D%2C%5B%22Nice%22%2C25%5D%2C%5B%22Great%22%2C40%5D%2C%5B%22Amazing%22%2C50%5D%2C%5B%22Genius%22%2C70%5D%2C%5B%22Queen%20Bee%22%2C100%5D%5D.map((e%3D%3E%5Be%5B0%5D%2CMath.round(e%5B1%5D%2F100*t)%5D))%7DmarkCurrentTier(t)%7Bconst%20s%3Dg(%22foundTerms%22)%2Ca%3Dthis.getData().filter((t%3D%3Et%5B1%5D%3C%3Ds)).pop()%5B1%5D%3Be.%24%24(%22td%22%2Ct).forEach((t%3D%3E%7Bt.parentNode.classList.remove(%22sba-current%22)%2CparseInt(t.textContent)%3D%3D%3Da%26%26t.parentNode.classList.add(%22sba-current%22)%7D))%7Dconstructor(t)%7Bsuper(t%2C%22Steps%20to%20success%22%2C%7BcanDeactivate%3A!0%7D)%2Cthis.ui%3De.details()%3Bconst%20s%3Dx(this.getData())%3Bthis.markCurrentTier(s)%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2Ct.on(l(%22wordsUpdated%22)%2C(()%3D%3E%7Bthis.markCurrentTier(s)%7D))%2Cthis.add()%7D%7D%2CSurrender%3Aclass%20extends%20f%7BusedOnce%3D!1%3BbuildEntry(t)%7Bconst%20s%3De.li(%7BclassNames%3Ah(%22pangrams%22).includes(t)%3F%5B%22sb-anagram%22%2C%22sb-pangram%22%5D%3A%5B%22sb-anagram%22%5D%7D)%3Breturn%20s.append(e.a(%7Btext%3At%2Cattributes%3A%7Bhref%3A%60https%3A%2F%2Fwww.google.com%2Fsearch%3Fq%3D%24%7Bt%7D%60%2Ctarget%3A%22_blank%22%7D%7D))%2Cs%7Dresolve(t)%7Breturn!this.usedOnce%26%26(this.app.observer.disconnect()%2Ch(%22remainders%22).forEach((e%3D%3Et.append(this.buildEntry(e))))%2Cthis.usedOnce%3D!0%2C!0)%7Dconstructor(t)%7Bsuper(t%2C%22Surrender%22%2C%7BcanDeactivate%3A!0%7D)%2Cthis.ui%3De.details()%3Bconst%20s%3De.div(%7BclassNames%3A%5B%22pane%22%5D%7D)%3Bs.append(e.button(%7Btag%3A%22button%22%2CclassNames%3A%5B%22hive-action%22%5D%2Ctext%3A%22Display%20answers%22%2Cattributes%3A%7Btype%3A%22button%22%7D%2Cevents%3A%7Bclick%3A()%3D%3Ethis.resolve(e.%24(%22.sb-wordlist-items%22%2Ct.game))%7D%7D))%2Cthis.ui.append(e.summary(%7Btext%3Athis.title%7D)%2Cs)%2Cthis.add()%7D%7D%2CFooter%3Aclass%20extends%20f%7Bconstructor(t)%7Bsuper(t%2C%60%24%7Bi(%22label%22)%7D%20%24%7Bi(%22version%22)%7D%60%2C%7Bkey%3A%22footer%22%7D)%2Cthis.ui%3De.a(%7Btext%3Athis.title%2Cattributes%3A%7Bhref%3Ai(%22url%22)%2Ctarget%3A%22_blank%22%7D%7D)%2Cthis.add()%7D%7D%7D%3Bnew%20class%20extends%20m%7BregisterPlugins(t)%7Bfor(const%5Be%2Cs%5Dof%20Object.entries(t))this.registry.set(e%2Cnew%20s(this))%3Breturn%20this.trigger(new%20CustomEvent(l(%22pluginsReady%22)%2C%7Bdetail%3Athis.registry%7D))%2Cthis.registerTools()%7DregisterTools()%7Breturn%20this.registry.forEach((t%3D%3E%7Bt.tool%26%26this.toolButtons.set(t.key%2Ct.tool)%7D))%2Cthis.enableTool(%22arrowDown%22%2C%22Maximize%20assistant%22%2C%22Minimize%20assistant%22)%2Cthis.tool.classList.add(%22minimizer%22)%2Cthis.toolButtons.set(this.key%2Cthis.tool)%2Cthis.trigger(new%20CustomEvent(l(%22toolsReady%22)%2C%7Bdetail%3Athis.toolButtons%7D))%7Dconstructor(t)%7Bif(!t%7C%7C!window.gameData)return%20console.info(%60This%20bookmarklet%20only%20works%20on%20%24%7Bi(%22targetUrl%22)%7D%60)%2C!1%3Bsuper(i(%22label%22)%2C%7BcanDeactivate%3A!0%7D)%2Cthis.game%3Dt%3Bconst%20s%3De.%24(%60%5Bdata-id%3D%22%24%7Bthis.key%7D%22%5D%60)%3Bs%26%26s.dispatchEvent(new%20Event(l(%22destroy%22)))%2Cthis.registry%3Dnew%20Map%2Cthis.toolButtons%3Dnew%20Map%2Cthis.parent%3De.div(%7BclassNames%3A%5Bl(%22container%22)%5D%7D)%3Bconst%20a%3De.%24(%22.sb-wordlist-items%22%2Ct)%2Cr%3D%7B%7D%3Br%5Bl(%22destroy%22)%5D%3D()%3D%3E%7Bthis.observer.disconnect()%2Cthis.parent.remove()%7D%2Cthis.ui%3De.div(%7Bdata%3A%7Bid%3Athis.key%7D%2CclassNames%3A%5Bi(%22prefix%22)%5D%2Cevents%3Ar%7D)%2Cp(this%2Ca)%2Cthis.observer%3Dnew%20MutationObserver((()%3D%3Ethis.trigger(new%20Event(l(%22newWord%22)))))%2Cthis.observer.observe(a%2C%7BchildList%3A!0%7D)%3Bconst%20o%3Dwindow.matchMedia(%22(max-width%3A%201196px)%22)%3Bo.addEventListener(%22change%22%2C(t%3D%3Ethis.toggle(!t.currentTarget.matches)))%2Co.dispatchEvent(new%20Event(%22change%22))%3Bconst%20n%3De.%24(%22.sb-toggle-expand%22)%3Bn.addEventListener(%22click%22%2C(t%3D%3E%7Bthis.ui.style.display%3De.%24(%22.sb-toggle-icon-expanded%22%2Cn)%3F%22none%22%3A%22block%22%7D))%2Ce.%24(%22.sb-toggle-icon-expanded%22%2Cn)%26%26n.dispatchEvent(new%20Event(%22click%22))%3Bconst%20d%3De.%24(%22.sb-modal-wrapper%22)%3Bd.addEventListener(%22keypress%22%2C(t%3D%3E%7Bconst%20s%3De.%24(%22.sb-modal-close%22%2Cd)%2Ca%3De.%24(%22.pz-modal__button.dark%22%2Cd)%3B%22Escape%22%3D%3D%3Dt.key%26%26s%3Fs.dispatchEvent(%22click%22)%3A%22Escape%22%3D%3D%3Dt.key%26%26a%26%26a.dispatchEvent(%22click%22)%7D))%2Cthis.parent.append(this.ui)%2Ct.before(this.parent)%7D%7D(e.%24(%22%23pz-game-root%22)).registerPlugins(k)%7D()%3B%0A%7D)()" onclick="return false" rel="nofollow"><img alt="Spelling Bee Assistant" src="assets/img/closed-light.png"></a>
+				</figure>
+				<figcaption>
+					Drag this to your bookmarks
+				</figcaption>
+			</div>
+			<p class="mobile-only">Spelling Bee Assistant can only run on desktop computers and laptops with a screen size of at least 700 pixels.</p>
+		</section>
+		<section>
+			<h2>Features</h2>
+			<ul class="card-listing">
+				<li class="card">
+					<h3>Dark Mode</h3><a class="lft" href="#dark-mode">
+					<figure class="img-box dark-mode">
+						<img alt="Dark Mode" src="assets/img/dark-mode-light.png?2.0.0">
+					</figure>
+					<figcaption>
+						What does it look like?
+					</figcaption></a>
+					<p>Have you been staring at the screen for a long time? Your eyes are dry and hurt but you can't stop playing, just this one level! People on social media had suggested to bring Dark Mode to Spelling Bee and the Spelling Bee Assistant does just that. Go to <em>Set-Up</em>, check the <em>Dark Mode</em> box and relax!</p>
+				</li>
+				<li class="card">
+					<h3>Score so far</h3>
+					<div class="lft">
+						<figure class="img-box score-so-far">
+							<img alt="Score so far" src="assets/img/score-so-far-light.png?2.0.0">
+						</figure>
+						<figcaption>
+							What you already bagged
+						</figcaption>
+					</div>
+					<p>How far have you been moving ahead already and long is the way to the top? And - and that's a tiny spoiler - how many points will you need to have to become <em>Queen Bee</em>? That's the sort of question you get answered here.</p>
+				</li>
+				<li class="card">
+					<h3>Spoilers</h3>
+					<div class="lft">
+						<figure class="img-box spoilers">
+							<img alt="Spoilers" src="assets/img/spoilers-light.png?2.0.0">
+						</figure>
+						<figcaption>
+							What you still need to find
+						</figcaption>
+					</div>
+					<p>So you found a good bunch of words, discovered the Pangram but now you wonder if there are words with four letters left that you've been missing. Maybe there is another Pangram hidden in the hive? Or at least a good long term that moves you to the next level? The <em>Spoiler</em> panel won't tell you the words, but it will tell you, how many of each size lay still ahead.</p>
+				</li>
+				<li class="card">
+					<h3>Spill the beans</h3>
+					<div class="lft">
+						<figure class="img-box spill-the-beans">
+							<img alt="Spill the beans" src="assets/img/spill-the-beans-light.png?2.0.0">
+						</figure>
+						<figcaption>
+							Crumbs of help, letter-wise
+						</figcaption>
+					</div>
+					<p>What was the name of this bird again, that you only know from solving crosswords? You know what it starts with, but what came after the 3rd letter again? This little face might know a thing or two that you don't, so watch it while you type!</p>
+					<ul class="clr">
+						<li><span class="emoji">🙂</span> a smile means you are on the right track</li>
+						<li><span class="emoji">🙁</span> a sad face says you're barking up the wrong tree.</li>
+						<li><span class="emoji">😐</span> no emotion means there is nothing to say; either you didn't type anything yet - or the complete word is already right in front of you.</li>
+					</ul>
+				</li>
+				<li class="card">
+					<h3>Steps to success</h3>
+					<div class="lft">
+						<figure class="img-box steps-to-success">
+							<img alt="Steps to success" src="assets/img/steps-to-success-light.png?2.0.0">
+						</figure>
+						<figcaption>
+							Where to go next
+						</figcaption>
+					</div>
+					<p>You’ve certainly seen this one before, which is no wonder, because it's pretty close to the <em>Rankings</em> pop-up that is already part of <em>Spelling Bee</em>. But this one you can keep open while you're playing and - as an added bonus - it reveals how far the road to <em>Queen Bee</em> is. The tier that you’re currently in is highlighted.</p>
+				</li>
+				<li class="card">
+					<h3>Surrender</h3>
+					<div class="lft">
+						<figure class="img-box surrender">
+							<img alt="Surrender" src="assets/img/surrender-light.png?2.0.0">
+						</figure>
+						<figcaption>
+							Ready to give up?
+						</figcaption>
+					</div>
+					<p>You aren’t ready to declare defeat already, are you? Well, if you are, no need to wait until 3:00 a.m. ET anymore - with this button you can resolve the game with a mouse clicks. But don't expect to be crowned <em>Queen Bee</em>! All the words you didn’t find will be linked to the respective terms in Google. Maybe this will help you next time!</p>
+				</li>
+				<li class="card">
+					<h3>Set-up</h3>
+					<div class="lft">
+						<figure class="img-box set-up">
+							<img alt="Set-up" src="assets/img/set-up-light.png?2.0.0" usemap="#setUp">
+						</figure>
+						<figcaption>
+							Use only what you like
+						</figcaption>
+					</div>
+					<p>You like only some of these features, but not all of them? Get rid of those you don’t like, they won't bother you anymore. Unless of course you use the assistant on another browser, then you'll have to do it all over again.</p>
+				</li>
+				<li class="card extras">
+					<h3>Little extras</h3>
+					<ul>
+						<li>
+							<div class="lft">
+								<figure class="img-box header">
+									<img alt="Assistant can be dragged" src="assets/img/header-light.png?2.0.0">
+								</figure>
+							</div>
+							<p>The assistant can be dragged anywhere inside the game area and be minimized by clicking on the <svg height="10" viewbox="0 0 6.6718 4.5789" width="9" xmlns="http://www.w3.org/2000/svg">
+							<path d="m6.6718 4.579-3.3342-3.07-3.3377 3.07v-1.659l3.2262-2.92h0.22025l3.2254 2.91z"></path></svg> symbol.</p>
+						</li>
+						<li>
+							<div class="lft">
+								<figure class="img-box pangram-underline">
+									<img alt="Pangrams are underlined" src="assets/img/pangram-underline-light.png?2.0.0">
+								</figure>
+							</div>
+							<p>In the result list pangrams are marked with a yellow underline.</p>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</section>
+		<section>
+			<h2 id="bookmarklet">What is a bookmarklet?</h2>
+			<div class="lft">
+				<figure class="img-box bookmarklet">
+					<img alt="Bookmarklet" src="assets/img/bookmarklet-light.png?2.0.0">
+				</figure>
+				<figcaption>
+					Regular bookmarks along with the Spelling Bee Assistant
+				</figcaption>
+			</div>
+			<p>Bookmarklets are small pieces of code that can enhance the functionality of a website. They reside, just like regular bookmarks, in your browser’s bookmark menu. Unfortunately, there is no straightforward way to assign an icon to them.</p>
+			<p class="rgt"><a href="#">Back to top</a></p>
+		</section>
+		<section>
+			<h2>Does it work everywhere?</h2>
+			<p>Spelling Bee Assistant works only with modern browsers and has been built with laptops or desktop computers in mind. Installing bookmarklets on a phone or a tablet is a bit complex but can be done according to <a href="https://www.google.com/search?q=Installing+bookmarklets+on+a+moblie+device" rel="noopener" target="_blank">Google</a>. There is a good chance it will work on larger mobile devices but this has not been tested. It can't be installed on the NYT app though.</p>
+		</section>
+		<section>
+			<h2>Does it not spoil the game?</h2>
+			<p>Other people have been creating <a href="https://www.shunn.net/bee/">tools with a similar purpose</a> which - according to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html">this article</a> - the Spelling Bee community seems to like well.</p>
+			<p>Use the Assistant sparsely, don't launch it before having solved a good chunk of the game on your own. Don't open the <em>Spoilers</em> panel before you really need to. Only hit the magic button when you eventually run completely out of ideas. At least for me it works well this way.</p>
+		</section>
+		<section>
+			<h2>I discovered a bug | I’d like to ask for a new feature</h2>
+			<p>You can report bugs or request features <a href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is a fun weekend project and I don't want it to be a burden. I might work on issues from time to time but I won't make any promises.</p>
+		</section>
+		<section>
+			<h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
+			<p>No.</p>
+		</section>
+	</main><map id="setUp" name="setUp">
+		<area coords="3,28,106,47" href="#dark-mode" shape="rect">
+	</map> <map id="header-links" name="header-links">
+		<area coords="86,0,102,12" href="#dark-mode" shape="rect">
+		<area coords="104,0,119,12" href="#set-up" shape="rect">
+		<area coords="121,0,136,12" href="#minimize" shape="rect">
+	</map> 
+	<script>
+	 ((d) => {
+	   d.body.dataset.theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'; 
+	   d.querySelectorAll('[href="#dark-mode"]').forEach(toggle => {
+	     toggle.addEventListener('click', evt => { 
+	       evt.preventDefault();
+	       d.body.dataset.theme = d.body.dataset.theme === 'dark' ? 'light' : 'dark';
+	       localStorage.setItem('theme', d.body.dataset.theme);
+	     })
+	   })
+	     
+	   d.querySelector('.bookmarklet').addEventListener('dragstart', e => {
+	       window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams({
+	           v: 1,
+	           tid: 'UA-182372232-1',
+	           cid: Date.now(),
+	           t: 'event',
+	           aip: '1',
+	           ec: 'SBA Download',
+	           ea: e.type,
+	           el: '2.0.0'
+	       }).toString());
+	   }, false);
+	 })(document)      
+	</script>
 </body>
 </html>

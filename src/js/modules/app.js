@@ -7,20 +7,58 @@ import {
 } from './string.js';
 
 
+// noinspection JSUnresolvedVariable
 /**
  * App container
  * @param {HTMLElement} game
  * @returns {App} app
  */
 class App extends Widget {
-    constructor(game) {
-        if (!game || !window.gameData) {
-            console.info(`This bookmarklet only works on ${settings.get('targetUrl')}`);
-            return false;
+
+    /**
+     * The element that is used to drag the app
+     * @type {HTMLElement}
+     */
+    dragHandle;
+
+    /**
+     * Register all plugins
+     * @param plugins
+     * @returns {Widget}
+     */
+    registerPlugins(plugins) {
+        for (const [key, plugin] of Object.entries(plugins)) {
+            this.registry.set(key, new plugin(this));
         }
+        this.trigger(prefix('pluginsReady'), this.registry);
+        return this.registerTools();
+    }
+
+    /**
+     * Register tools for tool bar
+     * @returns {Widget}
+     */
+    registerTools() {
+        this.registry.forEach(plugin => {
+            if (plugin.tool) {
+                this.toolButtons.set(plugin.key, plugin.tool);
+            }
+        })
+        this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
+        this.tool.classList.add('minimizer');
+        this.toolButtons.set(this.key, this.tool);
+        return this.trigger(prefix('toolsReady'), this.toolButtons);
+    }
+
+    /**
+     * Builds the app
+     * @param {HTMLElement} game
+     */
+    constructor(game) {
 
         super(settings.get('label'), {
-            canDeactivate: true
+            canChangeState: true,
+            key: prefix('app'),
         });
         this.game = game;
 
@@ -32,15 +70,23 @@ class App extends Widget {
         this.registry = new Map();
         this.toolButtons = new Map();
 
-        this.parent = el.$('.sb-content-box', game);
+        this.parent = el.div({
+            classNames: [prefix('container')]
+        });
 
         const resultList = el.$('.sb-wordlist-items', game);
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
-            this.ui.remove();
+            this.parent.remove();
         };
+
+        this.isDraggable = true;
+
         this.ui = el.div({
+            attributes: {
+                draggable: this.isDraggable
+            },
             data: {
                 id: this.key
             },
@@ -48,49 +94,35 @@ class App extends Widget {
             events: events
         });
 
+        this.dragHandle = this.ui;
+        this.dragArea = this.game;
+
         data.init(this, resultList);
 
-        this.observer = new MutationObserver(() => this.trigger(new Event(prefix('newWord'))));
-
-        this.observer.observe(resultList, {
-            childList: true
-        });
-
-        this.registerPlugins = plugins => {
-            for (const [key, plugin] of Object.entries(plugins)) {
-                this.registry.set(key, new plugin(this));
-            }
-            this.trigger(new CustomEvent(prefix('pluginsReady'), {
-                detail: this.registry
-            }))
-            return this.registerTools();
-        }
-
-        this.registerTools = () => {
-            this.registry.forEach(plugin => {
-                if (plugin.tool) {
-                    this.toolButtons.set(plugin.key, plugin.tool);
-                }
-            })
-            this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
-            this.tool.classList.add('minimizer');
-            this.toolButtons.set(this.key, this.tool);
-            return this.trigger(new CustomEvent(prefix('toolsReady'), {
-                detail: this.toolButtons
-            }))
-        }
+        this.observer = (() => {
+            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop()));
+            observer.observe(resultList, {
+                childList: true
+            });
+            return observer;
+        })();
 
         // minimize on smaller screens
-        const mql = window.matchMedia('(max-width: 1196.98px)');
-        mql.addEventListener('change', evt => this.toggle(!evt.matches));
+        const mql = window.matchMedia('(max-width: 1196px)');
+        mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));
         mql.dispatchEvent(new Event('change'));
 
-        const wordlistToggle = el.$('.sb-toggle-icon');
-        el.$('.sb-toggle-expand').addEventListener('click', evt => {
-            this.ui.style.display = wordlistToggle.classList.contains('sb-toggle-icon-expanded') ? 'none' : 'block';
+        const wordlistToggle = el.$('.sb-toggle-expand');
+        wordlistToggle.addEventListener('click', () => {
+            this.ui.style.display = el.$('.sb-toggle-icon-expanded', wordlistToggle) ? 'none' : 'block';
         })
+        if (el.$('.sb-toggle-icon-expanded', wordlistToggle)) {
+            wordlistToggle.dispatchEvent(new Event('click'));
+        }
 
+        this.toggle(this.getState());
         this.parent.append(this.ui);
+        game.before(this.parent);
     };
 }
 

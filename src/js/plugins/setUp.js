@@ -1,6 +1,8 @@
 import el from '../modules/element.js';
 import Plugin from '../modules/plugin.js';
-import { prefix } from '../modules/string.js';
+import {
+	prefix
+} from '../modules/string.js';
 
 /**
  * Set-up plugin
@@ -9,11 +11,22 @@ import { prefix } from '../modules/string.js';
  * @returns {Plugin} SetUp
  */
 class SetUp extends Plugin {
+
+	/**
+	 * Override default toggle mechanism
+	 * @param state
+	 */
+	toggle(state) {
+		super.toggle(state);
+		this.ui.open = this.getState();
+		return this;
+	}
+
 	constructor(app) {
 
 		super(app, 'Set-up', {
-			canDeactivate: true,
-			defaultActive: false
+			canChangeState: true,
+			defaultState: false
 		});
 
 		const pane = el.ul({
@@ -35,18 +48,11 @@ class SetUp extends Plugin {
 			}
 		});
 
-		const _toggle = this.toggle;
-
-		this.toggle = state => {
-			_toggle(state);
-			this.ui.open = this.isActive();
-		}
-
 		this.enableTool('options', 'Show set-up', 'Hide set-up');
 
 		app.on(prefix('pluginsReady'), evt => {
 			evt.detail.forEach((plugin, key) => {
-				if (!plugin.canDeactivate || plugin.tool) {
+				if (!plugin.canChangeState || plugin.tool) {
 					return false;
 				}
 				const li = el.li();
@@ -57,7 +63,7 @@ class SetUp extends Plugin {
 					attributes: {
 						type: 'checkbox',
 						name: key,
-						checked: plugin.isActive()
+						checked: !!plugin.getState()
 					}
 				});
 				label.prepend(check)
@@ -71,7 +77,6 @@ class SetUp extends Plugin {
 		}), pane);
 
 		this.toggle(false);
-
 		this.add();
 	}
 }

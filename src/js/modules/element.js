@@ -25,12 +25,7 @@ const fn = {
 
 /**
  * Create elements conveniently
- * @param {String} tag
- * @param {String} text
- * @param {Object} attributes
- * @param {Object} style
- * @param {Object} data
- * @param {Object} events
+ * @param {{tag: String, text: String, attributes: Object, style: Object, data: Object, events: Object, classNames: Array, svg: Boolean}}
  * @returns {HTMLElement}
  */
 const create = function ({
@@ -45,14 +40,16 @@ const create = function ({
 } = {}) {
     const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
     el.textContent = text;
-    for (const [key, value] of Object.entries(attributes)) {
+    for (let [key, value] of Object.entries(attributes)) {
+        value = value.toString();
         if (svg) {
             el.setAttributeNS(null, key, value);
         } else {
             el[key] = value;
         }
     }    
-    for (const [key, value] of Object.entries(data)) {
+    for (let [key, value] of Object.entries(data)) {
+        value = value.toString();
         el.dataset[key] = value;
     }
     for (const [event, fn] of Object.entries(events)) {
@@ -65,6 +62,7 @@ const create = function ({
     return el;
 };
 
+// noinspection SpellCheckingInspection
 /**
  * Dispatcher for the `create()`, `$` and `$$`
  * Examples (for $, $$ see docs on the functions):
@@ -90,6 +88,12 @@ const create = function ({
  * returns the element `<a href="http://example.com" style="color: red" data-foo="bar" class="boom">My link</a>` that issues an alert when clicked
  */
 const el = new Proxy(fn, {
+    /**
+     * Either build an element or retrieve one or multiple from the DOM
+     * @param target
+     * @param prop
+     * @returns {function(): (*)}
+     */
     get(target, prop) {
         return function () {
             const args = Array.prototype.slice.call(arguments);

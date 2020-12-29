@@ -5,6 +5,7 @@ import settings from './settings.js';
 import getIcon from './icons.js';
 import el from './element.js';
 
+// noinspection JSUnresolvedFunction
 /**
  * Plugin base class
  */
@@ -14,7 +15,7 @@ class Widget {
      * Cannot be hidden or otherwise disabled by user, default state
      * @type {boolean}
      */
-    defaultActive = true;
+    defaultState = true;
 
     /**
      * Undefined by default, most plugins will overwrite this
@@ -38,15 +39,15 @@ class Widget {
      * Can be deactivated
      * @type {boolean}
      */
-    canDeactivate = false;
+    canChangeState = false;
 
     /**
      * Tells if the user has deactivated a plugin, falls back on default setting
-     * @returns {boolean}
+     * @returns {*}
      */
-    isActive = () => {
+    getState() {
         const stored = settings.get(`options.${this.key}`);
-        return typeof stored !== 'undefined' ? stored : this.defaultActive;
+        return typeof stored !== 'undefined' ? stored : this.defaultState;
     }
 
     /**
@@ -54,26 +55,39 @@ class Widget {
      * @param {boolean} state
      * @returns {Widget}
      */
-    toggle = state => {
-        if (!this.canDeactivate) {
+    toggle(state) {
+        if (!this.canChangeState) {
             return this;
         }
         settings.set(`options.${this.key}`, state);
-        this.ui.classList.toggle('inactive', !state);
+        if (this.hasUi()) {
+            this.ui.classList.toggle('inactive', !state);
+        }
         return this;
     }
 
-    enableTool = (iconKey, textToActivate, textToDeactivate) => {
+    /**
+     * Build a tool for the tool bar
+     * @param {String} iconKey
+     * @param {String} textToActivate
+     * @param {String} textToDeactivate
+     * @returns {Widget}
+     */
+    enableTool(iconKey, textToActivate, textToDeactivate) {
         this.tool = el.div({
             events: {
                 click: () => {
-                    this.toggle(!this.isActive());
-                    this.tool.title = this.isActive() ? textToDeactivate : textToActivate;
+                    this.toggle(!this.getState());
+                    this.tool.title = this.getState() ? textToDeactivate : textToActivate;
                 }
             },
             attributes: {
-                title: this.isActive() ? textToDeactivate : textToActivate
+                title: this.getState() ? textToDeactivate : textToActivate
+            },
+            data: {
+                tool: this.key
             }
+
         })
         this.tool.append(getIcon(iconKey));
         return this;
@@ -83,40 +97,51 @@ class Widget {
      * Some plugins, for instance `darkMode` have no UI
      * @returns {boolean}
      */
-    hasUi = () => {
+    hasUi() {
         return this.ui instanceof HTMLElement;
     }
 
     /**
      * Assign an event to the ui
+     * @param type
+     * @param action
      * @returns {Widget}
      */
-    on = (evt, action) => {
-        this.ui.addEventListener(evt, action);
+    on(type, action) {
+        this.ui.addEventListener(type, action);
         return this;
     }
 
     /**
      * Fire an event from the ui
+     * @param type
+     * @param data
      * @returns {Widget}
      */
-    trigger = evt => {
-        this.ui.dispatchEvent(evt);
+    trigger(type, data) {
+        this.ui.dispatchEvent(data ? new CustomEvent(type, {
+            detail: data
+        }) : new Event(type));
         return this;
     }
 
+    /**
+     * Build an instance of the widget
+     * @param {String} title
+     * @param {{key: String, canChangeState: Boolean, defaultState: *}}
+     */
     constructor(title, {
         key,
-        canDeactivate,
-        defaultActive
+        canChangeState,
+        defaultState
     } = {}) {
         if (!title) {
             throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
         }
         this.title = title;
         this.key = key || camel(title);
-        this.canDeactivate = typeof canDeactivate !== 'undefined' ? canDeactivate : this.canDeactivate;
-        this.defaultActive = typeof defaultActive !== 'undefined' ? defaultActive : this.defaultActive;
+        this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : this.canChangeState;
+        this.defaultState = typeof defaultState !== 'undefined' ? defaultState : this.defaultState;
     }
 }
 
