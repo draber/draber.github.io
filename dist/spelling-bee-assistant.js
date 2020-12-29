@@ -21,14 +21,16 @@
     } = {}) {
         const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
         el.textContent = text;
-        for (const [key, value] of Object.entries(attributes)) {
+        for (let [key, value] of Object.entries(attributes)) {
+            value = value.toString();
             if (svg) {
                 el.setAttributeNS(null, key, value);
             } else {
                 el[key] = value;
             }
         }
-        for (const [key, value] of Object.entries(data)) {
+        for (let [key, value] of Object.entries(data)) {
+            value = value.toString();
             el.dataset[key] = value;
         }
         for (const [event, fn] of Object.entries(events)) {
@@ -484,6 +486,7 @@
     	toggle(state) {
     		super.toggle(state);
     		this.ui.open = this.getState();
+    		return this;
     	}
     	constructor(app) {
     		super(app, 'Set-up', {
@@ -879,8 +882,7 @@
                         evt.target.style.opacity = '.2';
                         this.position = this.getPosition();
                         this.mouse = this.getMouse(evt);
-                    },
-                    false)
+                    })
                 .on('dragover', evt => evt.preventDefault());
             this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
             return this;

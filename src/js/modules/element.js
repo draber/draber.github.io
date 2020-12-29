@@ -40,14 +40,16 @@ const create = function ({
 } = {}) {
     const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
     el.textContent = text;
-    for (const [key, value] of Object.entries(attributes)) {
+    for (let [key, value] of Object.entries(attributes)) {
+        value = value.toString();
         if (svg) {
             el.setAttributeNS(null, key, value);
         } else {
             el[key] = value;
         }
     }    
-    for (const [key, value] of Object.entries(data)) {
+    for (let [key, value] of Object.entries(data)) {
+        value = value.toString();
         el.dataset[key] = value;
     }
     for (const [event, fn] of Object.entries(events)) {
@@ -60,6 +62,7 @@ const create = function ({
     return el;
 };
 
+// noinspection SpellCheckingInspection
 /**
  * Dispatcher for the `create()`, `$` and `$$`
  * Examples (for $, $$ see docs on the functions):

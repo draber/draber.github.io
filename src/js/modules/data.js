@@ -14,6 +14,7 @@ let lists;
  * @param {HTMLElement} resultList
  */
 const initLists = resultList => {
+    // noinspection JSUnresolvedVariable,JSUnresolvedVariable,JSUnresolvedVariable,JSUnresolvedVariable
     lists = {
         answers: window.gameData.today.answers,
         pangrams: window.gameData.today.pangrams,

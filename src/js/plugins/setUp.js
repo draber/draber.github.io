@@ -19,6 +19,7 @@ class SetUp extends Plugin {
 	toggle(state) {
 		super.toggle(state);
 		this.ui.open = this.getState();
+		return this;
 	}
 
 	constructor(app) {

@@ -43,7 +43,7 @@ class Widget {
 
     /**
      * Tells if the user has deactivated a plugin, falls back on default setting
-     * @returns {Boolean|String}
+     * @returns {*}
      */
     getState() {
         const stored = settings.get(`options.${this.key}`);

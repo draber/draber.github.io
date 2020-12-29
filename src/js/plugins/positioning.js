@@ -1,6 +1,6 @@
 import Plugin from '../modules/plugin.js';
-import settings from '../modules/settings.js';
 
+// noinspection JSUnresolvedVariable,JSUnresolvedVariable
 /**
  * Positioning plugin
  *
@@ -136,8 +136,7 @@ class Positioning extends Plugin {
                     evt.target.style.opacity = '.2';
                     this.position = this.getPosition();
                     this.mouse = this.getMouse(evt);
-                },
-                false)
+                })
             .on('dragover', evt => evt.preventDefault());
 
         this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());

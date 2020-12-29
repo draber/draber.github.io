@@ -15,7 +15,7 @@ const config = Object.assign(packageJson, configJs);
  * @returns {Buffer | string}
  */
 const getContents = path => {
-  return fs.readFileSync(path, 'utf8', (err, data) => {
+  return fs.readFileSync(path, 'utf8', (err) => {
     if (err) {
       console.log(err);
       process.exit(2);
@@ -32,7 +32,7 @@ const getContents = path => {
  */
 const writeHtml = (replacements = {}, inPath, outPath) => {
   let html = getContents(inPath);
-  [...new Set(html.match(/{{[\w\.]+}}/g) || [])].forEach(entry => {
+  [...new Set(html.match(/{{[\w.]+}}/g) || [])].forEach(entry => {
     const re = new RegExp(entry.replace(/\./g, '\\.'), 'g');
     html = html.replace(re, key => {
       key = key.replace(/^{+|}+$/g, '');
