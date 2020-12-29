@@ -370,7 +370,7 @@
             this.dragArea = this.game;
             data.init(this, resultList);
             this.observer = (() => {
-                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop()));
+                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop().addedNodes[0]));
                 observer.observe(resultList, {
                     childList: true
                 });

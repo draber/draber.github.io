@@ -100,7 +100,7 @@ class App extends Widget {
         data.init(this, resultList);
 
         this.observer = (() => {
-            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop()));
+            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop().addedNodes[0]));
             observer.observe(resultList, {
                 childList: true
             });
