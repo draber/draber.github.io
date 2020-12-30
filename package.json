@@ -15,12 +15,9 @@
     "sass": "^1.29.0"
   },
   "scripts": {
-    "build": "rollup -c ./rollup/build.js",
-    "dev": "rollup -c ./rollup/dev.js",
+    "dev": "rollup -c ./src/config/dev.js",
     "sba-sass-w": "sass --watch src/scss/widget.scss:src/css/widget.css --style compressed --no-source-map",
     "sba-sass": "sass src/scss/widget.scss:src/css/widget.css --style compressed --no-source-map",
-    "site-sass-w": "sass --watch src/scss/site.scss:assets/css/site.css --style compressed --no-source-map",
-    "site-sass": "sass src/scss/site.scss:assets/css/site.css --style compressed --no-source-map",
     "compile-site": "node ./src/compiler/ -t site",
     "watch-site": "node ./src/compiler/ -t site -w",
     "compile-ext": "node ./src/compiler/ -t extension",
