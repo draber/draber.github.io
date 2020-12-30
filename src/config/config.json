@@ -26,7 +26,7 @@
         "site": "src/scss/site.scss"
     },
     "bookmarklet": {
-        "cdn": "https://dieterraber.net/spelling-bee-assistant.min.js",
+        "cdn": "https://spelling-bee-assistant.app/img/spelling-bee-assistant.min.js",
         "html": {
             "template": "src/templates/bookmarklet/installer.html",
             "output": "dist/bookmarklet/installer.html"

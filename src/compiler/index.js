@@ -104,9 +104,10 @@ const build = async (type) => {
             }];
             break;
         case 'bookmarklet':
-            const template = read(settings.get('bookmarklet.js.template'));
-            write(settings.get('bookmarklet.js.plain'), substituteVars(template, settings));
             config = [{
+                contents: substituteVars(read(settings.get('bookmarklet.js.template')), settings),
+                savePath: settings.get('bookmarklet.js.plain')
+            }, {
                 contents: await getHtml(settings.get('bookmarklet.html.template'), settings.get('bookmarklet.js.plain')),
                 savePath: settings.get('bookmarklet.html.output')
             }];
@@ -146,7 +147,8 @@ const watch = async (type) => {
             config = [
                 'js.plain',
                 'bookmarklet.html.template',
-                'bookmarklet.js.template'
+                'bookmarklet.js.template',
+                'bookmarklet.js.plain'
             ];
     }
     config = config.map(entry => settings.get(entry));
