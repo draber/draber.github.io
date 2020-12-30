@@ -25,6 +25,17 @@
         "widget": "src/scss/widget.scss",
         "site": "src/scss/site.scss"
     },
+    "bookmarklet": {
+        "cdn": "https://dieterraber.net/spelling-bee-assistant.min.js",
+        "html": {
+            "template": "src/templates/bookmarklet/installer.html",
+            "output": "dist/bookmarklet/installer.html"
+        },
+        "js": {
+            "template": "src/templates/bookmarklet/tpl.js",
+            "plain": "src/templates/bookmarklet/main.js"
+        }
+    },
     "css": {
         "widget": "src/css/widget.css",
         "site": "assets/css/site.css"
