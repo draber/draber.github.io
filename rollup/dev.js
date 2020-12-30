@@ -5,6 +5,7 @@ import json from '@rollup/plugin-json';
 import {
 	string
 } from 'rollup-plugin-string';
+import config from '../src/config/config.json';
 
 const plugins = [
 	resolve(),
@@ -17,10 +18,10 @@ const plugins = [
 ];
 
 export default [{
-	input: 'src/js/main.js',
+	input: config.js.input,
 	output: {
-		file: 'dist/spelling-bee-assistant.js',
-		format: 'iife'
+		file: config.js.plain,
+		format: config.js.format
 	},
 	plugins: plugins
 }];

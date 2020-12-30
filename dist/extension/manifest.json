@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "name": "Spelling Bee Assistant",
+    "description": "Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle",
+    "version": "2.0.0",
+    "content_scripts": [{
+        "matches": [
+            "https://www.nytimes.com/puzzles/spelling-bee"
+        ],
+        "js": ["content.js"]
+    }],
+    "web_accessible_resources" : ["/spelling-bee-assistant.min.js"],
+    "permissions": [
+        "activeTab",
+        "storage"
+    ]
+}

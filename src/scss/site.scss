@@ -201,7 +201,6 @@ header {
         }
     }
 
-
     .installer {
         min-width: 16rem;
         height: 24.6rem;
@@ -311,7 +310,6 @@ figcaption {
 
 $cardMargin: 2rem;
 
-
 .card {
     border: {
         width: .1rem;
@@ -329,6 +327,7 @@ $cardMargin: 2rem;
         clear: left;
         display: block;
     }
+
 }
 
 .card-listing {
@@ -398,3 +397,4 @@ ul {
         margin-bottom: 1.5rem
     }
 }
+

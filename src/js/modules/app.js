@@ -96,6 +96,7 @@ class App extends Widget {
 
         this.dragHandle = this.ui;
         this.dragArea = this.game;
+        this.dragOffset = 12;
 
         data.init(this, resultList);
 

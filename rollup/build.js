@@ -8,6 +8,7 @@ import {
 import {
     terser
 } from 'rollup-plugin-terser';
+import config from '../src/config/config.json';
 
 const plugins = [
     resolve(),
@@ -22,10 +23,10 @@ const plugins = [
 
 
 export default [{
-    input: 'src/js/main.js',
-    output: {
-        file: 'dist/spelling-bee-assistant.esm.min.js',
-        format: 'esm'
-    },
-    plugins: plugins
+	input: config.js.input,
+	output: {
+		file: config.js.compressed,
+		format: config.js.format
+	},
+	plugins: plugins
 }];

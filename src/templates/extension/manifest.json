@@ -1,0 +1,17 @@
+{
+    "manifest_version": 2,
+    "name": "{{label}}",
+    "description": "{{description}}",
+    "version": "{{version}}",
+    "content_scripts": [{
+        "matches": [
+            "{{targetUrl}}"
+        ],
+        "js": ["content.js"]
+    }],
+    "web_accessible_resources" : ["/{{sbaFileName}}"],
+    "permissions": [
+        "activeTab",
+        "storage"
+    ]
+}
