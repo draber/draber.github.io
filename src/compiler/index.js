@@ -110,6 +110,9 @@ const build = async (type) => {
             }, {
                 contents: await getHtml(settings.get('bookmarklet.html.template'), settings.get('bookmarklet.js.plain')),
                 savePath: settings.get('bookmarklet.html.output')
+            }, {
+                contents: await getMinifiedJs(settings.get('js.plain')),
+                savePath: settings.get('bookmarklet.cdn.local')
             }];
     }
     if (config) {
