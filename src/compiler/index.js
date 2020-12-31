@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
 const settings = require('./modules/settings.js');
@@ -14,8 +15,10 @@ const {
     read,
     write
 } = require('./modules/file.js');
-const chokidar = require('chokidar');
 const sass = require('sass');
+const {
+    Console
+} = require('console');
 
 const args = minimist(process.argv.slice(2));
 
@@ -48,7 +51,9 @@ const getHtml = async (path, jsPath) => {
  * @returns {String}
  */
 const getCss = path => {
-    const buffer = sass.renderSync({file: path});
+    const buffer = sass.renderSync({
+        file: path
+    });
     return buffer.css;
 }
 
@@ -79,50 +84,95 @@ const getMinifiedJs = async (path) => {
 }
 
 /**
+ * Get a collection of files needed for a certain compilation
+ * @param {String} type 
+ */
+const getFileKeys = type => {
+    const types = {
+        site: [
+            'html.template',
+            'scss.site',
+            'scss.colors'
+        ],
+        extension: [
+            'extension.template',
+            'js.plain'
+        ],
+        bookmarklet: [
+            'bookmarklet.html.template',
+            'js.plain',
+            'bookmarklet.js.template'
+        ]
+    }
+    if (!types[type]) {
+        errorHandler(new Error(`Unknown type ${type}`));
+    }
+    return types[type];
+}
+
+/**
+ * Compilations that follow a change of a certain file
+ * @param fileKey the key of the the file in config.json
+ */
+const buildPartial = async (fileKey) => {
+    let contents;
+    let tasks;
+    switch (fileKey) {
+        case 'bookmarklet.html.template':
+            tasks = [{
+                contents: await getHtml(settings.get('bookmarklet.html.template'), settings.get('bookmarklet.js.plain')),
+                savePath: settings.get('bookmarklet.html.output')
+            }];
+            break;
+        case 'bookmarklet.js.template':
+            tasks = [{
+                contents: substituteVars(read(settings.get('bookmarklet.js.template')), settings),
+                savePath: settings.get('bookmarklet.js.plain')
+            }];
+            break;
+        case 'extension.template':
+            tasks = [{
+                contents: await getManifest(),
+                savePath: settings.get('extension.output')
+            }];
+            break;
+        case 'html.template':
+            tasks = [{
+                contents: await getHtml(settings.get('html.template'), settings.get('bookmarklet.js.plain')),
+                savePath: settings.get('html.output')
+            }];
+            break;
+        case 'js.plain':
+            contents = await getMinifiedJs(settings.get('js.plain'));
+            tasks = [{
+                contents,
+                savePath: settings.get('extension.sba')
+            }, {
+                contents,
+                savePath: settings.get('bookmarklet.cdn.local')
+            }];
+            break;
+        case 'scss.colors':
+        case 'scss.site':
+            tasks = [{
+                contents: getCss(settings.get('scss.site')),
+                savePath: settings.get('css.site')
+            }];
+    }
+    tasks.forEach(entry => {
+        write(entry.savePath, entry.contents, `Created ${entry.savePath}`);
+    });
+}
+
+/**
  * Create one or more files
  * @param type
  */
 const build = async (type) => {
-    let config;
-    switch (type) {
-        case 'site':
-            config = [{
-                contents: await getHtml(settings.get('html.template'), settings.get('js.plain')),
-                savePath: settings.get('html.output')
-            }, {
-                contents: getCss(settings.get('scss.site')),
-                savePath: settings.get('css.site')
-            }];
-            break;
-        case 'extension':
-            config = [{
-                contents: await getManifest(),
-                savePath: settings.get('extension.output')
-            }, {
-                contents: await getMinifiedJs(settings.get('js.plain')),
-                savePath: settings.get('extension.sba')
-            }];
-            break;
-        case 'bookmarklet':
-            config = [{
-                contents: substituteVars(read(settings.get('bookmarklet.js.template')), settings),
-                savePath: settings.get('bookmarklet.js.plain')
-            }, {
-                contents: await getHtml(settings.get('bookmarklet.html.template'), settings.get('bookmarklet.js.plain')),
-                savePath: settings.get('bookmarklet.html.output')
-            }, {
-                contents: await getMinifiedJs(settings.get('js.plain')),
-                savePath: settings.get('bookmarklet.cdn.local')
-            }];
-    }
-    if (config) {
-        config.forEach(entry => {
-            write(entry.savePath, entry.contents, `Created ${entry.savePath}`);
-        })
-    }
-    else {
-        errorHandler(new Error(`Unknown type ${type}`));
-    }
+    getFileKeys(type).forEach(fileKey => {
+        buildPartial(fileKey);
+    })
+    log(`Created files for task "${type}"`, 'info');
 }
 
 
@@ -131,38 +181,18 @@ const build = async (type) => {
  * @param {String} type
  */
 const watch = async (type) => {
-    let config;
-    switch (type) {
-        case 'site':
-            config = [
-                'html.template',
-                'js.plain',
-                'scss.site'
-            ];
-            break;
-        case 'extension':
-            config = [
-                'js.plain',
-                'extension.template'
-            ];
-            break;
-        case 'bookmarklet':
-            config = [
-                'js.plain',
-                'bookmarklet.html.template',
-                'bookmarklet.js.template',
-                'bookmarklet.js.plain'
-            ];
-    }
-    config = config.map(entry => settings.get(entry));
-    log(`Watching changes on \n\t- ${config.join('\n\t- ')}`, 'info');
-    const watcher = chokidar.watch(config);
-    watcher
-        .on('change', path => {
-            log(`Change detected on ${path}`, 'info');
-            build(type);
-        })
-        .on('unlink', path => log(`File ${path} has been removed`));
+    const fileKeys = getFileKeys(type);
+    const files = [];
+    await build(type);
+    fileKeys.forEach(fileKey => {
+        const file = settings.get(fileKey);
+        files.push(file)
+        fs.watchFile(file, () => {
+            log(`Change detected on ${file}`, 'info');
+            buildPartial(fileKey);
+        });
+    })
+    log(`Watching changes on \n\t- ${files.join('\n\t- ')}`, 'info');
 }
 
 /**
@@ -179,8 +209,7 @@ available types: site, extension, bookmarklet
 
     if (args.w) {
         await watch(args.t);
-    }
-    else {
+    } else {
         await build(args.t);
     }
 })();

@@ -1,17 +1,24 @@
 {
-    "manifest_version": 2,
-    "name": "{{label}}",
-    "description": "{{description}}",
-    "version": "{{version}}",
-    "content_scripts": [{
-        "matches": [
-            "{{targetUrl}}"
-        ],
-        "js": ["content.js"]
-    }],
-    "web_accessible_resources" : ["/{{sbaFileName}}"],
-    "permissions": [
-        "activeTab",
-        "storage"
-    ]
+  "manifest_version": 2,
+  "name": "{{label}}",
+  "description": "{{description}}",
+  "homepage_url": "{{url}}",
+  "version": "{{version}}",
+  "content_scripts": [{
+    "matches": [
+      "{{targetUrl}}"
+    ],
+    "js": ["assets/content.js"]
+  }],
+  "background": {
+    "scripts": [
+      "assets/background.js"
+    ],
+    "persistent": true
+  },
+  "web_accessible_resources": ["assets/{{sbaFileName}}"],
+  "permissions": [
+    "webNavigation",
+    "storage"
+  ]
 }

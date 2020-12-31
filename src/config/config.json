@@ -23,7 +23,8 @@
     },
     "scss": {
         "widget": "src/scss/widget.scss",
-        "site": "src/scss/site.scss"
+        "site": "src/scss/site.scss",
+        "colors": "src/scss/inc/_colors.scss"
     },
     "bookmarklet": {
         "cdn": {
