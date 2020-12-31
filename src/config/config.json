@@ -6,8 +6,44 @@
     "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
     "twitter": "@d_raber",
     "prefix": "sba",
-    "htmlIn": "src/html/index.tpl",
-    "htmlOut": "index.html",
+    "extension": {
+        "template": "src/templates/extension/manifest.json",
+        "output": "dist/extension/manifest.json",
+        "sba": "dist/extension/assets/spelling-bee-assistant.min.js"
+    },
+    "html": {
+        "template": "src/templates/html/index.html",
+        "output": "index.html"
+    },
+    "js": {
+        "input": "src/js/main.js",
+        "plain": "dist/js/spelling-bee-assistant.js",
+        "compressed": "dist/js/spelling-bee-assistant.min.js",
+        "format": "iife"
+    },
+    "scss": {
+        "widget": "src/scss/widget.scss",
+        "site": "src/scss/site.scss",
+        "colors": "src/scss/inc/_colors.scss"
+    },
+    "bookmarklet": {
+        "cdn": {
+            "url": "https://spelling-bee-assistant.app/img/spelling-bee-assistant.min.js",
+            "local": "assets/js/spelling-bee-assistant.min.js"
+        },
+        "html": {
+            "template": "src/templates/bookmarklet/installer.html",
+            "output": "dist/bookmarklet/installer.html"
+        },
+        "js": {
+            "template": "src/templates/bookmarklet/tpl.js",
+            "plain": "src/templates/bookmarklet/main.js"
+        }
+    },
+    "css": {
+        "widget": "src/css/widget.css",
+        "site": "assets/css/site.css"
+    },
     "ga": {
         "tid": "UA-182372232-1",
         "ec": "SBA Download"

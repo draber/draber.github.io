@@ -4,7 +4,6 @@
 html {
     line-height: 1.15;
     text-size-adjust: 100%;
-    color: #222;
     font-size: 62.5%;
     box-sizing: border-box;
 }
@@ -20,11 +19,13 @@ body {
     font-size: 1.6rem;
     line-height: 1.6;
     font-family: 'Open Sans', sans-serif;
+    background: var(--body-bg-color);
+    color: var(--site-text-color);
 }
 
 main {
     &.wrapper {
-        padding-top: 10rem;
+        padding: 10rem 0 3rem 0;
     }
 }
 
@@ -56,22 +57,79 @@ ol {
 
 a {
     background-color: transparent;
-    color: #326891;
+    color: var(--link-color);
 
     &:hover {
         text-decoration: none;
+        color: var(--link-hover-color);
     }
 
     &:visited {
-        color: #326891;
+        color: var(--link-visited-color);
     }
 }
 
 .emoji {
     font-weight: bolder;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     // @see https://css-tricks.com/snippets/css/system-font-stack/
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+ul {
+    &.score-so-far {
+        strong {
+            display: inline-block;
+            width: 1.6rem;
+            position: relative;
+            top: -.1rem
+        }
+    }
+}
+
+
+.toolbar {
+    svg {
+        width: 1.6rem;
+        height: 1.6rem;
+        display: inline-block;
+        position: relative;
+        margin-right: .5rem;
+        fill: var(--site-text-color);
+        z-index: 0;
+
+        &.drag {
+            top: .3rem;
+        }
+
+        &.inactive {
+            transform: rotate(180deg);
+        }
+    }
+
+    li {
+        margin-bottom: .5rem;
+
+        &>a:first-of-type {
+            display: inline-block;
+            width: 1.6rem;
+            height: 1.6rem;
+            position: relative;
+            top: .3rem;
+            z-index: 1;
+
+            &:after {
+                content: '';
+                display: inline-block;
+                width: 1.6rem;
+                height: 1.6rem;
+                position: absolute;
+                left: 0;
+                top: .3rem;
+                z-index: 2;
+            }
+        }
+    }
 }
 
 img {
@@ -88,10 +146,11 @@ header {
     position: fixed;
     border-bottom: 1px solid var(--border-color);
     width: 100%;
-    background: white;
     padding: 2rem 0;
     top: 0;
     z-index: 10;
+    background: var(--body-bg-color);
+    color: var(--site-text-color);
 
     .wrapper {
         display: flex;
@@ -106,7 +165,7 @@ header {
     display: flex;
 
     li {
-        margin: 0 1rem
+        margin: 0 1.5rem 0 0
     }
 }
 
@@ -120,21 +179,6 @@ header {
 }
 
 [data-theme="dark"] {
-    background: var(--body-bg-color);
-    color: rgba(var(--text-color), .85);
-
-    header {
-        background: var(--body-bg-color);
-        color: rgba(var(--text-color), .85);
-    }
-
-    .card {
-        background: var(--area-bg-color);
-    }
-
-    .img-box {
-        background-color: var(--body-bg-color);
-    }
 
     .github {
         img {
@@ -142,17 +186,9 @@ header {
         }
     }
 
-    main {       
+    main {
         img {
             opacity: 0;
-        } 
-    }
-
-    a {
-        color: #51a9f7;
-
-        &:hover {
-            color: #8dc6f8;
         }
     }
 
@@ -169,7 +205,7 @@ header {
 
         .text {
             path:not(.center) {
-                fill: var(--text-color);
+                fill: var(--site-text-color);
             }
         }
     }
@@ -177,8 +213,9 @@ header {
 
 .wrapper {
     margin: 0 auto;
-    max-width: 102.4rem;
-    padding: 0 2rem;
+    width: 102.4rem;
+    max-width: calc(100vw - 5rem);
+    padding: 0;
     position: relative;
 }
 
@@ -201,18 +238,17 @@ header {
         }
     }
 
-
     .installer {
         min-width: 16rem;
         height: 24.6rem;
         padding-top: 1.5rem;
 
         &:hover {
-            box-shadow: 0 0 1.5rem .8rem rgba(var(--highlight-color), .35);
+            box-shadow: 0 0 1.5rem .8rem var(--shadow-light-color);
         }
 
         &:focus {
-            box-shadow: 0 0 1.5rem .8rem rgba(var(--highlight-color), .7);
+            box-shadow: 0 0 1.5rem .8rem var(--shadow-dark-color);
         }
     }
 
@@ -257,14 +293,14 @@ section {
     }
 
     background: {
-        repeat: no-repeat;
-        position: center 1rem;
-        color: white;
+        color: var(--body-bg-color);
+        size: calc(100% - 2rem);
     }
 
     img {
         display: block;
         margin: 1rem;
+        max-width: calc(100% - 2rem);
     }
 
     &.hive-box {
@@ -278,25 +314,42 @@ section {
     svg {
         width: 20rem;
     }
+}
 
-    $features: closed,
-    bookmarklet,
-    dark-mode,
-    header,
-    pangram-underline,
-    score-so-far,
-    set-up,
-    spill-the-beans,
-    spoilers,
-    steps-to-success,
-    surrender;
-
-    @each $feature in $features {
-        &.#{$feature} {
-            background-image: url(../img/#{$feature}-dark.png)
-        }
+[data-state] {
+    background: {
+        repeat: no-repeat;
+        position: center 1rem;
     }
+}
 
+$features: closed,
+bookmarklet,
+dark-mode,
+header,
+closed,
+pangram-underline,
+score-so-far,
+start-up,
+set-up,
+spill-the-beans,
+spoilers,
+steps-to-success,
+set-up-demo,
+inactive,
+surrender;
+
+@each $feature in $features {
+    [data-state="#{$feature}"] {
+        background-image: url(../img/#{$feature}-dark.png)
+    }
+}
+
+
+
+figure {
+    margin: 0;
+    padding: 0;
 }
 
 figcaption {
@@ -305,30 +358,89 @@ figcaption {
     text-align: center;
 }
 
+textarea {
+    padding: 1rem;
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    color: var(--site-text-color);
+    font: 1.5rem Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+}
+
 .help {
     cursor: help;
 }
 
 $cardMargin: 2rem;
 
+textarea.card {
+    min-height: 10rem;
+    padding-bottom: 1.1rem;
+}
 
 .card {
     border: {
         width: .1rem;
-        color: #eee;
+        color: var(--border-color);
         style: solid;
         radius: .9rem
     }
 
-    padding: 1.1rem 1.5rem;
+    line-height: 1.5;
+    padding: 1.1rem 1.5rem .5rem 1.5rem;
     margin-bottom: $cardMargin;
-    background: rgba(var(--highlight-color), .1);
+    background: var(--card-color);
+    min-height: 27rem;
+
+    figure {
+        min-height: 19rem;
+    }
+
+    [data-state="closed"] {
+
+        .inactive,
+        .set-up-demo {
+            display: none;
+        }
+
+        &~.inactive,
+        &~.set-up-demo {
+            display: none;
+        }
+    }
+
+    [data-state="inactive"] {
+
+        .closed,
+        .set-up-demo {
+            display: none;
+        }
+
+        &~.closed,
+        &~.set-up-demo {
+            display: none;
+        }
+    }
+
+    [data-state="set-up-demo"] {
+
+        .closed,
+        .inactive {
+            display: none;
+        }
+
+        &~.inactive,
+        &~.closed {
+            display: none;
+        }
+    }
 
     &:after {
         content: '';
         clear: left;
         display: block;
     }
+
 }
 
 .card-listing {
@@ -352,6 +464,7 @@ area {
     outline: none !important;
 }
 
+
 th {
     font-weight: normal;
 }
@@ -370,9 +483,21 @@ ul {
     .card-listing {
         display: block
     }
+
+    header {
+        .wrapper {
+            flex-direction: column;
+        }
+        .social {
+            display: flex;
+            justify-content:flex-end;
+            margin: .5rem 0 0 0;
+            padding: 0;
+        }
+    }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 768px) {
     .mobile-only {
         display: block;
     }
@@ -387,6 +512,20 @@ ul {
 
     .intro {
         display: block;
+    }
+}
+
+@media screen and (max-width: 500px) {
+
+    .card {
+        min-height: auto;
+        padding-bottom: 1.1rem;
+        figure {
+            min-height: auto;
+        }
+        ul {
+            clear: left
+        }
     }
 }
 

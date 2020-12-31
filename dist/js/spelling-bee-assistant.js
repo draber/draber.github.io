@@ -368,9 +368,10 @@
             });
             this.dragHandle = this.ui;
             this.dragArea = this.game;
+            this.dragOffset = 12;
             data.init(this, resultList);
             this.observer = (() => {
-                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop()));
+                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop().addedNodes[0]));
                 observer.observe(resultList, {
                     childList: true
                 });
@@ -811,15 +812,26 @@
 
     class Positioning extends Plugin {
         position;
-        offset = {
-            top: 12,
-            right: 12,
-            bottom: 12,
-            left: 12
-        };
+        offset;
         boundaries;
         mouse;
         isLastTarget = false;
+        getOffset(offset) {
+            return !isNaN(offset) ? {
+                top: offset,
+                right: offset,
+                bottom: offset,
+                left: offset
+            } : {
+                ...{
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                },
+                ...offset
+            }
+        }
         getBoundaries() {
             const areaRect = this.app.dragArea.getBoundingClientRect();
             const parentRect = this.app.ui.parentNode.getBoundingClientRect();
@@ -844,8 +856,7 @@
                     left: this.position.left + mouse.left - this.mouse.left,
                     top: this.position.top += mouse.top - this.mouse.top
                 }
-            }
-            else {
+            } else {
                 const style = getComputedStyle(this.app.ui);
                 return {
                     top: parseInt(style.top),
@@ -875,14 +886,14 @@
                     this.reposition();
                     evt.target.style.opacity = '1';
                 }).on('dragstart', evt => {
-                        if (!this.isLastTarget) {
-                            evt.preventDefault();
-                            return false;
-                        }
-                        evt.target.style.opacity = '.2';
-                        this.position = this.getPosition();
-                        this.mouse = this.getMouse(evt);
-                    })
+                    if (!this.isLastTarget) {
+                        evt.preventDefault();
+                        return false;
+                    }
+                    evt.target.style.opacity = '.2';
+                    this.position = this.getPosition();
+                    this.mouse = this.getMouse(evt);
+                })
                 .on('dragover', evt => evt.preventDefault());
             this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
             return this;
@@ -899,6 +910,7 @@
                 return this;
             }
             this.position = this.getPosition();
+            this.offset = this.getOffset(app.dragOffset || 0);
             const stored = this.getState();
             if (stored && Object.prototype.toString.call(stored) === '[object Object]') {
                 this.position = stored;

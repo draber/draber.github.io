@@ -96,11 +96,12 @@ class App extends Widget {
 
         this.dragHandle = this.ui;
         this.dragArea = this.game;
+        this.dragOffset = 12;
 
         data.init(this, resultList);
 
         this.observer = (() => {
-            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop()));
+            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop().addedNodes[0]));
             observer.observe(resultList, {
                 childList: true
             });
