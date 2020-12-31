@@ -28,7 +28,7 @@
     },
     "bookmarklet": {
         "cdn": {
-            "url": "https://spelling-bee-assistant.app/img/spelling-bee-assistant.min.js",
+            "url": "https://spelling-bee-assistant.app/assets/js/spelling-bee-assistant.min.js",
             "local": "assets/js/spelling-bee-assistant.min.js"
         },
         "html": {
