@@ -3,24 +3,24 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>Spelling Bee Assistant</title>
-	<meta content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle" name="description">
+	<title>{{label}}</title>
+	<meta content="{{description}}" name="description">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<meta content="Spelling Bee Assistant" property="og:title">
-	<meta content="Spelling Bee Assistant is a JavaScript bookmarklet for Spelling Bee, the New York Times’ popular word puzzle" property="og:description">
-	<meta content="https://spelling-bee-assistant.app/assets/img/social.png?2.0.0" property="og:image">
-	<meta content="https://spelling-bee-assistant.app/" property="og:url">
-	<meta content="Spelling Bee Assistant" property="og:site_name">
+	<meta content="{{label}}" property="og:title">
+	<meta content="{{description}}" property="og:description">
+	<meta content="{{url}}assets/img/social.png?{{version}}" property="og:image">
+	<meta content="{{url}}" property="og:url">
+	<meta content="{{label}}" property="og:site_name">
 	<meta content="summary_large_image" name="twitter:card">
-	<meta content="@d_raber" name="twitter:site">
-	<meta content="https://spelling-bee-assistant.app/assets/img/social.png?2.0.0" name="twitter:image">
-	<meta content="Spelling Bee Assistant" name="twitter:image:alt">
-	<meta content="xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU" name="google-site-verification">
-	<meta content="7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8" name="google-site-verification">
-	<link href="assets/img/favicon.png?2.0.0" rel="icon" type="image/png">
+	<meta content="{{twitter}}" name="twitter:site">
+	<meta content="{{url}}assets/img/social.png?{{version}}" name="twitter:image">
+	<meta content="{{label}}" name="twitter:image:alt">
+	<meta content="{{gsc.drg}}" name="google-site-verification">
+	<meta content="{{gsc.sba}}" name="google-site-verification">
+	<link href="assets/img/favicon.png?{{version}}" rel="icon" type="image/png">
 	<link href="https://fonts.gstatic.com" rel="preconnect">
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
-	<link href="assets/css/site.css?2.0.0" rel="stylesheet">
+	<link href="assets/css/site.css?{{version}}" rel="stylesheet">
 </head>
 
 <body><svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1"
@@ -118,8 +118,8 @@
 			<div class="lft desktop-only">
 				<figure>
 					<div class="installer img-box desktop-only" data-state="start-up">
-						<a class="bookmarklet" href="javascript:(()%3D%3E%7Bconst%20script%3Ddocument.createElement(%22script%22)%3Bscript.async%3D!0%2Cscript.src%3D%22https%3A%2F%2Fspelling-bee-assistant.app%2Fimg%2Fspelling-bee-assistant.min.js%22%2Cdocument.body.append(script)%3B%7D)()" onclick="return false" rel="nofollow"><img
-								alt="Spelling Bee Assistant" src="assets/img/start-up-light.png"></a>
+						<a class="bookmarklet" href="{{bookmarklet.code}}" onclick="return false" rel="nofollow"><img
+								alt="{{label}}" src="assets/img/start-up-light.png"></a>
 					</div>
 					<figcaption>
 						Drag this to your bookmarks
@@ -139,11 +139,11 @@
 						<figure id="overview">
 							<div class="img-box" data-state="closed">
 								<img class="closed" alt="Overview" usemap="#header-links"
-									src="assets/img/closed-light.png?2.0.0">
+									src="assets/img/closed-light.png?{{version}}">
 								<img class="inactive" alt="Minimized" usemap="#header-links"
-									src="assets/img/inactive-light.png?2.0.0">
+									src="assets/img/inactive-light.png?{{version}}">
 								<img class="set-up-demo" alt="Set-up" usemap="#header-links"
-									src="assets/img/set-up-demo-light.png?2.0.0">
+									src="assets/img/set-up-demo-light.png?{{version}}">
 							</div>
 							<figcaption class="closed">All panels closed</figcaption>
 							<figcaption class="inactive">Minimized</figcaption>
@@ -183,7 +183,7 @@
 					<div class="lft">
 						<figure>
 							<div class="img-box" data-state="score-so-far"> <img alt="Score so far"
-									src="assets/img/score-so-far-light.png?2.0.0"></div>
+									src="assets/img/score-so-far-light.png?{{version}}"></div>
 							<figcaption> What you already bagged </figcaption>
 						</figure>
 
@@ -202,7 +202,7 @@
 					<div class="lft">
 						<figure>
 							<div class="img-box" data-state="spoilers"> <img alt="Spoilers"
-									src="assets/img/spoilers-light.png?2.0.0"></div>
+									src="assets/img/spoilers-light.png?{{version}}"></div>
 							<figcaption> What you still need to find </figcaption>
 						</figure>
 
@@ -217,7 +217,7 @@
 					<div class="lft">
 						<figure>
 							<div class="img-box" data-state="spill-the-beans"><img alt="Spill the beans"
-									src="assets/img/spill-the-beans-light.png?2.0.0"></div>
+									src="assets/img/spill-the-beans-light.png?{{version}}"></div>
 							<figcaption> Crumbs of help, letter-wise </figcaption>
 						</figure>
 					</div>
@@ -234,7 +234,7 @@
 					<div class="lft">
 						<figure>
 							<div class="img-box" data-state="steps-to-success"> <img alt="Steps to success"
-									src="assets/img/steps-to-success-light.png?2.0.0"> </div>
+									src="assets/img/steps-to-success-light.png?{{version}}"> </div>
 							<figcaption> Where to go next </figcaption>
 						</figure>
 					</div>
@@ -246,7 +246,7 @@
 					<div class="lft">
 						<figure>
 							<div class="img-box" data-state="surrender"><img alt="Surrender"
-									src="assets/img/surrender-light.png?2.0.0"></div>
+									src="assets/img/surrender-light.png?{{version}}"></div>
 							<figcaption> Ready to give up? </figcaption>
 						</figure>
 					</div>
@@ -261,7 +261,7 @@
 					<div class="lft">
 						<figure>
 							<div class="img-box" data-state="set-up"> <img alt="Set-up"
-									src="assets/img/set-up-light.png?2.0.0"> </div>
+									src="assets/img/set-up-light.png?{{version}}"> </div>
 							<figcaption> Use only what you like </figcaption>
 						</figure>
 					</div>
@@ -274,7 +274,7 @@
 			<div class="lft">
 				<figure>
 					<div class="img-box" data-state="bookmarklet"> <img alt="Bookmarklet"
-							src="assets/img/bookmarklet-light.png?2.0.0"> </div>
+							src="assets/img/bookmarklet-light.png?{{version}}"> </div>
 					<figcaption> Regular bookmarks along with the Spelling Bee Assistant </figcaption>
 				</figure>
 			</div>
@@ -293,7 +293,7 @@
 			<p>Commonly, tutorials for mobile-installation involve copying the source of the bookmarklet. If you want to
 				give
 				this a shot you can copy it from here:</p>
-			<textarea class="card">javascript:(()%3D%3E%7Bconst%20script%3Ddocument.createElement(%22script%22)%3Bscript.async%3D!0%2Cscript.src%3D%22https%3A%2F%2Fspelling-bee-assistant.app%2Fimg%2Fspelling-bee-assistant.min.js%22%2Cdocument.body.append(script)%3B%7D)()</textarea>
+			<textarea class="card">{{bookmarklet.code}}</textarea>
 		</section>
 		<section>
 			<h2>Does it not spoil the game?</h2>
@@ -352,13 +352,13 @@
 			d.querySelector('.bookmarklet').addEventListener('dragstart', e => {
 				window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams({
 					v: 1,
-					tid: 'UA-182372232-1',
+					tid: '{{ga.tid}}',
 					cid: Date.now(),
 					t: 'event',
 					aip: '1',
-					ec: 'SBA Download',
+					ec: '{{ga.ec}}',
 					ea: e.type,
-					el: '2.0.0'
+					el: '{{version}}'
 				}).toString());
 			}, false);
 		})(document)
