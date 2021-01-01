@@ -17,9 +17,7 @@ class Styles extends Plugin {
         this.target = el.$('head');
 
         this.ui = el.style({
-            // - (Dart) Sass adds a BOM to CSS with Unicode characters
-            // - `rollup-plugin-string` converts line-breaks to `\n`
-            text: css.replace(/(\uFEFF|\\n)/gu, '')
+            text: css
         });
         app.on(prefix('destroy'), () => this.ui.remove());
 
