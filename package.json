@@ -1,6 +1,6 @@
 {
   "name": "spelling-bee-assistant",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Spelling Bee Assistant is a bookmarklet for Spelling Bee, the New York Times’ popular word puzzle",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^16.0.0",
@@ -15,7 +15,7 @@
     "sass": "^1.29.0"
   },
   "scripts": {
-    "dev": "rollup -c ./src/config/dev.js",
+    "dev": "rollup -c ./src/config/rollup.js",
     "sba-sass-w": "sass --watch src/scss/widget.scss:src/css/widget.css --style compressed --no-source-map",
     "sba-sass": "sass src/scss/widget.scss:src/css/widget.css --style compressed --no-source-map",
     "compile-site": "node ./src/compiler/ -t site",
