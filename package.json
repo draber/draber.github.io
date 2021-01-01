@@ -16,8 +16,8 @@
   },
   "scripts": {
     "dev": "rollup -c ./src/config/rollup.js",
-    "sba-sass-w": "sass --watch src/scss/widget.scss:src/css/widget.css --style compressed --no-source-map",
-    "sba-sass": "sass src/scss/widget.scss:src/css/widget.css --style compressed --no-source-map",
+    "sba-sass-w": "node ./src/compiler/ -t appsass -w",
+    "sba-sass": "node ./src/compiler/ -t appsass",
     "compile-site": "node ./src/compiler/ -t site",
     "watch-site": "node ./src/compiler/ -t site -w",
     "compile-ext": "node ./src/compiler/ -t extension",

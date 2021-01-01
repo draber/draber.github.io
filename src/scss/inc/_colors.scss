@@ -32,7 +32,7 @@ $themeColors: (
 
 
 @each $theme, $colors in $themeColors {
-    [data-theme="#{$theme}"] {
+    [data-sba-theme="#{$theme}"] {
         @each $purpose, $color in $colors {
             #{'--' + $purpose + '-color'} : $color;
         }

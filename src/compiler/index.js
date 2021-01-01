@@ -16,9 +16,7 @@ const {
     write
 } = require('./modules/file.js');
 const sass = require('sass');
-const {
-    Console
-} = require('console');
+const cssUtils = require('./modules/cssUtils.js');
 
 const args = minimist(process.argv.slice(2));
 
@@ -51,10 +49,13 @@ const getHtml = async (path, jsPath) => {
  * @returns {String}
  */
 const getCss = path => {
-    const buffer = sass.renderSync({
-        file: path
-    });
-    return buffer.css;
+    let css = sass.renderSync({
+        file: path,
+        outputStyle: 'compressed'
+    }).css.toString();
+    css = cssUtils.handleCustomProps(css, {prefix: settings.get('prefix')});
+    css = cssUtils.removeBom(css);
+    return css;
 }
 
 /**
@@ -85,10 +86,13 @@ const getMinifiedJs = async (path) => {
 
 /**
  * Get a collection of files needed for a certain compilation
- * @param {String} type 
+ * @param {String|Array} type
  */
 const getFileKeys = type => {
     const types = {
+        appcss: [
+            'scss.widget'
+        ],
         site: [
             'html.template',
             'scss.site',
@@ -104,6 +108,9 @@ const getFileKeys = type => {
             'bookmarklet.js.template'
         ]
     }
+    if(type === '*'){
+        return types;
+    }
     if (!types[type]) {
         errorHandler(new Error(`Unknown type ${type}`));
     }
@@ -118,6 +125,12 @@ const buildPartial = async (fileKey) => {
     let contents;
     let tasks;
     switch (fileKey) {
+        case 'scss.widget':
+            tasks = [{
+                contents: getCss(settings.get('scss.widget')),
+                savePath: settings.get('css.widget')
+            }];
+            break;
         case 'bookmarklet.html.template':
             tasks = [{
                 contents: await getHtml(settings.get('bookmarklet.html.template'), settings.get('bookmarklet.js.plain')),
@@ -138,6 +151,9 @@ const buildPartial = async (fileKey) => {
             break;
         case 'html.template':
             tasks = [{
+                contents: substituteVars(read(settings.get('bookmarklet.js.template')), settings),
+                savePath: settings.get('bookmarklet.js.plain')
+            }, {
                 contents: await getHtml(settings.get('html.template'), settings.get('bookmarklet.js.plain')),
                 savePath: settings.get('html.output')
             }];
@@ -200,9 +216,11 @@ const watch = async (type) => {
  */
 const compile = (async () => {
     if (!args.t) {
+        const keys = Object.keys(getFileKeys('*'));
         log(`Usage:
-compiler -t <type> [-w]
-available types: site, extension, bookmarklet
+compiler -t <type> [<options>]
+types: \n  ${keys.join('\n  ')}
+options:
   -w: watch instead of compiling`, 'info');
         process.exit();
     }
