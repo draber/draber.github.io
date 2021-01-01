@@ -96,7 +96,8 @@ const getFileKeys = type => {
         site: [
             'html.template',
             'scss.site',
-            'scss.colors'
+            'scss.colors',
+            'js.plain'
         ],
         extension: [
             'extension.template',
@@ -208,7 +209,7 @@ const watch = async (type) => {
             buildPartial(fileKey);
         });
     })
-    log(`Watching changes on \n\t- ${files.join('\n\t- ')}`, 'info');
+    log(`Watching changes on \n - ${files.join('\n - ')}`, 'info');
 }
 
 /**

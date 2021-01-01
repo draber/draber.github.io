@@ -21,6 +21,7 @@
 	<link href="https://fonts.gstatic.com" rel="preconnect">
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
 	<link href="assets/css/site.css?2.0.1" rel="stylesheet">
+	<script src="assets/js/modernizr-custom.js"></script>
 </head>
 
 <body><svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1"
@@ -103,43 +104,49 @@
 						</g>
 					</svg>
 				</figure>
-				<p><span class="emoji">Spelling Bee Assistant</span> is a <a class="help"
-						href="#bookmarklet">bookmarklet</a> for <a href="https://www.nytimes.com/puzzles/spelling-bee"
-						rel="noopener" target="_blank">Spelling Bee</a>, the New York Times’ popular word puzzle.
-					A great game but sometimes a bit frustrating when you're stuck. If you don't make it to the
-					end - and honestly, how often did you you see the <em>Queen Bee</em> screen come up - you'll have to
-					wait until the next day to find out which words you’ve been missing.</p>
-				<p class="desktop-only">If you play on a laptop or a desktop computer, the <em>Spelling Bee
-						Assistant</em> is a great improvement for the game.
-					It’s packed with tools that help you to succeed without spoiling the fun.</p>
-				<p class="desktop-only">Drag the picture at the right to your browser’s bookmark
-					menu. Next time you are playing, click on the bookmarklet to launch the assistant.</p>
+				<p><strong>Spelling Bee Assistant</strong> is an add-on for <a href="https://www.nytimes.com/puzzles/spelling-bee"
+						rel="noopener" target="_blank">Spelling
+						Bee</a>, the New York Times’ popular word puzzle. It’s packed with <a
+						href="#features">features</a> that can greatly
+					improve your playing experience.</p>
+				<p>Follow up your progress, see what lays ahead of you and if you want to, get a hint or two.
+					Eventually, when you run out of ideas, reveal the missing words - no more waiting until the next
+					day!</p>
+				<p>Spelling Bee Assistant is a great improvement for an already great game and it won’t spoil the fun. Promised!</p>
+
 			</div>
 			<div class="lft desktop-only">
 				<figure>
-					<div class="installer img-box desktop-only" data-state="start-up">
-						<a class="bookmarklet" href="javascript:(()%3D%3E%7Bconst%20script%3Ddocument.createElement(%22script%22)%3Bscript.async%3D!0%2Cscript.src%3D%22https%3A%2F%2Fspelling-bee-assistant.app%2Fassets%2Fjs%2Fspelling-bee-assistant.min.js%22%2Cdocument.body.append(script)%3B%7D)()" onclick="return false" rel="nofollow"><img
-								alt="Spelling Bee Assistant" src="assets/img/start-up-light.png"></a>
+					<div class="start-up-img img-box desktop-only" data-state="start-up">
+						<span data-footer="Spelling Bee Assistant 2.0.1">
+
+							<img alt="Spelling Bee Assistant" src="assets/img/start-up-light.png"></span>
 					</div>
-					<figcaption>
-						Drag this to your bookmarks
-					</figcaption>
 				</figure>
 			</div>
-			<p class="mobile-only">Spelling Bee Assistant is made for <a href="#requirements">desktop computers and
-					laptops with a sufficient screen
-					size.</a></p>
+
 		</section>
 		<section>
-			<h2>Features</h2>
+			<h2>Installation</h2>
+			<p class="legacy">It appears, you’re using a legacy web browser on which Spelling Bee Assistant won’t work.</p>
+			<div class="modern">
+				<p>On your laptop or desktop computer drag this button <a class="bookmarklet installer"
+						href="javascript:(()%3D%3E%7Bconst%20script%3Ddocument.createElement(%22script%22)%3Bscript.async%3D!0%2Cscript.src%3D%22https%3A%2F%2Fspelling-bee-assistant.app%2Fassets%2Fjs%2Fspelling-bee-assistant.min.js%22%2Cdocument.body.append(script)%3B%7D)()" onclick="return false" rel="nofollow">Spelling Bee Assistant</a> to the bookmark
+					menu. Next time you’re playing, click on the new bookmark to launch the assistant.</p>
+			</div>
+			<p><a href="#requirements">I want to install Spelling Bee Assistant on a tablet or a smartphone</a></p>
+		</section>
+		<section>
+			<h2 id="features">Features</h2>
 			<ul class="card-listing">
 				<li class="card overview">
 					<h3>Toolbar</h3>
 					<div class="lft">
 						<figure id="overview">
 							<div class="img-box" data-state="closed">
-								<img class="closed" alt="Overview" usemap="#header-links"
-									src="assets/img/closed-light.png?2.0.1">
+								<span class="closed" data-footer="Spelling Bee Assistant 2.0.1">
+									<img alt="Overview" usemap="#header-links"
+										src="assets/img/closed-light.png?2.0.1"></span>
 								<img class="inactive" alt="Minimized" usemap="#header-links"
 									src="assets/img/inactive-light.png?2.0.1">
 								<img class="set-up-demo" alt="Set-up" usemap="#header-links"
@@ -268,32 +275,19 @@
 					<p>If some of these features aren’t right for you, simply disable them in this panel.</p>
 				</li>
 			</ul>
+			<div class="rgt"><a href="#">Back to top</a></div>
 		</section>
 		<section>
-			<h2 id="bookmarklet">What is a bookmarklet?</h2>
-			<div class="lft">
-				<figure>
-					<div class="img-box" data-state="bookmarklet"> <img alt="Bookmarklet"
-							src="assets/img/bookmarklet-light.png?2.0.1"> </div>
-					<figcaption> Regular bookmarks along with the Spelling Bee Assistant </figcaption>
-				</figure>
-			</div>
-			<p>Bookmarklets are small pieces of code that can enhance the functionality of a website. They reside, just
-				like regular bookmarks, in the browser’s bookmark menu. Unfortunately, there is no straightforward way
-				to assign an icon to them.</p>
-			<p class="rgt"><a href="#">Back to top</a></p>
-		</section>
-		<section>
-			<h2 id="requirements">Does it work everywhere?</h2>
+			<h2 id="requirements">I want to install the application on a mobile device</h2>
 			<p>Spelling Bee Assistant works only with modern browsers and has been built with laptops or desktop
 				computers in mind. Installing bookmarklets on a phone or a tablet is rather complex but - according to
 				<a href="https://www.google.com/search?q=Installing+bookmarklets+on+a+moblie+device" rel="noopener"
 					target="_blank">Google</a>
 				- it appears to be feasible. It can't be installed on the NYT app, though.</p>
-			<p>Commonly, tutorials for mobile-installation involve copying the source of the bookmarklet. If you want to
-				give
-				this a shot you can copy it from here:</p>
+			<p>Commonly, tutorials for mobile-installation involve copying the source code of a bookmarklet. This hasn’t
+				been tested but if you want to give it a shot anyway, you can copy the code from here:</p>
 			<textarea class="card">javascript:(()%3D%3E%7Bconst%20script%3Ddocument.createElement(%22script%22)%3Bscript.async%3D!0%2Cscript.src%3D%22https%3A%2F%2Fspelling-bee-assistant.app%2Fassets%2Fjs%2Fspelling-bee-assistant.min.js%22%2Cdocument.body.append(script)%3B%7D)()</textarea>
+			<div class="rgt"><a href="#">Back to top</a></div>
 		</section>
 		<section>
 			<h2>Does it not spoil the game?</h2>
@@ -322,16 +316,34 @@
 		<area alt="Minimize" coords="121,0,136,20" href="#inactive" shape="rect">
 	</map>
 	<script>
+		(function () {
+			var features = ['queryselector', 'es6array', 'arrow', 'es6collections', 'generators', 'es6number',
+					'es6object', 'es6string', 'fetch', 'sessionstorage', 'scriptasync', 'customevent',
+					'flexbox', 'matchmedia'
+				],
+				i = features.length,
+				cls = document.documentElement.classList;
+			var browserType = 'modern-browser';
+			while (i--) {
+				if (!cls.contains(features[i])) {
+					browserType = 'legacy-browser';
+					break;
+				}
+			}
+			document.documentElement.classList.add(browserType);
+		})();
 		((d) => {
+
 			const overviewBox = d.querySelector('#overview [data-state]');
-			d.body.dataset.theme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
+			d.body.dataset.sbaTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
 			d.querySelectorAll('[href^="#"]').forEach(toggle => {
 				toggle.addEventListener('click', evt => {
 					switch (evt.target.getAttribute('href')) {
 						case '#dark-mode':
 							evt.preventDefault();
-							d.body.dataset.theme = d.body.dataset.theme === 'dark' ? 'light' : 'dark';
-							localStorage.setItem('theme', d.body.dataset.theme);
+							d.body.dataset.sbaTheme = d.body.dataset.sbaTheme === 'dark' ? 'light' :
+								'dark';
+							localStorage.setItem('theme', d.body.dataset.sbaTheme);
 							break;
 						case '#inactive':
 							evt.preventDefault();

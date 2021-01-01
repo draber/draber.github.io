@@ -34,11 +34,15 @@ h1 {
 }
 
 h2 {
-    margin: 2rem 0 1rem;
+    margin: 3rem 0 1rem;
+    // font-weight: normal;
+    font-size: 2rem;
 }
 
 h3 {
-    margin: 1.5rem 0 .8rem
+    margin: 3rem 0 .8rem;
+    // font-weight: normal;
+    font-size: 1.7rem;
 }
 
 p,
@@ -86,6 +90,8 @@ ul {
         }
     }
 }
+
+
 
 
 .toolbar {
@@ -138,8 +144,39 @@ img {
     max-width: 100%;
 }
 
+[data-footer] {
+    display: block;
+
+    &::after {
+        content: attr(data-footer);
+        display: block;
+        color: currentColor;
+        opacity: .6;
+        font-size: .95rem;
+        text-align: right;
+        line-height: 2rem;
+        padding: 0 1rem .5rem 1rem;
+        margin-top: -.5rem;
+    }
+}
+
 ::selection {
     background: var(--highlight-color);
+}
+
+.legacy-browser {
+    .legacy {
+        font-weight:bold;
+        color:firebrick
+    }
+    .modern {
+        display: none;
+    }
+}
+.modern-browser {
+    .legacy {
+        display: none;
+    }
 }
 
 header {
@@ -160,7 +197,7 @@ header {
 
 .social {
     position: relative !important;
-    margin: 0 2rem 0 0;
+    margin: 0;
     padding: 1.3rem 0 0 0;
     display: flex;
 
@@ -178,7 +215,7 @@ header {
     top: -.5rem
 }
 
-[data-theme="dark"] {
+[data-sba-theme="dark"] {
 
     .github {
         img {
@@ -222,11 +259,15 @@ header {
 .intro {
     display: flex;
     align-items: flex-start;
-    padding-top: 4rem;
+    padding-top: 3rem;
 
     .intro-text {
         flex-grow: 2;
         margin-right: 2rem;
+
+        p:first-of-type {
+            padding-top: 1.2rem
+        }
     }
 
     .img-box {
@@ -238,22 +279,31 @@ header {
         }
     }
 
-    .installer {
+    .start-up-img {
         min-width: 16rem;
         height: 24.6rem;
         padding-top: 1.5rem;
-
-        &:hover {
-            box-shadow: 0 0 1.5rem .8rem var(--shadow-light-color);
-        }
-
-        &:focus {
-            box-shadow: 0 0 1.5rem .8rem var(--shadow-dark-color);
-        }
     }
+}
 
-    .bookmarklet {
-        cursor: move;
+
+
+.bookmarklet {
+    cursor: move;
+    display: inline-block;
+    text-decoration: none;
+    border: {
+        width: .1rem;
+        color: var(--border-color);
+        style: solid;
+        radius: .7rem
+    }
+    color: #333;
+    padding: 0 1.2rem;
+    margin: 0 .2rem;
+    background: var(--highlight-color);
+    &:hover {
+        color: #333;
     }
 }
 
@@ -488,11 +538,23 @@ ul {
         .wrapper {
             flex-direction: column;
         }
+
         .social {
             display: flex;
-            justify-content:flex-end;
+            justify-content: flex-end;
             margin: .5rem 0 0 0;
             padding: 0;
+        }
+    }
+}
+
+
+@media screen and (max-width: 990px) {
+    .intro {
+        .intro-text {
+            p:first-of-type {
+                padding-top: 0
+            }
         }
     }
 }
@@ -520,9 +582,11 @@ ul {
     .card {
         min-height: auto;
         padding-bottom: 1.1rem;
+
         figure {
             min-height: auto;
         }
+
         ul {
             clear: left
         }

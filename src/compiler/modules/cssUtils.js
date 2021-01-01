@@ -4,7 +4,7 @@
  * Keys found by getFindings()
  * @type {Set<any>}
  */
-const keys = new Set();
+let keys;
 
 /**
  * Escapes a regular expression
@@ -37,6 +37,7 @@ const getShort = prefix => {
  * @returns {{}}
  */
 const getFindings = css => {
+    keys = new Set();
     const findings = {};
     const defs = css.matchAll(/((--[-\w]+):([^;}]+))(?:;|})/g);
     const usages = css.matchAll(/(var\(([-\w]+)\))/g);
