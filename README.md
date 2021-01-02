@@ -1,6 +1,6 @@
 # Spelling Bee Assistant
 
-__Spelling Bee Assistant__ is a JavaScript bookmarklet for [Spelling Bee](https://www.nytimes.com/puzzles/spelling-bee), the New York Times’ popular word puzzle. Visit the [project’s homepage](https://spelling-bee-assistant.app/) to learn more.
+__Spelling Bee Assistant__ is an add-on for [Spelling Bee](https://www.nytimes.com/puzzles/spelling-bee), the New York Times’ popular word puzzle. Visit the [project’s homepage](https://spelling-bee-assistant.app/) to learn more.
 
 
 ## I discovered a bug / I’d like to ask for a new feature

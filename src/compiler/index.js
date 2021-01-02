@@ -24,10 +24,10 @@ const args = minimist(process.argv.slice(2));
  * Creates manifest code for extension
  * @returns {String}
  */
-const getManifest = () => {
-    const template = read(settings.get('extension.template'));
+const getExtTemplate = template => {
+    const contents = read(settings.get(template));
     settings.set('sbaFileName', path.basename(settings.get('js.compressed')));
-    return substituteVars(template, settings);
+    return substituteVars(contents, settings);
 }
 
 /**
@@ -53,7 +53,9 @@ const getCss = path => {
         file: path,
         outputStyle: 'compressed'
     }).css.toString();
-    css = cssUtils.handleCustomProps(css, {prefix: settings.get('prefix')});
+    css = cssUtils.handleCustomProps(css, {
+        prefix: settings.get('prefix')
+    });
     css = cssUtils.removeBom(css);
     return css;
 }
@@ -100,7 +102,8 @@ const getFileKeys = type => {
             'js.plain'
         ],
         extension: [
-            'extension.template',
+            'extension.manifest.template',
+            'extension.update.template',
             'js.plain'
         ],
         bookmarklet: [
@@ -109,7 +112,7 @@ const getFileKeys = type => {
             'bookmarklet.js.template'
         ]
     }
-    if(type === '*'){
+    if (type === '*') {
         return types;
     }
     if (!types[type]) {
@@ -144,10 +147,16 @@ const buildPartial = async (fileKey) => {
                 savePath: settings.get('bookmarklet.js.plain')
             }];
             break;
-        case 'extension.template':
+        case 'extension.manifest.template':
             tasks = [{
-                contents: await getManifest(),
-                savePath: settings.get('extension.output')
+                contents: await getExtTemplate('extension.manifest.template'),
+                savePath: settings.get('extension.manifest.output')
+            }];
+            break;
+        case 'extension.update.template':
+            tasks = [{
+                contents: await getExtTemplate('extension.update.template'),
+                savePath: settings.get('extension.update.output')
             }];
             break;
         case 'html.template':

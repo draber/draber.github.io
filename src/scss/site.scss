@@ -35,13 +35,11 @@ h1 {
 
 h2 {
     margin: 3rem 0 1rem;
-    // font-weight: normal;
     font-size: 2rem;
 }
 
 h3 {
     margin: 3rem 0 .8rem;
-    // font-weight: normal;
     font-size: 1.7rem;
 }
 
@@ -90,8 +88,6 @@ ul {
         }
     }
 }
-
-
 
 
 .toolbar {
@@ -166,13 +162,15 @@ img {
 
 .legacy-browser {
     .legacy {
-        font-weight:bold;
-        color:firebrick
+        font-weight: bold;
+        color: firebrick
     }
+
     .modern {
         display: none;
     }
 }
+
 .modern-browser {
     .legacy {
         display: none;
@@ -192,33 +190,31 @@ header {
     .wrapper {
         display: flex;
         justify-content: space-between;
-    }
-}
-
-.social {
-    position: relative !important;
-    margin: 0;
-    padding: 1.3rem 0 0 0;
-    display: flex;
-
-    li {
-        margin: 0 1.5rem 0 0
-    }
-}
-
-.github {
-    img {
-        width: 2rem
+        align-items: center;
     }
 
-    position: relative;
-    top: -.5rem
+    ul {
+        padding: 1.5rem 0 0 0;
+        margin: 0;
+        list-style: none;
+        display: flex;
+
+        svg {
+            width: 2.2rem;
+            height: 2.2rem;
+            display: inline-block;
+            position: relative;
+            top: -.1rem;
+            z-index: 0;
+            margin-right: 1rem;
+        }
+    }
 }
 
 [data-sba-theme="dark"] {
 
-    .github {
-        img {
+    .social {
+        svg {
             filter: invert(100%)
         }
     }
@@ -292,16 +288,19 @@ header {
     cursor: move;
     display: inline-block;
     text-decoration: none;
+
     border: {
         width: .1rem;
         color: var(--border-color);
         style: solid;
         radius: .7rem
     }
+
     color: #333;
     padding: 0 1.2rem;
     margin: 0 .2rem;
     background: var(--highlight-color);
+
     &:hover {
         color: #333;
     }
@@ -395,8 +394,6 @@ surrender;
     }
 }
 
-
-
 figure {
     margin: 0;
     padding: 0;
@@ -441,6 +438,12 @@ textarea.card {
     margin-bottom: $cardMargin;
     background: var(--card-color);
     min-height: 27rem;
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
 
     figure {
         min-height: 19rem;
@@ -493,6 +496,14 @@ textarea.card {
 
 }
 
+#features {
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+}
+
 .card-listing {
     display: grid;
     justify-content: space-between;
@@ -519,32 +530,10 @@ th {
     font-weight: normal;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.mobile-only {
-    display: none;
-}
 
 @media screen and (max-width: 830px) {
     .card-listing {
         display: block
-    }
-
-    header {
-        .wrapper {
-            flex-direction: column;
-        }
-
-        .social {
-            display: flex;
-            justify-content: flex-end;
-            margin: .5rem 0 0 0;
-            padding: 0;
-        }
     }
 }
 
@@ -560,16 +549,9 @@ ul {
 }
 
 @media screen and (max-width: 768px) {
-    .mobile-only {
-        display: block;
-    }
 
     .desktop-only {
         display: none;
-    }
-
-    h1 {
-        font-size: 2.2rem;
     }
 
     .intro {
@@ -577,7 +559,10 @@ ul {
     }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 540px) {
+    h1 {
+        font-size: 2.2rem;
+    }
 
     .card {
         min-height: auto;

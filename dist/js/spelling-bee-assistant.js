@@ -60,8 +60,6 @@
         }
     });
 
-    var version = "2.0.1";
-
     var label = "Spelling Bee Assistant";
     var title = "Assistant";
     var url = "https://spelling-bee-assistant.app/";
@@ -76,7 +74,6 @@
         prefix: prefix,
         repo: repo,
         targetUrl: targetUrl,
-        version: version,
         options: JSON.parse(localStorage.getItem(prefix + '-settings') || '{}')
     };
     const get = key => {
@@ -796,7 +793,7 @@
 
     class Footer extends Plugin {
         constructor(app) {
-            super(app, `${settings$1.get('label')} ${settings$1.get('version')}`, {
+            super(app, `${settings$1.get('label')}`, {
                 key: 'footer'
             });
             this.ui = el.a({

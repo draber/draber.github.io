@@ -1,9 +1,8 @@
-import * as pkg from '../../../package.json';
 import * as config from '../../config/config.json';
 
 /**
  * Collection of data from `package.json`, `config.json` and `localStorage`
- * @type {{prefix: string, repo: string, options: object, label: string, title: string, targetUrl: string, version: string, url: string}}
+ * @type {{prefix: string, repo: string, options: object, label: string, title: string, targetUrl: string, url: string}}
  */
 const settings = {
     label: config.label,
@@ -12,7 +11,6 @@ const settings = {
     prefix: config.prefix,
     repo: config.repo,
     targetUrl: config.targetUrl,
-    version: pkg.version,
     options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 };
 
