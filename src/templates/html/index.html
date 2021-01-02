@@ -17,7 +17,8 @@
 	<meta content="{{label}}" name="twitter:image:alt">
 	<meta content="{{gsc.drg}}" name="google-site-verification">
 	<meta content="{{gsc.sba}}" name="google-site-verification">
-	<link href="assets/img/favicon.png?{{version}}" rel="icon" type="image/png">
+	<link rel="manifest" href="site.webmanifest">
+	<link rel="apple-touch-icon" href="assets/img/icon72.png?{{version}}" type="image/png">
 	<link href="https://fonts.gstatic.com" rel="preconnect">
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 	<link href="assets/css/site.css?{{version}}" rel="stylesheet">
@@ -56,7 +57,8 @@
 	</svg>
 	<header>
 		<div class="wrapper">
-			<h1>{{label}}</h1>
+			<img src="assets/img/logo.png?{{version}}" alt="{{label}}" id="logo" />
+			<h1> {{label}}</h1>
 			<ul class="social">
 				<li class="github"> <a href="https://github.com/draber/draber.github.io" rel="noopener" target="_blank">
 						<svg class="github">

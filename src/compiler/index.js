@@ -57,6 +57,7 @@ const getCss = path => {
         prefix: settings.get('prefix')
     });
     css = cssUtils.removeBom(css);
+    css = substituteVars(css, settings);
     return css;
 }
 

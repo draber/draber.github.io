@@ -1,5 +1,7 @@
 @import './inc/colors';
 
+$version: '{{version}}';
+
 //noinspection CssUnknownProperty
 html {
     line-height: 1.15;
@@ -31,6 +33,7 @@ main {
 
 h1 {
     margin: 0;
+    flex-grow: 2;
 }
 
 h2 {
@@ -209,6 +212,10 @@ header {
             margin-right: 1rem;
         }
     }
+}
+
+#logo {
+	margin-right: 2rem;
 }
 
 [data-sba-theme="dark"] {
@@ -390,7 +397,7 @@ surrender;
 
 @each $feature in $features {
     [data-state="#{$feature}"] {
-        background-image: url(../img/#{$feature}-dark.png)
+        background-image: url(../img/#{$feature}-dark.png?#{$version})
     }
 }
 
