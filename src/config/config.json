@@ -7,9 +7,15 @@
     "twitter": "@d_raber",
     "prefix": "sba",
     "extension": {
-        "template": "src/templates/extension/manifest.json",
-        "output": "dist/extension/manifest.json",
-        "sba": "dist/extension/assets/spelling-bee-assistant.min.js"
+        "manifest": {
+            "template": "src/templates/extension/manifest.json",
+            "output": "src/extension/manifest.json"
+        },
+        "update": {
+            "template": "src/templates/extension/update-info.xml",
+            "output": "dist/extension/update-info.xml"
+        },
+        "sba": "src/extension/spelling-bee-assistant.min.js"
     },
     "html": {
         "template": "src/templates/html/index.html",
