@@ -93,9 +93,9 @@ ul {
 }
 
 svg.symbols {
-    position: absolute; 
-    width: 0; 
-    height: 0; 
+    position: absolute;
+    width: 0;
+    height: 0;
     overflow: hidden;
 }
 
@@ -222,7 +222,7 @@ header {
 }
 
 #logo {
-	margin-right: 2rem;
+    margin-right: 2rem;
 }
 
 [data-sba-theme="dark"] {
@@ -372,10 +372,12 @@ section {
         float: left;
         position: static;
         border: none;
+        max-width: 60%;
     }
 
     svg {
         width: 20rem;
+        max-width: 100%;
     }
 }
 
@@ -590,6 +592,11 @@ th {
             clear: left
         }
     }
+
+    #logo {
+        margin-right: 1rem;
+        width: 3.5rem;
+    }
 }
 
 @media screen and (max-width: 400px) {
@@ -598,5 +605,25 @@ th {
         float: none;
         display: inline-block;
         margin-bottom: 1.5rem
+    }
+
+    header {
+        .wrapper {
+
+            display: flex;
+            justify-content: flex-start;
+            align-items: start;
+            min-height: 5rem;
+        }
+
+        ul {
+            position: absolute;
+            right: 0;
+            top: 2.5rem;
+
+            .github {
+                display: none;
+            }
+        }
     }
 }
