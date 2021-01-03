@@ -21,6 +21,5 @@
   },
   "web_accessible_resources": [
     "spelling-bee-assistant.min.js"
-  ],
-  "update_url": "https://spelling-bee-assistant.app//dist/extension/update-info.xml"
+  ]
 }
