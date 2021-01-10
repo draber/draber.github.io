@@ -7,18 +7,6 @@ import Widget from './widget.js';
 class Plugin extends Widget {
 
     /**
-     * Parent element of plugin, if applicable
-     * @type {undefined|HTMLElement}
-     */
-    target;
-
-    /**
-     * App container object, not the app UI!
-     * @type {App}
-     */
-    app;
-
-    /**
      * Attaches plugins to DOM, creates slot in app if needed
      * @returns {Widget}
      */
@@ -59,7 +47,18 @@ class Plugin extends Widget {
             canChangeState,
             defaultState
         })
-        this.app = app;
+
+        /**
+         * Parent element of plugin, if applicable
+         * @type {undefined|HTMLElement}
+         */
+        this.target;
+    
+        /**
+         * App container object, not the app UI!
+         * @type {App}
+         */
+        this.app= app;
     }
 }
 

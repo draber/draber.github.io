@@ -345,7 +345,7 @@
 					'flexbox', 'matchmedia'
 				],
 				i = features.length,
-				cls = document.documentElement.classList;
+				cls = d.documentElement.classList;
 			var browserType = 'modern-browser';
 			while (i--) {
 				if (!cls.contains(features[i])) {
@@ -353,7 +353,7 @@
 					break;
 				}
 			}
-			document.documentElement.classList.add(browserType);
+			d.documentElement.classList.add(browserType);
 		})();
 		((d) => {
 

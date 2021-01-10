@@ -16,12 +16,6 @@ import {
 class App extends Widget {
 
     /**
-     * The element that is used to drag the app
-     * @type {HTMLElement}
-     */
-    dragHandle;
-
-    /**
      * Register all plugins
      * @param plugins
      * @returns {Widget}
@@ -94,8 +88,22 @@ class App extends Widget {
             events: events
         });
 
+        /**
+         * The element that is used to drag the app
+         * @type {HTMLElement}
+         */
         this.dragHandle = this.ui;
+
+        /**
+         * The area in which the app can be dragged
+         * @type {HTMLElement}
+         */
         this.dragArea = this.game;
+
+        /**
+         * The offset from the borders of the drag area in px
+         * @type {int|{top: int, right: int, bottom: int, left: int}}
+         */
         this.dragOffset = 12;
 
         data.init(this, resultList);
@@ -124,7 +132,7 @@ class App extends Widget {
         this.toggle(this.getState());
         this.parent.append(this.ui);
         game.before(this.parent);
-    };
+    }
 }
 
 export default App;

@@ -15,7 +15,8 @@
             "template": "src/templates/extension/update-info.xml",
             "output": "dist/extension/update-info.xml"
         },
-        "sba": "src/extension/spelling-bee-assistant.min.js"
+        "sba": "src/extension/spelling-bee-assistant.js",
+        "sba-min": "src/extension/spelling-bee-assistant.min.js"
     },
     "html": {
         "template": "src/templates/html/index.html",

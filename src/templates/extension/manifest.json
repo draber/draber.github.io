@@ -6,7 +6,7 @@
   "version": "{{version}}",
   "content_scripts": [{
     "matches": [
-      "{{targetUrl}}"
+      "{{targetUrl}}*"
     ],
     "js": [
       "content.js"
@@ -21,6 +21,5 @@
   },
   "web_accessible_resources": [
     "{{sbaFileName}}"
-  ],
-  "update_url": "{{url}}/dist/extension/update-info.xml"
+  ]
 }

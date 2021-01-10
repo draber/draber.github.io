@@ -41,7 +41,7 @@
     }
 
     .sb-modal-scrim {
-        background:  var(--modal-bg-color);
+        background: var(--modal-bg-color);
         color: var(--text-color);
     }
 
@@ -64,7 +64,7 @@
     }
 
     .sb-input-invalid {
-        color:var(--invalid-color)
+        color: var(--invalid-color)
     }
 
     .sb-toggle-expand {
@@ -147,6 +147,7 @@ $pluginWidth: 138;
     [data-ui="header"] {
         display: flex;
         gap: 8px;
+
         .toolbar {
             display: flex;
             align-items: stretch;
@@ -154,6 +155,7 @@ $pluginWidth: 138;
 
             div {
                 padding: 10px 3px 2px 3px;
+
                 &:last-of-type {
                     padding-top: 8px;
                 }
@@ -188,9 +190,10 @@ $pluginWidth: 138;
             display: none;
         }
 
-        [data-tool="setUp"]{
+        [data-tool="setUp"] {
             position: relative;
             pointer-events: none;
+
             &:before {
                 content: '';
                 width: 100%;
@@ -382,6 +385,7 @@ $pluginWidth: 138;
         position: relative;
         z-index: 5;
     }
+
     .sba {
         left: 100%;
         top: 64px;
@@ -392,14 +396,22 @@ $pluginWidth: 138;
     .sbaContainer {
         max-width: none;
     }
+
     .sba {
         top: 16px;
         left: 12px;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767.98px) {
     .sba {
         top: 167px;
+    }
+
+    .pz-mobile {
+        .sba {
+            top: auto;
+            bottom: -7px
+        }
     }
 }
