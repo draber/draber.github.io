@@ -67,7 +67,10 @@
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix = "sba";
 
+    var version = "2.1.1";
+
     const settings = {
+        version: version,
         label: label,
         title: title,
         url: url,
@@ -347,13 +350,14 @@
                 this.observer.disconnect();
                 this.parent.remove();
             };
-            this.isDraggable = true;
+            this.isDraggable = document.body.classList.contains('pz-desktop');
             this.ui = el.div({
                 attributes: {
                     draggable: this.isDraggable
                 },
                 data: {
-                    id: this.key
+                    id: this.key,
+                    version: settings$1.get('version')
                 },
                 classNames: [settings$1.get('prefix')],
                 events: events

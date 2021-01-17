@@ -339,7 +339,7 @@
 		<area alt="Minimize" coords="121,0,136,20" href="#inactive" shape="rect">
 	</map>
 	<script>
-		(function () {
+		(function (d) {
 			var features = ['queryselector', 'es6array', 'arrow', 'es6collections', 'generators', 'es6number',
 					'es6object', 'es6string', 'fetch', 'sessionstorage', 'scriptasync', 'customevent',
 					'flexbox', 'matchmedia'
@@ -354,7 +354,7 @@
 				}
 			}
 			d.documentElement.classList.add(browserType);
-		})();
+		})(document);
 		((d) => {
 
 			const overviewBox = d.querySelector('#overview [data-state]');

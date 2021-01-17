@@ -75,14 +75,15 @@ class App extends Widget {
             this.parent.remove();
         };
 
-        this.isDraggable = true;
+        this.isDraggable = document.body.classList.contains('pz-desktop');
 
         this.ui = el.div({
             attributes: {
                 draggable: this.isDraggable
             },
             data: {
-                id: this.key
+                id: this.key,
+                version: settings.get('version')
             },
             classNames: [settings.get('prefix')],
             events: events
