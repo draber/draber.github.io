@@ -6,11 +6,12 @@
   "version": "{{version}}",
   "content_scripts": [{
     "matches": [
-      "{{targetUrl}}"
+      "{{targetUrl}}*"
     ],
     "js": [
       "content.js"
-    ]
+    ],
+    "run_at": "document_start"
   }],
   "icons": {
     "16": "icon16.png",
@@ -21,6 +22,5 @@
   },
   "web_accessible_resources": [
     "{{sbaFileName}}"
-  ],
-  "update_url": "{{url}}/dist/extension/update-info.xml"
+  ]
 }

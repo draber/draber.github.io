@@ -10,36 +10,6 @@ import Plugin from '../modules/plugin.js';
 class Positioning extends Plugin {
 
     /**
-     * Absolute position of the draggable object
-     * @type {{top: Number, left: Number}}
-     */
-    position;
-
-    /**
-     * How close the draggable object can come to the edges of the drag area
-     * @type {{top: Number, right: Number, bottom: number, left: Number}}
-     */
-    offset;
-
-    /**
-     * Translation of the boundaries to left and top
-     * @type {{minTop: Number, maxTop: Number, minLeft: number, maxLeft: Number}}
-     */
-    boundaries;
-
-    /**
-     * Mouse position, new = on drag start, old on dragend
-     * @type {{left: Number, top: Number}}
-     */
-    mouse;
-
-    /**
-     * Helps to determine if the the draggable object has been dragged by the handle
-     * @type {boolean}
-     */
-    isLastTarget = false;
-
-    /**
      * How close the draggable object can come to the edges of the drag area
      * @param {Number|Object} offset
      * @type {{top: Number, right: Number, bottom: number, left: Number}}
@@ -178,15 +148,39 @@ class Positioning extends Plugin {
             key: 'positioning',
             canChangeState: true
         });
+        
+        /**
+         * Translation of the boundaries to left and top
+         * @type {{minTop: Number, maxTop: Number, minLeft: number, maxLeft: Number}}
+         */
+        this.boundaries;
+    
+        /**
+         * Mouse position, new = on drag start, old on dragend
+         * @type {{left: Number, top: Number}}
+         */
+        this.mouse;
+    
+        /**
+         * Helps to determine if the the draggable object has been dragged by the handle
+         * @type {boolean}
+         */
+        this.isLastTarget = false;
 
         if (!this.app.isDraggable) {
             return this;
         }
 
-        // current physical position
+        /**
+         * Absolute position of the draggable object
+         * @type {{top: Number, left: Number}}
+         */
         this.position = this.getPosition();
 
-        // minimal distance from edges of drag area
+        /**
+         * How close the draggable object can come to the edges of the drag area
+         * @type {{top: Number, right: Number, bottom: number, left: Number}}
+         */
         this.offset = this.getOffset(app.dragOffset || 0);
 
         // possibly stored position from previous session

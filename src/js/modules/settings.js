@@ -1,10 +1,12 @@
 import * as config from '../../config/config.json';
+import * as pkg from '../../../package.json';
 
 /**
  * Collection of data from `package.json`, `config.json` and `localStorage`
  * @type {{prefix: string, repo: string, options: object, label: string, title: string, targetUrl: string, url: string}}
  */
 const settings = {
+    version: pkg.version,
     label: config.label,
     title: config.title,
     url: config.url,

@@ -1,6 +1,6 @@
 {
   "name": "spelling-bee-assistant",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^16.0.0",
@@ -17,8 +17,8 @@
   },
   "scripts": {
     "dev": "rollup -c ./src/config/rollup.js",
-    "sba-sass-w": "node ./src/compiler/ -t appsass -w",
-    "sba-sass": "node ./src/compiler/ -t appsass",
+    "sba-sass-w": "node ./src/compiler/ -t appcss -w",
+    "sba-sass": "node ./src/compiler/ -t appcss",
     "compile-site": "node ./src/compiler/ -t site",
     "watch-site": "node ./src/compiler/ -t site -w",
     "compile-ext": "node ./src/compiler/ -t extension",
@@ -36,5 +36,6 @@
     "url": "https://github.com/draber/draber.github.io.git/issues"
   },
   "author": "Dieter Raber",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {}
 }

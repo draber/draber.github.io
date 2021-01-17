@@ -12,36 +12,6 @@ import el from './element.js';
 class Widget {
 
     /**
-     * Cannot be hidden or otherwise disabled by user, default state
-     * @type {boolean}
-     */
-    defaultState = true;
-
-    /**
-     * Undefined by default, most plugins will overwrite this
-     * @type {undefined|HTMLElement}
-     */
-    ui;
-
-    /**
-     * Used when the plugin is mentioned anywhere in the UI
-     * @type {string}
-     */
-    title;
-
-    /**
-     * Used for instance to register the plugin, mostly the title in camelCase
-     * @type {string}
-     */
-    key;
-
-    /**
-     * Can be deactivated
-     * @type {boolean}
-     */
-    canChangeState = false;
-
-    /**
      * Tells if the user has deactivated a plugin, falls back on default setting
      * @returns {*}
      */
@@ -138,10 +108,36 @@ class Widget {
         if (!title) {
             throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
         }
+
+        /**
+         * Used when the plugin is mentioned anywhere in the UI
+         * @type {string}
+         */
         this.title = title;
+
+        /**
+         * Used for instance to register the plugin, mostly the title in camelCase
+         * @type {string}
+         */
         this.key = key || camel(title);
-        this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : this.canChangeState;
-        this.defaultState = typeof defaultState !== 'undefined' ? defaultState : this.defaultState;
+
+        /**
+         * Can be deactivated
+         * @type {boolean}
+         */
+        this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
+        
+        /**
+         * Cannot be hidden or otherwise disabled by user, default state
+         * @type {boolean}
+         */
+        this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
+
+        /**
+         * Undefined by default, most plugins will overwrite this
+         * @type {undefined|HTMLElement}
+         */
+        this.ui;
     }
 }
 

@@ -16,12 +16,6 @@ import {
 class App extends Widget {
 
     /**
-     * The element that is used to drag the app
-     * @type {HTMLElement}
-     */
-    dragHandle;
-
-    /**
      * Register all plugins
      * @param plugins
      * @returns {Widget}
@@ -81,21 +75,36 @@ class App extends Widget {
             this.parent.remove();
         };
 
-        this.isDraggable = true;
+        this.isDraggable = document.body.classList.contains('pz-desktop');
 
         this.ui = el.div({
             attributes: {
                 draggable: this.isDraggable
             },
             data: {
-                id: this.key
+                id: this.key,
+                version: settings.get('version')
             },
             classNames: [settings.get('prefix')],
             events: events
         });
 
+        /**
+         * The element that is used to drag the app
+         * @type {HTMLElement}
+         */
         this.dragHandle = this.ui;
+
+        /**
+         * The area in which the app can be dragged
+         * @type {HTMLElement}
+         */
         this.dragArea = this.game;
+
+        /**
+         * The offset from the borders of the drag area in px
+         * @type {int|{top: int, right: int, bottom: int, left: int}}
+         */
         this.dragOffset = 12;
 
         data.init(this, resultList);
@@ -124,7 +133,7 @@ class App extends Widget {
         this.toggle(this.getState());
         this.parent.append(this.ui);
         game.before(this.parent);
-    };
+    }
 }
 
 export default App;

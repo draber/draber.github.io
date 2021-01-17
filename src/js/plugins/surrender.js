@@ -11,12 +11,6 @@ import Plugin from '../modules/plugin.js';
 class Surrender extends Plugin {
 
 	/**
-	 * Helps to make sure that the missing terms can only be appended once
-	 * @type {boolean}
-	 */
-	usedOnce = false;
-
-	/**
 	 * Build a single entry for the term list
 	 * @param {String} term
 	 * @returns {HTMLElement}
@@ -33,7 +27,7 @@ class Surrender extends Plugin {
 			}
 		}));
 		return entry;
-	};
+	}
 
 	/**
 	 * Display the solution
@@ -48,13 +42,19 @@ class Surrender extends Plugin {
 		data.getList('remainders').forEach(term => resultList.append(this.buildEntry(term)));
 		this.usedOnce = true;
 		return true;
-	};
+	}
 
 	constructor(app) {
 
 		super(app, 'Surrender', {
 			canChangeState: true
 		});
+
+		/**
+		 * Helps to make sure that the missing terms can only be appended once
+		 * @type {boolean}
+		 */
+		this.usedOnce = false;
 
 		this.ui = el.details();
 

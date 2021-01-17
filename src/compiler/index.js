@@ -173,10 +173,13 @@ const buildPartial = async (fileKey) => {
             contents = await getMinifiedJs(settings.get('js.plain'));
             tasks = [{
                 contents,
-                savePath: settings.get('extension.sba')
+                savePath: settings.get('extension.sba-min')
             }, {
                 contents,
                 savePath: settings.get('bookmarklet.cdn.local')
+            }, {
+                contents: read(settings.get('js.plain')),
+                savePath: settings.get('extension.sba')
             }];
             break;
         case 'scss.colors':
