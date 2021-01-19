@@ -234,7 +234,7 @@ header {
     }
 
     main {
-        img {
+        img:not(.store-icon) {
             opacity: 0;
         }
     }
@@ -441,6 +441,52 @@ textarea.card {
     padding-bottom: 1.1rem;
 }
 
+#features .card {
+    min-height: 27rem;
+}
+
+#requirement-chart {
+    svg {
+        display: inline-block;
+        width: 1.4rem;
+        height: 1.4rem;
+        fill: var(--success-color);
+        position: relative;
+        top: .3rem;
+        margin: 0 .2rem
+    }
+    figcaption {
+        text-align: left
+    }
+    margin-bottom: 1.5rem;
+}
+
+table {
+    border: {
+        width: .1rem;
+        color: var(--border-color);
+        style: solid;
+        radius: .9rem;
+        collapse: collapse;
+        spacing: 0;
+    }
+}
+
+th {
+    font-weight: bold;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    text-align: left;
+    padding: .2rem 1rem;
+    font-size: 1.3rem;
+}
+
+tr:nth-child(n+1) td:nth-child(n+2){
+    text-align: center;
+}
+
 .card {
     border: {
         width: .1rem;
@@ -453,7 +499,6 @@ textarea.card {
     padding: 1.1rem 1.5rem .5rem 1.5rem;
     margin-bottom: $cardMargin;
     background: var(--card-color);
-    min-height: 27rem;
 
     ul {
         margin: 0;
@@ -512,7 +557,8 @@ textarea.card {
 
 }
 
-#features {
+#features,
+#installation {
     ul {
         list-style: none;
         padding: 0;
@@ -540,12 +586,6 @@ map,
 area {
     outline: none !important;
 }
-
-
-th {
-    font-weight: normal;
-}
-
 
 @media screen and (max-width: 830px) {
     .card-listing {

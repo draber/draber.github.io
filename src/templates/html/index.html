@@ -25,9 +25,17 @@
 	<script src="assets/js/modernizr-custom.js"></script>
 </head>
 
-<body><svg aria-hidden="true" class="symbols" version="1.1"
-		xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<body><svg aria-hidden="true" class="symbols" version="1.1" xmlns="http://www.w3.org/2000/svg"
+		xmlns:xlink="http://www.w3.org/1999/xlink">
 		<defs>
+			<symbol id="icon-extension" viewBox="0 0 24 24">
+				<path
+					d="M14.935.054c-1.942 0-3.12 1.424-3.12 2.615 0 1.025.587 1.435.955 1.805h.002v.002c.363.362.437.722.327.982-.11.26-.43.476-1.026.476H5.945v6.139c0 .597-.217.917-.476 1.028-.26.11-.619.036-.98-.328h-.002v-.002c-.37-.369-.78-.957-1.802-.957-1.19 0-2.61 1.18-2.61 3.126s1.42 3.125 2.61 3.125c1.023 0 1.433-.588 1.802-.957v-.002h.002c.361-.363.72-.437.98-.327.26.11.476.43.476 1.028v6.138h6.128c.69 0 1.184-.273 1.366-.702.182-.43.028-.957-.407-1.392-.41-.41-.847-.652-.847-1.542 0-.94.99-2.244 2.75-2.244s2.75 1.304 2.75 2.244c0 .89-.437 1.131-.847 1.542-.435.435-.59.963-.407 1.392.182.429.676.702 1.366.702h6.128v-6.138c0-.691-.273-1.186-.701-1.369-.429-.182-.956-.028-1.39.408-.41.41-.65.848-1.54.848-.937 0-2.239-.99-2.239-2.754s1.302-2.755 2.24-2.755c.889 0 1.13.438 1.54.848.434.436.96.59 1.389.408.428-.182.701-.677.701-1.368V5.934h-6.128c-.596 0-.916-.217-1.026-.476-.11-.26-.036-.62.327-.982v-.002h.002c.368-.37.955-.78.955-1.805 0-1.191-1.178-2.615-3.12-2.615zm7.164 12.72c-14.56 7.324-7.28 3.662 0 0z" />
+			</symbol>
+			<symbol id="icon-bookmark" viewBox="0 0 24 24">
+				<path
+					d="m20.188 0.1795c0.234 0 0.469 0.047 0.688 0.141 0.688 0.266 1.125 0.906 1.125 1.609v20.141c0 0.703-0.438 1.344-1.125 1.609-0.219 0.094-0.453 0.125-0.688 0.125-0.484 0-0.938-0.172-1.297-0.5l-6.891-6.625-6.891 6.625c-0.359 0.328-0.812 0.516-1.297 0.516-0.234 0-0.469-0.047-0.688-0.141-0.688-0.266-1.125-0.906-1.125-1.609v-20.141c0-0.703 0.438-1.344 1.125-1.609 0.219-0.094 0.453-0.141 0.688-0.141h16.375z" />
+			</symbol>
 			<symbol id="icon-github" viewBox="0 0 24 24">
 				<circle cx="12" cy="12" r="12" fill="#fff" />
 				<path
@@ -129,21 +137,39 @@
 				<figure>
 					<div class="start-up-img img-box desktop-only" data-state="start-up">
 						<span data-footer="{{label}}">
-
-							<img alt="{{label}}" src="assets/img/start-up-light.png"></span>
+							<img alt="{{label}}" src="assets/img/start-up-light.png?{{version}}"></span>
 					</div>
 				</figure>
 			</div>
 
 		</section>
-		<section>
+		<section id="installation">
 			<h2>Installation</h2>
+			<ul class="card-listing">
+				<li class="card">
+					<h3>Browser extension</h3>
+					<div class="lft">
+						<div class="img-box">
+							<a href="{{extension.chromeStore.url}}" rel="noopener" target="_blank"><img
+									class="chrome-store-icon" src="assets/img/tbyBjqi7Zu733AAKA5n4.png?{{version}}"
+									alt="{{label}} in the Chrome Web Store" /></a>
+						</div>
+					</div>
+					<p>The browser extension loads the assistant automatically whenever you open the Spelling
+						Bee site. Right now it’s available for Chromium-based browsers (Chrome, Edge, Brave etc.), other releases are planned. 
+						You can install it from <a href="{{extension.chromeStore.url}}" rel="noopener" target="_blank">the Chrome Web Store</a>.						
+
+					</p>
+				</li>
+				<li class="card">
+					<h3>Browser bookmarklet</h3>
+					<p>Alternatively you can install the bookmarklet, that uses the same code. On your laptop or desktop computer drag this button <a class="bookmarklet installer"
+							href="{{bookmarklet.code}}" onclick="return false" rel="nofollow">{{label}}</a> to the
+						bookmark
+						menu. Next time you’re playing, click on the new bookmark to launch the assistant.</p>
+				</li>
+			</ul>
 			<p class="legacy">It seems that you’re using a legacy web browser on which {{label}} won’t work.</p>
-			<div class="modern">
-				<p>On your laptop or desktop computer drag this button <a class="bookmarklet installer"
-						href="{{bookmarklet.code}}" onclick="return false" rel="nofollow">{{label}}</a> to the bookmark
-					menu. Next time you’re playing, click on the new bookmark to launch the assistant.</p>
-			</div>
 			<p><a href="#requirements">I want to install {{label}} on a tablet or a smartphone</a></p>
 		</section>
 		<section id="features">
@@ -288,15 +314,142 @@
 			<div class="rgt"><a href="#">Back to top</a></div>
 		</section>
 		<section>
-			<h2 id="requirements">I want to install the application on a mobile device</h2>
-			<p>{{label}} works only with modern browsers and has been built with laptops or desktop
-				computers in mind. Installing bookmarklets on a phone or a tablet is rather complex but - according to
+			<h2 id="requirements">System requirements</h2>
+			<p>{{label}} works with modern browsers and has been built with laptops or desktop
+				computers in mind.</p>
+
+				<figure id="requirement-chart">
+
+					<p>It has successfully been tested on recent browsers and operating systems.
+						<table>
+							<thead>
+								<tr>
+									<th>Browser</th>
+									<th>Windows 10 64-bit</th>
+									<th>MacOS Big Sur</th>
+									<th>Android 10</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Chrome</td>
+									<td class="win-10"><svg>
+										<title>Extension</title>
+											<use xlink:href="#icon-extension"></use>
+										</svg>
+										<svg>
+											<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+									<td class="mac-os"><svg>
+										<title>Extension</title>
+											<use xlink:href="#icon-extension"></use>
+										</svg>
+										<svg>
+											<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+									<td class="android">not tested</td>
+								</tr>
+	
+								<tr>
+									<td>Edge</td>
+									<td class="win-10"><!--svg>
+										<title>Extension</title>
+											<use xlink:href="#icon-extension"></use>
+										</svg-->
+										<svg>
+											<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+									<td class="mac-os">n/a</td>
+									<td class="android">n/a</td>
+								</tr>
+	
+	
+								<tr>
+									<td>Firefox</td>
+									<td class="win-10"><!--svg>
+										<title>Extension</title>
+											<use xlink:href="#icon-extension"></use>
+										</svg-->
+										<svg>
+											<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+									<td class="mac-os"><!--svg>
+										<title>Extension</title>
+											<use xlink:href="#icon-extension"></use>
+										</svg-->
+										<svg>
+											<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+									<td class="android">not tested</td>
+								</tr>
+	
+								<tr>
+									<td>Safari</td>
+									<td class="win-10">n/a</td>
+									<td class="mac-os"><svg>
+										<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+									<td class="android">n/a</td>
+								</tr>
+	
+								<!--tr>
+									<td>Kiwi</td>
+									<td class="win-10">n/a</td>
+									<td class="mac-os">n/a</td>
+									<td class="android"><svg>
+										<title>Extension</title>
+											<use xlink:href="#icon-extension"></use>
+										</svg>
+										<svg>
+											<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+								</!tr-->
+								<tr>
+									<td>Brave</td>
+									<td class="win-10"><svg>
+										<title>Extension</title>
+											<use xlink:href="#icon-extension"></use>
+										</svg>
+										<svg>
+											<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+									<td class="mac-os"><svg>
+										<title>Extension</title>
+											<use xlink:href="#icon-extension"></use>
+										</svg>
+										<svg>
+											<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+									<td class="android"><svg>
+										<title>Bookmarklet</title>
+											<use xlink:href="#icon-bookmark"></use>
+										</svg></td>
+								</tr>
+							</tbody>
+						</table>
+						<figcaption><svg>
+								<use xlink:href="#icon-extension"></use>
+							</svg> = browser extension, <svg>
+								<use xlink:href="#icon-bookmark"></use>
+							</svg> = bookmarklet</figcaption>
+				</figure>
+			<p>Installing bookmarklets on a phone or a tablet is rather complex but feasible.
 				<a href="https://www.google.com/search?q=Installing+bookmarklets+on+a+moblie+device" rel="noopener"
-					target="_blank">Google</a>
-				- it appears to be feasible. It can't be installed on the NYT app, though.</p>
-			<p>Commonly, tutorials for mobile-installation involve copying the source code of a bookmarklet. This hasn’t
-				been tested but if you want to give it a shot anyway, you can copy the code from here:</p>
+					target="_blank">Google</a> links to a number of very similar tutorials. We tried some of them on
+				Android and it worked just fine. Still, it remains pretty inconvenient.</p>
+			<p>Commonly, tutorials for mobile-installation involve copying the source code of a bookmarklet. If you want
+				to give it shot, you can copy the code from here:</p>
 			<textarea class="card">{{bookmarklet.code}}</textarea>
+			<p>{{label}} cannot be installed inside the NYT app!</p>
 			<div class="rgt"><a href="#">Back to top</a></div>
 		</section>
 		<section>

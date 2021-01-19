@@ -13,7 +13,8 @@ $themeColors: (
         border:#dcdcdc,
         area-bg: #e6e6e6,
         invalid: #dcdcdc,
-        card: rgba(248, 205, 5, .1)
+        card: rgba(248, 205, 5, .1),
+        success: #248a17,
     ),
     dark: (
         text: #e7eae1,
@@ -26,7 +27,8 @@ $themeColors: (
         border: #333,
         area-bg: #393939,
         invalid: #666,
-        card:  #393939
+        card:  #393939,
+        success: #47c537,
     )
 );
 
