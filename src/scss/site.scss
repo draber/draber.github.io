@@ -226,6 +226,7 @@ header {
     margin-right: 2rem;
 }
 
+
 [data-sba-theme="dark"] {
 
     .social {
@@ -297,29 +298,27 @@ header {
     }
 }
 
+.install-source {
+    display: flex;
+    flex-direction: column;
 
+    img {
+        border: {
+            width: .1rem;
+            color: var(--border-color);
+            style: solid;
+            radius: .1rem
+        }
 
-.bookmarklet {
-    cursor: move;
-    display: inline-block;
-    text-decoration: none;
+        margin-bottom: .6rem;
+        width: 140px;
 
-    border: {
-        width: .1rem;
-        color: var(--border-color);
-        style: solid;
-        radius: .7rem
-    }
-
-    color: #333;
-    padding: 0 1.2rem;
-    margin: 0 .2rem;
-    background: var(--highlight-color);
-
-    &:hover {
-        color: #333;
+        &.bookmarklet {
+            cursor: move;
+        }
     }
 }
+
 
 .extras {
     .img-box {
@@ -449,16 +448,18 @@ textarea.card {
 #requirement-chart {
     svg {
         display: inline-block;
-        width: 1.4rem;
-        height: 1.4rem;
+        width: 1.2rem;
+        height: 1.2rem;
         fill: var(--success-color);
         position: relative;
-        top: .3rem;
+        top: .2rem;
         margin: 0 .2rem
     }
+
     figcaption {
         text-align: left
     }
+
     margin-bottom: 1.5rem;
 }
 
@@ -477,14 +478,15 @@ th {
     font-weight: bold;
 }
 
-th, td {
+th,
+td {
     border: 1px solid var(--border-color);
     text-align: left;
     padding: .2rem 1rem;
     font-size: 1.3rem;
 }
 
-tr:nth-child(n+1) td:nth-child(n+2){
+tr:nth-child(n+1) td:nth-child(n+2) {
     text-align: center;
 }
 
