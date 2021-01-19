@@ -16,7 +16,10 @@
             "output": "dist/extension/update-info.xml"
         },
         "sba": "src/extension/spelling-bee-assistant.js",
-        "sba-min": "src/extension/spelling-bee-assistant.min.js"
+        "sba-min": "src/extension/spelling-bee-assistant.min.js",
+        "chromeStore": {
+            "url": "https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg"
+        }
     },
     "html": {
         "template": "src/templates/html/index.html",
