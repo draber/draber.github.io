@@ -8,7 +8,10 @@ const config = require('../../config/config.json');
  */
 const settings = {
     ...pkg,
-    ...config
+    ...config,
+    ...{
+        cacheId: Math.floor(new Date().getTime() / 1000)
+    }
 }
 
 /**

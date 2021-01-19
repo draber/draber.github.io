@@ -1,6 +1,7 @@
 @import './inc/colors';
 
 $version: '{{version}}';
+$cacheId: '{{cacheId}}';
 
 //noinspection CssUnknownProperty
 html {
@@ -406,7 +407,7 @@ surrender;
 
 @each $feature in $features {
     [data-state="#{$feature}"] {
-        background-image: url(../img/#{$feature}-dark.png?#{$version})
+        background-image: url(../img/#{$feature}-dark.png?#{$version}&cache-id=#{cacheId})
     }
 }
 

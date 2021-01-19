@@ -20,6 +20,7 @@ const cssUtils = require('./modules/cssUtils.js');
 
 const args = minimist(process.argv.slice(2));
 
+
 /**
  * Creates manifest code for extension
  * @returns {String}
