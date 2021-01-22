@@ -420,20 +420,6 @@
 									</svg></td>
 								<td class="android">n/a</td>
 							</tr>
-
-							<!--tr>
-									<td>Kiwi</td>
-									<td class="win-10">n/a</td>
-									<td class="mac-os">n/a</td>
-									<td class="android"><svg>
-										<title>Extension</title>
-											<use xlink:href="#icon-extension"></use>
-										</svg>
-										<svg>
-											<title>Bookmarklet</title>
-											<use xlink:href="#icon-bookmark"></use>
-										</svg></td>
-								</!tr-->
 							<tr>
 								<td>Brave</td>
 								<td class="win-10"><svg>
@@ -571,21 +557,10 @@
 					}
 				})
 			})
-
-			d.querySelector('.bookmarklet').addEventListener('dragstart', e => {
-				window.fetch('https://www.google-analytics.com/collect?' + new URLSearchParams({
-					v: 1,
-					tid: '{{ga.tid}}',
-					cid: Date.now(),
-					t: 'event',
-					aip: '1',
-					ec: '{{ga.ec}}',
-					ea: e.type,
-					el: '{{version}}'
-				}).toString());
-			}, false);
 		})(document)
 	</script>
 </body>
 
 </html>
+
+ 
