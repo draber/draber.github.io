@@ -404,9 +404,11 @@ set-up-demo,
 inactive,
 surrender;
 
-@each $feature in $features {
-    [data-state="#{$feature}"] {
-        background-image: url(../img/#{$feature}-dark.png?#{$version}&cache-id=#{cacheId})
+[data-sba-theme="dark"] {
+    @each $feature in $features {
+        [data-state="#{$feature}"] {
+            background-image: url(../img/#{$feature}-dark.png?#{$version}&cache-id=#{cacheId})
+        }
     }
 }
 
