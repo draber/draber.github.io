@@ -229,6 +229,11 @@ header {
 
 [data-sba-theme="dark"] {
 
+    
+    ::selection {
+        color: var(--body-bg-color);
+    }
+
     .social {
         svg {
             filter: invert(100%)
