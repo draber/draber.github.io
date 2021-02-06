@@ -16,6 +16,38 @@ import {
 class App extends Widget {
 
     /**
+     * Retrieve sync data
+     */
+    getSyncData() {
+        let sync = localStorage.getItem('sb-today');
+        if (!sync) {
+            return false;
+        }
+        sync = JSON.parse(sync);
+        if (sync.id !== data.getId()) {
+            return false;
+        }
+        return data.words || [];
+    }
+
+    /**
+     * Retrieve existing results
+     */
+    async getResults() {
+        let listedResults = Array.from(el.$$('li', this.resultList)).map(entry => entry.textContent.trim());
+        let syncResults;
+        let tries = 5;
+        let interval = setInterval(() => {
+            tries--;
+            syncResults = this.getSyncData();
+            if (syncResults || !tries) {
+                clearInterval(interval);
+            }
+        }, 300);
+        return syncResults || listedResults;
+    }
+
+    /**
      * Register all plugins
      * @param plugins
      * @returns {Widget}
@@ -68,7 +100,7 @@ class App extends Widget {
             classNames: [prefix('container')]
         });
 
-        const resultList = el.$('.sb-wordlist-items', game);
+        this.resultList = el.$('.sb-wordlist-items', game);
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
@@ -107,11 +139,9 @@ class App extends Widget {
          */
         this.dragOffset = 12;
 
-        data.init(this, resultList);
-
         this.observer = (() => {
-            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop().addedNodes[0]));
-            observer.observe(resultList, {
+            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop().addedNodes[0].textContent.trim()));
+            observer.observe(this.resultList, {
                 childList: true
             });
             return observer;
@@ -133,6 +163,7 @@ class App extends Widget {
         this.toggle(this.getState());
         this.parent.append(this.ui);
         game.before(this.parent);
+
     }
 }
 

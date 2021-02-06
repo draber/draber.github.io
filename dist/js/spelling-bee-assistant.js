@@ -136,29 +136,26 @@
     };
 
     let lists;
-    const initLists = resultList => {
-        lists = {
-            answers: window.gameData.today.answers,
-            pangrams: window.gameData.today.pangrams,
-            foundTerms: [],
-            foundPangrams: [],
-            remainders: []
-        };
-        el.$$('li', resultList).forEach(node => {
-            if (el.$('a', node)) {
-                return false;
-            }
-            const term = node.textContent;
-            lists.foundTerms.push(term);
-            if (lists.pangrams.includes(term)) {
-                lists.foundPangrams.push(term);
-                node.classList.add('sb-pangram');
-            }
-        });
+    const sbData = window.gameData.today;
+    let app;
+    const completeLists = () => {
+        lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
+        app.trigger(prefix$1('wordsUpdated'));
+    };
+    const initLists = foundTerms => {
+        lists = {
+            answers: sbData.answers,
+            pangrams: sbData.pangrams,
+            foundTerms: foundTerms
+        };
+        completeLists();
     };
     const getList = type => {
         return lists[type];
+    };
+    const getId = () => {
+        return sbData.id;
     };
     const getCount = type => {
         return lists[type].length;
@@ -177,27 +174,23 @@
         });
         return points;
     };
-    const updateLists = (app, node) => {
-        const term = node.textContent.trim();
+    const updateLists = (term) => {
         lists.foundTerms.push(term);
-        if (lists.pangrams.includes(term)) {
-            lists.foundPangrams.push(term);
-            node.classList.add('sb-pangram');
-        }
-        lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.trigger(prefix$1('wordsUpdated'));
+        completeLists();
     };
-    const init = (app, resultList) => {
-        initLists(resultList);
+    const init = (_app, foundTerms) => {
+        app = _app;
+        initLists(foundTerms);
         app.on(prefix$1('newWord'), (evt) => {
-            updateLists(app, evt.detail);
+            updateLists(evt.detail);
         });
     };
     var data = {
         init,
         getList,
         getCount,
-        getPoints
+        getPoints,
+        getId
     };
 
     const icons = {
@@ -311,6 +304,30 @@
     }
 
     class App extends Widget {
+        getSyncData() {
+            let sync = localStorage.getItem('sb-today');
+            if (!sync) {
+                return false;
+            }
+            sync = JSON.parse(sync);
+            if (sync.id !== data.getId()) {
+                return false;
+            }
+            return data.words || [];
+        }
+        async getResults() {
+            let listedResults = Array.from(el.$$('li', this.resultList)).map(entry => entry.textContent.trim());
+            let syncResults;
+            let tries = 5;
+            let interval = setInterval(() => {
+                tries--;
+                syncResults = this.getSyncData();
+                if (syncResults || !tries) {
+                    clearInterval(interval);
+                }
+            }, 300);
+            return syncResults || listedResults;
+        }
         registerPlugins(plugins) {
             for (const [key, plugin] of Object.entries(plugins)) {
                 this.registry.set(key, new plugin(this));
@@ -344,7 +361,7 @@
             this.parent = el.div({
                 classNames: [prefix$1('container')]
             });
-            const resultList = el.$('.sb-wordlist-items', game);
+            this.resultList = el.$('.sb-wordlist-items', game);
             const events = {};
             events[prefix$1('destroy')] = () => {
                 this.observer.disconnect();
@@ -365,10 +382,9 @@
             this.dragHandle = this.ui;
             this.dragArea = this.game;
             this.dragOffset = 12;
-            data.init(this, resultList);
             this.observer = (() => {
-                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop().addedNodes[0]));
-                observer.observe(resultList, {
+                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop().addedNodes[0].textContent.trim()));
+                observer.observe(this.resultList, {
                     childList: true
                 });
                 return observer;
@@ -915,6 +931,27 @@
         }
     }
 
+    class DecoratePangrams extends Plugin {
+        decorate() {
+            const pangrams = data.getList('pangrams');
+            this.resultItems.forEach(node => {
+                const term = node.textContent;
+                if (pangrams.includes(term)) {
+                    node.classList.add('sb-pangram');
+                }
+            });
+        }
+        constructor(app) {
+            super(app, 'Underline Pangrams');
+            this.resultItems = el.$$('li', app.resultList);
+            app.on(prefix$1('wordsUpdated'), () => {
+                this.decorate();
+            });
+            this.decorate();
+            this.add();
+        }
+    }
+
     var plugins = {
          Styles,
          DarkMode,
@@ -926,9 +963,15 @@
          StepsToSuccess,
          Surrender,
          Footer,
-         Positioning
+         Positioning,
+         DecoratePangrams
     };
 
-    (new App(el.$('#pz-game-root'))).registerPlugins(plugins);
+    const app$1 = new App(el.$('#pz-game-root'));
+    app$1.getResults()
+        .then(foundTerms => {
+            data.init(app$1, foundTerms);
+            app$1.registerPlugins(plugins);
+        });
 
 }());

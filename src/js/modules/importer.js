@@ -9,6 +9,7 @@ import StepsToSuccess from '../plugins/stepsToSuccess.js';
 import Surrender from '../plugins/surrender.js';
 import Footer from '../plugins/footer.js';
 import Positioning from '../plugins/positioning.js';
+import DecoratePangrams from '../plugins/decoratePangrams.js';
 
 /**
  * All available plugins ready for loading
@@ -24,5 +25,6 @@ export default {
      StepsToSuccess,
      Surrender,
      Footer,
-     Positioning
+     Positioning,
+     DecoratePangrams
 }
