@@ -17,6 +17,7 @@ class App extends Widget {
 
     /**
      * Retrieve sync data
+     * @returns {Boolean|Array}
      */
     getSyncData() {
         let sync = localStorage.getItem('sb-today');
@@ -24,27 +25,30 @@ class App extends Widget {
             return false;
         }
         sync = JSON.parse(sync);
-        if (sync.id !== data.getId()) {
+        if (!sync.id || sync.id !== data.getId()) {
             return false;
         }
-        return data.words || [];
+        return sync.words || [];
     }
 
     /**
      * Retrieve existing results
+     * @returns {Promise<Array>}
      */
     async getResults() {
-        let listedResults = Array.from(el.$$('li', this.resultList)).map(entry => entry.textContent.trim());
+        const listedResults = Array.from(el.$$('li', this.resultList)).map(entry => entry.textContent.trim());
         let syncResults;
         let tries = 5;
-        let interval = setInterval(() => {
-            tries--;
-            syncResults = this.getSyncData();
-            if (syncResults || !tries) {
-                clearInterval(interval);
-            }
-        }, 300);
-        return syncResults || listedResults;
+        return await new Promise(resolve => {
+            const interval = setInterval(() => {
+                syncResults = this.getSyncData();
+                if (syncResults || !tries) {
+                    resolve(syncResults || listedResults);
+                    clearInterval(interval);
+                }
+                tries--;
+            }, 300);
+        });
     }
 
     /**

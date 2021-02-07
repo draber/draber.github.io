@@ -6,7 +6,7 @@
 }
 
 .sb-wordlist-items {
-    .sb-pangram {
+    .sba-pangram {
         border-bottom: 2px var(--highlight-color) solid;
     }
 
@@ -366,11 +366,12 @@ $pluginWidth: 138;
         cursor: pointer;
         position: relative;
         line-height: 19px;
+        white-space: nowrap;
 
         input {
             position: relative;
             top: 2px;
-            margin: 0 10px 0 0;
+            margin: 0 5px 0 0;
         }
     }
 }

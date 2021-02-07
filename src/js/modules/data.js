@@ -89,7 +89,7 @@ const getPoints = type => {
  * Update word lists
  * @param {String} term
  */
-const updateLists = (term) => {
+const updateLists = term => {
     lists.foundTerms.push(term);
     completeLists();
 };
