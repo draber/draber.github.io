@@ -67,7 +67,7 @@
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix = "sba";
 
-    var version = "2.1.1";
+    var version = "2.2.0";
 
     const settings = {
         version: version,
@@ -136,29 +136,26 @@
     };
 
     let lists;
-    const initLists = resultList => {
-        lists = {
-            answers: window.gameData.today.answers,
-            pangrams: window.gameData.today.pangrams,
-            foundTerms: [],
-            foundPangrams: [],
-            remainders: []
-        };
-        el.$$('li', resultList).forEach(node => {
-            if (el.$('a', node)) {
-                return false;
-            }
-            const term = node.textContent;
-            lists.foundTerms.push(term);
-            if (lists.pangrams.includes(term)) {
-                lists.foundPangrams.push(term);
-                node.classList.add('sb-pangram');
-            }
-        });
+    const sbData = window.gameData.today;
+    let app;
+    const completeLists = () => {
+        lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
+        app.trigger(prefix$1('wordsUpdated'));
+    };
+    const initLists = foundTerms => {
+        lists = {
+            answers: sbData.answers,
+            pangrams: sbData.pangrams,
+            foundTerms: foundTerms
+        };
+        completeLists();
     };
     const getList = type => {
         return lists[type];
+    };
+    const getId = () => {
+        return sbData.id;
     };
     const getCount = type => {
         return lists[type].length;
@@ -177,27 +174,23 @@
         });
         return points;
     };
-    const updateLists = (app, node) => {
-        const term = node.textContent.trim();
+    const updateLists = term => {
         lists.foundTerms.push(term);
-        if (lists.pangrams.includes(term)) {
-            lists.foundPangrams.push(term);
-            node.classList.add('sb-pangram');
-        }
-        lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.trigger(prefix$1('wordsUpdated'));
+        completeLists();
     };
-    const init = (app, resultList) => {
-        initLists(resultList);
+    const init = (_app, foundTerms) => {
+        app = _app;
+        initLists(foundTerms);
         app.on(prefix$1('newWord'), (evt) => {
-            updateLists(app, evt.detail);
+            updateLists(evt.detail);
         });
     };
     var data = {
         init,
         getList,
         getCount,
-        getPoints
+        getPoints,
+        getId
     };
 
     const icons = {
@@ -311,6 +304,32 @@
     }
 
     class App extends Widget {
+        getSyncData() {
+            let sync = localStorage.getItem('sb-today');
+            if (!sync) {
+                return false;
+            }
+            sync = JSON.parse(sync);
+            if (!sync.id || sync.id !== data.getId()) {
+                return false;
+            }
+            return sync.words || [];
+        }
+        async getResults() {
+            const listedResults = Array.from(el.$$('li', this.resultList)).map(entry => entry.textContent.trim());
+            let syncResults;
+            let tries = 5;
+            return await new Promise(resolve => {
+                const interval = setInterval(() => {
+                    syncResults = this.getSyncData();
+                    if (syncResults || !tries) {
+                        resolve(syncResults || listedResults);
+                        clearInterval(interval);
+                    }
+                    tries--;
+                }, 300);
+            });
+        }
         registerPlugins(plugins) {
             for (const [key, plugin] of Object.entries(plugins)) {
                 this.registry.set(key, new plugin(this));
@@ -344,7 +363,7 @@
             this.parent = el.div({
                 classNames: [prefix$1('container')]
             });
-            const resultList = el.$('.sb-wordlist-items', game);
+            this.resultList = el.$('.sb-wordlist-items', game);
             const events = {};
             events[prefix$1('destroy')] = () => {
                 this.observer.disconnect();
@@ -365,10 +384,9 @@
             this.dragHandle = this.ui;
             this.dragArea = this.game;
             this.dragOffset = 12;
-            data.init(this, resultList);
             this.observer = (() => {
-                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop().addedNodes[0]));
-                observer.observe(resultList, {
+                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop().addedNodes[0].textContent.trim()));
+                observer.observe(this.resultList, {
                     childList: true
                 });
                 return observer;
@@ -389,7 +407,7 @@
         }
     }
 
-    var css = "[data-sba-theme=light]{--sba0:#000;--sba1:#fff;--sba2:rgba(255,255,255,.85);--sba3:#dcdcdc;--sba4:#e6e6e6;--sba5:#dcdcdc;}[data-sba-theme=dark]{--sba0:#e7eae1;--sba1:#111;--sba2:rgba(17,17,17,.85);--sba3:#333;--sba4:#393939;--sba5:#666;}html{--sba6: rgb(248, 205, 5);}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sb-pangram{border-bottom:2px var(--sba6) solid}.sb-wordlist-items .sb-anagram a{color:var(--sba5)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--sba0)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--sba1)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--sba2);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__title{color:var(--sba0)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--sba4)}[data-sba-theme=dark] .sb-message{background:var(--sba4)}[data-sba-theme=dark] .sb-input-invalid{color:var(--sba5)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--sba6);fill:var(--sba6);color:var(--sba1)}[data-sba-theme=dark] .sb-input-bright{color:var(--sba6)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--sba4)}[data-sba-theme=dark] .cell-fill{stroke:var(--sba1)}[data-sba-theme=dark] .cell-letter{fill:var(--sba0)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--sba1)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:var(--sba3) !important}.sba{position:absolute;z-index:3;width:160px;box-sizing:border-box;padding:0 10px 5px;background:var(--sba1);border-width:1px;border-color:var(--sba3);border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive [data-ui=footer]{display:none}.sba.inactive [data-tool=setUp]{position:relative;pointer-events:none}.sba.inactive [data-tool=setUp]:before{content:\"\";width:100%;height:100%;background-color:var(--sba2);cursor:default;display:block;position:absolute;top:0;left:0}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:22px;padding:1px 15px 0 21px;background:var(--sba4);color:var(--sba0);cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}.sba .pane{border:1px solid var(--sba3);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid var(--sba6) !important}.sba td{border:1px solid var(--sba3);border-top:none;white-space:nowrap;text-align:center;padding:4px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;text-overflow:ellipsis;padding:4px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td{font-weight:bold}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px}.sba label input{position:relative;top:2px;margin:0 10px 0 0}@media(min-width: 768px){.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}.sba{left:100%;top:64px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 767.98px){.sba{top:167px}.pz-mobile .sba{top:auto;bottom:-7px}}";
+    var css = "[data-sba-theme=light]{--sba0:#000;--sba1:#fff;--sba2:rgba(255,255,255,.85);--sba3:#dcdcdc;--sba4:#e6e6e6;--sba5:#dcdcdc;}[data-sba-theme=dark]{--sba0:#e7eae1;--sba1:#111;--sba2:rgba(17,17,17,.85);--sba3:#333;--sba4:#393939;--sba5:#666;}html{--sba6: rgb(248, 205, 5);}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sba-pangram{border-bottom:2px var(--sba6) solid}.sb-wordlist-items .sb-anagram a{color:var(--sba5)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--sba0)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--sba1)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--sba2);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__title{color:var(--sba0)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--sba4)}[data-sba-theme=dark] .sb-message{background:var(--sba4)}[data-sba-theme=dark] .sb-input-invalid{color:var(--sba5)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--sba6);fill:var(--sba6);color:var(--sba1)}[data-sba-theme=dark] .sb-input-bright{color:var(--sba6)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--sba4)}[data-sba-theme=dark] .cell-fill{stroke:var(--sba1)}[data-sba-theme=dark] .cell-letter{fill:var(--sba0)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--sba1)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current){border-color:var(--sba3) !important}.sba{position:absolute;z-index:3;width:160px;box-sizing:border-box;padding:0 10px 5px;background:var(--sba1);border-width:1px;border-color:var(--sba3);border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive [data-ui=footer]{display:none}.sba.inactive [data-tool=setUp]{position:relative;pointer-events:none}.sba.inactive [data-tool=setUp]:before{content:\"\";width:100%;height:100%;background-color:var(--sba2);cursor:default;display:block;position:absolute;top:0;left:0}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:22px;padding:1px 15px 0 21px;background:var(--sba4);color:var(--sba0);cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::-webkit-details-marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}.sba .pane{border:1px solid var(--sba3);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-current{font-weight:bold;border-bottom:2px solid var(--sba6) !important}.sba td{border:1px solid var(--sba3);border-top:none;white-space:nowrap;text-align:center;padding:4px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;text-overflow:ellipsis;padding:4px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td{font-weight:bold}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:10px 6px 0;text-align:center}.sba .spill{text-align:center;padding:17px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}@media(min-width: 768px){.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}.sba{left:100%;top:64px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 767.98px){.sba{top:167px}.pz-mobile .sba{top:auto;bottom:-7px}}";
 
     class Plugin extends Widget {
         attach() {
@@ -789,6 +807,34 @@
     	}
     }
 
+    class HighlightPangrams extends Plugin {
+        toggle(state) {
+            super.toggle(state);
+            this.handleDecoration();
+            return this;
+        }
+        handleDecoration() {
+            const pangrams = data.getList('pangrams');
+            el.$$('li', this.app.resultList).forEach(node => {
+                const term = node.textContent;
+                if (pangrams.includes(term)) {
+                    node.classList.toggle('sba-pangram', this.getState());
+                }
+            });
+            return this;
+        }
+        constructor(app) {
+            super(app, 'Highlight Pangrams', {
+                canChangeState: true
+            });
+            app.on(prefix$1('wordsUpdated'), () => {
+                this.handleDecoration();
+            });
+            this.handleDecoration();
+            this.add();
+        }
+    }
+
     class Footer extends Plugin {
         constructor(app) {
             super(app, `${settings$1.get('label')}`, {
@@ -925,10 +971,16 @@
          SpillTheBeans,
          StepsToSuccess,
          Surrender,
+         HighlightPangrams,
          Footer,
          Positioning
     };
 
-    (new App(el.$('#pz-game-root'))).registerPlugins(plugins);
+    const app$1 = new App(el.$('#pz-game-root'));
+    app$1.getResults()
+        .then(foundTerms => {
+            data.init(app$1, foundTerms);
+            app$1.registerPlugins(plugins);
+        });
 
 }());

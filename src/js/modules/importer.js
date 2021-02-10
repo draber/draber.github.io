@@ -7,6 +7,7 @@ import SpillTheBeans from '../plugins/spillTheBeans.js';
 import Spoilers from '../plugins/spoilers.js';
 import StepsToSuccess from '../plugins/stepsToSuccess.js';
 import Surrender from '../plugins/surrender.js';
+import HighlightPangrams from '../plugins/highlightPangrams.js';
 import Footer from '../plugins/footer.js';
 import Positioning from '../plugins/positioning.js';
 
@@ -23,6 +24,7 @@ export default {
      SpillTheBeans,
      StepsToSuccess,
      Surrender,
+     HighlightPangrams,
      Footer,
      Positioning
 }

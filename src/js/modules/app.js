@@ -16,6 +16,42 @@ import {
 class App extends Widget {
 
     /**
+     * Retrieve sync data
+     * @returns {Boolean|Array}
+     */
+    getSyncData() {
+        let sync = localStorage.getItem('sb-today');
+        if (!sync) {
+            return false;
+        }
+        sync = JSON.parse(sync);
+        if (!sync.id || sync.id !== data.getId()) {
+            return false;
+        }
+        return sync.words || [];
+    }
+
+    /**
+     * Retrieve existing results
+     * @returns {Promise<Array>}
+     */
+    async getResults() {
+        const listedResults = Array.from(el.$$('li', this.resultList)).map(entry => entry.textContent.trim());
+        let syncResults;
+        let tries = 5;
+        return await new Promise(resolve => {
+            const interval = setInterval(() => {
+                syncResults = this.getSyncData();
+                if (syncResults || !tries) {
+                    resolve(syncResults || listedResults);
+                    clearInterval(interval);
+                }
+                tries--;
+            }, 300);
+        });
+    }
+
+    /**
      * Register all plugins
      * @param plugins
      * @returns {Widget}
@@ -68,7 +104,7 @@ class App extends Widget {
             classNames: [prefix('container')]
         });
 
-        const resultList = el.$('.sb-wordlist-items', game);
+        this.resultList = el.$('.sb-wordlist-items', game);
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
@@ -107,11 +143,9 @@ class App extends Widget {
          */
         this.dragOffset = 12;
 
-        data.init(this, resultList);
-
         this.observer = (() => {
-            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop().addedNodes[0]));
-            observer.observe(resultList, {
+            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop().addedNodes[0].textContent.trim()));
+            observer.observe(this.resultList, {
                 childList: true
             });
             return observer;
@@ -133,6 +167,7 @@ class App extends Widget {
         this.toggle(this.getState());
         this.parent.append(this.ui);
         game.before(this.parent);
+
     }
 }
 
