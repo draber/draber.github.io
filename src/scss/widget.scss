@@ -107,7 +107,7 @@
         filter: invert(100%)
     }
 
-    *:not(.hive-action__shuffle):not(.sb-pangram):not(.sba-current) {
+    *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-current) {
         border-color: var(--border-color) !important
     }
 

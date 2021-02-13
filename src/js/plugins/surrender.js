@@ -41,6 +41,7 @@ class Surrender extends Plugin {
 		this.app.observer.disconnect();
 		data.getList('remainders').forEach(term => resultList.append(this.buildEntry(term)));
 		this.usedOnce = true;
+		this.app.trigger(prefix('wordsUpdated'));
 		return true;
 	}
 

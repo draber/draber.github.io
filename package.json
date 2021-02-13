@@ -1,6 +1,6 @@
 {
   "name": "spelling-bee-assistant",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^16.0.0",

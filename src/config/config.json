@@ -11,10 +11,6 @@
             "template": "src/templates/extension/manifest.json",
             "output": "src/extension/manifest.json"
         },
-        "update": {
-            "template": "src/templates/extension/update-info.xml",
-            "output": "dist/extension/update-info.xml"
-        },
         "sba": "src/extension/spelling-bee-assistant.js",
         "sba-min": "src/extension/spelling-bee-assistant.min.js",
         "chromeStore": {
@@ -33,8 +29,7 @@
     },
     "js": {
         "input": "src/js/main.js",
-        "plain": "dist/js/spelling-bee-assistant.js",
-        "compressed": "dist/js/spelling-bee-assistant.min.js",
+        "plain": "dist/spelling-bee-assistant.js",
         "format": "iife"
     },
     "scss": {
@@ -59,10 +54,6 @@
     "css": {
         "widget": "src/css/widget.css",
         "site": "assets/css/site.css"
-    },
-    "ga": {
-        "tid": "UA-182372232-1",
-        "ec": "SBA Download"
     },
     "gsc": {
         "drg": "xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU",
