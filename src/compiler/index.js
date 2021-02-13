@@ -27,6 +27,7 @@ const args = minimist(process.argv.slice(2));
  */
 const getExtTemplate = template => {
     const contents = read(settings.get(template));
+    settings.set('sbaFileName', path.basename(settings.get('extension.sba-min')));
     return substituteVars(contents, settings);
 }
 

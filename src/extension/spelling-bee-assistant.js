@@ -65,7 +65,7 @@
     var url = "https://spelling-bee-assistant.app/";
     var repo = "draber/draber.github.io.git";
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
-    var prefix$1 = "sba";
+    var prefix = "sba";
 
     var version = "2.2.1";
 
@@ -74,10 +74,10 @@
         label: label,
         title: title,
         url: url,
-        prefix: prefix$1,
+        prefix: prefix,
         repo: repo,
         targetUrl: targetUrl,
-        options: JSON.parse(localStorage.getItem(prefix$1 + '-settings') || '{}')
+        options: JSON.parse(localStorage.getItem(prefix + '-settings') || '{}')
     };
     const get = key => {
         let current = Object.create(settings);
@@ -104,7 +104,7 @@
             current = current[part];
         }
         current[last] = value;
-        localStorage.setItem(prefix$1 + '-settings', JSON.stringify(settings.options));
+        localStorage.setItem(prefix + '-settings', JSON.stringify(settings.options));
     };
     var settings$1 = {
         get,
@@ -124,7 +124,7 @@
             .map(word => word.toLowerCase())
             .join('-');
     };
-    const prefix$2 = (term, mode = 'c') => {
+    const prefix$1 = (term, mode = 'c') => {
         switch (mode) {
             case 'c':
                 return camel(pf + '_' + term);
@@ -141,7 +141,7 @@
     const completeLists = () => {
         lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.trigger(prefix$2('wordsUpdated'));
+        app.trigger(prefix$1('wordsUpdated'));
     };
     const initLists = foundTerms => {
         lists = {
@@ -181,7 +181,7 @@
     const init = (_app, foundTerms) => {
         app = _app;
         initLists(foundTerms);
-        app.on(prefix$2('newWord'), (evt) => {
+        app.on(prefix$1('newWord'), (evt) => {
             updateLists(evt.detail);
         });
     };
@@ -334,7 +334,7 @@
             for (const [key, plugin] of Object.entries(plugins)) {
                 this.registry.set(key, new plugin(this));
             }
-            this.trigger(prefix$2('pluginsReady'), this.registry);
+            this.trigger(prefix$1('pluginsReady'), this.registry);
             return this.registerTools();
         }
         registerTools() {
@@ -346,26 +346,26 @@
             this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
             this.tool.classList.add('minimizer');
             this.toolButtons.set(this.key, this.tool);
-            return this.trigger(prefix$2('toolsReady'), this.toolButtons);
+            return this.trigger(prefix$1('toolsReady'), this.toolButtons);
         }
         constructor(game) {
             super(settings$1.get('label'), {
                 canChangeState: true,
-                key: prefix$2('app'),
+                key: prefix$1('app'),
             });
             this.game = game;
             const oldInstance = el.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
-                oldInstance.dispatchEvent(new Event(prefix$2('destroy')));
+                oldInstance.dispatchEvent(new Event(prefix$1('destroy')));
             }
             this.registry = new Map();
             this.toolButtons = new Map();
             this.parent = el.div({
-                classNames: [prefix$2('container')]
+                classNames: [prefix$1('container')]
             });
             this.resultList = el.$('.sb-wordlist-items', game);
             const events = {};
-            events[prefix$2('destroy')] = () => {
+            events[prefix$1('destroy')] = () => {
                 this.observer.disconnect();
                 this.parent.remove();
             };
@@ -385,7 +385,7 @@
             this.dragArea = this.game;
             this.dragOffset = 12;
             this.observer = (() => {
-                const observer = new MutationObserver(mutationsList => this.trigger(prefix$2('newWord'), mutationsList.pop().addedNodes[0].textContent.trim()));
+                const observer = new MutationObserver(mutationsList => this.trigger(prefix$1('newWord'), mutationsList.pop().addedNodes[0].textContent.trim()));
                 observer.observe(this.resultList, {
                     childList: true
                 });
@@ -447,7 +447,7 @@
             this.ui = el.style({
                 text: css
             });
-            app.on(prefix$2('destroy'), () => this.ui.remove());
+            app.on(prefix$1('destroy'), () => this.ui.remove());
             this.add();
         }
     }
@@ -455,7 +455,7 @@
     class DarkMode extends Plugin {
         toggle(state) {
             super.toggle(state);
-            document.body.dataset[prefix$2('theme')] = state ? 'dark' : 'light';
+            document.body.dataset[prefix$1('theme')] = state ? 'dark' : 'light';
             return this;
         }
         constructor(app) {
@@ -464,8 +464,8 @@
                 defaultState: false
             });
             this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
-            app.on(prefix$2('destroy'), () => {
-                delete document.body.dataset[prefix$2('theme')];
+            app.on(prefix$1('destroy'), () => {
+                delete document.body.dataset[prefix$1('theme')];
             });
             this.add();
         }
@@ -482,7 +482,7 @@
                 classNames: ['header']
             });
             this.ui.append(app.dragHandle);
-            app.on(prefix$2('toolsReady'), evt => {
+            app.on(prefix$1('toolsReady'), evt => {
                 const toolbar = el.div({
                     classNames: ['toolbar']
                 });
@@ -525,7 +525,7 @@
     			}
     		});
     		this.enableTool('options', 'Show set-up', 'Hide set-up');
-    		app.on(prefix$2('pluginsReady'), evt => {
+    		app.on(prefix$1('pluginsReady'), evt => {
     			evt.detail.forEach((plugin, key) => {
     				if (!plugin.canChangeState || plugin.tool) {
     					return false;
@@ -611,7 +611,7 @@
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
-            app.on(prefix$2('wordsUpdated'), () => {
+            app.on(prefix$1('wordsUpdated'), () => {
                 tbl.refresh(this.getData(), pane);
             });
             this.add();
@@ -705,7 +705,7 @@
     		this.ui.append(el.summary({
     			text: this.title
     		}), pane);
-    		app.on(prefix$2('wordsUpdated'), () => {
+    		app.on(prefix$1('wordsUpdated'), () => {
     			tbl.refresh(this.getData(), pane);
     		});
     		this.add();
@@ -750,7 +750,7 @@
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
-            app.on(prefix$2('wordsUpdated'), () => {
+            app.on(prefix$1('wordsUpdated'), () => {
                 this.markCurrentTier(pane);
             });
             this.add();
@@ -760,7 +760,7 @@
     class Surrender extends Plugin {
     	buildEntry(term) {
     		const entry = el.li({
-    			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', 'sb-pangram'] : ['sb-anagram']
+    			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', 'sba-pangram'] : ['sb-anagram']
     		});
     		entry.append(el.a({
     			text: term,
@@ -778,7 +778,7 @@
     		this.app.observer.disconnect();
     		data.getList('remainders').forEach(term => resultList.append(this.buildEntry(term)));
     		this.usedOnce = true;
-    		this.app.trigger(prefix('wordsUpdated'));
+    		this.app.trigger(prefix$1('wordsUpdated'));
     		return true;
     	}
     	constructor(app) {
@@ -828,7 +828,7 @@
             super(app, 'Highlight Pangrams', {
                 canChangeState: true
             });
-            app.on(prefix$2('wordsUpdated'), () => {
+            app.on(prefix$1('wordsUpdated'), () => {
                 this.handleDecoration();
             });
             this.handleDecoration();
