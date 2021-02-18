@@ -27,7 +27,7 @@ const args = minimist(process.argv.slice(2));
  */
 const getExtTemplate = template => {
     const contents = read(settings.get(template));
-    settings.set('sbaFileName', path.basename(settings.get('js.compressed')));
+    settings.set('sbaFileName', path.basename(settings.get('extension.sba-min')));
     return substituteVars(contents, settings);
 }
 
@@ -105,7 +105,6 @@ const getFileKeys = type => {
         ],
         extension: [
             'extension.manifest.template',
-            'extension.update.template',
             'js.plain'
         ],
         bookmarklet: [
@@ -153,12 +152,6 @@ const buildPartial = async (fileKey) => {
             tasks = [{
                 contents: await getExtTemplate('extension.manifest.template'),
                 savePath: settings.get('extension.manifest.output')
-            }];
-            break;
-        case 'extension.update.template':
-            tasks = [{
-                contents: await getExtTemplate('extension.update.template'),
-                savePath: settings.get('extension.update.output')
             }];
             break;
         case 'html.template':

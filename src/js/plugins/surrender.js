@@ -1,6 +1,9 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
 import Plugin from '../modules/plugin.js';
+import {
+    prefix
+} from '../modules/string.js';
 
 /**
  * Surrender plugin
@@ -17,7 +20,7 @@ class Surrender extends Plugin {
 	 */
 	buildEntry(term) {
 		const entry = el.li({
-			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', 'sb-pangram'] : ['sb-anagram']
+			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', 'sba-pangram'] : ['sb-anagram']
 		});
 		entry.append(el.a({
 			text: term,
@@ -41,6 +44,7 @@ class Surrender extends Plugin {
 		this.app.observer.disconnect();
 		data.getList('remainders').forEach(term => resultList.append(this.buildEntry(term)));
 		this.usedOnce = true;
+		this.app.trigger(prefix('wordsUpdated'));
 		return true;
 	}
 
