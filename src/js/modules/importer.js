@@ -5,6 +5,7 @@ import SetUp from '../plugins/setUp.js';
 import ScoreSoFar from '../plugins/scoreSoFar.js';
 import SpillTheBeans from '../plugins/spillTheBeans.js';
 import Spoilers from '../plugins/spoilers.js';
+import StartsWith from '../plugins/startsWith.js';
 import StepsToSuccess from '../plugins/stepsToSuccess.js';
 import Surrender from '../plugins/surrender.js';
 import HighlightPangrams from '../plugins/highlightPangrams.js';
@@ -21,6 +22,7 @@ export default {
      SetUp,
      ScoreSoFar,
      Spoilers,
+     StartsWith,
      SpillTheBeans,
      StepsToSuccess,
      Surrender,

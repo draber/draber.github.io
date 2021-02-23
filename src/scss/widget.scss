@@ -213,6 +213,35 @@ $pluginWidth: 138;
         }
     }
 
+
+    progress {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        border-radius: 0;
+        margin: 0;
+        height: 9px;
+        padding: 0;
+        border: 1px var(--border-color) solid;
+        border-top: none;
+        background: transparent;
+        display: block;
+
+        &::-webkit-progress-bar {
+            background-color: transparent;
+        }
+
+        &::-webkit-progress-value {
+            background-color: var(--highlight-color);
+            height: 7px;
+        }
+
+        &::-moz-progress-bar {
+            background-color: var(--highlight-color);
+        }
+    }
+
+
     details {
         font-size: 90%;
         max-height: 800px; // intentionally unrealistically high (transition)
@@ -305,12 +334,26 @@ $pluginWidth: 138;
     }
 
     [data-ui="scoreSoFar"],
-    [data-ui="spoilers"] {
+    [data-ui="spoilers"],
+    [data-ui="startingWith…"] {
         tbody {
             tr {
                 &:first-child {
                     td {
                         font-weight: bold
+                    }
+                }
+            }
+        }
+    }
+
+    [data-ui="startingWith…"] {
+        tbody {
+            tr {
+                td {
+                    &:first-child {
+                        text-align: center;
+                        text-transform: uppercase;
                     }
                 }
             }

@@ -4,6 +4,7 @@ import el from './element.js';
  * Populate a table with data
  * @param {Array} data in the format [[ "1st row, 1st cell", ... ], [ "2nd row, 1st cell", ... ], ...]
  * @param {HTMLElement} table
+ * @returns {HTMLElement} table
  */
 const refresh = (data, table) => { 
     table.innerHTML = '';
@@ -18,6 +19,7 @@ const refresh = (data, table) => {
         tbody.append(tr);
     });
     table.append(tbody);
+    return table;
 }
 
 /**

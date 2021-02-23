@@ -96,8 +96,8 @@ const el = new Proxy(fn, {
      */
     get(target, prop) {
         return function () {
-            const args = Array.prototype.slice.call(arguments);
-            if (target.hasOwnProperty(prop) && typeof target[prop] === 'function') {
+            const args = Array.prototype.slice.call(arguments);             
+            if (Object.prototype.hasOwnProperty.call(target, prop) && typeof target[prop] === 'function') {
                 target[prop].bind(target);
                 return target[prop].apply(null, args);
             }
