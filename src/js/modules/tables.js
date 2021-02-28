@@ -1,17 +1,26 @@
 import el from './element.js';
+import {
+    prefix
+} from '../modules/string.js';
 
 /**
- * Populate a table with data
+ * Table built or refresh and populate it with data
  * @param {Array} data in the format [[ "1st row, 1st cell", ... ], [ "2nd row, 1st cell", ... ], ...]
  * @param {HTMLElement} table
+ * @param {String} highlighter keyword in a cell that highlights the row
  * @returns {HTMLElement} table
  */
-const refresh = (data, table) => { 
+const get = (data, table = null, highlighter = '') => {
+    table = table || el.table({
+        classNames: ['pane']
+    });
     table.innerHTML = '';
     const tbody = el.tbody();
-    data.forEach((rowData) => {
-        const tr = el.tr();
-        rowData.forEach((cellData) => {
+    data.forEach(rowData => {
+        const tr = el.tr({
+            classNames: highlighter && rowData.includes(highlighter) ? [prefix('highlight', 'd')] : []
+        });
+        rowData.forEach(cellData => {
             tr.append(el.td({
                 text: cellData
             }))
@@ -22,20 +31,6 @@ const refresh = (data, table) => {
     return table;
 }
 
-/**
- * Initial table built
- * @param {Array} data 
- * @returns {HTMLElement} table
- */
-const build = data => {    
-    const table = el.table({
-        classNames: ['pane']
-    });     
-    refresh(data, table);
-    return table;
-}
-
 export default {
-    build,
-    refresh
+    get
 };

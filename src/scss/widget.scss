@@ -107,7 +107,7 @@
         filter: invert(100%)
     }
 
-    *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-current) {
+    *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-highlight) {
         border-color: var(--border-color) !important
     }
 
@@ -219,8 +219,8 @@ $pluginWidth: 138;
         appearance: none;
         width: 100%;
         border-radius: 0;
-        margin: 0;
-        height: 9px;
+        margin: 0 0 2px 0;
+        height: 8px;
         padding: 0;
         border: 1px var(--border-color) solid;
         border-top: none;
@@ -310,7 +310,7 @@ $pluginWidth: 138;
     }
 
     tr {
-        &.sba-current {
+        &.sba-highlight {
             font-weight: bold;
             border-bottom: 2px solid var(--highlight-color) !important;
         }
@@ -330,6 +330,12 @@ $pluginWidth: 138;
             overflow: hidden;
             text-overflow: ellipsis;
             padding: 4px 3px;
+        }
+    }
+
+    [data-ui="scoreSoFar"] {
+        table {
+            margin-bottom: 0
         }
     }
 

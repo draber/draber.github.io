@@ -14,18 +14,6 @@ import tbl from '../modules/tables.js';
  */
 class StartsWith extends Plugin {
 
-   /**
-     * Populate/update pane
-     * @param {HTMLElement} pane
-     */
-    markCenterLetter(pane) {
-        el.$$('td', pane).forEach(cell => {
-			if(cell.textContent.trim() === this.centerLetter){
-				cell.parentElement.classList.add('sba-current');
-			}
-        })
-    }
-
 	/**
 	 * Get the data for the table cells
 	 * @returns {Array}
@@ -80,11 +68,8 @@ class StartsWith extends Plugin {
 
 		this.ui = el.details();
 		
-		this.centerLetter = data.getCenterLetter();
-
 		// add and populate content pane        
-		const pane = tbl.build(this.getData());
-		this.markCenterLetter(pane);
+		const pane = tbl.get(this.getData(), null, data.getCenterLetter());
 
 		this.ui.append(el.summary({
 			text: this.title
@@ -92,8 +77,7 @@ class StartsWith extends Plugin {
 
 		// update on demand
 		app.on(prefix('wordsUpdated'), () => {
-			tbl.refresh(this.getData(), pane);
-			this.markCenterLetter(tbl.refresh(this.getData(), pane));
+			tbl.get(this.getData(), pane, data.getCenterLetter());
 		});
 
 		this.add();

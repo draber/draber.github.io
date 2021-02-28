@@ -33,7 +33,7 @@ class HighlightPangrams extends Plugin {
         el.$$('li', this.app.resultList).forEach(node => {
             const term = node.textContent;
             if (pangrams.includes(term)) {
-                node.classList.toggle('sba-pangram', this.getState());
+                node.classList.toggle(prefix('pangram', 'd'), this.getState());
             }
         });
         return this;

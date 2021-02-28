@@ -40,16 +40,10 @@ class StepsToSuccess extends Plugin {
      * Populate/update pane
      * @param {HTMLElement} pane
      */
-    markCurrentTier(pane) {
-        const ownPoints = data.getPoints('foundTerms');
-        const currentTier = this.getData().filter(entry => entry[1] <= ownPoints).pop()[1];
-        el.$$('td', pane).forEach(cell => {
-            cell.parentNode.classList.remove('sba-current');
-            if (parseInt(cell.textContent) === currentTier) {
-                cell.parentNode.classList.add('sba-current');
-            }
-        })
+    getCurrentTier() {
+        return this.getData().filter(entry => entry[1] <= data.getPoints('foundTerms')).pop()[1];
     }
+
     constructor(app) {
 
         super(app, 'Steps to success', {
@@ -59,8 +53,7 @@ class StepsToSuccess extends Plugin {
         this.ui = el.details();
 
         // add and populate content pane        
-        const pane = tbl.build(this.getData());
-        this.markCurrentTier(pane);
+        const pane = tbl.get(this.getData(), null, this.getCurrentTier());
 
         this.ui.append(el.summary({
             text: this.title
@@ -68,7 +61,7 @@ class StepsToSuccess extends Plugin {
 
         // update on demand
         app.on(prefix('wordsUpdated'), () => {
-            this.markCurrentTier(pane);
+            tbl.get(this.getData(), pane, this.getCurrentTier());
         });
 
         this.add();

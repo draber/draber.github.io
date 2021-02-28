@@ -55,7 +55,7 @@ class Spoilers extends Plugin {
 			]);
 		});
 		return cellData;
-	};
+	}
 
 	constructor(app) {
 
@@ -66,7 +66,7 @@ class Spoilers extends Plugin {
 		this.ui = el.details();
 
 		// add and populate content pane        
-		const pane = tbl.build(this.getData());
+		const pane = tbl.get(this.getData());
 
 		this.ui.append(el.summary({
 			text: this.title
@@ -74,7 +74,7 @@ class Spoilers extends Plugin {
 
 		// update on demand
 		app.on(prefix('wordsUpdated'), () => {
-			tbl.refresh(this.getData(), pane);
+			tbl.get(this.getData(), pane);
 		});
 
 		this.add();

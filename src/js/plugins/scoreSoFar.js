@@ -63,7 +63,7 @@ class ScoreSoFar extends Plugin {
         });
 
         // add and populate content pane        
-        const pane = tbl.build(this.getData());
+        const pane = tbl.get(this.getData());
 
         this.progressBar = el.progress({
             attributes: {
@@ -74,11 +74,11 @@ class ScoreSoFar extends Plugin {
 
         this.ui.append(el.summary({
             text: this.title
-        }), this.progressBar, pane);
+        }), pane, this.progressBar);
 
         // update on demand
         app.on(prefix('wordsUpdated'), () => {
-            tbl.refresh(this.getData(), pane);
+            tbl.get(this.getData(), pane);
             this.refreshProgressBar();
         })
 
