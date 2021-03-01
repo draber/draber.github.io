@@ -15,16 +15,6 @@ import tbl from '../modules/tables.js';
 class ScoreSoFar extends Plugin {
 
     /**
-     * Get current progress in % and refresh the bar
-     */
-    refreshProgressBar() {
-        const progress = Math.round(data.getPoints('foundTerms') * 100 / data.getPoints('answers'));
-        this.progressBar.value = progress;
-        this.progressBar.textContent = progress + '%';
-        this.progressBar.title = progress + '%';
-    }
-
-    /**
      * Build table data set
      * @returns {(string[]|(string|number)[])[]}
      */
@@ -65,21 +55,13 @@ class ScoreSoFar extends Plugin {
         // add and populate content pane        
         const pane = tbl.get(this.getData());
 
-        this.progressBar = el.progress({
-            attributes: {
-                max: 100
-            }
-        })
-        this.refreshProgressBar();
-
         this.ui.append(el.summary({
             text: this.title
-        }), pane, this.progressBar);
+        }), pane);
 
         // update on demand
         app.on(prefix('wordsUpdated'), () => {
             tbl.get(this.getData(), pane);
-            this.refreshProgressBar();
         })
 
         this.add();

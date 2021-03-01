@@ -186,6 +186,7 @@ $pluginWidth: 138;
     &.inactive {
 
         details,
+        progress,
         [data-ui="footer"] {
             display: none;
         }
@@ -220,12 +221,14 @@ $pluginWidth: 138;
         width: 100%;
         border-radius: 0;
         margin: 0 0 2px 0;
-        height: 8px;
+        height: 6px;
         padding: 0;
         border: 1px var(--border-color) solid;
-        border-top: none;
         background: transparent;
         display: block;
+        &.inactive {
+            display: none;
+        }
 
         &::-webkit-progress-bar {
             background-color: transparent;
@@ -233,7 +236,7 @@ $pluginWidth: 138;
 
         &::-webkit-progress-value {
             background-color: var(--highlight-color);
-            height: 7px;
+            height: 5px;
         }
 
         &::-moz-progress-bar {
@@ -269,7 +272,7 @@ $pluginWidth: 138;
 
     summary {
         font-size: 13px;
-        line-height: 22px;
+        line-height: 20px;
         padding: 1px 15px 0 21px;
         background: var(--area-bg-color);
         color: var(--text-color);
@@ -321,7 +324,7 @@ $pluginWidth: 138;
         border-top: none;
         white-space: nowrap;
         text-align: center;
-        padding: 4px 0;
+        padding: 3px 0;
         width: 26px;
 
         &:first-of-type {
@@ -329,13 +332,7 @@ $pluginWidth: 138;
             width: auto;
             overflow: hidden;
             text-overflow: ellipsis;
-            padding: 4px 3px;
-        }
-    }
-
-    [data-ui="scoreSoFar"] {
-        table {
-            margin-bottom: 0
+            padding: 3px 3px;
         }
     }
 
@@ -346,7 +343,8 @@ $pluginWidth: 138;
             tr {
                 &:first-child {
                     td {
-                        font-weight: bold
+                        font-weight: bold;
+                        font-size: 92%;
                     }
                 }
             }
@@ -381,13 +379,13 @@ $pluginWidth: 138;
     }
 
     .spill-title {
-        padding: 10px 6px 0;
+        padding: 8px 6px 0;
         text-align: center;
     }
 
     .spill {
         text-align: center;
-        padding: 17px 0;
+        padding: 14px 0;
         font-size: 280%;
     }
 

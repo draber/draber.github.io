@@ -63,7 +63,7 @@ class SetUp extends Plugin {
 					attributes: {
 						type: 'checkbox',
 						name: key,
-						checked: !!plugin.getState()
+						checked: plugin.getState()
 					}
 				});
 				label.prepend(check)

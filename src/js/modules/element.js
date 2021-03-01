@@ -41,13 +41,18 @@ const create = function ({
     const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
     el.textContent = text;
     for (let [key, value] of Object.entries(attributes)) {
-        value = value.toString();
-        if (svg) {
-            el.setAttributeNS(null, key, value);
-        } else {
-            el[key] = value;
+        if(isBoolean(key)) {
+            if(value === false){
+                continue;
+            }
+            value = key;
         }
-    }    
+        if (svg) {
+            el.setAttributeNS(null, key, value.toString());
+        } else {
+            el[key] = value.toString();
+        }
+    }
     for (let [key, value] of Object.entries(data)) {
         value = value.toString();
         el.dataset[key] = value;
@@ -61,6 +66,15 @@ const create = function ({
     }
     return el;
 };
+
+/**
+ * Determines if an attribute is boolean
+ * @param {String} attr 
+ * @returns {Boolean}
+ */
+const isBoolean = attr => {
+    return ['allowfullscreen', 'allowpaymentrequest', 'async', 'autofocus', 'autoplay', 'checked', 'controls', 'default', 'disabled', 'formnovalidate', 'hidden', 'ismap', 'itemscope', 'loop', 'multiple', 'muted', 'nomodule', 'novalidate', 'open', 'playsinline', 'readonly', 'required', 'reversed', 'selected', 'truespeed'].includes(attr);
+}
 
 // noinspection SpellCheckingInspection
 /**
@@ -96,7 +110,7 @@ const el = new Proxy(fn, {
      */
     get(target, prop) {
         return function () {
-            const args = Array.prototype.slice.call(arguments);             
+            const args = Array.prototype.slice.call(arguments);
             if (Object.prototype.hasOwnProperty.call(target, prop) && typeof target[prop] === 'function') {
                 target[prop].bind(target);
                 return target[prop].apply(null, args);
