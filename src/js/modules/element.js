@@ -41,15 +41,9 @@ const create = function ({
     const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
     el.textContent = text;
     for (let [key, value] of Object.entries(attributes)) {
-        if(isBoolean(key)) {
-            if(value === false){
-                continue;
-            }
-            value = key;
-        }
         if (svg) {
             el.setAttributeNS(null, key, value.toString());
-        } else {
+        } else if(value !== false) {
             el[key] = value.toString();
         }
     }
@@ -66,15 +60,6 @@ const create = function ({
     }
     return el;
 };
-
-/**
- * Determines if an attribute is boolean
- * @param {String} attr 
- * @returns {Boolean}
- */
-const isBoolean = attr => {
-    return ['allowfullscreen', 'allowpaymentrequest', 'async', 'autofocus', 'autoplay', 'checked', 'controls', 'default', 'disabled', 'formnovalidate', 'hidden', 'ismap', 'itemscope', 'loop', 'multiple', 'muted', 'nomodule', 'novalidate', 'open', 'playsinline', 'readonly', 'required', 'reversed', 'selected', 'truespeed'].includes(attr);
-}
 
 // noinspection SpellCheckingInspection
 /**
