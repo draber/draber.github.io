@@ -66,7 +66,7 @@ class Spoilers extends Plugin {
 		this.ui = el.details();
 
 		// add and populate content pane        
-		const pane = tbl.get(this.getData());
+		const pane = tbl.get(this.getData(), null, true);
 
 		this.ui.append(el.summary({
 			text: this.title
@@ -74,7 +74,7 @@ class Spoilers extends Plugin {
 
 		// update on demand
 		app.on(prefix('wordsUpdated'), () => {
-			tbl.get(this.getData(), pane);
+			tbl.get(this.getData(), pane, true);
 		});
 
 		this.add();

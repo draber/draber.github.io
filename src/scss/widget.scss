@@ -283,7 +283,7 @@ $pluginWidth: 138;
         overflow: hidden;
         text-overflow: ellipsis;
 
-        &::-webkit-details-marker {
+        &::marker {
             display: none
         }
 
@@ -316,6 +316,9 @@ $pluginWidth: 138;
         &.sba-highlight {
             font-weight: bold;
             border-bottom: 2px solid var(--highlight-color) !important;
+        }
+        &.sba-complete {
+            opacity: .5;
         }
     }
 

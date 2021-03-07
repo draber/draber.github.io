@@ -18,7 +18,7 @@ class ProgressBar extends Plugin {
      */
     refresh() {
         let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
-        progress = Math.min(Number(Math.round(progress+'e2')+'e-2'), 100);
+        progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
         this.ui.value = progress;
         this.ui.textContent = progress + '%';
         this.ui.title = `Progress: ${progress}%`;

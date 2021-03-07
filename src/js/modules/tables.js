@@ -7,18 +7,32 @@ import {
  * Table built or refresh and populate it with data
  * @param {Array} data in the format [[ "1st row, 1st cell", ... ], [ "2nd row, 1st cell", ... ], ...]
  * @param {HTMLElement} table
- * @param {String} highlighter keyword in a cell that highlights the row
+ * @param {Boolean} markCompleted should completed rows (i.e. the second value === 0)
+ * @param {String} highlightMarker keyword in a cell that highlights the row
  * @returns {HTMLElement} table
  */
-const get = (data, table = null, highlighter = '') => {
+const get = (data, table = null, markCompleted = true, highlightMarker = '') => {
     table = table || el.table({
         classNames: ['pane']
     });
     table.innerHTML = '';
     const tbody = el.tbody();
-    data.forEach(rowData => {
+    let completable = false;
+    let position;
+    data.forEach((rowData, i) => {
+        if(i === 0 && rowData.includes('?')){
+            completable = true;
+            position = rowData.indexOf('?')
+        }
+        const classNames = [];
+        if(markCompleted && i > 0 && completable && rowData.indexOf(0) === position){
+            classNames.push(prefix('complete', 'd'));
+        }
+        if(highlightMarker && rowData.includes(highlightMarker)) {
+            classNames.push(prefix('highlight', 'd'));
+        }
         const tr = el.tr({
-            classNames: highlighter && rowData.includes(highlighter) ? [prefix('highlight', 'd')] : []
+            classNames: classNames
         });
         rowData.forEach(cellData => {
             tr.append(el.td({
