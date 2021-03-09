@@ -6,7 +6,7 @@ import Plugin from '../modules/plugin.js';
 import data from '../modules/data.js';
 
 /**
- * Dark Mode plugin
+ * Highlight Pangrams plugin
  *
  * @param {App} app
  * @returns {Plugin} HighlightPangrams
@@ -41,7 +41,7 @@ class HighlightPangrams extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Highlight Pangrams', {
+        super(app, 'Highlight pangrams', {
             canChangeState: true
         });
 

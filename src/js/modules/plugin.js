@@ -58,7 +58,7 @@ class Plugin extends Widget {
          * App container object, not the app UI!
          * @type {App}
          */
-        this.app= app;
+        this.app = app;
     }
 }
 

@@ -66,7 +66,7 @@
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix = "sba";
 
-    var version = "2.3.0";
+    var version = "3.0.0";
 
     const settings = {
         version: version,
@@ -410,7 +410,7 @@
         }
     }
 
-    var css = "[data-sba-theme=light]{--sba0:#000;--sba1:#fff;--sba2:rgba(255,255,255,.85);--sba3:#dcdcdc;--sba4:#e6e6e6;--sba5:#dcdcdc;}[data-sba-theme=dark]{--sba0:#e7eae1;--sba1:#111;--sba2:rgba(17,17,17,.85);--sba3:#333;--sba4:#393939;--sba5:#666;}html{--sba6: rgb(248, 205, 5);}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sba-pangram{border-bottom:2px var(--sba6) solid}.sb-wordlist-items .sb-anagram a{color:var(--sba5)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--sba0)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--sba1)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--sba2);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__title{color:var(--sba0)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--sba4)}[data-sba-theme=dark] .sb-message{background:var(--sba4)}[data-sba-theme=dark] .sb-input-invalid{color:var(--sba5)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--sba6);fill:var(--sba6);color:var(--sba1)}[data-sba-theme=dark] .sb-input-bright{color:var(--sba6)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--sba4)}[data-sba-theme=dark] .cell-fill{stroke:var(--sba1)}[data-sba-theme=dark] .cell-letter{fill:var(--sba0)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--sba1)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-highlight){border-color:var(--sba3) !important}.sba{position:absolute;z-index:3;width:160px;box-sizing:border-box;padding:0 10px 5px;background:var(--sba1);border-width:1px;border-color:var(--sba3);border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive progress,.sba.inactive [data-ui=footer]{display:none}.sba.inactive [data-tool=setUp]{position:relative;pointer-events:none}.sba.inactive [data-tool=setUp]:before{content:\"\";width:100%;height:100%;background-color:var(--sba2);cursor:default;display:block;position:absolute;top:0;left:0}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--sba3) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--sba6);height:4px}.sba progress::-moz-progress-bar{background-color:var(--sba6)}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:20px;padding:1px 15px 0 21px;background:var(--sba4);color:var(--sba0);cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}.sba .pane{border:1px solid var(--sba3);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-highlight{font-weight:bold;border-bottom:2px solid var(--sba6) !important}.sba tr.sba-complete{opacity:.5}.sba td{border:1px solid var(--sba3);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}@media(min-width: 768px){.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}.sba{left:100%;top:64px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 767.98px){.sba{top:167px}.pz-mobile .sba{top:auto;bottom:-7px}}";
+    var css = "[data-sba-theme=light]{--sba0:#000;--sba1:#fff;--sba2:rgba(255,255,255,.85);--sba3:#dcdcdc;--sba4:#e6e6e6;--sba5:#dcdcdc;}[data-sba-theme=dark]{--sba0:#e7eae1;--sba1:#111;--sba2:rgba(17,17,17,.85);--sba3:#333;--sba4:#393939;--sba5:#666;}html{--sba6: rgb(248, 205, 5);}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items .sba-pangram{border-bottom:2px var(--sba6) solid}.sb-wordlist-items .sb-anagram a{color:var(--sba5)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--sba0)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--sba1)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--sba2);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__title{color:var(--sba0)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--sba4)}[data-sba-theme=dark] .sb-message{background:var(--sba4)}[data-sba-theme=dark] .sb-input-invalid{color:var(--sba5)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--sba6);fill:var(--sba6);color:var(--sba1)}[data-sba-theme=dark] .sb-input-bright{color:var(--sba6)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--sba4)}[data-sba-theme=dark] .cell-fill{stroke:var(--sba1)}[data-sba-theme=dark] .cell-letter{fill:var(--sba0)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--sba1)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--sba3) !important}.sba{position:absolute;z-index:3;width:160px;box-sizing:border-box;padding:0 10px 5px;background:var(--sba1);border-width:1px;border-color:var(--sba3);border-radius:6px;border-style:solid}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] .toolbar div:last-of-type{padding-top:8px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2}.sba .minimizer{transform:rotate(180deg);transform-origin:center;position:relative;top:2px}.sba.inactive details,.sba.inactive progress,.sba.inactive [data-ui=footer]{display:none}.sba.inactive [data-tool=setUp]{position:relative;pointer-events:none}.sba.inactive [data-tool=setUp]:before{content:\"\";width:100%;height:100%;background-color:var(--sba2);cursor:default;display:block;position:absolute;top:0;left:0}.sba.inactive .minimizer{transform:rotate(0deg);top:0}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--sba3) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--sba6);height:4px}.sba progress::-moz-progress-bar{background-color:var(--sba6)}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:20px;padding:1px 15px 0 21px;background:var(--sba4);color:var(--sba0);cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}.sba .pane{border:1px solid var(--sba3);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--sba6) !important}.sba tr.sba-completed{opacity:.65}.sba td{border:1px solid var(--sba3);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}@media(min-width: 768px){.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}.sba{left:100%;top:64px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 767.98px){.sba{top:167px}.pz-mobile .sba{top:auto;bottom:-7px}}";
 
     class Plugin extends Widget {
         attach() {
@@ -439,7 +439,7 @@
                 defaultState
             });
             this.target;
-            this.app= app;
+            this.app = app;
         }
     }
 
@@ -582,29 +582,11 @@
         }
     }
 
-    const get$1 = (data, table = null, markCompleted = true, highlightMarker = '') => {
-        table = table || el.table({
-            classNames: ['pane']
-        });
+    const get$1 = (data, table) => {
         table.innerHTML = '';
         const tbody = el.tbody();
-        let completable = false;
-        let position;
-        data.forEach((rowData, i) => {
-            if(i === 0 && rowData.includes('?')){
-                completable = true;
-                position = rowData.indexOf('?');
-            }
-            const classNames = [];
-            if(markCompleted && i > 0 && completable && rowData.indexOf(0) === position){
-                classNames.push(prefix$1('complete', 'd'));
-            }
-            if(highlightMarker && rowData.includes(highlightMarker)) {
-                classNames.push(prefix$1('highlight', 'd'));
-            }
-            const tr = el.tr({
-                classNames: classNames
-            });
+        data.forEach(rowData => {
+            const tr = el.tr();
             rowData.forEach(cellData => {
                 tr.append(el.td({
                     text: cellData
@@ -646,12 +628,14 @@
                     open: true
                 }
             });
-            const pane = tbl.get(this.getData(), null, true);
+    		const pane = el.table({
+                classNames: ['pane']
+            });
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
             app.on(prefix$1('wordsUpdated'), () => {
-                tbl.get(this.getData(), pane, true);
+                tbl.get(this.getData(), pane);
             });
             this.add();
         }
@@ -702,13 +686,7 @@
     		const pangramCount = data.getCount('pangrams');
     		const foundPangramCount = data.getCount('foundPangrams');
     		const cellData = [
-    			['', '✓', '?', '∑'],
-    			[
-    				'Pangrams',
-    				foundPangramCount,
-    				pangramCount - foundPangramCount,
-    				pangramCount
-    			]
+    			['', '✓', '?', '∑']
     		];
     		data.getList('answers').forEach(term => {
     			counts[term.length] = counts[term.length] || {
@@ -733,6 +711,12 @@
     				counts[count].total
     			]);
     		});
+    		cellData.push([
+    			'Pangrams',
+    			foundPangramCount,
+    			pangramCount - foundPangramCount,
+    			pangramCount
+    		]);
     		return cellData;
     	}
     	constructor(app) {
@@ -740,25 +724,34 @@
     			canChangeState: true
     		});
     		this.ui = el.details();
-    		const pane = tbl.get(this.getData(), null, true);
+    		this.cssMarkers = {
+    			completed: (rowData, i) => i > 0 && rowData[2] === 0,
+    			preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
+    		};
+    		const pane = el.table({
+    			classNames: ['pane']
+    		});
     		this.ui.append(el.summary({
     			text: this.title
     		}), pane);
     		app.on(prefix$1('wordsUpdated'), () => {
-    			tbl.get(this.getData(), pane, true);
+    			tbl.get(this.getData(), pane);
+    			app.trigger(prefix$1('paneUpdated'), {
+    				plugin: this
+    			});
     		});
     		this.add();
     	}
     }
 
-    class StartsWith extends Plugin {
+    class StartingWith extends Plugin {
     	getData() {
     		const letters = {};
     		const answers = data.getList('answers').sort((a, b) => {
-    			if(a.startsWith(this.centerLetter)) {
+    			if (a.startsWith(this.centerLetter)) {
     				return -1;
     			}
-    			if(b.startsWith(this.centerLetter)) {
+    			if (b.startsWith(this.centerLetter)) {
     				return 1;
     			}
     			return a < b ? -1 : 1;
@@ -771,18 +764,21 @@
     		};
     		answers.forEach(term => {
     			const letter = term.charAt(0);
-    			if(typeof letters[letter] === 'undefined'){
-    				letters[letter] = { ...tpl };
+    			if (typeof letters[letter] === 'undefined') {
+    				letters[letter] = {
+    					...tpl
+    				};
     			}
-    			if(remainders.includes(term)){
+    			if (remainders.includes(term)) {
     				letters[letter].remainders++;
-    			}
-    			else {
+    			} else {
     				letters[letter].foundTerms++;
     			}
     			letters[letter].total++;
     		});
-    		const cellData = [['', '✓', '?', '∑']];
+    		const cellData = [
+    			['', '✓', '?', '∑']
+    		];
     		for (let [letter, values] of Object.entries(letters)) {
     			values = Object.values(values);
     			values.unshift(letter);
@@ -795,12 +791,21 @@
     			canChangeState: true
     		});
     		this.ui = el.details();
-    		const pane = tbl.get(this.getData(), null, true, data.getCenterLetter());
+    		this.cssMarkers = {
+    			completed: (rowData, i) => i > 0 && rowData[2] === 0,
+    			preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
+    		};
+    		const pane = el.table({
+                classNames: ['pane']
+            });
     		this.ui.append(el.summary({
     			text: this.title
     		}), pane);
     		app.on(prefix$1('wordsUpdated'), () => {
-    			tbl.get(this.getData(), pane, true, data.getCenterLetter());
+    			tbl.get(this.getData(), pane);
+    			app.trigger(prefix$1('paneUpdated'), {
+    				plugin: this
+    			});
     		});
     		this.add();
     	}
@@ -832,12 +837,21 @@
                 canChangeState: true
             });
             this.ui = el.details();
-            const pane = tbl.get(this.getData(), null, this.getCurrentTier());
+            this.cssMarkers = {
+                completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
+                preeminent: rowData => rowData[1] === this.getCurrentTier()
+            };
+    		const pane = el.table({
+                classNames: ['pane']
+            });
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
             app.on(prefix$1('wordsUpdated'), () => {
-                tbl.get(this.getData(), pane, this.getCurrentTier());
+    			tbl.get(this.getData(), pane);
+    			app.trigger(prefix$1('paneUpdated'), {
+    				plugin: this
+    			});
             });
             this.add();
         }
@@ -911,13 +925,76 @@
             return this;
         }
         constructor(app) {
-            super(app, 'Highlight Pangrams', {
+            super(app, 'Highlight pangrams', {
                 canChangeState: true
             });
             app.on(prefix$1('wordsUpdated'), () => {
                 this.handleDecoration();
             });
             this.handleDecoration();
+            this.add();
+        }
+    }
+
+    class TrBaseMarker extends Plugin {
+        toggleDecoration(plugin) {
+            el.$$('tr', plugin.ui).forEach((tr, i) => {
+                const rowData = Array.from(el.$$('td', tr)).map(td => /^\d+$/.test(td.textContent) ? parseInt(td.textContent) : td.textContent);
+                console.log(plugin.key, rowData, plugin.cssMarkers[this.marker](rowData, i));
+                if (plugin.cssMarkers[this.marker](rowData, i)) {
+                    tr.classList.toggle(prefix$1(this.marker, 'd'), this.getState());
+                }
+            });
+            return this;
+        }
+        toggle(state) {
+            super.toggle(state);
+            this.plugins.forEach(plugin => {
+                this.toggleDecoration(plugin);
+            });
+            return this;
+        }
+        constructor(app, title, {
+            canChangeState,
+            marker
+        } = {}) {
+            super(app, title, {
+                canChangeState
+            });
+            this.plugins = new Set();
+            this.marker = marker;
+            app.on(prefix$1('paneUpdated'), evt => {
+                if (!evt.detail ||
+                    !evt.detail.plugin ||
+                    !evt.detail.plugin.cssMarkers ||
+                    !evt.detail.plugin.cssMarkers[this.marker]) {
+                    return false;
+                }
+                if (!this.plugins.has(evt.detail.plugin)) {
+                    this.plugins.add(evt.detail.plugin);
+                }
+                this.toggleDecoration(evt.detail.plugin);
+            });
+            this.add();
+        }
+    }
+
+    class TrMarkCompleted extends TrBaseMarker {
+        constructor(app) {
+            super(app, 'Grey out completed', {
+                canChangeState: true,
+                marker: 'completed'
+            });
+            this.add();
+        }
+    }
+
+    class TrMarkPreeminent extends TrBaseMarker {
+        constructor(app) {
+            super(app, 'Highlight preeminent', {
+                canChangeState: true,
+                marker: 'preeminent'
+            });
             this.add();
         }
     }
@@ -1056,10 +1133,12 @@
          ProgressBar,
          ScoreSoFar,
          Spoilers,
-         StartsWith,
+         StartingWith,
          SpillTheBeans,
          StepsToSuccess,
          Surrender,
+         TrMarkCompleted,
+         TrMarkPreeminent,
          HighlightPangrams,
          Footer,
          Positioning
@@ -1070,6 +1149,7 @@
         .then(foundTerms => {
             data.init(app$1, foundTerms);
             app$1.registerPlugins(plugins);
+            app$1.trigger(prefix$1('wordsUpdated'));
         });
 
 }());

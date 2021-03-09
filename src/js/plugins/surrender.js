@@ -2,7 +2,7 @@ import el from '../modules/element.js';
 import data from '../modules/data.js';
 import Plugin from '../modules/plugin.js';
 import {
-    prefix
+	prefix
 } from '../modules/string.js';
 
 /**

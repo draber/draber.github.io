@@ -7,12 +7,12 @@ import Plugin from '../modules/plugin.js';
 import tbl from '../modules/tables.js';
 
 /**
- * StartsWith plugin
+ * StartingWith plugin
  * 
  * @param {App} app
- * @returns {Plugin} StartsWith
+ * @returns {Plugin} StartingWith
  */
-class StartsWith extends Plugin {
+class StartingWith extends Plugin {
 
 	/**
 	 * Get the data for the table cells
@@ -21,10 +21,10 @@ class StartsWith extends Plugin {
 	getData() {
 		const letters = {};
 		const answers = data.getList('answers').sort((a, b) => {
-			if(a.startsWith(this.centerLetter)) {
+			if (a.startsWith(this.centerLetter)) {
 				return -1;
 			}
-			if(b.startsWith(this.centerLetter)) {
+			if (b.startsWith(this.centerLetter)) {
 				return 1;
 			}
 			return a < b ? -1 : 1;
@@ -37,19 +37,22 @@ class StartsWith extends Plugin {
 		}
 		answers.forEach(term => {
 			const letter = term.charAt(0);
-			if(typeof letters[letter] === 'undefined'){
-				letters[letter] = { ...tpl };
+			if (typeof letters[letter] === 'undefined') {
+				letters[letter] = {
+					...tpl
+				};
 			}
-			if(remainders.includes(term)){
+			if (remainders.includes(term)) {
 				letters[letter].remainders++;
-			}
-			else {
+			} else {
 				letters[letter].foundTerms++;
 			}
 			letters[letter].total++;
 		})
 
-		const cellData = [['', '✓', '?', '∑']];
+		const cellData = [
+			['', '✓', '?', '∑']
+		];
 		for (let [letter, values] of Object.entries(letters)) {
 			values = Object.values(values);
 			values.unshift(letter);
@@ -67,9 +70,17 @@ class StartsWith extends Plugin {
 		});
 
 		this.ui = el.details();
-		
-		// add and populate content pane        
-		const pane = tbl.get(this.getData(), null, true, data.getCenterLetter());
+
+		// callback functions to conditionally add the css class `prefix(key, 'd')` to a table row
+		this.cssMarkers = {
+			completed: (rowData, i) => i > 0 && rowData[2] === 0,
+			preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
+		}
+        
+		// content pane        
+		const pane = el.table({
+            classNames: ['pane']
+        });
 
 		this.ui.append(el.summary({
 			text: this.title
@@ -77,10 +88,13 @@ class StartsWith extends Plugin {
 
 		// update on demand
 		app.on(prefix('wordsUpdated'), () => {
-			tbl.get(this.getData(), pane, true, data.getCenterLetter());
+			tbl.get(this.getData(), pane);
+			app.trigger(prefix('paneUpdated'), {
+				plugin: this
+			})
 		});
 
 		this.add();
 	}
 }
-export default StartsWith;
+export default StartingWith;

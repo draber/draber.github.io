@@ -23,13 +23,7 @@ class Spoilers extends Plugin {
 		const pangramCount = data.getCount('pangrams');
 		const foundPangramCount = data.getCount('foundPangrams');
 		const cellData = [
-			['', '✓', '?', '∑'],
-			[
-				'Pangrams',
-				foundPangramCount,
-				pangramCount - foundPangramCount,
-				pangramCount
-			]
+			['', '✓', '?', '∑']
 		];
 		data.getList('answers').forEach(term => {
 			counts[term.length] = counts[term.length] || {
@@ -54,6 +48,12 @@ class Spoilers extends Plugin {
 				counts[count].total
 			]);
 		});
+		cellData.push([
+			'Pangrams',
+			foundPangramCount,
+			pangramCount - foundPangramCount,
+			pangramCount
+		]);
 		return cellData;
 	}
 
@@ -65,8 +65,16 @@ class Spoilers extends Plugin {
 
 		this.ui = el.details();
 
-		// add and populate content pane        
-		const pane = tbl.get(this.getData(), null, true);
+		// callback functions to conditionally add the css class `prefix(key, 'd')` to a table row
+		this.cssMarkers = {
+			completed: (rowData, i) => i > 0 && rowData[2] === 0,
+			preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
+		}
+
+		// content pane        
+		const pane = el.table({
+			classNames: ['pane']
+		});
 
 		this.ui.append(el.summary({
 			text: this.title
@@ -74,7 +82,10 @@ class Spoilers extends Plugin {
 
 		// update on demand
 		app.on(prefix('wordsUpdated'), () => {
-			tbl.get(this.getData(), pane, true);
+			tbl.get(this.getData(), pane);
+			app.trigger(prefix('paneUpdated'), {
+				plugin: this
+			})
 		});
 
 		this.add();

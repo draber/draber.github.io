@@ -5,6 +5,7 @@ import {
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
 import tbl from '../modules/tables.js';
+import settings from '../modules/settings.js';
 
 /**
  * Steps to success plugin
@@ -52,8 +53,15 @@ class StepsToSuccess extends Plugin {
 
         this.ui = el.details();
 
-        // add and populate content pane        
-        const pane = tbl.get(this.getData(), null, this.getCurrentTier());
+        this.cssMarkers = {
+            completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
+            preeminent: rowData => rowData[1] === this.getCurrentTier()
+        }
+        
+		// content pane        
+		const pane = el.table({
+            classNames: ['pane']
+        });
 
         this.ui.append(el.summary({
             text: this.title
@@ -61,7 +69,10 @@ class StepsToSuccess extends Plugin {
 
         // update on demand
         app.on(prefix('wordsUpdated'), () => {
-            tbl.get(this.getData(), pane, this.getCurrentTier());
+			tbl.get(this.getData(), pane);
+			app.trigger(prefix('paneUpdated'), {
+				plugin: this
+			})
         });
 
         this.add();
