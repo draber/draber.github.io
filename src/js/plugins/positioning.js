@@ -144,7 +144,7 @@ class Positioning extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Memorize position', {
+        super(app, 'Memorize position', 'Places the assistant where you last moved it', {
             key: 'positioning',
             canChangeState: true
         });

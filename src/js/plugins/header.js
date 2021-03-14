@@ -14,7 +14,7 @@ import {
 class Header extends Plugin {
     constructor(app) {
 
-        super(app, settings.get('title'), {
+        super(app, settings.get('title'), '', {
             key: 'header'
         });
 

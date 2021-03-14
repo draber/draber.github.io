@@ -50,7 +50,7 @@ class Surrender extends Plugin {
 
 	constructor(app) {
 
-		super(app, 'Surrender', {
+		super(app, 'Surrender', 'Reveals the solution of the game', {
 			canChangeState: true
 		});
 

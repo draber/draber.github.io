@@ -20,7 +20,6 @@ class TrBaseMarker extends Plugin {
     toggleDecoration(plugin) {
         el.$$('tr', plugin.ui).forEach((tr, i) => {
             const rowData = Array.from(el.$$('td', tr)).map(td => /^\d+$/.test(td.textContent) ? parseInt(td.textContent) : td.textContent);
-            console.log(plugin.key, rowData, plugin.cssMarkers[this.marker](rowData, i))
             if (plugin.cssMarkers[this.marker](rowData, i)) {
                 tr.classList.toggle(prefix(this.marker, 'd'), this.getState());
             }
@@ -40,12 +39,12 @@ class TrBaseMarker extends Plugin {
         return this;
     }
 
-    constructor(app, title, {
+    constructor(app, title, description, {
         canChangeState,
         marker
     } = {}) {
 
-        super(app, title, {
+        super(app, title, description, {
             canChangeState
         });
 

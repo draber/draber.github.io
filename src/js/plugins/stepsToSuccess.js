@@ -47,7 +47,7 @@ class StepsToSuccess extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Steps to success', {
+        super(app, 'Steps to success', 'Number of points required for each level', {
             canChangeState: true
         });
 

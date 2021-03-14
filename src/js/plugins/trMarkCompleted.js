@@ -10,7 +10,7 @@ class TrMarkCompleted extends TrBaseMarker {
 
     constructor(app) {
 
-        super(app, 'Grey out completed', {
+        super(app, 'Grey out completed', 'Greys out lines in which you have found all items', {
             canChangeState: true,
             marker: 'completed'
         });

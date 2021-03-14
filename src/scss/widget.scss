@@ -122,7 +122,7 @@ $pluginWidth: 138;
     z-index: 3;
     width: $appWidth * 1px;
     box-sizing: border-box;
-    padding: 0 10px 5px;
+    padding: 0 8px 5px;
     background: var(--body-bg-color);
 
     border: {
@@ -174,6 +174,7 @@ $pluginWidth: 138;
         font-weight: bold;
         line-height: 32px;
         flex-grow: 2;
+        text-indent: 1px
     }
 
     .minimizer {
@@ -318,7 +319,8 @@ $pluginWidth: 138;
             border-bottom: 2px solid var(--highlight-color) !important;
         }
         &.sba-completed {
-            opacity: .65;
+            opacity: .7;
+            font-weight: normal;
         }
     }
 

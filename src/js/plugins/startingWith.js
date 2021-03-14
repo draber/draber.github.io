@@ -65,7 +65,7 @@ class StartingWith extends Plugin {
 
 	constructor(app) {
 
-		super(app, 'Starting with…', {
+		super(app, 'Starting with…', 'Number of words by first letter', {
 			canChangeState: true
 		});
 

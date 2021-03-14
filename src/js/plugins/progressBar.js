@@ -26,7 +26,7 @@ class ProgressBar extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Progress Bar', {
+        super(app, 'Progress Bar', 'Displays progress as a yellow bar', {
             canChangeState: true
         });
 

@@ -362,13 +362,13 @@ section {
 
     background: {
         color: var(--body-bg-color);
-        size: calc(100% - 2rem);
+        size: calc(100% - 1.6rem);
     }
 
     img {
         display: block;
-        margin: 1rem;
-        max-width: calc(100% - 2rem);
+        margin: .8rem;
+        max-width: calc(100% - 1.6rem);
     }
 
     &.hive-box {
@@ -409,6 +409,8 @@ steps-to-success,
 set-up-demo,
 highlight-pangrams,
 inactive,
+progress-bar,
+highlight-lines,
 surrender;
 
 [data-sba-theme="dark"] {
@@ -518,7 +520,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
         list-style: none;
     }
 
-    figure {
+    figure:not(.auto-height) {
         min-height: 19rem;
     }
 

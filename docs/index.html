@@ -384,6 +384,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#plugindescription'
+                        class='regular pre-open'>
+                        #description
+                      </a></li>
+                      
+                      <li><a
                         href='#pluginapp'
                         class='regular pre-open'>
                         #app
@@ -3263,7 +3269,7 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
 
   <p>Plugin base class</p>
 
-    <div class='pre p1 fill-light mt0'>new Plugin(app: <a href="#app">App</a>, title: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, $2: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</div>
+    <div class='pre p1 fill-light mt0'>new Plugin(app: <a href="#app">App</a>, title: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, description: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>, $3: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>)</div>
   
   
     <p>
@@ -3303,7 +3309,15 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>$2</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+            <span class='code bold'>description</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>$3</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
             = <code>{}</code>)</code>
 	    
           </div>
@@ -3322,7 +3336,7 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
             <tbody class='mt1'>
               
                 <tr>
-  <td class='break-word'><span class='code bold'>$2.key</span> <code class='quiet'>any</code>
+  <td class='break-word'><span class='code bold'>$3.key</span> <code class='quiet'>any</code>
   </td>
   <td class='break-word'><span></span></td>
 </tr>
@@ -3330,7 +3344,7 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
 
               
                 <tr>
-  <td class='break-word'><span class='code bold'>$2.canChangeState</span> <code class='quiet'>any</code>
+  <td class='break-word'><span class='code bold'>$3.canChangeState</span> <code class='quiet'>any</code>
   </td>
   <td class='break-word'><span></span></td>
 </tr>
@@ -3338,7 +3352,7 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
 
               
                 <tr>
-  <td class='break-word'><span class='code bold'>$2.defaultState</span> <code class='quiet'>any</code>
+  <td class='break-word'><span class='code bold'>$3.defaultState</span> <code class='quiet'>any</code>
   </td>
   <td class='break-word'><span></span></td>
 </tr>
@@ -3463,6 +3477,60 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
 
       
     
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='plugindescription'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>description</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Description of the plugin</p>
+
+    <div class='pre p1 fill-light mt0'>description</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
   
 
   
@@ -6688,7 +6756,7 @@ w/ evt: position at dragEnd, can be subject to boundary correction in this.repos
 
   
 
-  <p>Check per letter the typed letters still fit a word in the remainder list</p>
+  <p>Check if the input matches a term in the remainder list</p>
 
     <div class='pre p1 fill-light mt0'>react(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
@@ -7614,7 +7682,7 @@ w/ evt: position at dragEnd, can be subject to boundary correction in this.repos
 
   <p>Table row marker - base plugin</p>
 
-    <div class='pre p1 fill-light mt0'>new TrBaseMarker(app: <a href="#app">App</a>, title: any, $2: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="#plugin">Plugin</a></div>
+    <div class='pre p1 fill-light mt0'>new TrBaseMarker(app: <a href="#app">App</a>, title: any, description: any, $3: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="#plugin">Plugin</a></div>
   
   
     <p>
@@ -7654,7 +7722,15 @@ w/ evt: position at dragEnd, can be subject to boundary correction in this.repos
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>$2</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+            <span class='code bold'>description</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>$3</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
             = <code>{}</code>)</code>
 	    
           </div>
@@ -7673,7 +7749,7 @@ w/ evt: position at dragEnd, can be subject to boundary correction in this.repos
             <tbody class='mt1'>
               
                 <tr>
-  <td class='break-word'><span class='code bold'>$2.canChangeState</span> <code class='quiet'>any</code>
+  <td class='break-word'><span class='code bold'>$3.canChangeState</span> <code class='quiet'>any</code>
   </td>
   <td class='break-word'><span></span></td>
 </tr>
@@ -7681,7 +7757,7 @@ w/ evt: position at dragEnd, can be subject to boundary correction in this.repos
 
               
                 <tr>
-  <td class='break-word'><span class='code bold'>$2.marker</span> <code class='quiet'>any</code>
+  <td class='break-word'><span class='code bold'>$3.marker</span> <code class='quiet'>any</code>
   </td>
   <td class='break-word'><span></span></td>
 </tr>

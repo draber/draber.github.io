@@ -11,7 +11,7 @@ import Plugin from '../modules/plugin.js';
 class Footer extends Plugin {
     constructor(app) {
 
-        super(app, `${settings.get('label')}`, {
+        super(app, `${settings.get('label')}`, '', {
             key: 'footer'
         });
 

@@ -41,7 +41,7 @@ class HighlightPangrams extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Highlight pangrams', {
+        super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
             canChangeState: true
         });
 

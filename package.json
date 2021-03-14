@@ -22,7 +22,8 @@
     "compile-site": "npm run dev & node ./src/compiler/ -t site",
     "watch-site": "node ./src/compiler/ -t site -w",
     "compile-ext": "npm run dev & node ./src/compiler/ -t extension",
-    "watch-ext": "node ./src/compiler/ -t extension -w"
+    "watch-ext": "node ./src/compiler/ -t extension -w",
+    "build": "npm run compile-ext & npm run compile-site"
   },
   "files": [
     "dist"

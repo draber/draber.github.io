@@ -59,7 +59,7 @@ class Spoilers extends Plugin {
 
 	constructor(app) {
 
-		super(app, 'Spoilers', {
+		super(app, 'Spoilers', 'Number of words by length', {
 			canChangeState: true
 		});
 

@@ -11,7 +11,7 @@ import Plugin from '../modules/plugin.js';
 class SpillTheBeans extends Plugin {
 
     /**
-     * Check per letter the typed letters still fit a word in the remainder list
+     * Check if the input matches a term in the remainder list
      * @param {String} value
      * @returns {string}
      */
@@ -27,7 +27,7 @@ class SpillTheBeans extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Spill the beans', {
+        super(app, 'Spill the beans', 'Emoji that shows if your last letter was right or wrong', {
             canChangeState: true
         });
 

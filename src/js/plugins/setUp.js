@@ -24,7 +24,7 @@ class SetUp extends Plugin {
 
 	constructor(app) {
 
-		super(app, 'Set-up', {
+		super(app, 'Set-up', '', {
 			canChangeState: true,
 			defaultState: false
 		});
@@ -57,6 +57,9 @@ class SetUp extends Plugin {
 				}
 				const li = el.li();
 				const label = el.label({
+					attributes: {
+						title: plugin.description
+					},
 					text: plugin.title
 				})
 				const check = el.input({

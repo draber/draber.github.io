@@ -10,7 +10,7 @@ class TrMarkPreeminent extends TrBaseMarker {
 
     constructor(app) {
 
-        super(app, 'Highlight preeminent', {
+        super(app, 'Highlight preeminent', 'Highlights the most important line in a table', {
             canChangeState: true,
             marker: 'preeminent'
         });
