@@ -2,7 +2,7 @@ import el from '../modules/element.js';
 import data from '../modules/data.js';
 import Plugin from '../modules/plugin.js';
 import {
-    prefix
+	prefix
 } from '../modules/string.js';
 
 /**
@@ -20,7 +20,7 @@ class Surrender extends Plugin {
 	 */
 	buildEntry(term) {
 		const entry = el.li({
-			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', 'sba-pangram'] : ['sb-anagram']
+			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', prefix('pangram')] : ['sb-anagram']
 		});
 		entry.append(el.a({
 			text: term,
@@ -50,7 +50,7 @@ class Surrender extends Plugin {
 
 	constructor(app) {
 
-		super(app, 'Surrender', {
+		super(app, 'Surrender', 'Reveals the solution of the game', {
 			canChangeState: true
 		});
 

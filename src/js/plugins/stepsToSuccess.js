@@ -5,6 +5,7 @@ import {
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
 import tbl from '../modules/tables.js';
+import settings from '../modules/settings.js';
 
 /**
  * Steps to success plugin
@@ -40,27 +41,27 @@ class StepsToSuccess extends Plugin {
      * Populate/update pane
      * @param {HTMLElement} pane
      */
-    markCurrentTier(pane) {
-        const ownPoints = data.getPoints('foundTerms');
-        const currentTier = this.getData().filter(entry => entry[1] <= ownPoints).pop()[1];
-        el.$$('td', pane).forEach(cell => {
-            cell.parentNode.classList.remove('sba-current');
-            if (parseInt(cell.textContent) === currentTier) {
-                cell.parentNode.classList.add('sba-current');
-            }
-        })
+    getCurrentTier() {
+        return this.getData().filter(entry => entry[1] <= data.getPoints('foundTerms')).pop()[1];
     }
+
     constructor(app) {
 
-        super(app, 'Steps to success', {
+        super(app, 'Steps to success', 'Number of points required for each level', {
             canChangeState: true
         });
 
         this.ui = el.details();
 
-        // add and populate content pane        
-        const pane = tbl.build(this.getData());
-        this.markCurrentTier(pane);
+        this.cssMarkers = {
+            completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
+            preeminent: rowData => rowData[1] === this.getCurrentTier()
+        }
+        
+		// content pane        
+		const pane = el.table({
+            classNames: ['pane']
+        });
 
         this.ui.append(el.summary({
             text: this.title
@@ -68,7 +69,10 @@ class StepsToSuccess extends Plugin {
 
         // update on demand
         app.on(prefix('wordsUpdated'), () => {
-            this.markCurrentTier(pane);
+			tbl.get(this.getData(), pane);
+			app.trigger(prefix('paneUpdated'), {
+				plugin: this
+			})
         });
 
         this.add();

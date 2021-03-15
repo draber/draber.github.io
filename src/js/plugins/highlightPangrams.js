@@ -6,7 +6,7 @@ import Plugin from '../modules/plugin.js';
 import data from '../modules/data.js';
 
 /**
- * Dark Mode plugin
+ * Highlight Pangrams plugin
  *
  * @param {App} app
  * @returns {Plugin} HighlightPangrams
@@ -33,7 +33,7 @@ class HighlightPangrams extends Plugin {
         el.$$('li', this.app.resultList).forEach(node => {
             const term = node.textContent;
             if (pangrams.includes(term)) {
-                node.classList.toggle('sba-pangram', this.getState());
+                node.classList.toggle(prefix('pangram', 'd'), this.getState());
             }
         });
         return this;
@@ -41,7 +41,7 @@ class HighlightPangrams extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Highlight Pangrams', {
+        super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
             canChangeState: true
         });
 

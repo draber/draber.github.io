@@ -24,7 +24,7 @@ class DarkMode extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Dark Mode', {
+        super(app, 'Dark Mode', 'Applies a dark theme to this page', {
             canChangeState: true,
             defaultState: false
         });

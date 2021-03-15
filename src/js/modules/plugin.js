@@ -35,9 +35,10 @@ class Plugin extends Widget {
      * Build an instance of a plugin
      * @param {App} app
      * @param {String} title
+     * @param {String} description
      * @param {{key: String, canChangeState: Boolean, defaultState: *}}
      */
-    constructor(app, title, {
+    constructor(app, title, description, {
         key,
         canChangeState,
         defaultState
@@ -53,12 +54,18 @@ class Plugin extends Widget {
          * @type {undefined|HTMLElement}
          */
         this.target;
+
+        /**
+         * Description of the plugin
+         * @type {String}
+         */
+        this.description = description || '';
     
         /**
          * App container object, not the app UI!
          * @type {App}
          */
-        this.app= app;
+        this.app = app;
     }
 }
 

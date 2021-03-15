@@ -41,13 +41,12 @@ const create = function ({
     const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
     el.textContent = text;
     for (let [key, value] of Object.entries(attributes)) {
-        value = value.toString();
         if (svg) {
-            el.setAttributeNS(null, key, value);
-        } else {
-            el[key] = value;
+            el.setAttributeNS(null, key, value.toString());
+        } else if(value !== false) {
+            el[key] = value.toString();
         }
-    }    
+    }
     for (let [key, value] of Object.entries(data)) {
         value = value.toString();
         el.dataset[key] = value;
@@ -97,7 +96,7 @@ const el = new Proxy(fn, {
     get(target, prop) {
         return function () {
             const args = Array.prototype.slice.call(arguments);
-            if (target.hasOwnProperty(prop) && typeof target[prop] === 'function') {
+            if (Object.prototype.hasOwnProperty.call(target, prop) && typeof target[prop] === 'function') {
                 target[prop].bind(target);
                 return target[prop].apply(null, args);
             }

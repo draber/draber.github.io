@@ -1,4 +1,3 @@
-import el from './element.js';
 import {
     prefix
 } from './string.js';
@@ -49,11 +48,18 @@ const getList = type => {
 
 /**
  * Returns the gameId
- * @param {String} type
- * @returns {Array}
+ * @returns {String}
  */
 const getId = () => {
     return sbData.id;
+}
+
+/**
+ * Returns the gameId
+ * @returns {String}
+ */
+const getCenterLetter = () => {
+    return sbData.centerLetter;
 }
 
 /**
@@ -112,5 +118,6 @@ export default {
     getList,
     getCount,
     getPoints,
-    getId
+    getId,
+    getCenterLetter
 }

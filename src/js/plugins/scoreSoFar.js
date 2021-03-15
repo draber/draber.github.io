@@ -42,7 +42,7 @@ class ScoreSoFar extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Score so far', {
+        super(app, 'Score so far', 'Displays the number of words and points an how may of them you have found so far', {
             canChangeState: true
         });
 
@@ -51,9 +51,11 @@ class ScoreSoFar extends Plugin {
                 open: true
             }
         });
-
-        // add and populate content pane        
-        const pane = tbl.build(this.getData());
+        
+		// content pane        
+		const pane = el.table({
+            classNames: ['pane']
+        });
 
         this.ui.append(el.summary({
             text: this.title
@@ -61,7 +63,7 @@ class ScoreSoFar extends Plugin {
 
         // update on demand
         app.on(prefix('wordsUpdated'), () => {
-            tbl.refresh(this.getData(), pane);
+            tbl.get(this.getData(), pane);
         })
 
         this.add();

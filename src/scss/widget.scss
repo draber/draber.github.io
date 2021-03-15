@@ -107,7 +107,7 @@
         filter: invert(100%)
     }
 
-    *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-current) {
+    *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent) {
         border-color: var(--border-color) !important
     }
 
@@ -122,7 +122,7 @@ $pluginWidth: 138;
     z-index: 3;
     width: $appWidth * 1px;
     box-sizing: border-box;
-    padding: 0 10px 5px;
+    padding: 0 8px 5px;
     background: var(--body-bg-color);
 
     border: {
@@ -174,6 +174,7 @@ $pluginWidth: 138;
         font-weight: bold;
         line-height: 32px;
         flex-grow: 2;
+        text-indent: 1px
     }
 
     .minimizer {
@@ -186,6 +187,7 @@ $pluginWidth: 138;
     &.inactive {
 
         details,
+        progress,
         [data-ui="footer"] {
             display: none;
         }
@@ -212,6 +214,37 @@ $pluginWidth: 138;
             top: 0
         }
     }
+
+
+    progress {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        border-radius: 0;
+        margin: 0 0 2px 0;
+        height: 6px;
+        padding: 0;
+        border: 1px var(--border-color) solid;
+        background: transparent;
+        display: block;
+        &.inactive {
+            display: none;
+        }
+
+        &::-webkit-progress-bar {
+            background-color: transparent;
+        }
+
+        &::-webkit-progress-value {
+            background-color: var(--highlight-color);
+            height: 4px;
+        }
+
+        &::-moz-progress-bar {
+            background-color: var(--highlight-color);
+        }
+    }
+
 
     details {
         font-size: 90%;
@@ -240,7 +273,7 @@ $pluginWidth: 138;
 
     summary {
         font-size: 13px;
-        line-height: 22px;
+        line-height: 20px;
         padding: 1px 15px 0 21px;
         background: var(--area-bg-color);
         color: var(--text-color);
@@ -251,7 +284,7 @@ $pluginWidth: 138;
         overflow: hidden;
         text-overflow: ellipsis;
 
-        &::-webkit-details-marker {
+        &::marker {
             display: none
         }
 
@@ -281,9 +314,13 @@ $pluginWidth: 138;
     }
 
     tr {
-        &.sba-current {
+        &.sba-preeminent {
             font-weight: bold;
             border-bottom: 2px solid var(--highlight-color) !important;
+        }
+        &.sba-completed {
+            opacity: .7;
+            font-weight: normal;
         }
     }
 
@@ -292,25 +329,42 @@ $pluginWidth: 138;
         border-top: none;
         white-space: nowrap;
         text-align: center;
-        padding: 4px 0;
+        padding: 3px 0;
         width: 26px;
 
         &:first-of-type {
             text-align: left;
             width: auto;
             overflow: hidden;
+            white-space: nowrap;
             text-overflow: ellipsis;
-            padding: 4px 3px;
+            padding: 3px 3px;
+            
         }
     }
 
     [data-ui="scoreSoFar"],
-    [data-ui="spoilers"] {
+    [data-ui="spoilers"],
+    [data-ui="startingWith…"] {
         tbody {
             tr {
                 &:first-child {
                     td {
-                        font-weight: bold
+                        font-weight: bold;
+                        font-size: 92%;
+                    }
+                }
+            }
+        }
+    }
+
+    [data-ui="startingWith…"] {
+        tbody {
+            tr {
+                td {
+                    &:first-child {
+                        text-align: center;
+                        text-transform: uppercase;
                     }
                 }
             }
@@ -332,13 +386,13 @@ $pluginWidth: 138;
     }
 
     .spill-title {
-        padding: 10px 6px 0;
+        padding: 8px 6px 0;
         text-align: center;
     }
 
     .spill {
         text-align: center;
-        padding: 17px 0;
+        padding: 14px 0;
         font-size: 280%;
     }
 

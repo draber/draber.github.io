@@ -298,7 +298,7 @@ header {
 
     .start-up-img {
         min-width: 16rem;
-        height: 24.6rem;
+        height: 26.5rem;
         padding-top: 1.5rem;
     }
 }
@@ -362,13 +362,13 @@ section {
 
     background: {
         color: var(--body-bg-color);
-        size: calc(100% - 2rem);
+        size: calc(100% - 1.6rem);
     }
 
     img {
         display: block;
-        margin: 1rem;
-        max-width: calc(100% - 2rem);
+        margin: .8rem;
+        max-width: calc(100% - 1.6rem);
     }
 
     &.hive-box {
@@ -401,6 +401,7 @@ closed,
 pangram-underline,
 score-so-far,
 start-up,
+starting-with,
 set-up,
 spill-the-beans,
 spoilers,
@@ -408,6 +409,8 @@ steps-to-success,
 set-up-demo,
 highlight-pangrams,
 inactive,
+progress-bar,
+highlight-lines,
 surrender;
 
 [data-sba-theme="dark"] {
@@ -517,7 +520,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
         list-style: none;
     }
 
-    figure {
+    figure:not(.auto-height) {
         min-height: 19rem;
     }
 

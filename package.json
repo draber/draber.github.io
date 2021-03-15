@@ -1,6 +1,6 @@
 {
   "name": "spelling-bee-assistant",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "description": "Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^16.0.0",
@@ -16,13 +16,14 @@
     "sass": "^1.29.0"
   },
   "scripts": {
-    "dev": "rollup -c ./src/config/rollup.js",
+    "dev": "npm run sba-sass & rollup -c ./src/config/rollup.js",
     "sba-sass-w": "node ./src/compiler/ -t appcss -w",
     "sba-sass": "node ./src/compiler/ -t appcss",
-    "compile-site": "node ./src/compiler/ -t site",
+    "compile-site": "npm run dev & node ./src/compiler/ -t site",
     "watch-site": "node ./src/compiler/ -t site -w",
-    "compile-ext": "node ./src/compiler/ -t extension",
-    "watch-ext": "node ./src/compiler/ -t extension -w"
+    "compile-ext": "npm run dev & node ./src/compiler/ -t extension",
+    "watch-ext": "node ./src/compiler/ -t extension -w",
+    "build": "npm run compile-ext & npm run compile-site"
   },
   "files": [
     "dist"
