@@ -15,6 +15,31 @@ import {
  */
 class App extends Widget {
 
+    
+    /** 
+     * Wait for launch screen to be closed 
+     * @returns {Promise<Boolean>}
+     */
+    async launch() {
+        return new Promise((resolve, reject) => {
+            let launchObserver = new MutationObserver(mutationsList => {
+                const record = mutationsList.pop();
+                if(record.target && !record.target.classList.contains('sb-game-locked')) {
+                    this.parent.append(this.ui);
+                    this.game.before(this.parent);
+                    launchObserver.disconnect();
+                    resolve(true);
+                }
+                else {
+                    reject(false)
+                }
+            })
+            launchObserver.observe(el.$('.sb-content-box', this.game), {
+                attributes: true
+            });
+        });
+    }
+
     /**
      * Retrieve sync data
      * @returns {Boolean|Array}
@@ -144,7 +169,12 @@ class App extends Widget {
         this.dragOffset = 12;
 
         this.observer = (() => {
-            const observer = new MutationObserver(mutationsList => this.trigger(prefix('newWord'), mutationsList.pop().addedNodes[0].textContent.trim()));
+            const observer = new MutationObserver(mutationsList => {
+                const node = mutationsList.pop().addedNodes[0] || null;
+                if (node && node instanceof HTMLElement && node.textContent) {
+                    this.trigger(prefix('newWord'), node.textContent.trim())
+                }
+            });
             observer.observe(this.resultList, {
                 childList: true
             });
@@ -165,9 +195,6 @@ class App extends Widget {
         }
 
         this.toggle(this.getState());
-        this.parent.append(this.ui);
-        game.before(this.parent);
-
     }
 }
 
