@@ -1,4 +1,5 @@
 import Plugin from '../modules/plugin.js';
+import el from '../modules/element.js';
 
 // noinspection JSUnresolvedVariable,JSUnresolvedVariable
 /**
@@ -10,9 +11,57 @@ import Plugin from '../modules/plugin.js';
 class Positioning extends Plugin {
 
     /**
+     * Append App.ui to DOM
+     */
+    add() {
+        this.app.toggleVisibility();
+        this.waitUntilAfterSplash().then(() => {
+
+            this.position = this.getState() || this.getPosition();
+            this.reposition();
+            this.app.toggleVisibility();
+            this.enableDrag();
+            return super.add();
+        });
+    }
+
+    /**
+     * Game is locked as long as splash screen is present
+     * @param {HTMLElement} element
+     * @returns {Boolean}
+     */
+    isUnlocked(element) {
+        return element && !element.classList.contains('sb-game-locked');
+    }
+
+    /**
+     * Wait for launch screen to be closed
+     * @returns {Promise<Void>}
+     */
+    async waitUntilAfterSplash() {
+        const target = el.$('.sb-content-box', this.app.game);
+        return new Promise((resolve, reject) => {
+            if (this.isUnlocked(target)) {
+                resolve();
+            }
+            let launchObserver = new MutationObserver(() => {
+                if (this.isUnlocked(target)) {
+                    launchObserver.disconnect();
+                    resolve();
+                } else {
+                    reject()
+                }
+            })
+            launchObserver.observe(target, {
+                attributes: true
+            });
+        });
+    }
+
+    /**
      * How close the draggable object can come to the edges of the drag area
      * @param {Number|Object} offset
-     * @type {{top: Number, right: Number, bottom: number, left: Number}}
+     * @returns {{top: *, left: *, bottom: *, right: *}|{top: number, left: number, bottom: number, right: number}}
      */
     getOffset(offset) {
         return !isNaN(offset) ? {
@@ -31,9 +80,10 @@ class Positioning extends Plugin {
         }
     }
 
+
     /**
      * Translate offset to boundaries
-     * @returns {{minTop: Number, maxTop: Number, minLeft: Number, maxLeft: Number}}
+     * @returns {{top: {min: Number, max: number}, left: {min: number, max: number}}}
      */
     getBoundaries() {
         const areaRect = this.app.dragArea.getBoundingClientRect();
@@ -41,11 +91,30 @@ class Positioning extends Plugin {
         const appRect = this.app.ui.getBoundingClientRect();
 
         return {
-            minTop: this.offset.top,
-            maxTop: areaRect.height - appRect.height - this.offset.bottom,
-            minLeft: this.offset.left - parentRect.left,
-            maxLeft: areaRect.width - parentRect.left - appRect.width - this.offset.right
+            top: {
+                min: this.offset.top,
+                max: areaRect.height - appRect.height - this.offset.bottom
+            },
+            left: {
+                min: this.offset.left - parentRect.left,
+                max: areaRect.width - parentRect.left - appRect.width - this.offset.right
+            }
         }
+    }
+
+    /**
+     * Ensure position stays within boundaries
+     * @param {Object} position
+     * @returns {*|{top: Number, left: Number}}
+     */
+    validatePosition(position) {
+        if(position){
+            this.position = position;
+        }
+        const boundaries = this.getBoundaries();
+        this.position.left = Math.min(boundaries.left.max, Math.max(boundaries.left.min, this.position.left));
+        this.position.top = Math.min(boundaries.top.max, Math.max(boundaries.top.min, this.position.top));
+        return this.position;        
     }
 
     /**
@@ -64,22 +133,30 @@ class Positioning extends Plugin {
      * w/o evt: position at launch or dragStart
      * w/ evt: position at dragEnd, can be subject to boundary correction in this.reposition()
      * @param evt
-     * @returns {Object}
+     * @returns {*|{top: Number, left: Number}}
      */
     getPosition(evt) {
+        let coords;
         if (evt) {
             const mouse = this.getMouse(evt);
-            return {
+            coords = {
                 left: this.position.left + mouse.left - this.mouse.left,
                 top: this.position.top += mouse.top - this.mouse.top
             }
+
         } else {
             const style = getComputedStyle(this.app.ui);
-            return {
+            let left = parseInt(style.left);
+            // convert left to px if needed
+            if (style.left.endsWith('%')) {
+                left = left * parseInt(getComputedStyle(el.$('.sbaContainer')).width) / 100;
+            }
+            coords = {
                 top: parseInt(style.top),
-                left: parseInt(style.left)
+                left
             }
         }
+        return this.validatePosition(coords);
     }
 
     /**
@@ -87,9 +164,7 @@ class Positioning extends Plugin {
      * @returns {Positioning}
      */
     reposition() {
-        this.boundaries = this.getBoundaries();
-        this.position.left = Math.min(this.boundaries.maxLeft, Math.max(this.boundaries.minLeft, this.position.left));
-        this.position.top = Math.min(this.boundaries.maxTop, Math.max(this.boundaries.minTop, this.position.top));
+        this.validatePosition();
 
         Object.assign(this.app.ui.style, {
             left: this.position.left + 'px',
@@ -148,19 +223,15 @@ class Positioning extends Plugin {
             key: 'positioning',
             canChangeState: true
         });
-        
-        /**
-         * Translation of the boundaries to left and top
-         * @type {{minTop: Number, maxTop: Number, minLeft: number, maxLeft: Number}}
-         */
-        this.boundaries;
-    
+
         /**
          * Mouse position, new = on drag start, old on dragend
          * @type {{left: Number, top: Number}}
          */
         this.mouse;
-    
+
+        this.position;
+
         /**
          * Helps to determine if the the draggable object has been dragged by the handle
          * @type {boolean}
@@ -172,27 +243,16 @@ class Positioning extends Plugin {
         }
 
         /**
-         * Absolute position of the draggable object
-         * @type {{top: Number, left: Number}}
-         */
-        this.position = this.getPosition();
-
-        /**
          * How close the draggable object can come to the edges of the drag area
-         * @type {{top: Number, right: Number, bottom: number, left: Number}}
+         * @type {{top: *, left: *, bottom: *, right: *}|{top: number, left: number, bottom: number, right: number}}
          */
-        this.offset = this.getOffset(app.dragOffset || 0);
+        this.offset = this.getOffset(this.app.dragOffset || 0);
 
-        // possibly stored position from previous session
-        const stored = this.getState();
-        if (stored && Object.prototype.toString.call(stored) === '[object Object]') {
-            this.position = stored;
-            this.reposition();
-        }
-
-        this.enableDrag();
         this.add();
-        window.addEventListener('orientationchange', () => this.reposition());
+
+        ['orientationchange', 'resize'].forEach(handler => {
+            window.addEventListener(handler, () => this.reposition());
+        })
     }
 }
 

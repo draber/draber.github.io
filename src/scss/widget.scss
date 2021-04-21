@@ -10,7 +10,7 @@
         &>li {
             &.sba-pangram {
                 border-bottom: 2px var(--highlight-color) solid;
-            }            
+            }
 
             &.sb-anagram {
                 a {
@@ -128,12 +128,19 @@ $pluginWidth: 138;
     box-sizing: border-box;
     padding: 0 8px 5px;
     background: var(--body-bg-color);
+    visibility: visible;
+    opacity: 1;
 
     border: {
         width: 1px;
         color: var(--border-color);
         radius: 6px;
         style: solid
+    }
+
+    &.hidden {
+        visibility: hidden;
+        opacity: 0;
     }
 
     *,
@@ -231,6 +238,7 @@ $pluginWidth: 138;
         border: 1px var(--border-color) solid;
         background: transparent;
         display: block;
+
         &.inactive {
             display: none;
         }
@@ -322,6 +330,7 @@ $pluginWidth: 138;
             font-weight: bold;
             border-bottom: 2px solid var(--highlight-color) !important;
         }
+
         &.sba-completed {
             opacity: .7;
             font-weight: normal;
@@ -343,7 +352,7 @@ $pluginWidth: 138;
             white-space: nowrap;
             text-overflow: ellipsis;
             padding: 3px 3px;
-            
+
         }
     }
 

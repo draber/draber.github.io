@@ -1,7 +1,8 @@
 import TrBaseMarker from './trBaseMarker.js';
 
 /**
- * Greyout Completed plugin
+ * TrMarkCompleted plugin
+ * Greys out lines in which you have found all items
  *
  * @param {App} app
  * @returns {Plugin} TrMarkCompleted

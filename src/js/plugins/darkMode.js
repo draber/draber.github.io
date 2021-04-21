@@ -31,9 +31,7 @@ class DarkMode extends Plugin {
 
         this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
 
-        app.on(prefix('destroy'), () => {
-            delete document.body.dataset[prefix('theme')];
-        })
+        this.toggle(this.getState());
 
         this.add();
     }

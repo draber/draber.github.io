@@ -26,7 +26,7 @@ class TrBaseMarker extends Plugin {
         })
         return this;
     }
-// isNan === isString
+    
     /**
      * Toggle state an decorate
      * @param {Boolean} state 

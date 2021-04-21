@@ -15,29 +15,11 @@ import {
  */
 class App extends Widget {
 
-    
-    /** 
-     * Wait for launch screen to be closed 
-     * @returns {Promise<Boolean>}
+    /**
+     * Show/Hide UI
      */
-    async launch() {
-        return new Promise((resolve, reject) => {
-            let launchObserver = new MutationObserver(mutationsList => {
-                const record = mutationsList.pop();
-                if(record.target && !record.target.classList.contains('sb-game-locked')) {
-                    this.parent.append(this.ui);
-                    this.game.before(this.parent);
-                    launchObserver.disconnect();
-                    resolve(true);
-                }
-                else {
-                    reject(false)
-                }
-            })
-            launchObserver.observe(el.$('.sb-content-box', this.game), {
-                attributes: true
-            });
-        });
+    toggleVisibility() {
+        this.ui.classList.toggle('hidden');
     }
 
     /**
@@ -129,11 +111,12 @@ class App extends Widget {
             classNames: [prefix('container')]
         });
 
-        this.resultList = el.$('.sb-wordlist-items', game);
+        this.resultList = el.$('.sb-wordlist-wrapper', game);
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
             this.parent.remove();
+            delete document.body.dataset[prefix('theme')];
         };
 
         this.isDraggable = document.body.classList.contains('pz-desktop');
@@ -176,7 +159,8 @@ class App extends Widget {
                 }
             });
             observer.observe(this.resultList, {
-                childList: true
+                childList: true,
+                subtree: true
             });
             return observer;
         })();
@@ -193,6 +177,10 @@ class App extends Widget {
         if (el.$('.sb-toggle-icon-expanded', wordlistToggle)) {
             wordlistToggle.dispatchEvent(new Event('click'));
         }
+
+        this.parent.append(this.ui);
+        this.game.before(this.parent);
+        document.body.dataset[prefix('theme')] = 'light';
 
         this.toggle(this.getState());
     }
