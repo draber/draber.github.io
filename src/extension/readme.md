@@ -21,7 +21,7 @@ npm run compile-ext
 This creates two different IIFE bundles, a compressed and an uncompressed version of the same code base. The extension is set up to use the compressed version, the uncompressed one is just there for readability.
 
 ## Source code
-The source code of this extension is available on (GitHub)[https://github.com/draber/draber.github.io]. 
+The source code of this extension is available on [GitHub](https://github.com/draber/draber.github.io]). 
 
 - [Source code](https://github.com/draber/draber.github.io/tree/main/src/js)
 - [License](https://github.com/draber/draber.github.io/blob/main/LICENSE.md)
