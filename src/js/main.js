@@ -8,11 +8,10 @@ import {
 
 const app = new App(el.$('#pz-game-root'));
 
-app.launch().then(() => {
-    app.getResults()
-        .then(foundTerms => {
-            data.init(app, foundTerms);
-            app.registerPlugins(plugins);
-            app.trigger(prefix('wordsUpdated'));
-        });
-})
+app.getResults()
+    .then(foundTerms => {
+        data.init(app, foundTerms);
+        app.registerPlugins(plugins);
+        app.trigger(prefix('wordsUpdated'));
+    });
+    

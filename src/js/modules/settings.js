@@ -16,6 +16,20 @@ const settings = {
     options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 };
 
+const saveOptions = () => {
+    localStorage.setItem(settings.prefix + '-settings', JSON.stringify(settings.options));
+}
+
+/**
+ * Store the version in case something needs to be reset in a new release
+ */
+if(settings.options.version && settings.options.version !== settings.version){
+    settings.options.oldVersion = settings.options.version;
+}
+
+settings.options.version = settings.version;
+saveOptions();
+
 /**
  * Returns a value based on a key, can also be `foo.bar`
  * @param {String} key
@@ -52,7 +66,7 @@ const set = (key, value) => {
         current = current[part];
     }
     current[last] = value;
-    localStorage.setItem(config.prefix + '-settings', JSON.stringify(settings.options));
+    saveOptions();
 };
 
 export default {

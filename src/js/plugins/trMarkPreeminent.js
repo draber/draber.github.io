@@ -1,6 +1,7 @@
 import TrBaseMarker from './trBaseMarker.js';
 
 /**
+ * TrMarkPreeminent Plugin
  * Highlight most important entry
  *
  * @param {App} app
