@@ -66,7 +66,7 @@
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix = "sba";
 
-    var version = "3.0.3";
+    var version = "3.0.4";
 
     const settings = {
         version: version,
@@ -1039,7 +1039,8 @@
         add() {
             this.app.toggleVisibility();
             this.waitUntilAfterSplash().then(() => {
-                this.position = this.getState() || this.getPosition();
+                const stored = this.getState();
+                this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
                 this.reposition();
                 this.app.toggleVisibility();
                 this.enableDrag();
@@ -1100,9 +1101,11 @@
             }
         }
         validatePosition(position) {
-            if(position){
+            console.log(position);
+            if (position) {
                 this.position = position;
             }
+            console.log(this.position);
             const boundaries = this.getBoundaries();
             this.position.left = Math.min(boundaries.left.max, Math.max(boundaries.left.min, this.position.left));
             this.position.top = Math.min(boundaries.top.max, Math.max(boundaries.top.min, this.position.top));
@@ -1147,22 +1150,22 @@
         enableDrag() {
             this.app.dragHandle.style.cursor = 'move';
             this.app.on('pointerdown', evt => {
-                    this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
-                }).on('pointerup', () => {
-                    this.isLastTarget = false;
-                }).on('dragend', evt => {
-                    this.position = this.getPosition(evt);
-                    this.reposition();
-                    evt.target.style.opacity = '1';
-                }).on('dragstart', evt => {
-                    if (!this.isLastTarget) {
-                        evt.preventDefault();
-                        return false;
-                    }
-                    evt.target.style.opacity = '.2';
-                    this.position = this.getPosition();
-                    this.mouse = this.getMouse(evt);
-                })
+                this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
+            }).on('pointerup', () => {
+                this.isLastTarget = false;
+            }).on('dragend', evt => {
+                this.position = this.getPosition(evt);
+                this.reposition();
+                evt.target.style.opacity = '1';
+            }).on('dragstart', evt => {
+                if (!this.isLastTarget) {
+                    evt.preventDefault();
+                    return false;
+                }
+                evt.target.style.opacity = '.2';
+                this.position = this.getPosition();
+                this.mouse = this.getMouse(evt);
+            })
                 .on('dragover', evt => evt.preventDefault());
             this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
             return this;
