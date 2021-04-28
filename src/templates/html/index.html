@@ -156,17 +156,21 @@
 						<a href="{{extension.firefoxStore.url}}" rel="noopener" target="_blank"><img
 								class="store-icon firefox"
 								src="assets/img/firefox-store.svg?{{version}}&cache-id={{cacheId}}"
-								alt="{{label}} at Firefox Add-Ons" /></a>
+								alt="{{label}} at Firefox Add-ons" /></a>
 						<a href="{{extension.msStore.url}}" rel="noopener" target="_blank"><img class="store-icon edge"
-								src="assets/img/edge-store.svg" alt="Get {{label}} at Microsoft" /></a>
+								src="assets/img/edge-store.svg" alt="Get {{label}} at Edge Add-ons" /></a>
+						<a href="{{extension.operaStore.url}}" rel="noopener" target="_blank"><img
+								class="store-icon opera" src="assets/img/opera-store.png"
+								alt="Get {{label}} at Opera Add-ons" /></a>
 					</div>
 					<p>The browser extension loads the assistant automatically when you open the <a
 							href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener" target="_blank">Spelling
 							Bee</a> web site.</p>
-					<p>It is available in the <a href="{{extension.chromeStore.url}}" rel="noopener"
-							target="_blank">Chrome Web Store</a>, at <a href="{{extension.firefoxStore.url}}"
-							rel="noopener" target="_blank">Firefox Add-Ons</a> and at <a
-							href="{{extension.msStore.url}}" rel="noopener" target="_blank">Microsoft Edge Add-Ons</a>.
+					<p>It is available for
+						<a href="{{extension.chromeStore.url}}" rel="noopener" target="_blank">Chrome</a>, 
+						<a href="{{extension.firefoxStore.url}}" rel="noopener" target="_blank">Firefox</a>, 
+						<a href="{{extension.msStore.url}}" rel="noopener" target="_blank">Edge</a> and  
+						<a href="{{extension.operaStore.url}}" rel="noopener" target="_blank">Opera</a>.
 
 					</p>
 				</li>
@@ -405,7 +409,8 @@
 								<svg>
 									<title>Bookmarklet</title>
 									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+								</svg>
+							</td>
 							<td class="mac-os"><svg>
 									<title>Extension</title>
 									<use xlink:href="#icon-extension"></use>
@@ -413,7 +418,8 @@
 								<svg>
 									<title>Bookmarklet</title>
 									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+								</svg>
+							</td>
 							<td class="linux"><svg>
 									<title>Extension</title>
 									<use xlink:href="#icon-extension"></use>
@@ -421,7 +427,8 @@
 								<svg>
 									<title>Bookmarklet</title>
 									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+								</svg>
+							</td>
 							<td class="android"><svg>
 									<title>Extension</title>
 									<use xlink:href="#icon-extension"></use>
@@ -441,7 +448,8 @@
 								<svg>
 									<title>Bookmarklet</title>
 									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+								</svg>
+							</td>
 							<td class="mac-os"><svg>
 									<title>Extension</title>
 									<use xlink:href="#icon-extension"></use>
@@ -449,7 +457,8 @@
 								<svg>
 									<title>Bookmarklet</title>
 									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+								</svg>
+							</td>
 							<td class="linux"></td>
 							<td class="android"></td>
 							<th class="ios"></th>
@@ -465,7 +474,8 @@
 								<svg>
 									<title>Bookmarklet</title>
 									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+								</svg>
+							</td>
 							<td class="mac-os">
 								<svg>
 									<title>Extension</title>
@@ -474,7 +484,8 @@
 								<svg>
 									<title>Bookmarklet</title>
 									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+								</svg>
+							</td>
 							<td class="linux"></td>
 							<td class="android"></td>
 							<th class="ios"></th>
@@ -508,7 +519,8 @@
 				Android and it worked just fine. Still, it’s not the best way using it. Commonly, tutorials for
 				mobile-installation
 				involve copying the source code of a bookmarklet. If you want to give it a shot, you can copy the code
-				from here:</p>
+				from here:
+			</p>
 			<textarea class="card">{{bookmarklet.code}}</textarea>
 			<p><em>Note: {{label}} cannot be installed inside the NYT app!</em></p>
 			<div class="rgt"><a href="#">Back to top</a></div>
@@ -557,7 +569,8 @@
 			<p>The website and the bookmarklet are hosted at GitHub Pages. Please refer to
 				<a href="https://docs.github.com/en/github/site-policy/github-privacy-statement#github-pages">their
 					statement</a>
-				regarding the data they collect. I don’t have access to these data.</p>
+				regarding the data they collect. I don’t have access to these data.
+			</p>
 		</section>
 		<section>
 			<h2>{{label}} on GitHub</h2>
@@ -565,7 +578,7 @@
 				<li><a href="https://github.com/draber/draber.github.io" rel="noopener" target="_blank">Repository</a>
 				</li>
 				<li><a href="https://github.com/draber/draber.github.io/releases" rel="noopener"
-						target="_blank">Releases, currently {{version}}</a></li>
+						target="_blank">Releases, currently {{version}}</a>. <br /><small>Note: The latest version on GitHub might be slightly ahead of the extension.</small></li>
 				<li><a href="https://github.com/draber/draber.github.io/issues" rel="noopener"
 						target="_blank">Issues</a></li>
 				<li><a href="https://github.com/draber/draber.github.io/pulls" rel="noopener" target="_blank">Pull
@@ -574,29 +587,41 @@
 		</section>
 	</main>
 	<map id="header-links" name="header-links">
-		<area shape="rect" coords="86,0,102,20"  href="#dark-mode"   alt="Dark Mode" title="Dark Mode">
-		<area shape="rect" coords="104,0,119,20" href="#set-up-demo" alt="Set-up"    title="Set-up">
-		<area shape="rect" coords="121,0,136,20" href="#inactive"    alt="Minimize"  title="Minimize">
+		<area shape="rect" coords="86,0,102,20" href="#dark-mode" alt="Dark Mode" title="Dark Mode">
+		<area shape="rect" coords="104,0,119,20" href="#set-up-demo" alt="Set-up" title="Set-up">
+		<area shape="rect" coords="121,0,136,20" href="#inactive" alt="Minimize" title="Minimize">
 	</map>
 	<map id="config-tooltips" name="config-tooltips">
-		<area shape="rect" coords="5,27,136,42"   href="#" alt="Displays progress as a yellow bar" title="Displays progress as a yellow bar">
-		<area shape="rect" coords="5,46,136,61"   href="#" alt="Displays the number of words and points an how may of them you have found so far" title="Displays the number of words and points an how may of them you have found so far">
-		<area shape="rect" coords="5,65,136,80"   href="#" alt="Number of words by length" title="Number of words by length">
-		<area shape="rect" coords="5,84,136,99"   href="#" alt="Number of words by first letter" title="Number of words by first letter">
-		<area shape="rect" coords="5,103,136,118" href="#" alt="Emoji that shows if your last letter was right or wrong" title="Emoji that shows if your last letter was right or wrong">
-		<area shape="rect" coords="5,122,136,137" href="#" alt="Number of points required for each level" title="Number of points required for each level">
-		<area shape="rect" coords="5,141,136,156" href="#" alt="Number of points required for each level" title="Number of points required for each level">
-		<area shape="rect" coords="5,160,136,175" href="#" alt="Greys out lines in which you have found all items" title="Greys out lines in which you have found all items">
-		<area shape="rect" coords="5,179,136,194" href="#" alt="Highlights the most important line in a table" title="Highlights the most important line in a table">
-		<area shape="rect" coords="5,198,136,213" href="#" alt="Highlights pangrams in the result list" title="Highlights pangrams in the result list">
-		<area shape="rect" coords="5,217,136,232" href="#" alt="Places the assistant where you last moved it" title="Places the assistant where you last moved it">
-	  </map>
+		<area shape="rect" coords="5,27,136,42" href="#" alt="Displays progress as a yellow bar"
+			title="Displays progress as a yellow bar">
+		<area shape="rect" coords="5,46,136,61" href="#"
+			alt="Displays the number of words and points an how may of them you have found so far"
+			title="Displays the number of words and points an how may of them you have found so far">
+		<area shape="rect" coords="5,65,136,80" href="#" alt="Number of words by length"
+			title="Number of words by length">
+		<area shape="rect" coords="5,84,136,99" href="#" alt="Number of words by first letter"
+			title="Number of words by first letter">
+		<area shape="rect" coords="5,103,136,118" href="#" alt="Emoji that shows if your last letter was right or wrong"
+			title="Emoji that shows if your last letter was right or wrong">
+		<area shape="rect" coords="5,122,136,137" href="#" alt="Number of points required for each level"
+			title="Number of points required for each level">
+		<area shape="rect" coords="5,141,136,156" href="#" alt="Number of points required for each level"
+			title="Number of points required for each level">
+		<area shape="rect" coords="5,160,136,175" href="#" alt="Greys out lines in which you have found all items"
+			title="Greys out lines in which you have found all items">
+		<area shape="rect" coords="5,179,136,194" href="#" alt="Highlights the most important line in a table"
+			title="Highlights the most important line in a table">
+		<area shape="rect" coords="5,198,136,213" href="#" alt="Highlights pangrams in the result list"
+			title="Highlights pangrams in the result list">
+		<area shape="rect" coords="5,217,136,232" href="#" alt="Places the assistant where you last moved it"
+			title="Places the assistant where you last moved it">
+	</map>
 	<script>
 		(function (d) {
 			var features = ['queryselector', 'es6array', 'arrow', 'es6collections', 'generators', 'es6number',
-					'es6object', 'es6string', 'fetch', 'sessionstorage', 'scriptasync', 'customevent',
-					'flexbox', 'matchmedia'
-				],
+				'es6object', 'es6string', 'fetch', 'sessionstorage', 'scriptasync', 'customevent',
+				'flexbox', 'matchmedia'
+			],
 				i = features.length,
 				cls = d.documentElement.classList;
 			var browserType = 'modern-browser';
