@@ -5,17 +5,15 @@
     color: inherit;
 }
 
-.sb-wordlist-items {
-    &.paginated {
-        &>li {
-            &.sba-pangram {
-                border-bottom: 2px var(--highlight-color) solid;
-            }
+.sb-wordlist-items-pag {
+    &>li {
+        &.sba-pangram {
+            border-bottom: 2px var(--highlight-color) solid;
+        }
 
-            &.sb-anagram {
-                a {
-                    color: var(--invalid-color);
-                }
+        &.sb-anagram {
+            a {
+                color: var(--invalid-color);
             }
         }
     }

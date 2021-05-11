@@ -108,11 +108,9 @@ class Positioning extends Plugin {
      * @returns {*|{top: Number, left: Number}}
      */
     validatePosition(position) {
-        console.log(position)
         if (position) {
             this.position = position;
         }
-        console.log(this.position)
         const boundaries = this.getBoundaries();
         this.position.left = Math.min(boundaries.left.max, Math.max(boundaries.left.min, this.position.left));
         this.position.top = Math.min(boundaries.top.max, Math.max(boundaries.top.min, this.position.top));

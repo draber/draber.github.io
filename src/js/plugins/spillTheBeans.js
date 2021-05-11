@@ -1,6 +1,9 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
 import Plugin from '../modules/plugin.js';
+import {
+    prefix
+} from '../modules/string.js';
 
 /**
  * Spill the beans plugin
@@ -47,13 +50,12 @@ class SpillTheBeans extends Plugin {
         pane.append(reaction);
         this.ui.append(el.summary({
             text: this.title
-        }), pane);
+        }), pane);        
 
-        (new MutationObserver(mutationsList => {
-            reaction.textContent = this.react(mutationsList.pop().target.textContent.trim());
-        })).observe(el.$('.sb-hive-input-content', app.game), {
-            childList: true
-        });
+        this.app.on(prefix('newInput'), evt => {
+            reaction.textContent = this.react(evt.detail);
+            console.log(evt.detail)
+        })
 
         this.add();
     }
