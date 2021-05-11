@@ -43,14 +43,13 @@ class App extends Widget {
      * @returns {Promise<Array>}
      */
     async getResults() {
-        const listedResults = Array.from(el.$$('li', this.resultList)).map(entry => entry.textContent.trim());
         let syncResults;
         let tries = 5;
         return await new Promise(resolve => {
             const interval = setInterval(() => {
                 syncResults = this.getSyncData();
                 if (syncResults || !tries) {
-                    resolve(syncResults || listedResults);
+                    resolve(syncResults || []);
                     clearInterval(interval);
                 }
                 tries--;
@@ -111,7 +110,8 @@ class App extends Widget {
             classNames: [prefix('container')]
         });
 
-        this.resultList = el.$('.sb-wordlist-wrapper', game);
+        this.resultList = el.$('.sb-wordlist-items-pag', game);
+        
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
@@ -152,13 +152,30 @@ class App extends Widget {
         this.dragOffset = 12;
 
         this.observer = (() => {
-            const observer = new MutationObserver(mutationsList => {
-                const node = mutationsList.pop().addedNodes[0] || null;
-                if (node && node instanceof HTMLElement && node.textContent) {
-                    this.trigger(prefix('newWord'), node.textContent.trim())
-                }
+            const observer = new MutationObserver(mutationList => {
+                mutationList.forEach(mutation => {
+                    if (mutation.type === 'childList'
+                        && mutation.target instanceof HTMLElement) {
+                        switch (true) {
+
+                            // text input
+                            case mutation.target.classList.contains('sb-hive-input-content')
+                                && !!mutation.target.textContent.trim():
+                                this.trigger(prefix('newInput'), mutation.target.textContent.trim());
+                                break;
+
+                            // term added to word list
+                            case mutation.target.isSameNode(this.resultList)
+                                && !!mutation.addedNodes.length
+                                && !!mutation.addedNodes[0].textContent.trim()
+                                && mutation.addedNodes[0] instanceof HTMLElement:
+                                this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
+                                break;
+                        }
+                    }
+                });
             });
-            observer.observe(this.resultList, {
+            observer.observe(this.game, {
                 childList: true,
                 subtree: true
             });

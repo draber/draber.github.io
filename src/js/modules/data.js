@@ -108,7 +108,7 @@ const updateLists = term => {
 const init = (_app, foundTerms) => {
     app = _app;
     initLists(foundTerms);
-    app.on(prefix('newWord'), (evt) => {
+    app.on(prefix('newWord'), evt => {
         updateLists(evt.detail)
     });
 }

@@ -34,15 +34,14 @@ class Surrender extends Plugin {
 
 	/**
 	 * Display the solution
-	 * @param {HTMLElement} resultList
 	 * @returns {Boolean} 
 	 */
-	resolve(resultList) {
+	resolve() {
 		if (this.usedOnce) {
 			return false;
 		}
 		this.app.observer.disconnect();
-		data.getList('remainders').forEach(term => resultList.append(this.buildEntry(term)));
+		data.getList('remainders').forEach(term => this.app.resultList.append(this.buildEntry(term)));
 		this.usedOnce = true;
 		this.app.trigger(prefix('wordsUpdated'));
 		return true;
@@ -73,7 +72,7 @@ class Surrender extends Plugin {
 				type: 'button'
 			},
 			events: {
-				click: () => this.resolve(el.$('.sb-wordlist-items', app.game))
+				click: () => this.resolve()
 			}
 		}));
 		this.ui.append(el.summary({
