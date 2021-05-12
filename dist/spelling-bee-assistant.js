@@ -64,7 +64,7 @@
     var url = "https://spelling-bee-assistant.app/";
     var repo = "draber/draber.github.io.git";
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
-    var prefix = "sba";
+    var prefix$1 = "sba";
 
     var version = "3.1.1";
 
@@ -73,10 +73,10 @@
         label: label,
         title: title,
         url: url,
-        prefix: prefix,
+        prefix: prefix$1,
         repo: repo,
         targetUrl: targetUrl,
-        options: JSON.parse(localStorage.getItem(prefix + '-settings') || '{}')
+        options: JSON.parse(localStorage.getItem(prefix$1 + '-settings') || '{}')
     };
     const saveOptions = () => {
         localStorage.setItem(settings.prefix + '-settings', JSON.stringify(settings.options));
@@ -86,7 +86,7 @@
     }
     settings.options.version = settings.version;
     saveOptions();
-    const get = key => {
+    const get$1 = key => {
         let current = Object.create(settings);
         for (let token of key.split('.')) {
             if (typeof current[token] === 'undefined') {
@@ -114,7 +114,7 @@
         saveOptions();
     };
     var settings$1 = {
-        get,
+        get: get$1,
         set
     };
 
@@ -131,7 +131,7 @@
             .map(word => word.toLowerCase())
             .join('-');
     };
-    const prefix$1 = (term, mode = 'c') => {
+    const prefix = (term, mode = 'c') => {
         switch (mode) {
             case 'c':
                 return camel(pf + '_' + term);
@@ -144,11 +144,11 @@
 
     let lists;
     const sbData = window.gameData.today;
-    let app;
+    let app$1;
     const completeLists = () => {
         lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.trigger(prefix$1('wordsUpdated'));
+        app$1.trigger(prefix('wordsUpdated'));
     };
     const initLists = foundTerms => {
         lists = {
@@ -189,9 +189,9 @@
         completeLists();
     };
     const init = (_app, foundTerms) => {
-        app = _app;
+        app$1 = _app;
         initLists(foundTerms);
-        app.on(prefix$1('newWord'), evt => {
+        app$1.on(prefix('newWord'), evt => {
             updateLists(evt.detail);
         });
     };
@@ -347,7 +347,7 @@
             for (const [key, plugin] of Object.entries(plugins)) {
                 this.registry.set(key, new plugin(this));
             }
-            this.trigger(prefix$1('pluginsReady'), this.registry);
+            this.trigger(prefix('pluginsReady'), this.registry);
             return this.registerTools();
         }
         registerTools() {
@@ -359,29 +359,29 @@
             this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
             this.tool.classList.add('minimizer');
             this.toolButtons.set(this.key, this.tool);
-            return this.trigger(prefix$1('toolsReady'), this.toolButtons);
+            return this.trigger(prefix('toolsReady'), this.toolButtons);
         }
         constructor(game) {
             super(settings$1.get('label'), {
                 canChangeState: true,
-                key: prefix$1('app'),
+                key: prefix('app'),
             });
             this.game = game;
             const oldInstance = el.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
-                oldInstance.dispatchEvent(new Event(prefix$1('destroy')));
+                oldInstance.dispatchEvent(new Event(prefix('destroy')));
             }
             this.registry = new Map();
             this.toolButtons = new Map();
             this.parent = el.div({
-                classNames: [prefix$1('container')]
+                classNames: [prefix('container')]
             });
             this.resultList = el.$('.sb-wordlist-items-pag', game);
             const events = {};
-            events[prefix$1('destroy')] = () => {
+            events[prefix('destroy')] = () => {
                 this.observer.disconnect();
                 this.parent.remove();
-                delete document.body.dataset[prefix$1('theme')];
+                delete document.body.dataset[prefix('theme')];
             };
             this.isDraggable = document.body.classList.contains('pz-desktop');
             this.ui = el.div({
@@ -406,13 +406,13 @@
                             switch (true) {
                                 case mutation.target.classList.contains('sb-hive-input-content')
                                     && !!mutation.target.textContent.trim():
-                                    this.trigger(prefix$1('newInput'), mutation.target.textContent.trim());
+                                    this.trigger(prefix('newInput'), mutation.target.textContent.trim());
                                     break;
                                 case mutation.target.isSameNode(this.resultList)
                                     && !!mutation.addedNodes.length
                                     && !!mutation.addedNodes[0].textContent.trim()
                                     && mutation.addedNodes[0] instanceof HTMLElement:
-                                    this.trigger(prefix$1('newWord'), mutation.addedNodes[0].textContent.trim());
+                                    this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
                                     break;
                             }
                         }
@@ -436,7 +436,7 @@
             }
             this.parent.append(this.ui);
             this.game.before(this.parent);
-            document.body.dataset[prefix$1('theme')] = 'light';
+            document.body.dataset[prefix('theme')] = 'light';
             this.toggle(this.getState());
         }
     }
@@ -482,7 +482,7 @@
             this.ui = el.style({
                 text: css
             });
-            app.on(prefix$1('destroy'), () => this.ui.remove());
+            app.on(prefix('destroy'), () => this.ui.remove());
             this.add();
         }
     }
@@ -490,7 +490,7 @@
     class DarkMode extends Plugin {
         toggle(state) {
             super.toggle(state);
-            document.body.dataset[prefix$1('theme')] = state ? 'dark' : 'light';
+            document.body.dataset[prefix('theme')] = state ? 'dark' : 'light';
             return this;
         }
         constructor(app) {
@@ -515,7 +515,7 @@
                 classNames: ['header']
             });
             this.ui.append(app.dragHandle);
-            app.on(prefix$1('toolsReady'), evt => {
+            app.on(prefix('toolsReady'), evt => {
                 const toolbar = el.div({
                     classNames: ['toolbar']
                 });
@@ -558,7 +558,7 @@
     			}
     		});
     		this.enableTool('options', 'Show set-up', 'Hide set-up');
-    		app.on(prefix$1('pluginsReady'), evt => {
+    		app.on(prefix('pluginsReady'), evt => {
     			evt.detail.forEach((plugin, key) => {
     				if (!plugin.canChangeState || plugin.tool) {
     					return false;
@@ -607,7 +607,7 @@
                     max: 100
                 }
             });
-            app.on(prefix$1('wordsUpdated'), () => {
+            app.on(prefix('wordsUpdated'), () => {
                 this.refresh();
             });
             this.refresh();
@@ -615,7 +615,7 @@
         }
     }
 
-    const get$1 = (data, table) => {
+    const get = (data, table) => {
         table.innerHTML = '';
         const tbody = el.tbody();
         data.forEach(rowData => {
@@ -631,7 +631,7 @@
         return table;
     };
     var tbl = {
-        get: get$1
+        get
     };
 
     class ScoreSoFar extends Plugin {
@@ -667,7 +667,7 @@
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
-            app.on(prefix$1('wordsUpdated'), () => {
+            app.on(prefix('wordsUpdated'), () => {
                 tbl.get(this.getData(), pane);
             });
             this.add();
@@ -704,9 +704,8 @@
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
-            this.app.on(prefix$1('newInput'), evt => {
+            this.app.on(prefix('newInput'), evt => {
                 reaction.textContent = this.react(evt.detail);
-                console.log(evt.detail);
             });
             this.add();
         }
@@ -766,9 +765,9 @@
     		this.ui.append(el.summary({
     			text: this.title
     		}), pane);
-    		app.on(prefix$1('wordsUpdated'), () => {
+    		app.on(prefix('wordsUpdated'), () => {
     			tbl.get(this.getData(), pane);
-    			app.trigger(prefix$1('paneUpdated'), {
+    			app.trigger(prefix('paneUpdated'), {
     				plugin: this
     			});
     		});
@@ -833,9 +832,9 @@
     		this.ui.append(el.summary({
     			text: this.title
     		}), pane);
-    		app.on(prefix$1('wordsUpdated'), () => {
+    		app.on(prefix('wordsUpdated'), () => {
     			tbl.get(this.getData(), pane);
-    			app.trigger(prefix$1('paneUpdated'), {
+    			app.trigger(prefix('paneUpdated'), {
     				plugin: this
     			});
     		});
@@ -879,9 +878,9 @@
             this.ui.append(el.summary({
                 text: this.title
             }), pane);
-            app.on(prefix$1('wordsUpdated'), () => {
+            app.on(prefix('wordsUpdated'), () => {
     			tbl.get(this.getData(), pane);
-    			app.trigger(prefix$1('paneUpdated'), {
+    			app.trigger(prefix('paneUpdated'), {
     				plugin: this
     			});
             });
@@ -892,7 +891,7 @@
     class Surrender extends Plugin {
     	buildEntry(term) {
     		const entry = el.li({
-    			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', prefix$1('pangram')] : ['sb-anagram']
+    			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', prefix('pangram')] : ['sb-anagram']
     		});
     		entry.append(el.a({
     			text: term,
@@ -910,7 +909,7 @@
     		this.app.observer.disconnect();
     		data.getList('remainders').forEach(term => this.app.resultList.append(this.buildEntry(term)));
     		this.usedOnce = true;
-    		this.app.trigger(prefix$1('wordsUpdated'));
+    		this.app.trigger(prefix('wordsUpdated'));
     		return true;
     	}
     	constructor(app) {
@@ -951,7 +950,7 @@
             el.$$('li', this.app.resultList).forEach(node => {
                 const term = node.textContent;
                 if (pangrams.includes(term)) {
-                    node.classList.toggle(prefix$1('pangram', 'd'), this.getState());
+                    node.classList.toggle(prefix('pangram', 'd'), this.getState());
                 }
             });
             return this;
@@ -960,7 +959,7 @@
             super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
                 canChangeState: true
             });
-            app.on(prefix$1('wordsUpdated'), () => {
+            app.on(prefix('wordsUpdated'), () => {
                 this.handleDecoration();
             });
             this.handleDecoration();
@@ -973,7 +972,7 @@
             el.$$('tr', plugin.ui).forEach((tr, i) => {
                 const rowData = Array.from(el.$$('td', tr)).map(td => /^\d+$/.test(td.textContent) ? parseInt(td.textContent) : td.textContent);
                 if (plugin.cssMarkers[this.marker](rowData, i)) {
-                    tr.classList.toggle(prefix$1(this.marker, 'd'), this.getState());
+                    tr.classList.toggle(prefix(this.marker, 'd'), this.getState());
                 }
             });
             return this;
@@ -994,7 +993,7 @@
             });
             this.plugins = new Set();
             this.marker = marker;
-            app.on(prefix$1('paneUpdated'), evt => {
+            app.on(prefix('paneUpdated'), evt => {
                 if (!evt.detail ||
                     !evt.detail.plugin ||
                     !evt.detail.plugin.cssMarkers ||
@@ -1220,12 +1219,12 @@
          Positioning
     };
 
-    const app$1 = new App(el.$('#pz-game-root'));
-    app$1.getResults()
+    const app = new App(el.$('#pz-game-root'));
+    app.getResults()
         .then(foundTerms => {
-            data.init(app$1, foundTerms);
-            app$1.registerPlugins(plugins);
-            app$1.trigger(prefix$1('wordsUpdated'));
+            data.init(app, foundTerms);
+            app.registerPlugins(plugins);
+            app.trigger(prefix('wordsUpdated'));
         });
 
 }());
