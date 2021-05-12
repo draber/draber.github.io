@@ -54,7 +54,6 @@ class SpillTheBeans extends Plugin {
 
         this.app.on(prefix('newInput'), evt => {
             reaction.textContent = this.react(evt.detail);
-            console.log(evt.detail)
         })
 
         this.add();
