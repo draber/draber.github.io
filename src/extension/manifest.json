@@ -24,6 +24,7 @@
     "spelling-bee-assistant.min.js"
   ],
   "permissions": [
+    "activeTab",
     "http://www.w3.org/2000/svg",
     "https://www.nytimes.com/puzzles/spelling-bee",
     "https://spelling-bee-assistant.app/"
