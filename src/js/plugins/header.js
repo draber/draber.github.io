@@ -26,7 +26,7 @@ class Header extends Plugin {
         })
 
         this.ui.append(app.dragHandle);
-        
+
         app.on(prefix('toolsReady'), evt => {
             const toolbar = el.div({
                 classNames: ['toolbar']

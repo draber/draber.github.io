@@ -2,6 +2,7 @@
     "label": "Spelling Bee Assistant",
     "title": "Assistant",
     "url": "https://spelling-bee-assistant.app/",
+    "domain": "spelling-bee-assistant.app",
     "repo": "draber/draber.github.io.git",
     "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
     "twitter": "@d_raber",
@@ -10,6 +11,10 @@
         "manifest": {
             "template": "src/templates/extension/manifest.json",
             "output": "src/extension/manifest.json"
+        },
+        "content": {
+            "template": "src/templates/extension/content.js",
+            "output": "src/extension/content.js"
         },
         "sba": "src/extension/spelling-bee-assistant.js",
         "sba-min": "src/extension/spelling-bee-assistant.min.js",

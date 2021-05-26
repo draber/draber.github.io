@@ -14,48 +14,13 @@ class Positioning extends Plugin {
      * Append App.ui to DOM
      */
     add() {
-        this.app.toggleVisibility();
-        this.waitUntilAfterSplash().then(() => {
-            const stored = this.getState();
-            this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
-            this.reposition();
-            this.app.toggleVisibility();
+        const stored = this.getState();
+        this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
+        this.reposition();
+        if (this.app.envIs('desktop')) {
             this.enableDrag();
-            return super.add();
-        });
-    }
-
-    /**
-     * Game is locked as long as splash screen is present
-     * @param {HTMLElement} element
-     * @returns {Boolean}
-     */
-    isUnlocked(element) {
-        return element && !element.classList.contains('sb-game-locked');
-    }
-
-    /**
-     * Wait for launch screen to be closed
-     * @returns {Promise<Void>}
-     */
-    async waitUntilAfterSplash() {
-        const target = el.$('.sb-content-box', this.app.game);
-        return new Promise((resolve, reject) => {
-            if (this.isUnlocked(target)) {
-                resolve();
-            }
-            let launchObserver = new MutationObserver(() => {
-                if (this.isUnlocked(target)) {
-                    launchObserver.disconnect();
-                    resolve();
-                } else {
-                    reject()
-                }
-            })
-            launchObserver.observe(target, {
-                attributes: true
-            });
-        });
+        }
+        return super.add();
     }
 
     /**
@@ -89,10 +54,11 @@ class Positioning extends Plugin {
         const areaRect = this.app.dragArea.getBoundingClientRect();
         const parentRect = this.app.ui.parentNode.getBoundingClientRect();
         const appRect = this.app.ui.getBoundingClientRect();
+        const wordListRect = el.$('.sb-recent-words-wrap').getBoundingClientRect();
 
         return {
             top: {
-                min: this.offset.top,
+                min: this.app.envIs('desktop') ? this.offset.top : wordListRect.top + wordListRect.height + this.offset.top,
                 max: areaRect.height - appRect.height - this.offset.bottom
             },
             left: {
@@ -164,8 +130,17 @@ class Positioning extends Plugin {
      * @returns {Positioning}
      */
     reposition() {
-        this.validatePosition();
-
+        let style;
+        if(this.app.envIs('desktop')){
+            this.validatePosition();
+        }
+        else {
+            const boundaries = this.getBoundaries();
+            this.position = {
+                top: boundaries.top.min,
+                left: boundaries.left.max,
+            }
+        }
         Object.assign(this.app.ui.style, {
             left: this.position.left + 'px',
             top: this.position.top + 'px'
@@ -182,26 +157,43 @@ class Positioning extends Plugin {
 
         this.app.dragHandle.style.cursor = 'move';
         this.app.on('pointerdown', evt => {
-            this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
-        }).on('pointerup', () => {
-            this.isLastTarget = false;
-        }).on('dragend', evt => {
-            this.position = this.getPosition(evt);
-            this.reposition()
-            evt.target.style.opacity = '1';
-        }).on('dragstart', evt => {
-            if (!this.isLastTarget) {
-                evt.preventDefault();
-                return false;
-            }
-            evt.target.style.opacity = '.2';
-            this.position = this.getPosition();
-            this.mouse = this.getMouse(evt);
-        })
+                this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
+            }).on('pointerup', () => {
+                this.isLastTarget = false;
+            }).on('dragend', evt => {
+                this.position = this.getPosition(evt);
+                this.reposition()
+                evt.target.style.opacity = '1';
+            }).on('dragstart', evt => {
+                if (!this.isLastTarget) {
+                    evt.preventDefault();
+                    return false;
+                }
+                evt.target.style.opacity = '.2';
+                this.position = this.getPosition();
+                this.mouse = this.getMouse(evt);
+            })
             .on('dragover', evt => evt.preventDefault());
 
         this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
         return this;
+    }
+
+    getRequiredWidth() {
+        const appRect = this.app.ui.getBoundingClientRect();
+        console.log(appRect, this.app.ui)
+        return appRect.width + this.offset.left - this.offset.right;
+    }
+
+    getAvailableWidth() {
+        const controlBox = el.$('.sb-controls', this.app.game);
+        const cbRect = controlBox.getBoundingClientRect();
+        const space = {
+            left: cbRect.left - this.offset.left - this.offset.right,
+            // height: this.app.game.getBoundingClientRect().height - this.offset.top - this.offset.bottom
+        }
+        space.right = space.left;
+        return space;
     }
 
     /**
@@ -219,7 +211,7 @@ class Positioning extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Memorize position', 'Places the assistant where you last moved it', {
+        super(app, 'Memorize position', 'Places the assistant where it had been moved to last time', {
             key: 'positioning',
             canChangeState: true
         });
@@ -230,7 +222,11 @@ class Positioning extends Plugin {
          */
         this.mouse;
 
-        this.position;
+        /**
+         * How close the draggable object can come to the edges of the drag area
+         * @type {{top: *, left: *, bottom: *, right: *}|{top: number, left: number, bottom: number, right: number}}
+         */
+        this.offset = this.getOffset(this.app.dragOffset || 0);
 
         /**
          * Helps to determine if the the draggable object has been dragged by the handle
@@ -238,21 +234,15 @@ class Positioning extends Plugin {
          */
         this.isLastTarget = false;
 
-        if (!this.app.isDraggable) {
+        if (!this.app.envIs('desktop')) {
             return this;
         }
-
-        /**
-         * How close the draggable object can come to the edges of the drag area
-         * @type {{top: *, left: *, bottom: *, right: *}|{top: number, left: number, bottom: number, right: number}}
-         */
-        this.offset = this.getOffset(this.app.dragOffset || 0);
-
-        this.add();
 
         ['orientationchange', 'resize'].forEach(handler => {
             window.addEventListener(handler, () => this.reposition());
         })
+
+        this.add();
     }
 }
 

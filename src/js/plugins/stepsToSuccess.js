@@ -47,32 +47,36 @@ class StepsToSuccess extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Steps to success', 'Number of points required for each level', {
+        super(app, 'Steps to success', 'The number of points required for each level', {
             canChangeState: true
         });
 
-        this.ui = el.details();
 
         this.cssMarkers = {
             completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
             preeminent: rowData => rowData[1] === this.getCurrentTier()
         }
-        
-		// content pane        
-		const pane = el.table({
+
+        // content pane        
+        const pane = el.table({
             classNames: ['pane']
         });
 
-        this.ui.append(el.summary({
-            text: this.title
-        }), pane);
+        this.ui = el.details({
+            html: [
+                el.summary({
+                    text: this.title
+                }),
+                pane
+            ]
+        });
 
         // update on demand
         app.on(prefix('wordsUpdated'), () => {
-			tbl.get(this.getData(), pane);
-			app.trigger(prefix('paneUpdated'), {
-				plugin: this
-			})
+            tbl.get(this.getData(), pane);
+            app.trigger(prefix('paneUpdated'), {
+                plugin: this
+            })
         });
 
         this.add();

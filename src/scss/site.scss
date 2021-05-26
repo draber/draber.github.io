@@ -457,6 +457,7 @@ textarea.card {
 }
 
 #requirement-chart {
+    overflow: auto;
     svg {
         display: inline-block;
         width: 1.2rem;
@@ -495,6 +496,7 @@ td {
     text-align: left;
     padding: .2rem 1rem;
     font-size: 1.3rem;
+    white-space: nowrap;
 }
 
 tr:nth-child(n+1) td:nth-child(n+2) {

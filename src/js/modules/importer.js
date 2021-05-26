@@ -1,4 +1,5 @@
 import Styles from '../plugins/styles.js';
+import Launcher from '../plugins/launcher.js';
 import DarkMode from '../plugins/darkMode.js';
 import Header from '../plugins/header.js';
 import SetUp from '../plugins/setUp.js';
@@ -11,6 +12,7 @@ import StepsToSuccess from '../plugins/stepsToSuccess.js';
 import Surrender from '../plugins/surrender.js';
 import HighlightPangrams from '../plugins/highlightPangrams.js';
 import TrMarkCompleted from '../plugins/trMarkCompleted.js';
+import TrHideCompleted from '../plugins/trHideCompleted.js';
 import TrMarkPreeminent from '../plugins/trMarkPreeminent.js';
 import Footer from '../plugins/footer.js';
 import Positioning from '../plugins/positioning.js';
@@ -20,6 +22,7 @@ import Positioning from '../plugins/positioning.js';
  */
 export default {
      Styles,
+     Launcher,
      DarkMode,
      Header,
      SetUp,
@@ -31,6 +34,7 @@ export default {
      StepsToSuccess,
      Surrender,
      TrMarkCompleted,
+     TrHideCompleted,
      TrMarkPreeminent,
      HighlightPangrams,
      Footer,

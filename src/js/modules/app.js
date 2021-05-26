@@ -1,6 +1,7 @@
 import el from './element.js';
 import settings from './settings.js';
 import data from './data.js';
+import plugins from './importer.js';
 import Widget from './widget.js';
 import {
     prefix
@@ -16,13 +17,6 @@ import {
 class App extends Widget {
 
     /**
-     * Show/Hide UI
-     */
-    toggleVisibility() {
-        this.ui.classList.toggle('hidden');
-    }
-
-    /**
      * Retrieve sync data
      * @returns {Boolean|Array}
      */
@@ -36,6 +30,15 @@ class App extends Widget {
             return false;
         }
         return sync.words || [];
+    }
+
+    /**
+     * Retrieve environment
+     * @param {String} env desktop|mobile
+     * @returns {Boolean}
+     */
+    envIs(env) {
+        return document.body.classList.contains('pz-' + env);
     }
 
     /**
@@ -80,9 +83,6 @@ class App extends Widget {
                 this.toolButtons.set(plugin.key, plugin.tool);
             }
         })
-        this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
-        this.tool.classList.add('minimizer');
-        this.toolButtons.set(this.key, this.tool);
         return this.trigger(prefix('toolsReady'), this.toolButtons);
     }
 
@@ -119,11 +119,9 @@ class App extends Widget {
             delete document.body.dataset[prefix('theme')];
         };
 
-        this.isDraggable = document.body.classList.contains('pz-desktop');
-
         this.ui = el.div({
             attributes: {
-                draggable: this.isDraggable
+                draggable: this.envIs('desktop')
             },
             data: {
                 id: this.key,
@@ -159,8 +157,7 @@ class App extends Widget {
                         switch (true) {
 
                             // text input
-                            case mutation.target.classList.contains('sb-hive-input-content')
-                                && !!mutation.target.textContent.trim():
+                            case mutation.target.classList.contains('sb-hive-input-content'):
                                 this.trigger(prefix('newInput'), mutation.target.textContent.trim());
                                 break;
 
@@ -182,6 +179,14 @@ class App extends Widget {
             return observer;
         })();
 
+        this.modalWrapper = el.$('.sb-modal-wrapper');
+        const modalObserver = new MutationObserver(mutationList => {
+            this.ui.parentNode.style.zIndex = document.body.dataset[prefix('hasModal')] = !!mutationList.pop().target.hasChildNodes();
+        });
+        modalObserver.observe(this.modalWrapper, {
+            childList: true
+        });
+
         // minimize on smaller screens
         const mql = window.matchMedia('(max-width: 1196px)');
         mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));
@@ -195,11 +200,19 @@ class App extends Widget {
             wordlistToggle.dispatchEvent(new Event('click'));
         }
 
-        this.parent.append(this.ui);
-        this.game.before(this.parent);
-        document.body.dataset[prefix('theme')] = 'light';
+        this.game.addEventListener(prefix('gameReady'), () => {
+            this.getResults()
+            .then(foundTerms => {
+                data.init(this, foundTerms);
+                this.parent.append(this.ui);
+                this.game.before(this.parent);
+                this.registerPlugins(plugins);
+                this.trigger(prefix('wordsUpdated'));
+                this.toggle(this.getState());
+            });
+        })
 
-        this.toggle(this.getState());
+
     }
 }
 

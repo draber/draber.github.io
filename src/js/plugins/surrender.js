@@ -19,17 +19,16 @@ class Surrender extends Plugin {
 	 * @returns {HTMLElement}
 	 */
 	buildEntry(term) {
-		const entry = el.li({
-			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', prefix('pangram')] : ['sb-anagram']
+		return el.li({
+			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', prefix('pangram')] : ['sb-anagram'],
+			html: el.a({
+				text: term,
+				attributes: {
+					href: `https://www.google.com/search?q=${term}`,
+					target: '_blank'
+				}
+			})
 		});
-		entry.append(el.a({
-			text: term,
-			attributes: {
-				href: `https://www.google.com/search?q=${term}`,
-				target: '_blank'
-			}
-		}));
-		return entry;
 	}
 
 	/**
@@ -59,25 +58,27 @@ class Surrender extends Plugin {
 		 */
 		this.usedOnce = false;
 
-		this.ui = el.details();
-
-		const pane = el.div({
-			classNames: ['pane']
+		this.ui = el.details({
+			html: [
+				el.summary({
+					text: this.title
+				}),
+				el.div({
+					classNames: ['pane'],
+					html: el.button({
+						tag: 'button',
+						classNames: ['hive-action'],
+						text: 'Display answers',
+						attributes: {
+							type: 'button'
+						},
+						events: {
+							click: () => this.resolve()
+						}
+					})
+				})
+			]
 		});
-		pane.append(el.button({
-			tag: 'button',
-			classNames: ['hive-action'],
-			text: 'Display answers',
-			attributes: {
-				type: 'button'
-			},
-			events: {
-				click: () => this.resolve()
-			}
-		}));
-		this.ui.append(el.summary({
-			text: this.title
-		}), pane);
 
 		this.add();
 	}

@@ -20,6 +20,12 @@ class Widget {
         return typeof stored !== 'undefined' ? stored : this.defaultState;
     }
 
+    setState(state) {
+        if (this.canChangeState) {
+            settings.set(`options.${this.key}`, state);
+        }
+    }
+
     /**
      * Switches plugins on and off
      * @param {boolean} state
@@ -29,7 +35,7 @@ class Widget {
         if (!this.canChangeState) {
             return this;
         }
-        settings.set(`options.${this.key}`, state);
+        this.setState(state);
         if (this.hasUi()) {
             this.ui.classList.toggle('inactive', !state);
         }
@@ -56,10 +62,9 @@ class Widget {
             },
             data: {
                 tool: this.key
-            }
-
+            },
+            html: getIcon(iconKey)
         })
-        this.tool.append(getIcon(iconKey));
         return this;
     }
 
