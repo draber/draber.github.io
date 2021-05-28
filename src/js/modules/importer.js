@@ -38,5 +38,5 @@ export default {
      TrMarkPreeminent,
      HighlightPangrams,
      Footer,
-     Positioning
+   //  Positioning
 }

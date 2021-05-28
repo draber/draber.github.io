@@ -235,7 +235,7 @@
         getCenterLetter
     };
 
-    var css = "[data-sba-theme=light]{--sba0:#000;--sba1:#fff;--sba2:rgba(255,255,255,.85);--sba3:#dcdcdc;--sba4:#e6e6e6;--sba5:#a2a2a2;}[data-sba-theme=dark]{--sba0:#e7eae1;--sba1:#111;--sba2:rgba(17,17,17,.85);--sba3:#333;--sba4:#393939;--sba5:#666;}html{--sba6: rgb(248, 205, 5);}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--sba6) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--sba5)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--sba0)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--sba1)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--sba2);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--sba0)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--sba4)}[data-sba-theme=dark] .sb-message{background:var(--sba4)}[data-sba-theme=dark] .sb-input-invalid{color:var(--sba5)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--sba6);fill:var(--sba6);color:var(--sba1)}[data-sba-theme=dark] .sb-input-bright{color:var(--sba6)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--sba4)}[data-sba-theme=dark] .cell-fill{stroke:var(--sba1)}[data-sba-theme=dark] .cell-letter{fill:var(--sba0)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--sba1)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--sba4);color:var(--sba0)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--sba4)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--sba3) !important}[data-ui=setUp] li{position:relative;margin-left:22px}[data-ui=setUp] label{cursor:pointer;overflow:hidden}[data-ui=setUp] label:before{content:\"\";border:2px solid var(--sba3);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUp] input:checked:after{content:\"✔\";color:var(--sba6);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUp] b{font-weight:bold}[data-ui=setUp] i{font-style:italic}[data-ui=setUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-modal=true] .sbaContainer{z-index:3}.sba{position:absolute;left:100%;top:64px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--sba1);visibility:visible;opacity:1;border-width:1px;border-color:var(--sba3);border-radius:6px;border-style:solid}.sba.inactive{visibility:hidden;opacity:0}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--sba3) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--sba6);height:4px}.sba progress::-moz-progress-bar{background-color:var(--sba6)}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:20px;padding:1px 15px 0 21px;background:var(--sba4);color:var(--sba0);cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}.sba .pane{border:1px solid var(--sba3);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--sba6) !important}.sba tr.sba-completed{color:var(--sba5);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--sba3);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--sba3);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--sba3);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--sba2) 56.65%, var(--sba1) 100%)}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--sba3);padding-top:10px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 767.98px){.sba{top:167px}.pz-mobile .sba{top:108px;width:136px}.pz-mobile .sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba [data-ui=footer]{display:none}}";
+    var css = "[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}[data-ui=setUp] li{position:relative;margin-left:22px}[data-ui=setUp] label{cursor:pointer;overflow:hidden}[data-ui=setUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUp] b{font-weight:bold}[data-ui=setUp] i{font-style:italic}[data-ui=setUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}.sba{position:absolute;left:100%;top:64px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:20px;padding:1px 15px 0 21px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 767.98px){.sba{top:167px}.pz-mobile .sba{top:108px;width:136px}.pz-mobile .sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba [data-ui=footer]{display:none}}";
 
     const icons = {
         options: {
@@ -287,6 +287,7 @@
             if (this.canChangeState) {
                 settings$1.set(`options.${this.key}`, state);
             }
+            return this;
         }
         toggle(state) {
             if (!this.canChangeState) {
@@ -341,6 +342,7 @@
             this.key = key || camel(title);
             this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
             this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
+            this.setState(this.getState());
             this.ui;
         }
     }
@@ -355,7 +357,6 @@
             return this;
         }
         add(method = 'append') {
-            this.setState(this.getState());
             return this.attach(method);
         }
         constructor(app, title, description, {
@@ -404,7 +405,7 @@
                 text: settings$1.get('title'),
                 events: {
                     click: () => {
-                        this.app.toggle(this.app.getState());
+                        this.app.toggle(!this.app.getState());
                     }
                 },
                 attributes: {
@@ -1134,160 +1135,6 @@
         }
     }
 
-    class Positioning extends Plugin {
-        add() {
-            const stored = this.getState();
-            this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
-            this.reposition();
-            if (this.app.envIs('desktop')) {
-                this.enableDrag();
-            }
-            return super.add();
-        }
-        getOffset(offset) {
-            return !isNaN(offset) ? {
-                top: offset,
-                right: offset,
-                bottom: offset,
-                left: offset
-            } : {
-                ...{
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0
-                },
-                ...offset
-            }
-        }
-        getBoundaries() {
-            const areaRect = this.app.dragArea.getBoundingClientRect();
-            const parentRect = this.app.ui.parentNode.getBoundingClientRect();
-            const appRect = this.app.ui.getBoundingClientRect();
-            const wordListRect = el.$('.sb-recent-words-wrap').getBoundingClientRect();
-            return {
-                top: {
-                    min: this.app.envIs('desktop') ? this.offset.top : wordListRect.top + wordListRect.height + this.offset.top,
-                    max: areaRect.height - appRect.height - this.offset.bottom
-                },
-                left: {
-                    min: this.offset.left - parentRect.left,
-                    max: areaRect.width - parentRect.left - appRect.width - this.offset.right
-                }
-            }
-        }
-        validatePosition(position) {
-            if (position) {
-                this.position = position;
-            }
-            const boundaries = this.getBoundaries();
-            this.position.left = Math.min(boundaries.left.max, Math.max(boundaries.left.min, this.position.left));
-            this.position.top = Math.min(boundaries.top.max, Math.max(boundaries.top.min, this.position.top));
-            return this.position;
-        }
-        getMouse(evt) {
-            return {
-                left: evt.screenX,
-                top: evt.screenY
-            }
-        }
-        getPosition(evt) {
-            let coords;
-            if (evt) {
-                const mouse = this.getMouse(evt);
-                coords = {
-                    left: this.position.left + mouse.left - this.mouse.left,
-                    top: this.position.top += mouse.top - this.mouse.top
-                };
-            } else {
-                const style = getComputedStyle(this.app.ui);
-                let left = parseInt(style.left);
-                if (style.left.endsWith('%')) {
-                    left = left * parseInt(getComputedStyle(el.$('.sbaContainer')).width) / 100;
-                }
-                coords = {
-                    top: parseInt(style.top),
-                    left
-                };
-            }
-            return this.validatePosition(coords);
-        }
-        reposition() {
-            if(this.app.envIs('desktop')){
-                this.validatePosition();
-            }
-            else {
-                const boundaries = this.getBoundaries();
-                this.position = {
-                    top: boundaries.top.min,
-                    left: boundaries.left.max,
-                };
-            }
-            Object.assign(this.app.ui.style, {
-                left: this.position.left + 'px',
-                top: this.position.top + 'px'
-            });
-            this.toggle(this.getState() ? this.position : false);
-            return this;
-        }
-        enableDrag() {
-            this.app.dragHandle.style.cursor = 'move';
-            this.app.on('pointerdown', evt => {
-                    this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
-                }).on('pointerup', () => {
-                    this.isLastTarget = false;
-                }).on('dragend', evt => {
-                    this.position = this.getPosition(evt);
-                    this.reposition();
-                    evt.target.style.opacity = '1';
-                }).on('dragstart', evt => {
-                    if (!this.isLastTarget) {
-                        evt.preventDefault();
-                        return false;
-                    }
-                    evt.target.style.opacity = '.2';
-                    this.position = this.getPosition();
-                    this.mouse = this.getMouse(evt);
-                })
-                .on('dragover', evt => evt.preventDefault());
-            this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
-            return this;
-        }
-        getRequiredWidth() {
-            const appRect = this.app.ui.getBoundingClientRect();
-            console.log(appRect, this.app.ui);
-            return appRect.width + this.offset.left - this.offset.right;
-        }
-        getAvailableWidth() {
-            const controlBox = el.$('.sb-controls', this.app.game);
-            const cbRect = controlBox.getBoundingClientRect();
-            const space = {
-                left: cbRect.left - this.offset.left - this.offset.right,
-            };
-            space.right = space.left;
-            return space;
-        }
-        toggle(state) {
-            return super.toggle(state ? this.position : state);
-        }
-        constructor(app) {
-            super(app, 'Memorize position', 'Places the assistant where it had been moved to last time', {
-                key: 'positioning',
-                canChangeState: true
-            });
-            this.mouse;
-            this.offset = this.getOffset(this.app.dragOffset || 0);
-            this.isLastTarget = false;
-            if (!this.app.envIs('desktop')) {
-                return this;
-            }
-            ['orientationchange', 'resize'].forEach(handler => {
-                window.addEventListener(handler, () => this.reposition());
-            });
-            this.add();
-        }
-    }
-
     var plugins = {
          Styles,
          Launcher,
@@ -1306,7 +1153,6 @@
          TrMarkPreeminent,
          HighlightPangrams,
          Footer,
-         Positioning
     };
 
     class App extends Widget {
@@ -1359,6 +1205,8 @@
                 key: prefix('app'),
             });
             this.game = game;
+            this.gameWrapper = game.parentElement;
+            this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
             const oldInstance = el.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
                 oldInstance.dispatchEvent(new Event(prefix('destroy')));
@@ -1375,6 +1223,10 @@
                 this.parent.remove();
                 delete document.body.dataset[prefix('theme')];
             };
+            const classNames = [settings$1.get('prefix')];
+            if (this.getState() === false) {
+                classNames.push('inactive');
+            }
             this.ui = el.div({
                 attributes: {
                     draggable: this.envIs('desktop')
@@ -1383,7 +1235,7 @@
                     id: this.key,
                     version: settings$1.get('version')
                 },
-                classNames: [settings$1.get('prefix')],
+                classNames,
                 events: events
             });
             this.dragHandle = this.ui;
@@ -1392,55 +1244,50 @@
             this.observer = (() => {
                 const observer = new MutationObserver(mutationList => {
                     mutationList.forEach(mutation => {
-                        if (mutation.type === 'childList'
-                            && mutation.target instanceof HTMLElement) {
-                            switch (true) {
-                                case mutation.target.classList.contains('sb-hive-input-content'):
-                                    this.trigger(prefix('newInput'), mutation.target.textContent.trim());
-                                    break;
-                                case mutation.target.isSameNode(this.resultList)
-                                    && !!mutation.addedNodes.length
-                                    && !!mutation.addedNodes[0].textContent.trim()
-                                    && mutation.addedNodes[0] instanceof HTMLElement:
-                                    this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
-                                    break;
-                            }
+                        if(!mutation.target instanceof HTMLElement) {
+                            return false;
+                        }
+                        switch(true) {
+                            case mutation.type === 'attributes' &&
+                                mutation.target.classList.contains('sb-content-box'):
+                                document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
+                                break;
+                            case mutation.type === 'childList' &&
+                                mutation.target.classList.contains('sb-hive-input-content'):
+                                this.trigger(prefix('newInput'), mutation.target.textContent.trim());
+                                break;
+                            case  mutation.type === 'childList' &&
+                                mutation.target.isSameNode(this.resultList) &&
+                                !!mutation.addedNodes.length &&
+                                !!mutation.addedNodes[0].textContent.trim() &&
+                                mutation.addedNodes[0] instanceof HTMLElement:
+                                this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
+                                break;
                         }
                     });
                 });
-                observer.observe(this.game, {
+                observer.observe(this.gameWrapper, {
                     childList: true,
-                    subtree: true
+                    subtree: true,
+                    attributes: true
                 });
                 return observer;
             })();
-            this.modalWrapper = el.$('.sb-modal-wrapper');
             const modalObserver = new MutationObserver(mutationList => {
-                this.ui.parentNode.style.zIndex = document.body.dataset[prefix('hasModal')] = !!mutationList.pop().target.hasChildNodes();
+                document.body.dataset[prefix('hasOverlay')] = !!mutationList.pop().target.hasChildNodes();
             });
             modalObserver.observe(this.modalWrapper, {
                 childList: true
             });
-            const mql = window.matchMedia('(max-width: 1196px)');
-            mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));
-            mql.dispatchEvent(new Event('change'));
-            const wordlistToggle = el.$('.sb-toggle-expand');
-            wordlistToggle.addEventListener('click', () => {
-                this.ui.style.display = el.$('.sb-toggle-icon-expanded', wordlistToggle) ? 'none' : 'block';
-            });
-            if (el.$('.sb-toggle-icon-expanded', wordlistToggle)) {
-                wordlistToggle.dispatchEvent(new Event('click'));
-            }
             this.game.addEventListener(prefix('gameReady'), () => {
                 this.getResults()
-                .then(foundTerms => {
-                    data.init(this, foundTerms);
-                    this.parent.append(this.ui);
-                    this.game.before(this.parent);
-                    this.registerPlugins(plugins);
-                    this.trigger(prefix('wordsUpdated'));
-                    this.toggle(this.getState());
-                });
+                    .then(foundTerms => {
+                        data.init(this, foundTerms);
+                        this.parent.append(this.ui);
+                        this.game.before(this.parent);
+                        this.registerPlugins(plugins);
+                        this.trigger(prefix('wordsUpdated'));
+                    });
             });
         }
     }

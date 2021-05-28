@@ -30,7 +30,7 @@ class Launcher extends Plugin {
             text: settings.get('title'),
             events: {
                 click: () => {
-                    this.app.toggle(this.app.getState())
+                    this.app.toggle(!this.app.getState())
                 }
             },
             attributes: {

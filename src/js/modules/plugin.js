@@ -25,8 +25,6 @@ class Plugin extends Widget {
      * @returns {Widget}
      */
     add(method = 'append') {
-        // save state to localStorage
-        this.setState(this.getState());
         return this.attach(method);
     }
 

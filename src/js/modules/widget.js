@@ -20,10 +20,16 @@ class Widget {
         return typeof stored !== 'undefined' ? stored : this.defaultState;
     }
 
+    /**
+     * Write new state to memory
+     * @param {boolean} state
+     * @returns {Widget}
+     */
     setState(state) {
         if (this.canChangeState) {
             settings.set(`options.${this.key}`, state);
         }
+        return this;
     }
 
     /**
@@ -137,6 +143,12 @@ class Widget {
          * @type {boolean}
          */
         this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
+
+        /**
+         * `getState()` returns an actual value and not `undefined`
+         * This ensures that `localStorage` stores proper values
+         */
+        this.setState(this.getState());
 
         /**
          * Undefined by default, most plugins will overwrite this

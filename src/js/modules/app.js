@@ -98,6 +98,10 @@ class App extends Widget {
         });
         this.game = game;
 
+        this.gameWrapper = game.parentElement;
+
+        this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+
         const oldInstance = el.$(`[data-id="${this.key}"]`);
         if (oldInstance) {
             oldInstance.dispatchEvent(new Event(prefix('destroy')));
@@ -111,13 +115,18 @@ class App extends Widget {
         });
 
         this.resultList = el.$('.sb-wordlist-items-pag', game);
-        
+
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
             this.parent.remove();
             delete document.body.dataset[prefix('theme')];
         };
+
+        const classNames = [settings.get('prefix')];
+        if (this.getState() === false) {
+            classNames.push('inactive');
+        }
 
         this.ui = el.div({
             attributes: {
@@ -127,7 +136,7 @@ class App extends Widget {
                 id: this.key,
                 version: settings.get('version')
             },
-            classNames: [settings.get('prefix')],
+            classNames,
             events: events
         });
 
@@ -152,64 +161,57 @@ class App extends Widget {
         this.observer = (() => {
             const observer = new MutationObserver(mutationList => {
                 mutationList.forEach(mutation => {
-                    if (mutation.type === 'childList'
-                        && mutation.target instanceof HTMLElement) {
-                        switch (true) {
+                    if(!mutation.target instanceof HTMLElement) {
+                        return false;
+                    }
+                    switch(true) {
 
-                            // text input
-                            case mutation.target.classList.contains('sb-hive-input-content'):
-                                this.trigger(prefix('newInput'), mutation.target.textContent.trim());
-                                break;
+                        // result list toggles open
+                        case mutation.type === 'attributes' && 
+                            mutation.target.classList.contains('sb-content-box'):
+                            document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
+                            break;
 
-                            // term added to word list
-                            case mutation.target.isSameNode(this.resultList)
-                                && !!mutation.addedNodes.length
-                                && !!mutation.addedNodes[0].textContent.trim()
-                                && mutation.addedNodes[0] instanceof HTMLElement:
-                                this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
-                                break;
-                        }
+                        // modal is open
+                        case  mutation.type === 'childList' && 
+                            mutation.target.isSameNode(this.modalWrapper):
+                            document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();
+                            break;
+
+                        // text input
+                        case mutation.type === 'childList' && 
+                            mutation.target.classList.contains('sb-hive-input-content'):
+                            this.trigger(prefix('newInput'), mutation.target.textContent.trim());
+                            break;
+
+                        // term added to word list
+                        case  mutation.type === 'childList' && 
+                            mutation.target.isSameNode(this.resultList) &&
+                            !!mutation.addedNodes.length &&
+                            !!mutation.addedNodes[0].textContent.trim() &&
+                            mutation.addedNodes[0] instanceof HTMLElement:
+                            this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
+                            break;
                     }
                 });
             });
-            observer.observe(this.game, {
+            observer.observe(this.gameWrapper, {
                 childList: true,
-                subtree: true
+                subtree: true,
+                attributes: true
             });
             return observer;
         })();
 
-        this.modalWrapper = el.$('.sb-modal-wrapper');
-        const modalObserver = new MutationObserver(mutationList => {
-            this.ui.parentNode.style.zIndex = document.body.dataset[prefix('hasModal')] = !!mutationList.pop().target.hasChildNodes();
-        });
-        modalObserver.observe(this.modalWrapper, {
-            childList: true
-        });
-
-        // minimize on smaller screens
-        const mql = window.matchMedia('(max-width: 1196px)');
-        mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));
-        mql.dispatchEvent(new Event('change'));
-
-        const wordlistToggle = el.$('.sb-toggle-expand');
-        wordlistToggle.addEventListener('click', () => {
-            this.ui.style.display = el.$('.sb-toggle-icon-expanded', wordlistToggle) ? 'none' : 'block';
-        })
-        if (el.$('.sb-toggle-icon-expanded', wordlistToggle)) {
-            wordlistToggle.dispatchEvent(new Event('click'));
-        }
-
         this.game.addEventListener(prefix('gameReady'), () => {
             this.getResults()
-            .then(foundTerms => {
-                data.init(this, foundTerms);
-                this.parent.append(this.ui);
-                this.game.before(this.parent);
-                this.registerPlugins(plugins);
-                this.trigger(prefix('wordsUpdated'));
-                this.toggle(this.getState());
-            });
+                .then(foundTerms => {
+                    data.init(this, foundTerms);
+                    this.parent.append(this.ui);
+                    this.game.before(this.parent);
+                    this.registerPlugins(plugins);
+                    this.trigger(prefix('wordsUpdated'));
+                });
         })
 
 

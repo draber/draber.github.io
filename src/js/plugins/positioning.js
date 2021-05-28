@@ -130,7 +130,6 @@ class Positioning extends Plugin {
      * @returns {Positioning}
      */
     reposition() {
-        let style;
         if(this.app.envIs('desktop')){
             this.validatePosition();
         }
@@ -140,6 +139,7 @@ class Positioning extends Plugin {
                 top: boundaries.top.min,
                 left: boundaries.left.max,
             }
+            
         }
         Object.assign(this.app.ui.style, {
             left: this.position.left + 'px',

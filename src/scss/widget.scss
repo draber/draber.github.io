@@ -207,9 +207,9 @@ $pluginWidth: 138;
     z-index: 5;
 }
 
-[data-sba-has-modal="true"] {
+[data-sba-has-overlay="true"] {
     .sbaContainer {
-        z-index: 3;
+        z-index: -1;
     }
 }
 
@@ -222,8 +222,6 @@ $pluginWidth: 138;
     box-sizing: border-box;
     padding: 0 8px 5px;
     background: var(--body-bg-color);
-    visibility: visible;
-    opacity: 1;
 
     border: {
         width: 1px;
@@ -233,8 +231,7 @@ $pluginWidth: 138;
     }
 
     &.inactive {
-        visibility: hidden;
-        opacity: 0;
+        display: none;
     }
 
     *,
