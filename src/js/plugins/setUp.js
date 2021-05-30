@@ -29,7 +29,7 @@ class SetUp extends Popup {
 			events: {
 				click: evt => {
 					if (evt.target.tagName === 'INPUT') {
-						app.registry.get(evt.target.name).toggle(evt.target.checked);
+						app.plugins.get(evt.target.name).toggle(evt.target.checked);
 					}
 				},
 				toggle: evt => {
@@ -43,23 +43,35 @@ class SetUp extends Popup {
 		/**
 		 * Configure the launch button for this plugin
 		 */
-		this.enableTool('options', 'Show set-up', 'Hide set-up');
+		this.enableTool('options', 'Show set-up', 'Hide set-up');		
+
+        app.on(prefix('popup'), evt => {
+			if(evt.detail.plugin === this && this.getState()){
+				const options = settings.get('options');
+				el.$$('input', pane).forEach(input => {
+					console.log(input.name, !!options[input.name])
+					input.checked = !!options[input.name];
+				})
+			}
+		});
 
 		app.on(prefix('pluginsReady'), evt => {
+			const defaults = new Map();
 			evt.detail.forEach((plugin, key) => {
-				if (!plugin.canChangeState || plugin.tool) {
+				if (!plugin.canChangeState || plugin === this) {
 					return false;
 				}
+				const setting = el.input({
+					attributes: {
+						type: 'checkbox',
+						name: key,
+						checked: !!plugin.getState()
+					}
+				});
 				pane.append(el.li({
 					html: el.label({
 						html: [
-							el.input({
-								attributes: {
-									type: 'checkbox',
-									name: key,
-									checked: plugin.getState()
-								}
-							}),
+							setting,
 							el.b({
 								text: plugin.title
 							}),
@@ -69,8 +81,32 @@ class SetUp extends Popup {
 						]
 					})
 				}));
+				defaults.set(key, {
+					setting,
+					default: !!plugin.defaultState
+				});
 			})
 			this.setContent(pane);
+			this.puFooter.append(el.div({
+				classNames: [prefix('factory-reset', 'd')],
+				html: el.button({
+					classNames: ['hive-action'],
+					text: 'Reset to defaults',
+					attributes: {
+						type: 'text'
+					},
+					events: {
+						'click': () => {
+							defaults.forEach(value => {
+								if (value.setting.checked !== value.default) {
+									value.setting.click();
+								}
+							})
+						}
+					}
+
+				})
+			}))
 		})
 
 		this.add();

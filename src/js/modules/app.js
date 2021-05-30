@@ -1,7 +1,7 @@
 import el from './element.js';
 import settings from './settings.js';
 import data from './data.js';
-import plugins from './importer.js';
+import getPlugins from './importer.js';
 import Widget from './widget.js';
 import {
     prefix
@@ -62,14 +62,14 @@ class App extends Widget {
 
     /**
      * Register all plugins
-     * @param plugins
      * @returns {Widget}
      */
-    registerPlugins(plugins) {
-        for (const [key, plugin] of Object.entries(plugins)) {
-            this.registry.set(key, new plugin(this));
-        }
-        this.trigger(prefix('pluginsReady'), this.registry);
+    registerPlugins() {
+        Object.values(getPlugins(this)).forEach(plugin => {            
+            const instance = new plugin(this);
+            this.plugins.set(instance.key, instance);
+        })
+        this.trigger(prefix('pluginsReady'), this.plugins);
         return this.registerTools();
     }
 
@@ -78,7 +78,7 @@ class App extends Widget {
      * @returns {Widget}
      */
     registerTools() {
-        this.registry.forEach(plugin => {
+        this.plugins.forEach(plugin => {
             if (plugin.tool) {
                 this.toolButtons.set(plugin.key, plugin.tool);
             }
@@ -88,17 +88,16 @@ class App extends Widget {
 
     /**
      * Builds the app
-     * @param {HTMLElement} game
+     * @param {HTMLElement} gameWrapper
      */
-    constructor(game) {
+    constructor(gameWrapper) {
 
         super(settings.get('label'), {
             canChangeState: true,
             key: prefix('app'),
         });
-        this.game = game;
 
-        this.gameWrapper = game.parentElement;
+        this.gameWrapper = gameWrapper;
 
         this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
 
@@ -107,14 +106,16 @@ class App extends Widget {
             oldInstance.dispatchEvent(new Event(prefix('destroy')));
         }
 
-        this.registry = new Map();
+        this.plugins = new Map();
+        this.factorySettings = new Map();
+        
         this.toolButtons = new Map();
 
         this.parent = el.div({
             classNames: [prefix('container')]
         });
 
-        this.resultList = el.$('.sb-wordlist-items-pag', game);
+        this.resultList = el.$('.sb-wordlist-items-pag', gameWrapper);
 
         const events = {};
         events[prefix('destroy')] = () => {
@@ -150,13 +151,18 @@ class App extends Widget {
          * The area in which the app can be dragged
          * @type {HTMLElement}
          */
-        this.dragArea = this.game;
+        this.dragArea = this.gameWrapper;
 
         /**
          * The offset from the borders of the drag area in px
          * @type {int|{top: int, right: int, bottom: int, left: int}}
          */
-        this.dragOffset = 12;
+        this.dragOffset = {
+            top: 69,
+            right: 12,
+            bottom: 12,
+            left: 12
+        };
 
         this.observer = (() => {
             const observer = new MutationObserver(mutationList => {
@@ -203,13 +209,14 @@ class App extends Widget {
             return observer;
         })();
 
-        this.game.addEventListener(prefix('gameReady'), () => {
+        this.gameWrapper.addEventListener(prefix('gameReady'), () => {
             this.getResults()
                 .then(foundTerms => {
                     data.init(this, foundTerms);
                     this.parent.append(this.ui);
-                    this.game.before(this.parent);
-                    this.registerPlugins(plugins);
+                    this.gameWrapper.before(this.parent);
+                    this.gameWrapper.dataset.sbaActive = this.getState();
+                    this.registerPlugins();
                     this.trigger(prefix('wordsUpdated'));
                 });
         })

@@ -4,14 +4,14 @@ import {
     prefix
 } from './modules/string.js';
 
-const game = el.$('#pz-game-root');
+const gameWrapper = el.$('#js-hook-game-wrapper');
 const triggers = el.$$('.pz-moment__button-wrapper .pz-moment__button.primary');
 
 triggers.forEach(trigger => {
     trigger.addEventListener('click', () => {
-        game.dispatchEvent(new Event(prefix('gameReady')));
+        gameWrapper.dispatchEvent(new Event(prefix('gameReady')));
     })
 })
 
-const app = new App(game);
+const app = new App(gameWrapper);
     

@@ -109,7 +109,7 @@ class Popup extends Plugin {
         }
 
         if (state) {
-            this.modalWrapper.append(this.ui);
+            this.modalWrapper.append(this.ui);            
             this.modalSystem.classList.add('sb-modal-open');
         } else {
             this.getContainer().append(this.ui);
@@ -117,6 +117,11 @@ class Popup extends Plugin {
         }
 
         super.toggle(state);
+        
+        this.app.trigger(prefix('popup'), {
+            plugin: this
+        })
+
         return this;
     }
 
@@ -154,7 +159,7 @@ class Popup extends Plugin {
             classNames: ['sb-modal-body']
         });
 
-        this.puFooter = el.p({
+        this.puFooter = el.div({
             classNames: ['sb-modal-message', 'sba-modal-footer'],
             html: [
                 el.a({

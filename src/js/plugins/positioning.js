@@ -17,9 +17,7 @@ class Positioning extends Plugin {
         const stored = this.getState();
         this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
         this.reposition();
-        if (this.app.envIs('desktop')) {
-            this.enableDrag();
-        }
+        this.enableDrag();
         return super.add();
     }
 
@@ -45,25 +43,28 @@ class Positioning extends Plugin {
         }
     }
 
+    getRectangles() {
+        return {
+            canvas: this.app.dragArea.getBoundingClientRect(),
+            appContainer: this.app.ui.parentNode.getBoundingClientRect(),
+            app: this.app.ui.getBoundingClientRect()
+        }
+    }
+
 
     /**
      * Translate offset to boundaries
      * @returns {{top: {min: Number, max: number}, left: {min: number, max: number}}}
      */
     getBoundaries() {
-        const areaRect = this.app.dragArea.getBoundingClientRect();
-        const parentRect = this.app.ui.parentNode.getBoundingClientRect();
-        const appRect = this.app.ui.getBoundingClientRect();
-        const wordListRect = el.$('.sb-recent-words-wrap').getBoundingClientRect();
-
         return {
             top: {
-                min: this.app.envIs('desktop') ? this.offset.top : wordListRect.top + wordListRect.height + this.offset.top,
-                max: areaRect.height - appRect.height - this.offset.bottom
+                min: this.offset.top,
+                max: this.rectangles.canvas.height - this.rectangles.app.height - this.offset.bottom
             },
             left: {
-                min: this.offset.left - parentRect.left,
-                max: areaRect.width - parentRect.left - appRect.width - this.offset.right
+                min: this.offset.left - this.rectangles.appContainer.left,
+                max: this.rectangles.canvas.width - this.rectangles.appContainer.left - this.rectangles.app.width - this.offset.right
             }
         }
     }
@@ -130,17 +131,7 @@ class Positioning extends Plugin {
      * @returns {Positioning}
      */
     reposition() {
-        if(this.app.envIs('desktop')){
-            this.validatePosition();
-        }
-        else {
-            const boundaries = this.getBoundaries();
-            this.position = {
-                top: boundaries.top.min,
-                left: boundaries.left.max,
-            }
-            
-        }
+        this.validatePosition();
         Object.assign(this.app.ui.style, {
             left: this.position.left + 'px',
             top: this.position.top + 'px'
@@ -179,23 +170,6 @@ class Positioning extends Plugin {
         return this;
     }
 
-    getRequiredWidth() {
-        const appRect = this.app.ui.getBoundingClientRect();
-        console.log(appRect, this.app.ui)
-        return appRect.width + this.offset.left - this.offset.right;
-    }
-
-    getAvailableWidth() {
-        const controlBox = el.$('.sb-controls', this.app.game);
-        const cbRect = controlBox.getBoundingClientRect();
-        const space = {
-            left: cbRect.left - this.offset.left - this.offset.right,
-            // height: this.app.game.getBoundingClientRect().height - this.offset.top - this.offset.bottom
-        }
-        space.right = space.left;
-        return space;
-    }
-
     /**
      * Memorize last state or coordinates
      * @param {Boolean} state
@@ -213,7 +187,8 @@ class Positioning extends Plugin {
 
         super(app, 'Memorize position', 'Places the assistant where it had been moved to last time', {
             key: 'positioning',
-            canChangeState: true
+            canChangeState: true,
+            defaultState: false
         });
 
         /**
@@ -234,12 +209,13 @@ class Positioning extends Plugin {
          */
         this.isLastTarget = false;
 
-        if (!this.app.envIs('desktop')) {
-            return this;
-        }
+        this.rectangles = this.getRectangles();
 
         ['orientationchange', 'resize'].forEach(handler => {
-            window.addEventListener(handler, () => this.reposition());
+            window.addEventListener(handler, () => {
+                this.rectangles = this.getRectangles();
+                this.reposition();
+            });
         })
 
         this.add();

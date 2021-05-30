@@ -235,7 +235,7 @@
         getCenterLetter
     };
 
-    var css = "[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}[data-ui=setUp] li{position:relative;margin-left:22px}[data-ui=setUp] label{cursor:pointer;overflow:hidden}[data-ui=setUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUp] b{font-weight:bold}[data-ui=setUp] i{font-style:italic}[data-ui=setUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}.sba{position:absolute;left:100%;top:64px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:20px;padding:1px 15px 0 21px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;list-style:none;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:16px;left:12px}}@media(max-width: 767.98px){.sba{top:167px}.pz-mobile .sba{top:108px;width:136px}.pz-mobile .sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba [data-ui=footer]{display:none}}";
+    var css = "[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}[data-ui=setUp] li{position:relative;margin:0 0 5px 22px}[data-ui=setUp] label{cursor:pointer;overflow:hidden}[data-ui=setUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUp] b{font-weight:bold}[data-ui=setUp] i{font-style:italic}[data-ui=setUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}[data-sba-has-overlay=true] .pz-game-wrapper{background:transparent !important}[data-sba-has-overlay=true] .sb-expanded{background:var(--body-bg-color)}.sba{position:absolute;left:100%;top:121px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;max-height:800px;transition:max-height .25s ease-in;margin-bottom:1px}.sba details.inactive{height:0;max-height:0;transition:max-height .25s ease-out;overflow:hidden;margin:0}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px}}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:73px;left:12px}}@media(max-width: 767.98px){.sba{width:130px;top:158px;left:auto;right:12px;padding:0 5px 3px}.sba [data-ui=spillTheBeans] .spill-title{display:none}[data-sba-active=true] .sb-controls{top:0;left:12px;transform:none;max-width:calc(100vw - 166px)}[data-sba-active=true] .hive-actions{max-width:calc(100vw - 166px)}[data-sba-active=true] .hive-actions .hive-action{max-width:none;min-width:auto;margin:10px 0;flex:auto;padding:10px}[data-sba-active=true] .hive-actions .hive-action:nth-child(2){margin:10px 8px;width:50px;height:38px;width:36px}.pz-mobile [data-ui=setUp] b{display:block}.pz-mobile [data-ui=setUp] i{margin-bottom:5px}.pz-mobile [data-ui=setUp] i::before{content:normal}}";
 
     const icons = {
         options: {
@@ -405,7 +405,9 @@
                 text: settings$1.get('title'),
                 events: {
                     click: () => {
-                        this.app.toggle(!this.app.getState());
+                        const nextState = !this.app.getState();
+                        this.app.toggle(nextState);
+                        this.app.gameWrapper.dataset.sbaActive = nextState;
                     }
                 },
                 attributes: {
@@ -543,6 +545,9 @@
                 this.modalSystem.classList.remove('sb-modal-open');
             }
             super.toggle(state);
+            this.app.trigger(prefix('popup'), {
+                plugin: this
+            });
             return this;
         }
         constructor(app, title, description, {
@@ -566,7 +571,7 @@
             this.puBody = el.div({
                 classNames: ['sb-modal-body']
             });
-            this.puFooter = el.p({
+            this.puFooter = el.div({
                 classNames: ['sb-modal-message', 'sba-modal-footer'],
                 html: [
                     el.a({
@@ -601,7 +606,7 @@
     			events: {
     				click: evt => {
     					if (evt.target.tagName === 'INPUT') {
-    						app.registry.get(evt.target.name).toggle(evt.target.checked);
+    						app.plugins.get(evt.target.name).toggle(evt.target.checked);
     					}
     				},
     				toggle: evt => {
@@ -612,21 +617,32 @@
     			}
     		});
     		this.enableTool('options', 'Show set-up', 'Hide set-up');
+            app.on(prefix('popup'), evt => {
+    			if(evt.detail.plugin === this && this.getState()){
+    				const options = settings$1.get('options');
+    				el.$$('input', pane).forEach(input => {
+    					console.log(input.name, !!options[input.name]);
+    					input.checked = !!options[input.name];
+    				});
+    			}
+    		});
     		app.on(prefix('pluginsReady'), evt => {
+    			const defaults = new Map();
     			evt.detail.forEach((plugin, key) => {
-    				if (!plugin.canChangeState || plugin.tool) {
+    				if (!plugin.canChangeState || plugin === this) {
     					return false;
     				}
+    				const setting = el.input({
+    					attributes: {
+    						type: 'checkbox',
+    						name: key,
+    						checked: !!plugin.getState()
+    					}
+    				});
     				pane.append(el.li({
     					html: el.label({
     						html: [
-    							el.input({
-    								attributes: {
-    									type: 'checkbox',
-    									name: key,
-    									checked: plugin.getState()
-    								}
-    							}),
+    							setting,
     							el.b({
     								text: plugin.title
     							}),
@@ -636,8 +652,31 @@
     						]
     					})
     				}));
+    				defaults.set(key, {
+    					setting,
+    					default: !!plugin.defaultState
+    				});
     			});
     			this.setContent(pane);
+    			this.puFooter.append(el.div({
+    				classNames: [prefix('factory-reset', 'd')],
+    				html: el.button({
+    					classNames: ['hive-action'],
+    					text: 'Reset to defaults',
+    					attributes: {
+    						type: 'text'
+    					},
+    					events: {
+    						'click': () => {
+    							defaults.forEach(value => {
+    								if (value.setting.checked !== value.default) {
+    									value.setting.click();
+    								}
+    							});
+    						}
+    					}
+    				})
+    			}));
     		});
     		this.add();
     	}
@@ -1135,7 +1174,141 @@
         }
     }
 
-    var plugins = {
+    class Positioning extends Plugin {
+        add() {
+            const stored = this.getState();
+            this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
+            this.reposition();
+            this.enableDrag();
+            return super.add();
+        }
+        getOffset(offset) {
+            return !isNaN(offset) ? {
+                top: offset,
+                right: offset,
+                bottom: offset,
+                left: offset
+            } : {
+                ...{
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                },
+                ...offset
+            }
+        }
+        getRectangles() {
+            return {
+                canvas: this.app.dragArea.getBoundingClientRect(),
+                appContainer: this.app.ui.parentNode.getBoundingClientRect(),
+                app: this.app.ui.getBoundingClientRect()
+            }
+        }
+        getBoundaries() {
+            return {
+                top: {
+                    min: this.offset.top,
+                    max: this.rectangles.canvas.height - this.rectangles.app.height - this.offset.bottom
+                },
+                left: {
+                    min: this.offset.left - this.rectangles.appContainer.left,
+                    max: this.rectangles.canvas.width - this.rectangles.appContainer.left - this.rectangles.app.width - this.offset.right
+                }
+            }
+        }
+        validatePosition(position) {
+            if (position) {
+                this.position = position;
+            }
+            const boundaries = this.getBoundaries();
+            this.position.left = Math.min(boundaries.left.max, Math.max(boundaries.left.min, this.position.left));
+            this.position.top = Math.min(boundaries.top.max, Math.max(boundaries.top.min, this.position.top));
+            return this.position;
+        }
+        getMouse(evt) {
+            return {
+                left: evt.screenX,
+                top: evt.screenY
+            }
+        }
+        getPosition(evt) {
+            let coords;
+            if (evt) {
+                const mouse = this.getMouse(evt);
+                coords = {
+                    left: this.position.left + mouse.left - this.mouse.left,
+                    top: this.position.top += mouse.top - this.mouse.top
+                };
+            } else {
+                const style = getComputedStyle(this.app.ui);
+                let left = parseInt(style.left);
+                if (style.left.endsWith('%')) {
+                    left = left * parseInt(getComputedStyle(el.$('.sbaContainer')).width) / 100;
+                }
+                coords = {
+                    top: parseInt(style.top),
+                    left
+                };
+            }
+            return this.validatePosition(coords);
+        }
+        reposition() {
+            this.validatePosition();
+            Object.assign(this.app.ui.style, {
+                left: this.position.left + 'px',
+                top: this.position.top + 'px'
+            });
+            this.toggle(this.getState() ? this.position : false);
+            return this;
+        }
+        enableDrag() {
+            this.app.dragHandle.style.cursor = 'move';
+            this.app.on('pointerdown', evt => {
+                    this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
+                }).on('pointerup', () => {
+                    this.isLastTarget = false;
+                }).on('dragend', evt => {
+                    this.position = this.getPosition(evt);
+                    this.reposition();
+                    evt.target.style.opacity = '1';
+                }).on('dragstart', evt => {
+                    if (!this.isLastTarget) {
+                        evt.preventDefault();
+                        return false;
+                    }
+                    evt.target.style.opacity = '.2';
+                    this.position = this.getPosition();
+                    this.mouse = this.getMouse(evt);
+                })
+                .on('dragover', evt => evt.preventDefault());
+            this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
+            return this;
+        }
+        toggle(state) {
+            return super.toggle(state ? this.position : state);
+        }
+        constructor(app) {
+            super(app, 'Memorize position', 'Places the assistant where it had been moved to last time', {
+                key: 'positioning',
+                canChangeState: true,
+                defaultState: false
+            });
+            this.mouse;
+            this.offset = this.getOffset(this.app.dragOffset || 0);
+            this.isLastTarget = false;
+            this.rectangles = this.getRectangles();
+            ['orientationchange', 'resize'].forEach(handler => {
+                window.addEventListener(handler, () => {
+                    this.rectangles = this.getRectangles();
+                    this.reposition();
+                });
+            });
+            this.add();
+        }
+    }
+
+    const plugins = {
          Styles,
          Launcher,
          DarkMode,
@@ -1153,6 +1326,13 @@
          TrMarkPreeminent,
          HighlightPangrams,
          Footer,
+         Positioning
+    };
+    const getPlugins = app => {
+         if(!app.envIs('desktop')){
+              delete plugins.Positioning;
+         }
+         return plugins
     };
 
     class App extends Widget {
@@ -1184,39 +1364,40 @@
                 }, 300);
             });
         }
-        registerPlugins(plugins) {
-            for (const [key, plugin] of Object.entries(plugins)) {
-                this.registry.set(key, new plugin(this));
-            }
-            this.trigger(prefix('pluginsReady'), this.registry);
+        registerPlugins() {
+            Object.values(getPlugins(this)).forEach(plugin => {
+                const instance = new plugin(this);
+                this.plugins.set(instance.key, instance);
+            });
+            this.trigger(prefix('pluginsReady'), this.plugins);
             return this.registerTools();
         }
         registerTools() {
-            this.registry.forEach(plugin => {
+            this.plugins.forEach(plugin => {
                 if (plugin.tool) {
                     this.toolButtons.set(plugin.key, plugin.tool);
                 }
             });
             return this.trigger(prefix('toolsReady'), this.toolButtons);
         }
-        constructor(game) {
+        constructor(gameWrapper) {
             super(settings$1.get('label'), {
                 canChangeState: true,
                 key: prefix('app'),
             });
-            this.game = game;
-            this.gameWrapper = game.parentElement;
+            this.gameWrapper = gameWrapper;
             this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
             const oldInstance = el.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
                 oldInstance.dispatchEvent(new Event(prefix('destroy')));
             }
-            this.registry = new Map();
+            this.plugins = new Map();
+            this.factorySettings = new Map();
             this.toolButtons = new Map();
             this.parent = el.div({
                 classNames: [prefix('container')]
             });
-            this.resultList = el.$('.sb-wordlist-items-pag', game);
+            this.resultList = el.$('.sb-wordlist-items-pag', gameWrapper);
             const events = {};
             events[prefix('destroy')] = () => {
                 this.observer.disconnect();
@@ -1239,8 +1420,13 @@
                 events: events
             });
             this.dragHandle = this.ui;
-            this.dragArea = this.game;
-            this.dragOffset = 12;
+            this.dragArea = this.gameWrapper;
+            this.dragOffset = {
+                top: 69,
+                right: 12,
+                bottom: 12,
+                left: 12
+            };
             this.observer = (() => {
                 const observer = new MutationObserver(mutationList => {
                     mutationList.forEach(mutation => {
@@ -1251,6 +1437,10 @@
                             case mutation.type === 'attributes' &&
                                 mutation.target.classList.contains('sb-content-box'):
                                 document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
+                                break;
+                            case  mutation.type === 'childList' &&
+                                mutation.target.isSameNode(this.modalWrapper):
+                                document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();
                                 break;
                             case mutation.type === 'childList' &&
                                 mutation.target.classList.contains('sb-hive-input-content'):
@@ -1273,32 +1463,27 @@
                 });
                 return observer;
             })();
-            const modalObserver = new MutationObserver(mutationList => {
-                document.body.dataset[prefix('hasOverlay')] = !!mutationList.pop().target.hasChildNodes();
-            });
-            modalObserver.observe(this.modalWrapper, {
-                childList: true
-            });
-            this.game.addEventListener(prefix('gameReady'), () => {
+            this.gameWrapper.addEventListener(prefix('gameReady'), () => {
                 this.getResults()
                     .then(foundTerms => {
                         data.init(this, foundTerms);
                         this.parent.append(this.ui);
-                        this.game.before(this.parent);
-                        this.registerPlugins(plugins);
+                        this.gameWrapper.before(this.parent);
+                        this.gameWrapper.dataset.sbaActive = this.getState();
+                        this.registerPlugins();
                         this.trigger(prefix('wordsUpdated'));
                     });
             });
         }
     }
 
-    const game = el.$('#pz-game-root');
+    const gameWrapper = el.$('#js-hook-game-wrapper');
     const triggers = el.$$('.pz-moment__button-wrapper .pz-moment__button.primary');
     triggers.forEach(trigger => {
         trigger.addEventListener('click', () => {
-            game.dispatchEvent(new Event(prefix('gameReady')));
+            gameWrapper.dispatchEvent(new Event(prefix('gameReady')));
         });
     });
-    new App(game);
+    new App(gameWrapper);
 
 }());

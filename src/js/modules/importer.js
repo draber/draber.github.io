@@ -17,10 +17,7 @@ import TrMarkPreeminent from '../plugins/trMarkPreeminent.js';
 import Footer from '../plugins/footer.js';
 import Positioning from '../plugins/positioning.js';
 
-/**
- * All available plugins ready for loading
- */
-export default {
+const plugins = {
      Styles,
      Launcher,
      DarkMode,
@@ -38,5 +35,17 @@ export default {
      TrMarkPreeminent,
      HighlightPangrams,
      Footer,
-   //  Positioning
+     Positioning
 }
+
+const getPlugins = app => {
+     if(!app.envIs('desktop')){
+          delete plugins.Positioning;
+     }
+     return plugins
+}
+
+/**
+ * All available plugins ready for loading
+ */
+export default getPlugins;

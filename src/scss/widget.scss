@@ -1,5 +1,14 @@
 @import './inc/colors';
 
+
+$appWidth: 160;
+$offset: 12;
+
+@function getOffset() {
+    @return $offset;
+}
+
+
 .pz-game-field {
     background: inherit;
     color: inherit;
@@ -136,14 +145,12 @@
 
 }
 
-$appWidth: 160;
-$pluginWidth: 138;
 
 [data-ui="setUp"] {
 
     li {
         position: relative;
-        margin-left: 22px;
+        margin: 0 0 5px 22px;
     }
 
     label {
@@ -211,12 +218,20 @@ $pluginWidth: 138;
     .sbaContainer {
         z-index: -1;
     }
+
+    .pz-game-wrapper {
+        background: transparent !important;
+    }
+
+    .sb-expanded {
+        background: var(--body-bg-color);
+    }
 }
 
 .sba {
     position: absolute;
     left: 100%;
-    top: 64px;
+    top: 121px;
     z-index: 3;
     width: $appWidth * 1px;
     box-sizing: border-box;
@@ -312,16 +327,6 @@ $pluginWidth: 138;
         transition: max-height 0.25s ease-in;
         margin-bottom: 1px;
 
-        &[open] {
-            summary {
-                &:before {
-                    transform: rotate(-90deg);
-                    left: 10px;
-                    top: 1px;
-                }
-            }
-        }
-
         &.inactive {
             height: 0;
             max-height: 0;
@@ -334,30 +339,14 @@ $pluginWidth: 138;
     summary {
         font-size: 13px;
         line-height: 20px;
-        padding: 1px 15px 0 21px;
+        padding: 1px 6px 0 6px;
         background: var(--area-bg-color);
         color: var(--text-color);
         cursor: pointer;
-        list-style: none;
         position: relative;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-
-        &::marker {
-            display: none
-        }
-
-        &:before {
-            content: "❯";
-            font-size: 9px;
-            position: absolute;
-            display: inline-block;
-            transform: rotate(90deg);
-            transform-origin: center;
-            left: 7px;
-            top: 0
-        }
     }
 
     .pane {
@@ -495,6 +484,44 @@ $pluginWidth: 138;
     }
 }
 
+.pz-desktop {
+    .sba {
+
+        details {
+
+            &[open] {
+                summary {
+                    &:before {
+                        transform: rotate(-90deg);
+                        left: 10px;
+                        top: 1px;
+                    }
+                }
+            }
+        }
+
+        summary {
+            list-style: none;
+            padding: 1px 15px 0 21px;
+
+            &::marker {
+                display: none
+            }
+
+            &:before {
+                content: "❯";
+                font-size: 9px;
+                position: absolute;
+                display: inline-block;
+                transform: rotate(90deg);
+                transform-origin: center;
+                left: 7px;
+                top: 0
+            }
+        }
+    }
+}
+
 
 [data-sba-theme] {
     &.pz-spelling-bee-congrats {
@@ -505,6 +532,19 @@ $pluginWidth: 138;
                         text-align: right;
                         border-top: 1px solid var(--border-color);
                         padding-top: 10px;
+                        font-size: 13px;
+                        display: flex;
+                        flex-direction: row-reverse;
+                        justify-content: space-between;
+                        align-items: center;
+                        text-align: right;
+                        border-top: 1px solid var(--border-color);
+                        padding-top: 10px;
+
+                        button {
+                            padding: 6px 10px;
+                            margin: 0
+                        }
                     }
                 }
             }
@@ -514,12 +554,6 @@ $pluginWidth: 138;
     &.pz-spelling-bee-congrats {
         .left-aligned {
             .sb-modal-content {
-                .sba-modal-footer {
-                    text-align: right;
-                    border-top: 1px solid var(--border-color);
-                    padding-top: 10px;
-                }
-
                 .sb-modal-body {
                     &::after {
                         background: linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%);
@@ -572,34 +606,77 @@ $pluginWidth: 138;
 
 
 @media (max-width: 1444px) {
+
     .sbaContainer {
         max-width: none;
     }
 
     .sba {
-        top: 16px;
-        left: 12px;
+        top: 73px;
+        left: getOffset() * 1px;
     }
 }
 
 @media (max-width: 767.98px) {
+
+    $appWidth: 130;
+
     .sba {
-        top: 167px;
+        width: $appWidth * 1px;
+        top: 158px;
+        left: auto;
+        right: getOffset() * 1px;
+        padding: 0 5px 3px;
+
+
+        [data-ui="spillTheBeans"] {
+            .spill-title {
+                display: none
+            }
+        }
+    }
+
+    [data-sba-active="true"] {
+        .sb-controls {
+            top: 0;
+            left: getOffset() * 1px;
+            transform: none;
+            max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
+        }
+
+        .hive-actions {
+            max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
+            .hive-action {
+                max-width: none;
+                min-width: auto;
+                margin: 10px 0;
+                flex: auto;
+                padding: 10px;
+
+                &:nth-child(2) {
+                    margin: 10px 8px;
+                    width: 50px;
+                    height: 38px;
+                    width: 36px;
+                }
+            }
+        }
     }
 
     .pz-mobile {
-        .sba {
-            top: 108px;
-            width: 136px;
-    
-            [data-ui="spillTheBeans"] {
-                .spill-title {
-                    display: none
-                }
+
+        [data-ui="setUp"] {
+
+            b {
+                display: block;
             }
-    
-            [data-ui="footer"] {
-                display: none
+
+            i {
+                &::before {
+                    content: normal;
+                }
+
+                margin-bottom: 5px;
             }
         }
     }
