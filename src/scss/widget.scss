@@ -323,16 +323,10 @@ $offset: 12;
 
     details {
         font-size: 90%;
-        max-height: 800px; // intentionally unrealistically high (transition)
-        transition: max-height 0.25s ease-in;
         margin-bottom: 1px;
 
         &.inactive {
-            height: 0;
-            max-height: 0;
-            transition: max-height 0.25s ease-out;
-            overflow: hidden;
-            margin: 0
+            display: none
         }
     }
 
@@ -612,7 +606,7 @@ $offset: 12;
     }
 
     .sba {
-        top: 73px;
+        top: 15px;
         left: getOffset() * 1px;
     }
 }
@@ -646,6 +640,7 @@ $offset: 12;
 
         .hive-actions {
             max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
+
             .hive-action {
                 max-width: none;
                 min-width: auto;

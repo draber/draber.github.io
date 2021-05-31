@@ -5,7 +5,6 @@ import {
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
 import tbl from '../modules/tables.js';
-import settings from '../modules/settings.js';
 
 /**
  * Steps to success plugin

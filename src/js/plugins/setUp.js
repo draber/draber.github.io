@@ -40,16 +40,10 @@ class SetUp extends Popup {
 			}
 		});
 
-		/**
-		 * Configure the launch button for this plugin
-		 */
-		this.enableTool('options', 'Show set-up', 'Hide set-up');		
-
         app.on(prefix('popup'), evt => {
 			if(evt.detail.plugin === this && this.getState()){
 				const options = settings.get('options');
 				el.$$('input', pane).forEach(input => {
-					console.log(input.name, !!options[input.name])
 					input.checked = !!options[input.name];
 				})
 			}
@@ -109,6 +103,11 @@ class SetUp extends Popup {
 			}))
 		})
 
+		// Enforce false as atrt up state
+		this.setState(false);
+
+		// Configure the launch button for this plugin
+		this.enableTool('options', 'Show set-up', 'Hide set-up');	
 		this.add();
 	}
 }

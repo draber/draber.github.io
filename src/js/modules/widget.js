@@ -5,7 +5,6 @@ import settings from './settings.js';
 import getIcon from './icons.js';
 import el from './element.js';
 
-// noinspection JSUnresolvedFunction
 /**
  * Plugin base class
  */

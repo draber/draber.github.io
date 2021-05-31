@@ -38,6 +38,11 @@ const plugins = {
      Positioning
 }
 
+/**
+ * Plugins (minus Positioning on mobiles)
+ * @param app
+ * @returns {{StartingWith: StartingWith, Positioning: Positioning, DarkMode: DarkMode, ScoreSoFar: ScoreSoFar, Surrender: Surrender, Spoilers: Spoilers, SpillTheBeans: SpillTheBeans, StepsToSuccess: StepsToSuccess, TrHideCompleted: TrHideCompleted, Header: Header, TrMarkPreeminent: TrMarkPreeminent, TrMarkCompleted: TrMarkCompleted, Footer: Footer, Launcher: Launcher, SetUp: SetUp, ProgressBar: ProgressBar, Styles: Styles, HighlightPangrams: HighlightPangrams}}
+ */
 const getPlugins = app => {
      if(!app.envIs('desktop')){
           delete plugins.Positioning;
@@ -45,7 +50,4 @@ const getPlugins = app => {
      return plugins
 }
 
-/**
- * All available plugins ready for loading
- */
 export default getPlugins;

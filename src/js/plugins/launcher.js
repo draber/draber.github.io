@@ -13,6 +13,9 @@ import settings from '../modules/settings.js';
  */
 class Launcher extends Plugin {
 
+    /**
+     * Create launcher button and append it on UI
+     */
     buildUiAndTarget() {
         let classNames = ['pz-toolbar-button__sba'];
         if (this.app.envIs('mobile')) {

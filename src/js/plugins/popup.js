@@ -102,6 +102,11 @@ class Popup extends Plugin {
         this.puSubTitle.innerHTML = subTitle;
     }
 
+    /**
+     * Open/close popup
+     * @param state
+     * @returns {Popup}
+     */
     toggle(state) {
         const closer = el.$('.sb-modal-close', this.modalWrapper);
         if (!this.getState() && closer) {

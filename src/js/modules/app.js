@@ -7,8 +7,6 @@ import {
     prefix
 } from './string.js';
 
-
-// noinspection JSUnresolvedVariable
 /**
  * App container
  * @param {HTMLElement} game
@@ -61,11 +59,29 @@ class App extends Widget {
     }
 
     /**
+     * Wait for the game to be fully displayed
+     * @returns {Promise<Boolean>}
+     */
+    async waitForFadeIn() {
+        let tries = 5;
+        return await new Promise(resolve => {
+            const interval = setInterval(() => {
+                const gameHook = el.$('#js-hook-pz-moment__game');
+                if (!tries || (gameHook && !gameHook.classList.contains('on-stage'))) {
+                    resolve(true);
+                    clearInterval(interval);
+                }
+                tries--;
+            }, 300);
+        });
+    }
+
+    /**
      * Register all plugins
      * @returns {Widget}
      */
     registerPlugins() {
-        Object.values(getPlugins(this)).forEach(plugin => {            
+        Object.values(getPlugins(this)).forEach(plugin => {
             const instance = new plugin(this);
             this.plugins.set(instance.key, instance);
         })
@@ -97,30 +113,29 @@ class App extends Widget {
             key: prefix('app'),
         });
 
-        this.gameWrapper = gameWrapper;
-
-        this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
-
+        // Kill existing instance could happen on conflict between bookmarklet and extension
         const oldInstance = el.$(`[data-id="${this.key}"]`);
         if (oldInstance) {
             oldInstance.dispatchEvent(new Event(prefix('destroy')));
         }
 
+        // plugins and toolbar
         this.plugins = new Map();
-        this.factorySettings = new Map();
-        
         this.toolButtons = new Map();
 
-        this.parent = el.div({
+        // DOM containers
+        this.gameWrapper = gameWrapper;
+        this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+        this.resultList = el.$('.sb-wordlist-items-pag', gameWrapper);
+        this.container = el.div({
             classNames: [prefix('container')]
         });
 
-        this.resultList = el.$('.sb-wordlist-items-pag', gameWrapper);
-
+        // App UI
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
-            this.parent.remove();
+            this.container.remove();
             delete document.body.dataset[prefix('theme')];
         };
 
@@ -141,16 +156,8 @@ class App extends Widget {
             events: events
         });
 
-        /**
-         * The element that is used to drag the app
-         * @type {HTMLElement}
-         */
+        // Drag related
         this.dragHandle = this.ui;
-
-        /**
-         * The area in which the app can be dragged
-         * @type {HTMLElement}
-         */
         this.dragArea = this.gameWrapper;
 
         /**
@@ -164,38 +171,39 @@ class App extends Widget {
             left: 12
         };
 
+        // Observe game for various changes
         this.observer = (() => {
             const observer = new MutationObserver(mutationList => {
                 mutationList.forEach(mutation => {
-                    if(!mutation.target instanceof HTMLElement) {
+                    if (!(mutation.target instanceof HTMLElement)) {
                         return false;
                     }
-                    switch(true) {
+                    switch (true) {
 
                         // result list toggles open
-                        case mutation.type === 'attributes' && 
-                            mutation.target.classList.contains('sb-content-box'):
+                        case mutation.type === 'attributes' &&
+                        mutation.target.classList.contains('sb-content-box'):
                             document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
                             break;
 
-                        // modal is open
-                        case  mutation.type === 'childList' && 
-                            mutation.target.isSameNode(this.modalWrapper):
+                            // modal is open
+                        case mutation.type === 'childList' &&
+                        mutation.target.isSameNode(this.modalWrapper):
                             document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();
                             break;
 
-                        // text input
-                        case mutation.type === 'childList' && 
-                            mutation.target.classList.contains('sb-hive-input-content'):
+                            // text input
+                        case mutation.type === 'childList' &&
+                        mutation.target.classList.contains('sb-hive-input-content'):
                             this.trigger(prefix('newInput'), mutation.target.textContent.trim());
                             break;
 
-                        // term added to word list
-                        case  mutation.type === 'childList' && 
-                            mutation.target.isSameNode(this.resultList) &&
-                            !!mutation.addedNodes.length &&
-                            !!mutation.addedNodes[0].textContent.trim() &&
-                            mutation.addedNodes[0] instanceof HTMLElement:
+                            // term added to word list
+                        case mutation.type === 'childList' &&
+                        mutation.target.isSameNode(this.resultList) &&
+                        !!mutation.addedNodes.length &&
+                        !!mutation.addedNodes[0].textContent.trim() &&
+                        mutation.addedNodes[0] instanceof HTMLElement:
                             this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
                             break;
                     }
@@ -209,19 +217,15 @@ class App extends Widget {
             return observer;
         })();
 
-        this.gameWrapper.addEventListener(prefix('gameReady'), () => {
-            this.getResults()
-                .then(foundTerms => {
-                    data.init(this, foundTerms);
-                    this.parent.append(this.ui);
-                    this.gameWrapper.before(this.parent);
-                    this.gameWrapper.dataset.sbaActive = this.getState();
-                    this.registerPlugins();
-                    this.trigger(prefix('wordsUpdated'));
-                });
-        })
-
-
+        Promise.all([this.getResults(), this.waitForFadeIn()])
+            .then(values => {
+                data.init(this, values[0]);
+                this.container.append(this.ui);
+                this.gameWrapper.before(this.container);
+                this.gameWrapper.dataset.sbaActive = this.getState();
+                this.registerPlugins();
+                this.trigger(prefix('wordsUpdated'));
+            });
     }
 }
 

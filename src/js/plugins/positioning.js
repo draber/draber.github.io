@@ -43,6 +43,10 @@ class Positioning extends Plugin {
         }
     }
 
+    /**
+     * Collection of various BoundingClientRect
+     * @returns {{app: DOMRect, canvas: DOMRect, appContainer: DOMRect}}
+     */
     getRectangles() {
         return {
             canvas: this.app.dragArea.getBoundingClientRect(),

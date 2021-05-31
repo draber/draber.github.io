@@ -103,7 +103,6 @@ const create = function ({
     return el;
 };
 
-// noinspection SpellCheckingInspection
 /**
  * Dispatcher for the `create()`, `$` and `$$`
  * Examples (for $, $$ see docs on the functions):

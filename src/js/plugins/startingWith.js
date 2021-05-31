@@ -100,4 +100,5 @@ class StartingWith extends Plugin {
 		this.add();
 	}
 }
+
 export default StartingWith;

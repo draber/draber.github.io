@@ -21,7 +21,7 @@
     "128": "icon128.png"
   },
   "web_accessible_resources": [
-    "spelling-bee-assistant.js"
+    "spelling-bee-assistant.min.js"
   ],
   "permissions": [
     "activeTab",
