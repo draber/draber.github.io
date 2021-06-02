@@ -5,7 +5,6 @@ import settings from './settings.js';
 import getIcon from './icons.js';
 import el from './element.js';
 
-// noinspection JSUnresolvedFunction
 /**
  * Plugin base class
  */
@@ -21,6 +20,18 @@ class Widget {
     }
 
     /**
+     * Write new state to memory
+     * @param {boolean} state
+     * @returns {Widget}
+     */
+    setState(state) {
+        if (this.canChangeState) {
+            settings.set(`options.${this.key}`, state);
+        }
+        return this;
+    }
+
+    /**
      * Switches plugins on and off
      * @param {boolean} state
      * @returns {Widget}
@@ -29,7 +40,7 @@ class Widget {
         if (!this.canChangeState) {
             return this;
         }
-        settings.set(`options.${this.key}`, state);
+        this.setState(state);
         if (this.hasUi()) {
             this.ui.classList.toggle('inactive', !state);
         }
@@ -56,10 +67,9 @@ class Widget {
             },
             data: {
                 tool: this.key
-            }
-
+            },
+            html: getIcon(iconKey)
         })
-        this.tool.append(getIcon(iconKey));
         return this;
     }
 
@@ -132,6 +142,12 @@ class Widget {
          * @type {boolean}
          */
         this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
+
+        /**
+         * `getState()` returns an actual value and not `undefined`
+         * This ensures that `localStorage` stores proper values
+         */
+        this.setState(this.getState());
 
         /**
          * Undefined by default, most plugins will overwrite this

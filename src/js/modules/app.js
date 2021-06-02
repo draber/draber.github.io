@@ -1,26 +1,18 @@
 import el from './element.js';
 import settings from './settings.js';
 import data from './data.js';
+import getPlugins from './importer.js';
 import Widget from './widget.js';
 import {
     prefix
 } from './string.js';
 
-
-// noinspection JSUnresolvedVariable
 /**
  * App container
  * @param {HTMLElement} game
  * @returns {App} app
  */
 class App extends Widget {
-
-    /**
-     * Show/Hide UI
-     */
-    toggleVisibility() {
-        this.ui.classList.toggle('hidden');
-    }
 
     /**
      * Retrieve sync data
@@ -36,6 +28,15 @@ class App extends Widget {
             return false;
         }
         return sync.words || [];
+    }
+
+    /**
+     * Retrieve environment
+     * @param {String} env desktop|mobile
+     * @returns {Boolean}
+     */
+    envIs(env) {
+        return document.body.classList.contains('pz-' + env);
     }
 
     /**
@@ -58,15 +59,33 @@ class App extends Widget {
     }
 
     /**
+     * Wait for the game to be fully displayed
+     * @returns {Promise<Boolean>}
+     */
+    async waitForFadeIn() {
+        let tries = 5;
+        return await new Promise(resolve => {
+            const interval = setInterval(() => {
+                const gameHook = el.$('#js-hook-pz-moment__game');
+                if (!tries || (gameHook && !gameHook.classList.contains('on-stage'))) {
+                    resolve(true);
+                    clearInterval(interval);
+                }
+                tries--;
+            }, 300);
+        });
+    }
+
+    /**
      * Register all plugins
-     * @param plugins
      * @returns {Widget}
      */
-    registerPlugins(plugins) {
-        for (const [key, plugin] of Object.entries(plugins)) {
-            this.registry.set(key, new plugin(this));
-        }
-        this.trigger(prefix('pluginsReady'), this.registry);
+    registerPlugins() {
+        Object.values(getPlugins(this)).forEach(plugin => {
+            const instance = new plugin(this);
+            this.plugins.set(instance.key, instance);
+        })
+        this.trigger(prefix('pluginsReady'), this.plugins);
         return this.registerTools();
     }
 
@@ -75,131 +94,138 @@ class App extends Widget {
      * @returns {Widget}
      */
     registerTools() {
-        this.registry.forEach(plugin => {
+        this.plugins.forEach(plugin => {
             if (plugin.tool) {
                 this.toolButtons.set(plugin.key, plugin.tool);
             }
         })
-        this.enableTool('arrowDown', 'Maximize assistant', 'Minimize assistant');
-        this.tool.classList.add('minimizer');
-        this.toolButtons.set(this.key, this.tool);
         return this.trigger(prefix('toolsReady'), this.toolButtons);
     }
 
     /**
      * Builds the app
-     * @param {HTMLElement} game
+     * @param {HTMLElement} gameWrapper
      */
-    constructor(game) {
+    constructor(gameWrapper) {
 
         super(settings.get('label'), {
             canChangeState: true,
             key: prefix('app'),
         });
-        this.game = game;
 
+        // Kill existing instance could happen on conflict between bookmarklet and extension
         const oldInstance = el.$(`[data-id="${this.key}"]`);
         if (oldInstance) {
             oldInstance.dispatchEvent(new Event(prefix('destroy')));
         }
 
-        this.registry = new Map();
+        // plugins and toolbar
+        this.plugins = new Map();
         this.toolButtons = new Map();
 
-        this.parent = el.div({
+        // DOM containers
+        this.gameWrapper = gameWrapper;
+        this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+        this.resultList = el.$('.sb-wordlist-items-pag', gameWrapper);
+        this.container = el.div({
             classNames: [prefix('container')]
         });
 
-        this.resultList = el.$('.sb-wordlist-items-pag', game);
-        
+        // App UI
         const events = {};
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
-            this.parent.remove();
+            this.container.remove();
             delete document.body.dataset[prefix('theme')];
         };
 
-        this.isDraggable = document.body.classList.contains('pz-desktop');
+        const classNames = [settings.get('prefix')];
+        if (this.getState() === false) {
+            classNames.push('inactive');
+        }
 
         this.ui = el.div({
             attributes: {
-                draggable: this.isDraggable
+                draggable: this.envIs('desktop')
             },
             data: {
                 id: this.key,
                 version: settings.get('version')
             },
-            classNames: [settings.get('prefix')],
+            classNames,
             events: events
         });
 
-        /**
-         * The element that is used to drag the app
-         * @type {HTMLElement}
-         */
+        // Drag related
         this.dragHandle = this.ui;
-
-        /**
-         * The area in which the app can be dragged
-         * @type {HTMLElement}
-         */
-        this.dragArea = this.game;
+        this.dragArea = this.gameWrapper;
 
         /**
          * The offset from the borders of the drag area in px
          * @type {int|{top: int, right: int, bottom: int, left: int}}
          */
-        this.dragOffset = 12;
+        this.dragOffset = {
+            top: 69,
+            right: 12,
+            bottom: 12,
+            left: 12
+        };
 
+        // Observe game for various changes
         this.observer = (() => {
             const observer = new MutationObserver(mutationList => {
                 mutationList.forEach(mutation => {
-                    if (mutation.type === 'childList'
-                        && mutation.target instanceof HTMLElement) {
-                        switch (true) {
+                    if (!(mutation.target instanceof HTMLElement)) {
+                        return false;
+                    }
+                    switch (true) {
+
+                        // result list toggles open
+                        case mutation.type === 'attributes' &&
+                        mutation.target.classList.contains('sb-content-box'):
+                            document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
+                            break;
+
+                            // modal is open
+                        case mutation.type === 'childList' &&
+                        mutation.target.isSameNode(this.modalWrapper):
+                            document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();
+                            break;
 
                             // text input
-                            case mutation.target.classList.contains('sb-hive-input-content')
-                                && !!mutation.target.textContent.trim():
-                                this.trigger(prefix('newInput'), mutation.target.textContent.trim());
-                                break;
+                        case mutation.type === 'childList' &&
+                        mutation.target.classList.contains('sb-hive-input-content'):
+                            this.trigger(prefix('newInput'), mutation.target.textContent.trim());
+                            break;
 
                             // term added to word list
-                            case mutation.target.isSameNode(this.resultList)
-                                && !!mutation.addedNodes.length
-                                && !!mutation.addedNodes[0].textContent.trim()
-                                && mutation.addedNodes[0] instanceof HTMLElement:
-                                this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
-                                break;
-                        }
+                        case mutation.type === 'childList' &&
+                        mutation.target.isSameNode(this.resultList) &&
+                        !!mutation.addedNodes.length &&
+                        !!mutation.addedNodes[0].textContent.trim() &&
+                        mutation.addedNodes[0] instanceof HTMLElement:
+                            this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
+                            break;
                     }
                 });
             });
-            observer.observe(this.game, {
+            observer.observe(this.gameWrapper, {
                 childList: true,
-                subtree: true
+                subtree: true,
+                attributes: true
             });
             return observer;
         })();
 
-        // minimize on smaller screens
-        const mql = window.matchMedia('(max-width: 1196px)');
-        mql.addEventListener('change', evt => this.toggle(!evt.currentTarget.matches));
-        mql.dispatchEvent(new Event('change'));
-
-        const wordlistToggle = el.$('.sb-toggle-expand');
-        wordlistToggle.addEventListener('click', () => {
-            this.ui.style.display = el.$('.sb-toggle-icon-expanded', wordlistToggle) ? 'none' : 'block';
-        })
-        if (el.$('.sb-toggle-icon-expanded', wordlistToggle)) {
-            wordlistToggle.dispatchEvent(new Event('click'));
-        }
-
-        this.parent.append(this.ui);
-        this.game.before(this.parent);
-        document.body.dataset[prefix('theme')] = 'light';
-
-        this.toggle(this.getState());
+        Promise.all([this.getResults(), this.waitForFadeIn()])
+            .then(values => {
+                data.init(this, values[0]);
+                this.container.append(this.ui);
+                this.gameWrapper.before(this.container);
+                this.gameWrapper.dataset.sbaActive = this.getState();
+                this.registerPlugins();
+                this.trigger(prefix('wordsUpdated'));
+            });
     }
 }
 

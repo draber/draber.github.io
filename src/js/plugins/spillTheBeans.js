@@ -30,27 +30,32 @@ class SpillTheBeans extends Plugin {
 
     constructor(app) {
 
-        super(app, 'Spill the beans', 'Emoji that shows if your last letter was right or wrong', {
+        super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
             canChangeState: true
         });
 
-        this.ui = el.details();
-
-        const pane = el.div({
-            classNames: ['pane']
-        });
-        pane.append(el.div({
-            text: 'Watch my reaction!',
-            classNames: ['spill-title']
-        }));
+        /**
+         * Emoji area
+         */
         const reaction = el.div({
             text: '😐',
             classNames: ['spill']
         });
-        pane.append(reaction);
-        this.ui.append(el.summary({
-            text: this.title
-        }), pane);        
+
+        this.ui = el.details({
+            html: [el.summary({
+                text: this.title
+            }), el.div({
+                classNames: ['pane'],
+                html: [
+                    el.div({
+                        text: 'Watch my reaction!',
+                        classNames: ['spill-title']
+                    }),
+                    reaction
+                ]
+            })]
+        });
 
         this.app.on(prefix('newInput'), evt => {
             reaction.textContent = this.react(evt.detail);

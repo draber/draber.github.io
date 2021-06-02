@@ -16,6 +16,9 @@ const settings = {
     options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 };
 
+/**
+ * Store all options in local storage
+ */
 const saveOptions = () => {
     localStorage.setItem(settings.prefix + '-settings', JSON.stringify(settings.options));
 }

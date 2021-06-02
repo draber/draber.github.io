@@ -20,13 +20,15 @@ const cssUtils = require('./modules/cssUtils.js');
 
 const args = minimist(process.argv.slice(2));
 
+let debug = !!args.d;
+
 /**
  * Creates manifest code for extension
  * @returns {String}
  */
 const getExtTemplate = template => {
     const contents = read(settings.get(template));
-    settings.set('sbaFileName', path.basename(settings.get('extension.sba-min')));
+    settings.set('sbaFileName', path.basename(settings.get(debug ? 'extension.sba' : 'extension.sba-min')));
     return substituteVars(contents, settings);
 }
 
@@ -53,9 +55,11 @@ const getCss = path => {
         file: path,
         outputStyle: 'compressed'
     }).css.toString();
-    css = cssUtils.handleCustomProps(css, {
-        prefix: settings.get('prefix')
-    });
+    if(!debug){        
+        css = cssUtils.handleCustomProps(css, {
+            prefix: settings.get('prefix')
+        });
+    }
     css = cssUtils.removeBom(css);
     css = substituteVars(css, settings);
     return css;
@@ -104,6 +108,7 @@ const getFileKeys = type => {
         ],
         extension: [
             'extension.manifest.template',
+            'extension.content.template',
             'js.plain'
         ],
         bookmarklet: [
@@ -151,6 +156,12 @@ const buildPartial = async (fileKey) => {
             tasks = [{
                 contents: await getExtTemplate('extension.manifest.template'),
                 savePath: settings.get('extension.manifest.output')
+            }];
+            break;
+        case 'extension.content.template':
+            tasks = [{
+                contents: await getExtTemplate('extension.content.template'),
+                savePath: settings.get('extension.content.output')
             }];
             break;
         case 'html.template':
@@ -210,7 +221,7 @@ const watch = async (type) => {
     fileKeys.forEach(fileKey => {
         const file = settings.get(fileKey);
         files.push(file)
-        fs.watchFile(file, () => {
+        fs.watchFile((file), () => {
             log(`Change detected on ${file}`, 'info');
             buildPartial(fileKey);
         });

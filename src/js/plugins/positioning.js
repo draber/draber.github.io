@@ -14,48 +14,11 @@ class Positioning extends Plugin {
      * Append App.ui to DOM
      */
     add() {
-        this.app.toggleVisibility();
-        this.waitUntilAfterSplash().then(() => {
-            const stored = this.getState();
-            this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
-            this.reposition();
-            this.app.toggleVisibility();
-            this.enableDrag();
-            return super.add();
-        });
-    }
-
-    /**
-     * Game is locked as long as splash screen is present
-     * @param {HTMLElement} element
-     * @returns {Boolean}
-     */
-    isUnlocked(element) {
-        return element && !element.classList.contains('sb-game-locked');
-    }
-
-    /**
-     * Wait for launch screen to be closed
-     * @returns {Promise<Void>}
-     */
-    async waitUntilAfterSplash() {
-        const target = el.$('.sb-content-box', this.app.game);
-        return new Promise((resolve, reject) => {
-            if (this.isUnlocked(target)) {
-                resolve();
-            }
-            let launchObserver = new MutationObserver(() => {
-                if (this.isUnlocked(target)) {
-                    launchObserver.disconnect();
-                    resolve();
-                } else {
-                    reject()
-                }
-            })
-            launchObserver.observe(target, {
-                attributes: true
-            });
-        });
+        const stored = this.getState();
+        this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
+        this.reposition();
+        this.enableDrag();
+        return super.add();
     }
 
     /**
@@ -80,24 +43,32 @@ class Positioning extends Plugin {
         }
     }
 
+    /**
+     * Collection of various BoundingClientRect
+     * @returns {{app: DOMRect, canvas: DOMRect, appContainer: DOMRect}}
+     */
+    getRectangles() {
+        return {
+            canvas: this.app.dragArea.getBoundingClientRect(),
+            appContainer: this.app.ui.parentNode.getBoundingClientRect(),
+            app: this.app.ui.getBoundingClientRect()
+        }
+    }
+
 
     /**
      * Translate offset to boundaries
      * @returns {{top: {min: Number, max: number}, left: {min: number, max: number}}}
      */
     getBoundaries() {
-        const areaRect = this.app.dragArea.getBoundingClientRect();
-        const parentRect = this.app.ui.parentNode.getBoundingClientRect();
-        const appRect = this.app.ui.getBoundingClientRect();
-
         return {
             top: {
                 min: this.offset.top,
-                max: areaRect.height - appRect.height - this.offset.bottom
+                max: this.rectangles.canvas.height - this.rectangles.app.height - this.offset.bottom
             },
             left: {
-                min: this.offset.left - parentRect.left,
-                max: areaRect.width - parentRect.left - appRect.width - this.offset.right
+                min: this.offset.left - this.rectangles.appContainer.left,
+                max: this.rectangles.canvas.width - this.rectangles.appContainer.left - this.rectangles.app.width - this.offset.right
             }
         }
     }
@@ -165,7 +136,6 @@ class Positioning extends Plugin {
      */
     reposition() {
         this.validatePosition();
-
         Object.assign(this.app.ui.style, {
             left: this.position.left + 'px',
             top: this.position.top + 'px'
@@ -182,22 +152,22 @@ class Positioning extends Plugin {
 
         this.app.dragHandle.style.cursor = 'move';
         this.app.on('pointerdown', evt => {
-            this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
-        }).on('pointerup', () => {
-            this.isLastTarget = false;
-        }).on('dragend', evt => {
-            this.position = this.getPosition(evt);
-            this.reposition()
-            evt.target.style.opacity = '1';
-        }).on('dragstart', evt => {
-            if (!this.isLastTarget) {
-                evt.preventDefault();
-                return false;
-            }
-            evt.target.style.opacity = '.2';
-            this.position = this.getPosition();
-            this.mouse = this.getMouse(evt);
-        })
+                this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
+            }).on('pointerup', () => {
+                this.isLastTarget = false;
+            }).on('dragend', evt => {
+                this.position = this.getPosition(evt);
+                this.reposition()
+                evt.target.style.opacity = '1';
+            }).on('dragstart', evt => {
+                if (!this.isLastTarget) {
+                    evt.preventDefault();
+                    return false;
+                }
+                evt.target.style.opacity = '.2';
+                this.position = this.getPosition();
+                this.mouse = this.getMouse(evt);
+            })
             .on('dragover', evt => evt.preventDefault());
 
         this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
@@ -219,9 +189,10 @@ class Positioning extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Memorize position', 'Places the assistant where you last moved it', {
+        super(app, 'Memorize position', 'Places the assistant where it had been moved to last time', {
             key: 'positioning',
-            canChangeState: true
+            canChangeState: true,
+            defaultState: false
         });
 
         /**
@@ -230,7 +201,11 @@ class Positioning extends Plugin {
          */
         this.mouse;
 
-        this.position;
+        /**
+         * How close the draggable object can come to the edges of the drag area
+         * @type {{top: *, left: *, bottom: *, right: *}|{top: number, left: number, bottom: number, right: number}}
+         */
+        this.offset = this.getOffset(this.app.dragOffset || 0);
 
         /**
          * Helps to determine if the the draggable object has been dragged by the handle
@@ -238,21 +213,16 @@ class Positioning extends Plugin {
          */
         this.isLastTarget = false;
 
-        if (!this.app.isDraggable) {
-            return this;
-        }
-
-        /**
-         * How close the draggable object can come to the edges of the drag area
-         * @type {{top: *, left: *, bottom: *, right: *}|{top: number, left: number, bottom: number, right: number}}
-         */
-        this.offset = this.getOffset(this.app.dragOffset || 0);
-
-        this.add();
+        this.rectangles = this.getRectangles();
 
         ['orientationchange', 'resize'].forEach(handler => {
-            window.addEventListener(handler, () => this.reposition());
+            window.addEventListener(handler, () => {
+                this.rectangles = this.getRectangles();
+                this.reposition();
+            });
         })
+
+        this.add();
     }
 }
 

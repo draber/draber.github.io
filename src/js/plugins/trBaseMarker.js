@@ -19,14 +19,16 @@ class TrBaseMarker extends Plugin {
      */
     toggleDecoration(plugin) {
         el.$$('tr', plugin.ui).forEach((tr, i) => {
-            const rowData = Array.from(el.$$('td', tr)).map(td => /^\d+$/.test(td.textContent) ? parseInt(td.textContent) : td.textContent);
+            const rowData = Array.from(el.$$('td', tr)).map(td => /^\d+$/.test(td.textContent)
+                ? parseInt(td.textContent)
+                : td.textContent);
             if (plugin.cssMarkers[this.marker](rowData, i)) {
-                tr.classList.toggle(prefix(this.marker, 'd'), this.getState());
+                tr.classList.toggle(prefix(this.className, 'd'), this.getState());
             }
         })
         return this;
     }
-    
+
     /**
      * Toggle state an decorate
      * @param {Boolean} state 
@@ -41,16 +43,21 @@ class TrBaseMarker extends Plugin {
 
     constructor(app, title, description, {
         canChangeState,
-        marker
+        defaultState = true,
+        marker,
+        className
     } = {}) {
 
         super(app, title, description, {
-            canChangeState
+            canChangeState,
+            defaultState
         });
 
         this.plugins = new Set();
 
         this.marker = marker;
+
+        this.className = className || marker;
 
         // update on demand
         app.on(prefix('paneUpdated'), evt => {

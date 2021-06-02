@@ -1,5 +1,6 @@
 import el from '../modules/element.js';
-import Plugin from '../modules/plugin.js';
+import Popup from './popup.js';
+import settings from '../modules/settings.js';
 import {
 	prefix
 } from '../modules/string.js';
@@ -10,34 +11,25 @@ import {
  * @param {App} app
  * @returns {Plugin} SetUp
  */
-class SetUp extends Plugin {
-
-	/**
-	 * Override default toggle mechanism
-	 * @param state
-	 */
-	toggle(state) {
-		super.toggle(state);
-		this.ui.open = this.getState();
-		return this;
-	}
+class SetUp extends Popup {
 
 	constructor(app) {
 
-		super(app, 'Set-up', '', {
+		super(app, settings.get('label'), 'Configure the assistant the way you want it.', {
 			canChangeState: true,
-			defaultState: false
+			defaultState: false,
+			key: 'setUp'
 		});
 
+		/**
+		 * List of options
+		 */
 		const pane = el.ul({
-			classNames: ['pane']
-		});
-
-		this.ui = el.details({
+			classNames: ['pane'],
 			events: {
 				click: evt => {
 					if (evt.target.tagName === 'INPUT') {
-						app.registry.get(evt.target.name).toggle(evt.target.checked);
+						app.plugins.get(evt.target.name).toggle(evt.target.checked);
 					}
 				},
 				toggle: evt => {
@@ -48,38 +40,74 @@ class SetUp extends Plugin {
 			}
 		});
 
-		this.enableTool('options', 'Show set-up', 'Hide set-up');
+        app.on(prefix('popup'), evt => {
+			if(evt.detail.plugin === this && this.getState()){
+				const options = settings.get('options');
+				el.$$('input', pane).forEach(input => {
+					input.checked = !!options[input.name];
+				})
+			}
+		});
 
 		app.on(prefix('pluginsReady'), evt => {
+			const defaults = new Map();
 			evt.detail.forEach((plugin, key) => {
-				if (!plugin.canChangeState || plugin.tool) {
+				if (!plugin.canChangeState || plugin === this) {
 					return false;
 				}
-				const li = el.li();
-				const label = el.label({
-					attributes: {
-						title: plugin.description
-					},
-					text: plugin.title
-				})
-				const check = el.input({
+				const setting = el.input({
 					attributes: {
 						type: 'checkbox',
 						name: key,
-						checked: plugin.getState()
+						checked: !!plugin.getState()
 					}
 				});
-				label.prepend(check)
-				li.append(label);
-				pane.append(li);
+				pane.append(el.li({
+					html: el.label({
+						html: [
+							setting,
+							el.b({
+								text: plugin.title
+							}),
+							el.i({
+								text: plugin.description
+							})
+						]
+					})
+				}));
+				defaults.set(key, {
+					setting,
+					default: !!plugin.defaultState
+				});
 			})
+			this.setContent(pane);
+			this.puFooter.append(el.div({
+				classNames: [prefix('factory-reset', 'd')],
+				html: el.button({
+					classNames: ['hive-action'],
+					text: 'Reset to defaults',
+					attributes: {
+						type: 'text'
+					},
+					events: {
+						'click': () => {
+							defaults.forEach(value => {
+								if (value.setting.checked !== value.default) {
+									value.setting.click();
+								}
+							})
+						}
+					}
+
+				})
+			}))
 		})
 
-		this.ui.append(el.summary({
-			text: this.title
-		}), pane);
+		// Enforce false as atrt up state
+		this.setState(false);
 
-		this.toggle(false);
+		// Configure the launch button for this plugin
+		this.enableTool('options', 'Show set-up', 'Hide set-up');	
 		this.add();
 	}
 }

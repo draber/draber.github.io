@@ -23,10 +23,10 @@ class Header extends Plugin {
         app.dragHandle = el.div({
             text: this.title,
             classNames: ['header']
-        })
+        });
 
         this.ui.append(app.dragHandle);
-        
+
         app.on(prefix('toolsReady'), evt => {
             const toolbar = el.div({
                 classNames: ['toolbar']

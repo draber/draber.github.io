@@ -1,4 +1,3 @@
-import settings from './settings.js';
 import Widget from './widget.js';
 
 /**
@@ -8,27 +7,25 @@ class Plugin extends Widget {
 
     /**
      * Attaches plugins to DOM, creates slot in app if needed
+     * @param {String} method
      * @returns {Widget}
      */
-    attach() {
-        this.toggle(this.getState());
+    attach(method = 'append') {
         if (!this.hasUi()) {
             return this;
         }
         this.ui.dataset.ui = this.key;
-        (this.target || this.app.ui).append(this.ui);
+        (this.target || this.app.ui)[method](this.ui);
         return this;
     }
 
     /**
      * Adds plugin to DOM and registers state in local storage
+     * @param {String} method
      * @returns {Widget}
      */
-    add() {
-        if (this.canChangeState) {
-            settings.set(`options.${this.key}`, this.getState());
-        }
-        return this.attach();
+    add(method = 'append') {
+        return this.attach(method);
     }
 
     /**

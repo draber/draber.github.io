@@ -59,11 +59,9 @@ class Spoilers extends Plugin {
 
 	constructor(app) {
 
-		super(app, 'Spoilers', 'Number of words by length', {
+		super(app, 'Spoilers', 'The number of words by length, also the number of pangrams', {
 			canChangeState: true
 		});
-
-		this.ui = el.details();
 
 		// callback functions to conditionally add the css class `prefix(key, 'd')` to a table row
 		this.cssMarkers = {
@@ -71,14 +69,19 @@ class Spoilers extends Plugin {
 			preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
 		}
 
-		// content pane        
-		const pane = el.table({
-			classNames: ['pane']
-		});
+        // content pane        
+        const pane = el.table({
+            classNames: ['pane']
+        });
 
-		this.ui.append(el.summary({
-			text: this.title
-		}), pane);
+        this.ui = el.details({
+            html: [
+                el.summary({
+                    text: this.title
+                }),
+                pane
+            ]
+        });
 
 		// update on demand
 		app.on(prefix('wordsUpdated'), () => {

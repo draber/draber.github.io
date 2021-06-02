@@ -1,17 +1,16 @@
 import el from './modules/element.js';
 import App from './modules/app.js';
-import data from './modules/data.js';
-import plugins from './modules/importer.js';
-import {
-    prefix
-} from './modules/string.js';
 
-const app = new App(el.$('#pz-game-root'));
+const gameWrapper = el.$('#js-hook-game-wrapper');
+const triggers = el.$$('.pz-moment__button-wrapper .pz-moment__button.primary');
 
-app.getResults()
-    .then(foundTerms => {
-        data.init(app, foundTerms);
-        app.registerPlugins(plugins);
-        app.trigger(prefix('wordsUpdated'));
-    });
+let app;
+
+triggers.forEach(trigger => {
+    trigger.addEventListener('click', () => {
+        if(!app) {
+            app = new App(gameWrapper);
+        }
+    })
+})
     
