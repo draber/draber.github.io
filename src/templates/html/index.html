@@ -225,16 +225,13 @@
 							Toggle <a href="#dark-mode">dark mode</a>
 						</li>
 						<li>
-							<a href="#set-up-demo"><svg>
+							<svg class="drag">
 									<use xlink:href="#icon-set-up"></use>
-								</svg></a>
-							Display the <a href="#set-up-demo">options panel</a>
+								</svg>
+							Display the options pop-up
 						</li>
-						<li>
-							<a href="#inactive"><svg class="inactive">
-									<use xlink:href="#icon-minimize"></use>
-								</svg></a>
-							<a href="#inactive">Minimize</a> the assistant
+						<li><br><br>
+							Looking for the minimizer button? Check out the new <i>{{title}}</i> button in the main menu of the game!
 						</li>
 					</ul>
 				</li>
@@ -329,6 +326,15 @@
 				</li>
 				<li class="card">
 					<h3>Other features</h3>
+					<div class="lft" id="launcher">
+						<figure class="auto-height">
+							<div class="img-box" data-state="launcher"> <img alt="Launcher"
+									src="assets/img/launcher-light.png?{{version}}&cache-id={{cacheId}}"> </div>
+							<figcaption> Launcher </figcaption>
+						</figure>
+					</div>
+					<p>You can show or hide the {{title}} directly from the main menu of the game.</p>
+					<br style="clear: left;">
 					<div class="lft">
 						<figure class="auto-height">
 							<div class="img-box" data-state="progress-bar"> <img alt="Progress Bar"
@@ -356,21 +362,20 @@
 						</figure>
 					</div>
 					<p>The most important item is in each table is highlighted. Levels or lists that you’ve already
-						cleared are greyed out.
+						cleared are greyed out. You can also choose to hide them altogether.
 					</p>
 				</li>
 				<li class="card">
 					<h3>Set-up</h3>
 					<div class="lft">
 						<figure>
-							<div class="img-box" data-state="set-up"> <img alt="Set-up" usemap="#config-tooltips"
-									src="assets/img/set-up-light.png?{{version}}&cache-id={{cacheId}}"> </div>
+							<div class="img-box" data-state="set-up-pu-crop"> <img alt="Set-up"
+									src="assets/img/set-up-pu-crop-light.png?{{version}}&cache-id={{cacheId}}"> </div>
 							<figcaption> Use only what you like </figcaption>
 						</figure>
 					</div>
 					<p>Obviously, not every feature is right for everybody. If there is anything in {{label}} that
-						doesn’t suit your needs you can simply disable it in this panel.</p>
-					<p>Hover over the options to display tooltips.</p>
+						doesn’t suit your needs you can simply disable it in this pop-up.</p>
 				</li>
 			</ul>
 			<div class="rgt"><a href="#">Back to top</a></div>
@@ -589,31 +594,6 @@
 		<area shape="rect" coords="86,0,102,20" href="#dark-mode" alt="Dark Mode" title="Dark Mode">
 		<area shape="rect" coords="104,0,119,20" href="#set-up-demo" alt="Set-up" title="Set-up">
 		<area shape="rect" coords="121,0,136,20" href="#inactive" alt="Minimize" title="Minimize">
-	</map>
-	<map id="config-tooltips" name="config-tooltips">
-		<area shape="rect" coords="5,27,136,42" href="#" alt="Displays progress as a yellow bar"
-			title="Displays progress as a yellow bar">
-		<area shape="rect" coords="5,46,136,61" href="#"
-			alt="Displays the number of words and points an how may of them you have found so far"
-			title="Displays the number of words and points an how may of them you have found so far">
-		<area shape="rect" coords="5,65,136,80" href="#" alt="Number of words by length"
-			title="Number of words by length">
-		<area shape="rect" coords="5,84,136,99" href="#" alt="Number of words by first letter"
-			title="Number of words by first letter">
-		<area shape="rect" coords="5,103,136,118" href="#" alt="Emoji that shows if your last letter was right or wrong"
-			title="Emoji that shows if your last letter was right or wrong">
-		<area shape="rect" coords="5,122,136,137" href="#" alt="Number of points required for each level"
-			title="Number of points required for each level">
-		<area shape="rect" coords="5,141,136,156" href="#" alt="Number of points required for each level"
-			title="Number of points required for each level">
-		<area shape="rect" coords="5,160,136,175" href="#" alt="Greys out lines in which you have found all items"
-			title="Greys out lines in which you have found all items">
-		<area shape="rect" coords="5,179,136,194" href="#" alt="Highlights the most important line in a table"
-			title="Highlights the most important line in a table">
-		<area shape="rect" coords="5,198,136,213" href="#" alt="Highlights pangrams in the result list"
-			title="Highlights pangrams in the result list">
-		<area shape="rect" coords="5,217,136,232" href="#" alt="Places the assistant where you last moved it"
-			title="Places the assistant where you last moved it">
 	</map>
 	<script>
 		(function (d) {

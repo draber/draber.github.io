@@ -559,6 +559,24 @@ $offset: 12;
 }
 
 
+.pz-mobile {
+    .sbaContainer {
+      //  max-width: 1080px;
+    }
+}
+
+@media (max-width: 1444px) {
+
+    .sbaContainer {
+        max-width: none;
+    }
+
+    .sba {
+        top: 15px;
+        left: getOffset() * 1px;
+    }
+}
+
 @media (min-width: 992px) {
     [data-sba-theme] {
         &.pz-page {
@@ -572,7 +590,12 @@ $offset: 12;
     }
 }
 
+// result list on the right
 @media (min-width: 768px) {
+    /** 
+    if (screen width - .sb-content-box >= ((3 * $gapWidth) + $appWidth) {
+        sba => right
+    }*/
     [data-sba-theme] {
         &.pz-page {
             [data-ui="setUp"] {
@@ -598,19 +621,7 @@ $offset: 12;
     }
 }
 
-
-@media (max-width: 1444px) {
-
-    .sbaContainer {
-        max-width: none;
-    }
-
-    .sba {
-        top: 15px;
-        left: getOffset() * 1px;
-    }
-}
-
+// result list on top
 @media (max-width: 767.98px) {
 
     $appWidth: 130;
@@ -630,33 +641,33 @@ $offset: 12;
         }
     }
 
-    [data-sba-active="true"] {
-        .sb-controls {
-            top: 0;
-            left: getOffset() * 1px;
-            transform: none;
-            max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
-        }
+    // [data-sba-active="true"] {
+    //     .sb-controls {
+    //         top: 0;
+    //         left: getOffset() * 1px;
+    //         transform: none;
+    //         max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
+    //     }
 
-        .hive-actions {
-            max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
+    //     .hive-actions {
+    //         max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
 
-            .hive-action {
-                max-width: none;
-                min-width: auto;
-                margin: 10px 0;
-                flex: auto;
-                padding: 10px;
+    //         .hive-action {
+    //             max-width: none;
+    //             min-width: auto;
+    //             margin: 10px 0;
+    //             flex: auto;
+    //             padding: 10px;
 
-                &:nth-child(2) {
-                    margin: 10px 8px;
-                    width: 50px;
-                    height: 38px;
-                    width: 36px;
-                }
-            }
-        }
-    }
+    //             &:nth-child(2) {
+    //                 margin: 10px 8px;
+    //                 width: 50px;
+    //                 height: 38px;
+    //                 width: 36px;
+    //             }
+    //         }
+    //     }
+    // }
 
     .pz-mobile {
 
