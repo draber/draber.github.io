@@ -9,10 +9,31 @@ import {
 
 /**
  * App container
- * @param {HTMLElement} game
+ * @param {HTMLElement} gameWrapper
  * @returns {App} app
  */
 class App extends Widget {
+
+    getObserverArgs() {
+        return {
+            target: this.gameWrapper,
+            options: {
+                childList: true,
+                subtree: true,
+                attributes: true
+            }
+        }
+    }
+
+    /**
+     * Whether the splash screen has gone and the content box isn't set to `sb-game-locked`
+     * @returns {Boolean}
+     */
+    gameIsUnlocked() {
+        const splash = el.$('#js-hook-pz-moment__welcome', this.gameWrapper);
+        const contentBox = el.$('.sb-content-box', this.gameWrapper);
+        return splash && contentBox && !contentBox.classList.contains('sb-game-locked');
+    }
 
     /**
      * Retrieve sync data
@@ -44,11 +65,10 @@ class App extends Widget {
      * @returns {Promise<Array>}
      */
     async getResults() {
-        let syncResults;
-        let tries = 5;
+        let tries = 50;
         return await new Promise(resolve => {
             const interval = setInterval(() => {
-                syncResults = this.getSyncData();
+                const syncResults = this.getSyncData();
                 if (syncResults || !tries) {
                     resolve(syncResults || []);
                     clearInterval(interval);
@@ -62,12 +82,11 @@ class App extends Widget {
      * Wait for the game to be fully displayed
      * @returns {Promise<Boolean>}
      */
-    async waitForFadeIn() {
-        let tries = 5;
+    async waitForUnlock() {
+        let tries = 200;
         return await new Promise(resolve => {
             const interval = setInterval(() => {
-                const gameHook = el.$('#js-hook-pz-moment__game');
-                if (!tries || (gameHook && !gameHook.classList.contains('on-stage'))) {
+                if (!tries || this.gameIsUnlocked()) {
                     resolve(true);
                     clearInterval(interval);
                 }
@@ -77,84 +96,53 @@ class App extends Widget {
     }
 
     /**
-     * Register all plugins
-     * @returns {Widget}
+     * Observe game for various changes
+     * @returns {MutationObserver}
      */
-    registerPlugins() {
-        Object.values(getPlugins(this)).forEach(plugin => {
-            const instance = new plugin(this);
-            this.plugins.set(instance.key, instance);
-        })
-        this.trigger(prefix('pluginsReady'), this.plugins);
-        return this.registerTools();
-    }
+    buildObserver() {
+        const observer = new MutationObserver(mutationList => {
+            mutationList.forEach(mutation => {
+                if (!(mutation.target instanceof HTMLElement)) {
+                    return false;
+                }
 
-    /**
-     * Register tools for tool bar
-     * @returns {Widget}
-     */
-    registerTools() {
-        this.plugins.forEach(plugin => {
-            if (plugin.tool) {
-                this.toolButtons.set(plugin.key, plugin.tool);
-            }
-        })
-        return this.trigger(prefix('toolsReady'), this.toolButtons);
-    }
+                switch (true) {
 
-    /**
-     * Builds the app
-     * @param {HTMLElement} gameWrapper
-     */
-    constructor(gameWrapper) {
+                    // result list toggles open
+                    case mutation.type === 'attributes' &&
+                    mutation.target.classList.contains('sb-content-box'):
+                        document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
+                        break;
 
-        super(settings.get('label'), {
-            canChangeState: true,
-            key: prefix('app'),
+                        // modal is open
+                    case mutation.type === 'childList' &&
+                    mutation.target.isSameNode(this.modalWrapper):
+                        document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();
+                        break;
+
+                        // text input
+                    case mutation.type === 'childList' &&
+                    mutation.target.classList.contains('sb-hive-input-content'):
+                        this.trigger(prefix('newInput'), mutation.target.textContent.trim());
+                        break;
+
+                        // term added to word list
+                    case mutation.type === 'childList' &&
+                    mutation.target.isSameNode(this.resultList) &&
+                    !!mutation.addedNodes.length &&
+                    !!mutation.addedNodes[0].textContent.trim() &&
+                    mutation.addedNodes[0] instanceof HTMLElement:                        
+                        this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
+                        break;
+                }
+            });
         });
+        const args = this.getObserverArgs();
+        observer.observe(args.target, args.options);
+        return observer;
+    } 
 
-        // Kill existing instance could happen on conflict between bookmarklet and extension
-        const oldInstance = el.$(`[data-id="${this.key}"]`);
-        if (oldInstance) {
-            oldInstance.dispatchEvent(new Event(prefix('destroy')));
-        }
-
-        // plugins and toolbar
-        this.plugins = new Map();
-        this.toolButtons = new Map();
-
-        // DOM containers
-        this.gameWrapper = gameWrapper;
-        this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
-        this.resultList = el.$('.sb-wordlist-items-pag', gameWrapper);
-        this.container = el.div({
-            classNames: [prefix('container')]
-        });
-
-        // App UI
-        const events = {};
-        events[prefix('destroy')] = () => {
-            this.observer.disconnect();
-            this.container.remove();
-            delete document.body.dataset[prefix('theme')];
-        };
-
-        const classNames = [settings.get('prefix')];
-        if (this.getState() === false) {
-            classNames.push('inactive');
-        }
-
-        this.ui = el.div({
-            attributes: {
-                draggable: this.envIs('desktop')
-            },
-            data: {
-                id: this.key,
-                version: settings.get('version')
-            },
-            classNames,
-            events: events
-        });
+    setDragProps() {
 
         // Drag related
         this.dragHandle = this.ui;
@@ -170,61 +158,115 @@ class App extends Widget {
             bottom: 12,
             left: 12
         };
+    }
 
-        // Observe game for various changes
-        this.observer = (() => {
-            const observer = new MutationObserver(mutationList => {
-                mutationList.forEach(mutation => {
-                    if (!(mutation.target instanceof HTMLElement)) {
-                        return false;
-                    }
-                    switch (true) {
+    buildUi() {
+        const events = {};
+        events[prefix('destroy')] = () => {
+            this.observer.disconnect();
+            this.container.remove();
+            delete document.body.dataset[prefix('theme')];
+        };
 
-                        // result list toggles open
-                        case mutation.type === 'attributes' &&
-                        mutation.target.classList.contains('sb-content-box'):
-                            document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
-                            break;
+        const classNames = [settings.get('prefix')];
+        if (this.getState() === false) {
+            classNames.push('inactive');
+        }
 
-                            // modal is open
-                        case mutation.type === 'childList' &&
-                        mutation.target.isSameNode(this.modalWrapper):
-                            document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();
-                            break;
+        return el.div({
+            attributes: {
+                draggable: this.envIs('desktop')
+            },
+            data: {
+                id: this.key,
+                version: settings.get('version')
+            },
+            classNames,
+            events
+        });
+    }
 
-                            // text input
-                        case mutation.type === 'childList' &&
-                        mutation.target.classList.contains('sb-hive-input-content'):
-                            this.trigger(prefix('newInput'), mutation.target.textContent.trim());
-                            break;
+    /**
+     * Register all plugins
+     * @returns {Widget}
+     */
+    registerPlugins() {
+        this.plugins = new Map();
+        Object.values(getPlugins(this)).forEach(plugin => {
+            const instance = new plugin(this);
+            instance.add();
+            this.plugins.set(instance.key, instance);
+        })
+        this.trigger(prefix('pluginsReady'), this.plugins);
+        return this.registerTools();
+    }
 
-                            // term added to word list
-                        case mutation.type === 'childList' &&
-                        mutation.target.isSameNode(this.resultList) &&
-                        !!mutation.addedNodes.length &&
-                        !!mutation.addedNodes[0].textContent.trim() &&
-                        mutation.addedNodes[0] instanceof HTMLElement:
-                            this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
-                            break;
-                    }
-                });
-            });
-            observer.observe(this.gameWrapper, {
-                childList: true,
-                subtree: true,
-                attributes: true
-            });
-            return observer;
-        })();
+    /**
+     * Register tools for tool bar
+     * @returns {Widget}
+     */
+    registerTools() {
+        this.toolButtons = new Map();
+        this.plugins.forEach(plugin => {
+            if (plugin.tool) {
+                this.toolButtons.set(plugin.key, plugin.tool);
+            }
+        })
+        return this.trigger(prefix('toolsReady'), this.toolButtons);
+    }
 
-        Promise.all([this.getResults(), this.waitForFadeIn()])
+    add() {
+        this.container.append(this.ui);
+        if (this.envIs('mobile')) {
+            el.$('.sb-controls-box', this.gameWrapper).append(this.container);
+        } else {
+            this.gameWrapper.before(this.container);
+        }
+    }
+
+    /**
+     * Builds the app
+     * @param {HTMLElement} gameWrapper
+     */
+    constructor(gameWrapper) {
+
+        super(settings.get('label'), {
+            canChangeState: true,
+            key: prefix('app'),
+        });
+
+        // Kill existing instance - this could happen on a conflict between bookmarklet and extension
+        // or while debugging
+        const oldInstance = el.$(`[data-id="${this.key}"]`);
+        if (oldInstance) {
+            oldInstance.dispatchEvent(new Event(prefix('destroy')));
+        }
+
+        // Outer container
+        this.gameWrapper = gameWrapper;
+
+        Promise.all([this.getResults(), this.waitForUnlock()])
             .then(values => {
+
+                // App UI
+                this.ui = this.buildUi();
+                this.setDragProps();
+
+                // Observe game for various changes
+                this.observer = this.buildObserver();
+
+                // init dom elements for external access
+                this.container = el.div({
+                    classNames: [prefix('container')]
+                });
+                this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+                this.resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
+
                 data.init(this, values[0]);
-                this.container.append(this.ui);
-                this.gameWrapper.before(this.container);
+                this.add();
                 this.gameWrapper.dataset.sbaActive = this.getState();
                 this.registerPlugins();
-                this.trigger(prefix('wordsUpdated'));
+                this.trigger(prefix('refreshUi'));
             });
     }
 }

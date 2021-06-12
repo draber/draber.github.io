@@ -1,10 +1,5 @@
-import el from '../modules/element.js';
 import data from '../modules/data.js';
-import {
-    prefix
-} from '../modules/string.js';
-import Plugin from '../modules/plugin.js';
-import tbl from '../modules/tables.js';
+import TablePane from './tablePane.js';
 
 /**
  * Steps to success plugin
@@ -12,7 +7,7 @@ import tbl from '../modules/tables.js';
  * @param {App} app
  * @returns {Plugin} StepsToSuccess
  */
-class StepsToSuccess extends Plugin {
+class StepsToSuccess extends TablePane {
 
     /**
      * Get the data for the table cells
@@ -37,48 +32,31 @@ class StepsToSuccess extends Plugin {
     }
 
     /**
-     * Populate/update pane
-     * @param {HTMLElement} pane
+     * Get current tier
+     * @param {String}
      */
     getCurrentTier() {
         return this.getData().filter(entry => entry[1] <= data.getPoints('foundTerms')).pop()[1];
     }
 
+    /**
+     * StepsToSuccess constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, 'Steps to success', 'The number of points required for each level', {
             canChangeState: true
         });
 
-
+        /**
+         * Conditions ander which a line in the table should be marked with the class `sba-{$key}`
+         * @type {{preeminent: (function(*): boolean), completed: (function(*))}}
+         */
         this.cssMarkers = {
             completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
             preeminent: rowData => rowData[1] === this.getCurrentTier()
         }
-
-        // content pane        
-        const pane = el.table({
-            classNames: ['pane']
-        });
-
-        this.ui = el.details({
-            html: [
-                el.summary({
-                    text: this.title
-                }),
-                pane
-            ]
-        });
-
-        // update on demand
-        app.on(prefix('wordsUpdated'), () => {
-            tbl.get(this.getData(), pane);
-            app.trigger(prefix('paneUpdated'), {
-                plugin: this
-            })
-        });
-
-        this.add();
     }
 }
 

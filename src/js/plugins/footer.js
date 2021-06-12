@@ -4,11 +4,15 @@ import Plugin from '../modules/plugin.js';
 
 /**
  * Footer plugin
- * 
  * @param {App} app
  * @returns {Plugin} Footer
  */
 class Footer extends Plugin {
+
+    /**
+     * Footer constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, `${settings.get('label')}`, '', {
@@ -16,14 +20,12 @@ class Footer extends Plugin {
         });
 
         this.ui = el.a({
-            text: this.title,
+            content: this.title,
             attributes: {
                 href: settings.get('url'),
                 target: '_blank'
             }
         });
-        
-        this.add();
     }
 }
 

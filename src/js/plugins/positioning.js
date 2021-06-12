@@ -221,8 +221,6 @@ class Positioning extends Plugin {
                 this.reposition();
             });
         })
-
-        this.add();
     }
 }
 

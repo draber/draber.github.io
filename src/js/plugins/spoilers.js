@@ -1,10 +1,5 @@
-import el from '../modules/element.js';
 import data from '../modules/data.js';
-import {
-	prefix
-} from '../modules/string.js';
-import Plugin from '../modules/plugin.js';
-import tbl from '../modules/tables.js';
+import TablePane from './tablePane.js';
 
 /**
  * Spoilers plugin
@@ -12,7 +7,7 @@ import tbl from '../modules/tables.js';
  * @param {App} app
  * @returns {Plugin} Spoilers
  */
-class Spoilers extends Plugin {
+class Spoilers extends TablePane {
 
 	/**
 	 * Get the data for the table cells
@@ -57,41 +52,24 @@ class Spoilers extends Plugin {
 		return cellData;
 	}
 
+	/**
+	 * Spoilers constructor
+	 * @param {App} app
+	 */
 	constructor(app) {
 
 		super(app, 'Spoilers', 'The number of words by length, also the number of pangrams', {
 			canChangeState: true
 		});
 
-		// callback functions to conditionally add the css class `prefix(key, 'd')` to a table row
+        /**
+         * Conditions ander which a line in the table should be marked with the class `sba-{$key}`
+         * @type {{preeminent: (function(*): boolean), completed: (function(*))}}
+         */
 		this.cssMarkers = {
 			completed: (rowData, i) => i > 0 && rowData[2] === 0,
 			preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
 		}
-
-        // content pane        
-        const pane = el.table({
-            classNames: ['pane']
-        });
-
-        this.ui = el.details({
-            html: [
-                el.summary({
-                    text: this.title
-                }),
-                pane
-            ]
-        });
-
-		// update on demand
-		app.on(prefix('wordsUpdated'), () => {
-			tbl.get(this.getData(), pane);
-			app.trigger(prefix('paneUpdated'), {
-				plugin: this
-			})
-		});
-
-		this.add();
 	}
 }
 export default Spoilers;

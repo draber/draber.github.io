@@ -1,9 +1,9 @@
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import Plugin from '../modules/plugin.js';
 import {
 	prefix
 } from '../modules/string.js';
+import DisclosureBox from './disclosureBox.js';
 
 /**
  * Surrender plugin
@@ -11,7 +11,28 @@ import {
  * @param {App} app
  * @returns {Plugin} Surrender
  */
-class Surrender extends Plugin {
+class Surrender extends DisclosureBox {
+
+	/**
+	 *
+	 * @param {Event} evt
+	 * @returns {Plugin}
+	 */
+	run(evt) {
+		const args = this.app.getObserverArgs();
+		this.app.observer.disconnect();
+		if (this.isResolved) {
+			el.$$('.' + this.marker, this.app.resultList).forEach(termContainer => {
+				termContainer.parentElement.remove();
+			});
+		} else if (evt.type === 'pointerup') {
+			data.getList('remainders').forEach(term => this.app.resultList.append(this.buildEntry(term)));
+		}
+		this.isResolved = !this.isResolved;
+		this.app.observer.observe(args.target, args.options);
+		this.app.trigger(prefix('refreshUi'));
+		return this;
+	}
 
 	/**
 	 * Build a single entry for the term list
@@ -19,68 +40,44 @@ class Surrender extends Plugin {
 	 * @returns {HTMLElement}
 	 */
 	buildEntry(term) {
+		const classNames = ['sb-anagram', this.marker];
 		return el.li({
-			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', prefix('pangram')] : ['sb-anagram'],
-			html: el.a({
-				text: term,
-				attributes: {
-					href: `https://www.google.com/search?q=${term}`,
-					target: '_blank'
-				}
+			content: el.span({
+				content: term,
+				classNames
 			})
 		});
 	}
 
 	/**
-	 * Display the solution
-	 * @returns {Boolean} 
+	 * Surrender constructor
+	 * @param {App} app
 	 */
-	resolve() {
-		if (this.usedOnce) {
-			return false;
-		}
-		this.app.observer.disconnect();
-		data.getList('remainders').forEach(term => this.app.resultList.append(this.buildEntry(term)));
-		this.usedOnce = true;
-		this.app.trigger(prefix('wordsUpdated'));
-		return true;
-	}
-
 	constructor(app) {
 
 		super(app, 'Surrender', 'Reveals the solution of the game', {
-			canChangeState: true
+			canChangeState: true,
+			runEvt: prefix('newInput')
 		});
 
-		/**
-		 * Helps to make sure that the missing terms can only be appended once
-		 * @type {boolean}
-		 */
-		this.usedOnce = false;
+		this.marker = prefix('resolved', 'd');
 
-		this.ui = el.details({
-			html: [
-				el.summary({
-					text: this.title
-				}),
-				el.div({
-					classNames: ['pane'],
-					html: el.button({
-						tag: 'button',
-						classNames: ['hive-action'],
-						text: 'Display answers',
-						attributes: {
-							type: 'button'
-						},
-						events: {
-							click: () => this.resolve()
-						}
-					})
-				})
-			]
+		this.isResolved = false;
+
+		this.pane = el.div({
+			classNames: ['pane'],
+			content: el.button({
+				tag: 'button',
+				classNames: ['hive-action'],
+				content: 'Display answers',
+				attributes: {
+					type: 'button'
+				},
+				events: {
+					pointerup: evt => this.run(evt)
+				}
+			})
 		});
-
-		this.add();
 	}
 }
 

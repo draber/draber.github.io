@@ -1,10 +1,5 @@
-import el from '../modules/element.js';
 import data from '../modules/data.js';
-import {
-	prefix
-} from '../modules/string.js';
-import Plugin from '../modules/plugin.js';
-import tbl from '../modules/tables.js';
+import TablePane from './tablePane.js';
 
 /**
  * StartingWith plugin
@@ -12,7 +7,7 @@ import tbl from '../modules/tables.js';
  * @param {App} app
  * @returns {Plugin} StartingWith
  */
-class StartingWith extends Plugin {
+class StartingWith extends TablePane {
 
 	/**
 	 * Get the data for the table cells
@@ -62,42 +57,24 @@ class StartingWith extends Plugin {
 	}
 
 
-
+	/**
+	 * StartingWith constructor
+	 * @param {App} app
+	 */
 	constructor(app) {
 
 		super(app, 'Starting with…', 'The number of words by first letter', {
 			canChangeState: true
 		});
 
-		// callback functions to conditionally add the css class `prefix(key, 'd')` to a table row
+        /**
+         * Conditions ander which a line in the table should be marked with the class `sba-{$key}`
+         * @type {{preeminent: (function(*): boolean), completed: (function(*))}}
+         */
 		this.cssMarkers = {
 			completed: (rowData, i) => i > 0 && rowData[2] === 0,
 			preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
 		}
-
-        // content pane        
-        const pane = el.table({
-            classNames: ['pane']
-        });
-
-        this.ui = el.details({
-            html: [
-                el.summary({
-                    text: this.title
-                }),
-                pane
-            ]
-        });
-
-		// update on demand
-		app.on(prefix('wordsUpdated'), () => {
-			tbl.get(this.getData(), pane);
-			app.trigger(prefix('paneUpdated'), {
-				plugin: this
-			})
-		});
-
-		this.add();
 	}
 }
 

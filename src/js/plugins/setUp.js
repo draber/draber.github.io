@@ -55,7 +55,7 @@ class SetUp extends Popup {
 				if (!plugin.canChangeState || plugin === this) {
 					return false;
 				}
-				const setting = el.input({
+				const input = el.input({
 					attributes: {
 						type: 'checkbox',
 						name: key,
@@ -63,37 +63,37 @@ class SetUp extends Popup {
 					}
 				});
 				pane.append(el.li({
-					html: el.label({
-						html: [
-							setting,
+					content: el.label({
+						content: [
+							input,
 							el.b({
-								text: plugin.title
+								content: plugin.title
 							}),
 							el.i({
-								text: plugin.description
+								content: plugin.description
 							})
 						]
 					})
 				}));
 				defaults.set(key, {
-					setting,
+					input,
 					default: !!plugin.defaultState
 				});
 			})
-			this.setContent(pane);
-			this.puFooter.append(el.div({
+			this.setContent('body', pane);
+			this.parts.footer.append(el.div({
 				classNames: [prefix('factory-reset', 'd')],
-				html: el.button({
+				content: el.button({
 					classNames: ['hive-action'],
-					text: 'Reset to defaults',
+					content: 'Reset to defaults',
 					attributes: {
 						type: 'text'
 					},
 					events: {
 						'click': () => {
 							defaults.forEach(value => {
-								if (value.setting.checked !== value.default) {
-									value.setting.click();
+								if (value.input.checked !== value.default) {
+									value.input.click();
 								}
 							})
 						}
@@ -103,12 +103,11 @@ class SetUp extends Popup {
 			}))
 		})
 
-		// Enforce false as atrt up state
+		// Enforce false as start-up state
 		this.setState(false);
 
 		// Configure the launch button for this plugin
-		this.enableTool('options', 'Show set-up', 'Hide set-up');	
-		this.add();
+		this.enableTool('options', 'Show set-up', 'Hide set-up');
 	}
 }
 

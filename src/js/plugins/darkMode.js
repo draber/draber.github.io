@@ -22,6 +22,10 @@ class DarkMode extends Plugin {
         return this;
     }
 
+    /**
+     * DarkMode constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, 'Dark Mode', 'Applies a dark theme to this page', {
@@ -33,8 +37,6 @@ class DarkMode extends Plugin {
 
         // toggle body dataset
         this.toggle(this.getState());
-
-        this.add();
     }
 }
 

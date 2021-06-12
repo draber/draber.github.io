@@ -16,7 +16,7 @@ class Popup extends Plugin {
      * Create one if it doesn't exist yet
      * @returns {*}
      */
-    getContainer() {
+    getTarget() {
         const dataUi = prefix('popup-container', 'd');
         let container = el.$(`[data-ui="${dataUi}"]`);
         if (!container) {
@@ -48,13 +48,13 @@ class Popup extends Plugin {
                     e.stopPropagation();
                 }
             },
-            html: [
+            content: [
                 el.div({
                     attributes: {
                         role: 'button'
                     },
                     classNames: ['sb-modal-close'],
-                    text: '×',
+                    content: '×',
                     events: {
                         click: () => {
                             this.toggle(false)
@@ -63,12 +63,13 @@ class Popup extends Plugin {
                 }),
                 el.div({
                     classNames: ['sb-modal-content'],
-                    html: [
+                    content: [
                         el.div({
                             classNames: ['sb-modal-header'],
-                            html: [this.puTitle, this.puSubTitle]
+                            content: [this.parts.title, this.parts.subtitle]
                         }),
-                        this.puBody
+                        this.parts.body,
+                        this.parts.footer
                     ]
                 })
             ]
@@ -77,29 +78,17 @@ class Popup extends Plugin {
     }
 
     /**
-     * 
-     * @param {Element|NodeList|Array|String} body
+     * Set any part of the content the content of the popup
+     * @param {String} part
+     * @param {Element|NodeList|Array|String} content
      */
-    setContent(body) {
-        this.puBody.innerHTML = '';
-        this.puBody.append(el.htmlToNode(body));
-        this.puBody.append(this.puFooter);
-    }
-
-    /**
-     * Overwrite the title
-     * @param {String} title
-     */
-    setTitle(title) {
-        this.puTitle.innerHTML = title;
-    }
-
-    /**
-     * Overwrite the subtitle
-     * @param {String} subTitle
-     */
-    setSubtitle(subTitle) {
-        this.puSubTitle.innerHTML = subTitle;
+    setContent(part, content) {
+        if (!this.parts[part]) {
+            return !!console.error(`Unknown target ${part}`);
+        }
+        this.parts[part] = el.empty(this.parts[part]);
+        this.parts[part].append(el.toNode(content));
+        return true;
     }
 
     /**
@@ -114,21 +103,23 @@ class Popup extends Plugin {
         }
 
         if (state) {
-            this.modalWrapper.append(this.ui);            
+            this.modalWrapper.append(this.ui);
             this.modalSystem.classList.add('sb-modal-open');
         } else {
-            this.getContainer().append(this.ui);
+            this.getTarget().append(this.ui);
             this.modalSystem.classList.remove('sb-modal-open');
         }
 
         super.toggle(state);
-        
+
         this.app.trigger(prefix('popup'), {
             plugin: this
         })
 
         return this;
     }
+
+
 
     /**
      * Build an instance of a plugin
@@ -150,33 +141,36 @@ class Popup extends Plugin {
         this.modalSystem = el.$('.sb-modal-system');
         this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);
 
-        this.puTitle = el.h3({
-            classNames: ['sb-modal-title'],
-            text: title
-        });
+        this.parts = {
+            title: el.h3({
+                classNames: ['sb-modal-title'],
+                content: title
+            }),
 
-        this.puSubTitle = el.p({
-            classNames: ['sb-modal-message'],
-            text: description
-        });
+            subtitle: el.p({
+                classNames: ['sb-modal-message'],
+                content: description
+            }),
 
-        this.puBody = el.div({
-            classNames: ['sb-modal-body']
-        });
+            body: el.div({
+                classNames: ['sb-modal-body']
+            }),
 
-        this.puFooter = el.div({
-            classNames: ['sb-modal-message', 'sba-modal-footer'],
-            html: [
-                el.a({
-                    text: settings.get('label') + ' v' + settings.get('version'),
-                    attributes: {
-                        href: settings.get('url'),
-                        target: '_blank'
-                    }
-                })
-            ]
+            footer: el.div({
+                classNames: ['sb-modal-message', 'sba-modal-footer'],
+                content: [
+                    el.a({
+                        content: settings.get('label') + ' v' + settings.get('version'),
+                        attributes: {
+                            href: settings.get('url'),
+                            target: '_blank'
+                        }
+                    })
+                ]
 
-        });
+            })
+        }
+
 
         if (!this.app.popups) {
             this.app.popups = new Map();
@@ -186,7 +180,7 @@ class Popup extends Plugin {
             this.app.popups.set(key, this.create());
         }
 
-        this.target = this.getContainer();
+        this.target = this.getTarget();
         this.ui = this.app.popups.get(key);
     }
 

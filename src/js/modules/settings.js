@@ -3,7 +3,7 @@ import * as pkg from '../../../package.json';
 
 /**
  * Collection of data from `package.json`, `config.json` and `localStorage`
- * @type {{prefix: string, repo: string, options: object, label: string, title: string, targetUrl: string, url: string}}
+ * @type {{prefix: string, repo: string, options: object, label: string, title: string, version: string, targetUrl: string, url: string}}
  */
 const settings = {
     version: pkg.version,

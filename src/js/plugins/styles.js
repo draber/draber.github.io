@@ -10,14 +10,19 @@ import Plugin from '../modules/plugin.js';
  * @returns {Plugin} Styles
  */
 class Styles extends Plugin {
+
+    /**
+     * Styles constructor
+     * @param {App} app
+     */
     constructor(app) {
 
-        super(app, 'Styles');
+        super(app, 'Styles', '');
 
         this.target = el.$('head');
 
         this.ui = el.style({
-            text: css
+            content: css
         });
         app.on(prefix('destroy'), () => this.ui.remove());
 

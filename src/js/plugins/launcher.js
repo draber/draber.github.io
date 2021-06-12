@@ -14,28 +14,41 @@ import settings from '../modules/settings.js';
 class Launcher extends Plugin {
 
     /**
-     * Create launcher button and append it on UI
+     * Get element to which the launcher will be attached to
+     * @returns {HTMLElement}
      */
-    buildUiAndTarget() {
-        let classNames = ['pz-toolbar-button__sba'];
+    getTarget() {
+        let target;
         if (this.app.envIs('mobile')) {
-            this.target = el.$('#js-mobile-toolbar');
-            classNames.push('pz-nav__toolbar-item');
+            target = el.$('#js-mobile-toolbar');
         } else {
-            this.target = el.div();
-            el.$$('#portal-game-toolbar > span').forEach(button => {
-                this.target.append(button);
-            })
-            el.$('#portal-game-toolbar').append(this.target);
-            classNames.push('pz-toolbar-button');
+            target = el.div({
+                content: el.$$('#portal-game-toolbar > span')
+            });
+            el.$('#portal-game-toolbar').append(target);
         }
+        return target;
+    }
+
+    /**
+     * Launcher constructor
+     * @param {App} app
+     */
+    constructor(app) {
+
+        super(app, 'Launcher', '');
+
+        this.target = this.getTarget();
+
+        const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button']
+
         this.ui = el.span({
-            text: settings.get('title'),
+            content: settings.get('title'),
             events: {
                 click: () => {
                     const nextState = !this.app.getState();
-                    this.app.toggle(nextState);                    
-                    this.app.gameWrapper.dataset.sbaActive = nextState;
+                    this.app.toggle(nextState);
+                    this.app.gameWrapper.dataset.sbaActive = nextState.toString();
                 }
             },
             attributes: {
@@ -43,15 +56,8 @@ class Launcher extends Plugin {
             },
             classNames
         })
-    }
 
-    constructor(app) {
-
-        super(app, 'Launcher');
-
-        this.buildUiAndTarget();
         app.on(prefix('destroy'), () => this.ui.remove());
-        this.add();
     }
 }
 

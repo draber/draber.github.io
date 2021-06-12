@@ -29,6 +29,16 @@ class Plugin extends Widget {
     }
 
     /**
+     * Catch-all for run events
+     * @param {Event} evt 
+     * @returns 
+     */
+    // eslint-disable-next-line no-unused-vars
+    run(evt) {
+        return this;
+    }
+
+    /**
      * Build an instance of a plugin
      * @param {App} app
      * @param {String} title
@@ -38,7 +48,8 @@ class Plugin extends Widget {
     constructor(app, title, description, {
         key,
         canChangeState,
-        defaultState
+        defaultState,
+        runEvt
     } = {}) {
         super(title, {
             key,
@@ -57,12 +68,22 @@ class Plugin extends Widget {
          * @type {String}
          */
         this.description = description || '';
-    
+
         /**
          * App container object, not the app UI!
          * @type {App}
          */
         this.app = app;
+
+        /**
+         * Update plugin data on demand
+         */
+        if (runEvt) {
+            this.app.on(runEvt, evt => {
+                this.run(evt);
+            });
+        }
+
     }
 }
 

@@ -21,7 +21,7 @@ let app;
 const completeLists = () => {
     lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.trigger(prefix('wordsUpdated'));
+    app.trigger(prefix('refreshUi'));
 }
 
 /**

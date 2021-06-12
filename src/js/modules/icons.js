@@ -23,7 +23,7 @@ const icons = {
 /**
  * Build an icon based on the key
  * @param key
- * @returns {boolean|*}
+ * @returns {SVGElement|Boolean}
  */
 const getIcon = key => {
     if (!icons[key]) {
@@ -37,14 +37,14 @@ const getIcon = key => {
                 viewBox: `0 0 ${icon.width} ${icon.height}`
             }
         },
-        svg: true
+        isSvg: true
     });
     for (const [type, d] of Object.entries(icon.children)) {
         svg.append(el[type]({
             attributes: {
                 d
             },
-            svg: true
+            isSvg: true
         }));
     }
     return svg;

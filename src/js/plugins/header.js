@@ -12,6 +12,11 @@ import {
  * @returns {Plugin} Header
  */
 class Header extends Plugin {
+
+    /**
+     * Header constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, settings.get('title'), '', {
@@ -21,7 +26,7 @@ class Header extends Plugin {
         this.ui = el.div();
 
         app.dragHandle = el.div({
-            text: this.title,
+            content: this.title,
             classNames: ['header']
         });
 
@@ -37,8 +42,6 @@ class Header extends Plugin {
             this.ui.append(toolbar)
             return this;
         })
-
-        this.add();
     }
 }
 

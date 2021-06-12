@@ -20,15 +20,18 @@ class HighlightPangrams extends Plugin {
      */
     toggle(state) {
         super.toggle(state);
-        this.handleDecoration();
-        return this;
+        return this.run();
     }
 
     /**
      * Add or remove pangram underlines
+     * @param {Event} evt
      * @returns {HighlightPangrams}
      */
-    handleDecoration() {
+    // eslint-disable-next-line no-unused-vars
+    run(evt) {
+        const args = this.app.getObserverArgs();
+        this.app.observer.disconnect();
         const pangrams = data.getList('pangrams');
         el.$$('li', this.app.resultList).forEach(node => {
             const term = node.textContent;
@@ -36,21 +39,22 @@ class HighlightPangrams extends Plugin {
                 node.classList.toggle(prefix('pangram', 'd'), this.getState());
             }
         });
+        this.app.observer.observe(args.target, args.options);
         return this;
     }
 
+    /**
+     * HighlightPangrams constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
-            canChangeState: true
+            canChangeState: true,
+			runEvt: prefix('refreshUi')
         });
 
-        app.on(prefix('wordsUpdated'), () => {
-            this.handleDecoration();
-        })
-
-        this.handleDecoration();
-        this.add();
+        this.run();
     }
 }
 

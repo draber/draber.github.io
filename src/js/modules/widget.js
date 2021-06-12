@@ -21,7 +21,7 @@ class Widget {
 
     /**
      * Write new state to memory
-     * @param {boolean} state
+     * @param {Boolean} state
      * @returns {Widget}
      */
     setState(state) {
@@ -33,7 +33,7 @@ class Widget {
 
     /**
      * Switches plugins on and off
-     * @param {boolean} state
+     * @param {Boolean} state
      * @returns {Widget}
      */
     toggle(state) {
@@ -68,14 +68,14 @@ class Widget {
             data: {
                 tool: this.key
             },
-            html: getIcon(iconKey)
+            content: getIcon(iconKey)
         })
         return this;
     }
 
     /**
-     * Some plugins, for instance `darkMode` have no UI
-     * @returns {boolean}
+     * Some plugins have no UI
+     * @returns {Boolean}
      */
     hasUi() {
         return this.ui instanceof HTMLElement;
@@ -83,32 +83,38 @@ class Widget {
 
     /**
      * Assign an event to the ui
-     * @param type
-     * @param action
+     * @param {String} type
+     * @param {Function} action
      * @returns {Widget}
      */
     on(type, action) {
-        this.ui.addEventListener(type, action);
+        if (this.hasUi()) {
+            this.ui.addEventListener(type, action);
+        }
         return this;
     }
 
     /**
      * Fire an event from the ui
-     * @param type
-     * @param data
+     * @param {String } type
+     * @param {*} data
      * @returns {Widget}
      */
     trigger(type, data) {
-        this.ui.dispatchEvent(data ? new CustomEvent(type, {
-            detail: data
-        }) : new Event(type));
+        if (this.hasUi()) {
+            this.ui.dispatchEvent(data ? new CustomEvent(type, {
+                detail: data
+            }) : new Event(type));
+        }
         return this;
     }
 
     /**
      * Build an instance of the widget
      * @param {String} title
-     * @param {{key: String, canChangeState: Boolean, defaultState: *}}
+     * @param {String} key
+     * @param {Boolean} canChangeState
+     * @param {Boolean} defaultState
      */
     constructor(title, {
         key,
@@ -121,25 +127,25 @@ class Widget {
 
         /**
          * Used when the plugin is mentioned anywhere in the UI
-         * @type {string}
+         * @type {String}
          */
         this.title = title;
 
         /**
          * Used for instance to register the plugin, mostly the title in camelCase
-         * @type {string}
+         * @type {String}
          */
         this.key = key || camel(title);
 
         /**
          * Can be deactivated
-         * @type {boolean}
+         * @type {Boolean}
          */
         this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
-        
+
         /**
          * Cannot be hidden or otherwise disabled by user, default state
-         * @type {boolean}
+         * @type {Boolean}
          */
         this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
 
@@ -150,10 +156,10 @@ class Widget {
         this.setState(this.getState());
 
         /**
-         * Undefined by default, most plugins will overwrite this
-         * @type {undefined|HTMLElement}
+         * Null by default, most plugins will overwrite this
+         * @type {null|HTMLElement}
          */
-        this.ui;
+        this.ui = null;
     }
 }
 

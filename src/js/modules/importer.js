@@ -11,9 +11,7 @@ import StartingWith from '../plugins/startingWith.js';
 import StepsToSuccess from '../plugins/stepsToSuccess.js';
 import Surrender from '../plugins/surrender.js';
 import HighlightPangrams from '../plugins/highlightPangrams.js';
-import TrMarkCompleted from '../plugins/trMarkCompleted.js';
-import TrHideCompleted from '../plugins/trHideCompleted.js';
-import TrMarkPreeminent from '../plugins/trMarkPreeminent.js';
+import Googlify from '../plugins/googlify.js';
 import Footer from '../plugins/footer.js';
 import Positioning from '../plugins/positioning.js';
 
@@ -30,10 +28,8 @@ const plugins = {
      SpillTheBeans,
      StepsToSuccess,
      Surrender,
-     TrMarkCompleted,
-     TrHideCompleted,
-     TrMarkPreeminent,
      HighlightPangrams,
+     Googlify,
      Footer,
      Positioning
 }
@@ -41,7 +37,24 @@ const plugins = {
 /**
  * Plugins (minus Positioning on mobiles)
  * @param app
- * @returns {{StartingWith: StartingWith, Positioning: Positioning, DarkMode: DarkMode, ScoreSoFar: ScoreSoFar, Surrender: Surrender, Spoilers: Spoilers, SpillTheBeans: SpillTheBeans, StepsToSuccess: StepsToSuccess, TrHideCompleted: TrHideCompleted, Header: Header, TrMarkPreeminent: TrMarkPreeminent, TrMarkCompleted: TrMarkCompleted, Footer: Footer, Launcher: Launcher, SetUp: SetUp, ProgressBar: ProgressBar, Styles: Styles, HighlightPangrams: HighlightPangrams}}
+ * @returns {{
+ *   Styles,
+ *   Launcher,
+ *   DarkMode,
+ *   Header,
+ *   SetUp,
+ *   ProgressBar,
+ *   ScoreSoFar,
+ *   Spoilers,
+ *   StartingWith,
+ *   SpillTheBeans,
+ *   StepsToSuccess,
+ *   Surrender,
+ *   HighlightPangrams,
+ *   Googlify,
+ *   Footer,
+ *   [Positioning]
+ * }}
  */
 const getPlugins = app => {
      if(!app.envIs('desktop')){
