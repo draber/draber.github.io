@@ -32,6 +32,7 @@ const initLists = foundTerms => {
     lists = {
         answers: sbData.answers,
         pangrams: sbData.pangrams,
+        letters: sbData.validLetters,
         foundTerms: foundTerms
     }
     completeLists();
@@ -52,6 +53,10 @@ const getList = type => {
  */
 const getId = () => {
     return sbData.id;
+}
+
+const getDate = () => {
+    return sbData.displayDate;
 }
 
 /**
@@ -119,5 +124,6 @@ export default {
     getCount,
     getPoints,
     getId,
+    getDate,
     getCenterLetter
 }

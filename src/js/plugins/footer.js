@@ -1,6 +1,7 @@
 import settings from '../modules/settings.js';
 import el from '../modules/element.js';
 import Plugin from '../modules/plugin.js';
+import { prefix } from '../modules/string.js';
 
 /**
  * Footer plugin
@@ -23,7 +24,7 @@ class Footer extends Plugin {
             content: this.title,
             attributes: {
                 href: settings.get('url'),
-                target: '_blank'
+                target: prefix()
             }
         });
     }

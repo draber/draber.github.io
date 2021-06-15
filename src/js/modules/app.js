@@ -27,26 +27,47 @@ class App extends Widget {
 
     /**
      * Whether the splash screen has gone and the content box isn't set to `sb-game-locked`
-     * @returns {Boolean}
+     * @returns {Number}
      */
-    gameIsUnlocked() {
+    getGameState() {
+        // splash    | .sb-game-locked | state	    | action
+        // ===========================================================	
+        // absent	 | absent	       | loading	| wait for promise
+        // visible	 | present	       | locked	    | launch on click
+        // hidden	 | absent	       | unlocked	| launch
+
         const splash = el.$('#js-hook-pz-moment__welcome', this.gameWrapper);
         const contentBox = el.$('.sb-content-box', this.gameWrapper);
-        return splash && contentBox && !contentBox.classList.contains('sb-game-locked');
+        if (!splash) {
+            return -1; // loading
+        }
+
+        if (contentBox && contentBox.classList.contains('sb-game-locked')) {
+            return 0; // locked
+        }
+
+        if (!contentBox.classList.contains('sb-game-locked')) {
+            return 1; // unlocked
+        }
     }
 
     /**
      * Retrieve sync data
-     * @returns {Boolean|Array}
+     * @returns {Null|Array}
      */
     getSyncData() {
+        // starting on a fresh game we get the following values for `sb-today`
+        // pristine:                    absent
+        // at least one word locally:   loads along with splash (with tiny delay)
+        // on remote entry:             no change
+        // at least one word remotely:  loads along with splash (with delay)
         let sync = localStorage.getItem('sb-today');
         if (!sync) {
-            return false;
+            return null;
         }
         sync = JSON.parse(sync);
         if (!sync.id || sync.id !== data.getId()) {
-            return false;
+            return null;
         }
         return sync.words || [];
     }
@@ -65,7 +86,7 @@ class App extends Widget {
      * @returns {Promise<Array>}
      */
     async getResults() {
-        let tries = 50;
+        let tries = 10;
         return await new Promise(resolve => {
             const interval = setInterval(() => {
                 const syncResults = this.getSyncData();
@@ -82,17 +103,38 @@ class App extends Widget {
      * Wait for the game to be fully displayed
      * @returns {Promise<Boolean>}
      */
-    async waitForUnlock() {
-        let tries = 200;
+    async waitForGameState(threshold) {
+        let tries = 50;
         return await new Promise(resolve => {
             const interval = setInterval(() => {
-                if (!tries || this.gameIsUnlocked()) {
-                    resolve(true);
+                const state = this.getGameState();
+                if (!tries || this.getGameState() >= threshold) {
+                    resolve(state);
                     clearInterval(interval);
                 }
                 tries--;
             }, 300);
         });
+    }
+
+    load() {
+        if (this.isLoaded) {
+            return false;
+        }
+        // Observe game for various changes
+        this.observer = this.buildObserver();
+
+        this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+        this.resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
+        this.waitForGameState(1)
+            .then(() => {
+                this.add();
+                this.gameWrapper.dataset.sbaActive = this.getState();
+                this.registerPlugins();
+                this.trigger(prefix('refreshUi'));
+                this.isLoaded = true;
+            })
+
     }
 
     /**
@@ -131,7 +173,7 @@ class App extends Widget {
                     mutation.target.isSameNode(this.resultList) &&
                     !!mutation.addedNodes.length &&
                     !!mutation.addedNodes[0].textContent.trim() &&
-                    mutation.addedNodes[0] instanceof HTMLElement:                        
+                    mutation.addedNodes[0] instanceof HTMLElement:
                         this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
                         break;
                 }
@@ -140,7 +182,7 @@ class App extends Widget {
         const args = this.getObserverArgs();
         observer.observe(args.target, args.options);
         return observer;
-    } 
+    }
 
     setDragProps() {
 
@@ -245,29 +287,35 @@ class App extends Widget {
         // Outer container
         this.gameWrapper = gameWrapper;
 
-        Promise.all([this.getResults(), this.waitForUnlock()])
-            .then(values => {
+        // App UI
+        this.ui = this.buildUi();
+        this.setDragProps();
 
-                // App UI
-                this.ui = this.buildUi();
-                this.setDragProps();
+        // init dom elements for external access
+        this.container = el.div({
+            classNames: [prefix('container')]
+        });
 
-                // Observe game for various changes
-                this.observer = this.buildObserver();
+        this.isLoaded = false;
 
-                // init dom elements for external access
-                this.container = el.div({
-                    classNames: [prefix('container')]
-                });
-                this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
-                this.resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
+        this.getResults()
+            .then(results => {
+                data.init(this, results);
+            })
+            .then(() => {
+                this.waitForGameState(0)
+                    .then(state => {
+                        // start on button launch or automatically if the splash has already been closed (bookmarklet)
+                        if (state === 0) {
+                            el.$('.pz-moment__button-wrapper .pz-moment__button.primary', this.gameWrapper).addEventListener('pointerup', () => {
+                                this.load();
+                            })
+                        } else {
+                            this.load();
+                        }
+                    })
+            })
 
-                data.init(this, values[0]);
-                this.add();
-                this.gameWrapper.dataset.sbaActive = this.getState();
-                this.registerPlugins();
-                this.trigger(prefix('refreshUi'));
-            });
     }
 }
 

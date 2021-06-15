@@ -519,9 +519,13 @@ $offset: 12;
 
 [data-sba-theme] {
     &.pz-spelling-bee-congrats {
-        [data-ui="setUp"] {
+        .sba-pop-up {
             &.left-aligned {
                 .sb-modal-content {
+                    .sba-pangram {
+                        font-weight: 700;
+                        border-bottom: 2px var(--highlight-color) solid;
+                    }
                     .sba-modal-footer {
                         text-align: right;
                         border-top: 1px solid var(--border-color);
@@ -598,7 +602,7 @@ $offset: 12;
     }*/
     [data-sba-theme] {
         &.pz-page {
-            [data-ui="setUp"] {
+            .sba-pop-up  {
                 &.left-aligned {
                     .sb-modal-content {
                         .sb-modal-body {
@@ -673,7 +677,7 @@ $offset: 12;
 
     .pz-mobile {
 
-        [data-ui="setUp"] {
+        .sba-pop-up  {
 
             b {
                 display: block;

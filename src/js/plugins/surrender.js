@@ -4,6 +4,9 @@ import {
 	prefix
 } from '../modules/string.js';
 import DisclosureBox from './disclosureBox.js';
+import Popup from './popup.js';
+import Googlify from './googlify.js';
+import HighlightPangrams from './highlightPangrams.js';
 
 /**
  * Surrender plugin
@@ -13,40 +16,56 @@ import DisclosureBox from './disclosureBox.js';
  */
 class Surrender extends DisclosureBox {
 
+	getDescription() {
+		return el.div({
+			classNames: ['sb-modal-date__today'],
+			content: data.getDate()
+		})
+	}
+
 	/**
 	 *
 	 * @param {Event} evt
 	 * @returns {Plugin}
 	 */
 	run(evt) {
-		const args = this.app.getObserverArgs();
-		this.app.observer.disconnect();
-		if (this.isResolved) {
-			el.$$('.' + this.marker, this.app.resultList).forEach(termContainer => {
-				termContainer.parentElement.remove();
-			});
-		} else if (evt.type === 'pointerup') {
-			data.getList('remainders').forEach(term => this.app.resultList.append(this.buildEntry(term)));
-		}
-		this.isResolved = !this.isResolved;
-		this.app.observer.observe(args.target, args.options);
-		this.app.trigger(prefix('refreshUi'));
-		return this;
-	}
+		const answers = data.getList('answers');
+		const foundTerms = data.getList('foundTerms');
+		const pangrams = data.getList('pangrams');
 
-	/**
-	 * Build a single entry for the term list
-	 * @param {String} term
-	 * @returns {HTMLElement}
-	 */
-	buildEntry(term) {
-		const classNames = ['sb-anagram', this.marker];
-		return el.li({
-			content: el.span({
-				content: term,
-				classNames
-			})
+		const letters = el.div({
+			content: data.getList('letters').join(''),
+			classNames: ['sb-modal-letters']
+		})
+
+		const pane = el.ul({
+			classNames: ['sb-modal-wordlist-items']
+		})
+
+		answers.forEach(term => {
+			const checkClass = ['check'];
+			if (foundTerms.includes(term)) {
+				checkClass.push('checked');
+			}			
+			pane.append(
+				this.googlifier.link(el.li({
+					classNames: pangrams.includes(term) ? [this.pangramHighlighter.marker] : [],
+					content: [
+						el.span({
+							classNames: checkClass
+						}), el.span({
+							classNames: ['sb-anagram'],
+							content: term
+						})
+					]
+
+				}))
+			)
 		});
+
+		this.popup.setContent('body', [letters, pane]).toggle(!this.popup.getState());
+
+		return this;
 	}
 
 	/**
@@ -61,8 +80,14 @@ class Surrender extends DisclosureBox {
 		});
 
 		this.marker = prefix('resolved', 'd');
+		this.popup = new Popup(this.app, 'Today’s Answers', this.getDescription(), {
+			key: this.key + 'PopUp'
+		});
 
-		this.isResolved = false;
+		this.popup.add();
+		
+		this.googlifier = new Googlify(this.app);
+		this.pangramHighlighter = new HighlightPangrams(this.app);
 
 		this.pane = el.div({
 			classNames: ['pane'],

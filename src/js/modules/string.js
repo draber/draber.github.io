@@ -37,7 +37,7 @@ export const dash = term => {
  * @param {String} mode `c` for camelCase | `d` for dash-case
  * @returns {String}
  */
-export const prefix = (term, mode = 'c') => {
+export const prefix = (term = '', mode = 'c') => {
     switch (mode) {
         case 'c':
             return camel(pf + '_' + term);

@@ -32,7 +32,10 @@ class Googlify extends Plugin {
         this.app.observer.disconnect();
         const fn = this.getState() ? this.link : this.unlink;
         el.$$('li', this.app.resultList).forEach(node => {
-            fn(node);
+            const newNode = fn(node);
+            if (!node.isSameNode(newNode)) {
+                node.replaceWith(newNode)
+            }
         });
         this.app.observer.observe(args.target, args.options);
         return this;
@@ -42,17 +45,20 @@ class Googlify extends Plugin {
      * Add link to a node
      * @param {HTMLElement} node
      */
-    link(node){
+    link(node) {
         if (el.$('a', node)) {
-            return false;
+            return node;
         }
-        node.append(el.a({
-            content: node.firstChild,
+        const newNode = node.cloneNode(); 
+        const text = node.textContent;    
+        newNode.append(el.a({
+            content: el.toNode(node.childNodes),
             attributes: {
-                href: `https://www.google.com/search?q=${encodeURI(node.textContent)}`,
-                target: 'google'
+                href: `https://www.google.com/search?q=${text}`,
+                target: prefix()
             }
         }));
+        return newNode;
     }
 
     /**
@@ -62,11 +68,11 @@ class Googlify extends Plugin {
     unlink(node) {
         const link = el.$('a', node);
         if (!link) {
-            return false;
+            return node;
         }
-        const original = link.firstChild.cloneNode(true);
-        node = el.empty(node);
-        node.append(original);
+        const newNode = node.cloneNode();
+        newNode.append(el.toNode(link.children));
+        return newNode;
     }
 
     /**
@@ -77,7 +83,7 @@ class Googlify extends Plugin {
 
         super(app, 'Googlify', 'Link all result terms to Google', {
             canChangeState: true,
-			runEvt: prefix('refreshUi')
+            runEvt: prefix('refreshUi')
         });
 
         this.run();

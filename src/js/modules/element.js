@@ -25,41 +25,44 @@ const fn = {
 
     /**
      * Convert whatever form of HTML to a single element or fragment
-     * @param {Element|NodeList|Array|String|HTMLCode} content
+     * @param {Element|DocumentFragment|Iterable|String|HTMLCode} content
      * @return {Element|DocumentFragment}
      */
-    toNode: content => { 
-        // single HTML or SVG element
-        if (content instanceof Element) {
+    toNode: (content) => {
+        const fragment = document.createDocumentFragment();
+
+        if (!content) {
+            return fragment;
+        }
+
+        // HTML or SVG element or DocumentFragment, a single node either way
+        if (content instanceof Element || content instanceof DocumentFragment) {
             return content;
         }
 
         // numeric values are acted to string
-        if(typeof content === 'number') {
-            content = content .toString();
+        if (typeof content === 'number') {
+            content = content.toString();
         }
-        
+
         // HTML, text or a mix
-        if (typeof content === 'string' 
-        || content instanceof String
+        if (typeof content === 'string' ||
+            content instanceof String
         ) {
             const doc = (new DOMParser()).parseFromString(content, 'text/html');
             content = doc.body.childNodes;
         }
-        
-        // NodeList, either from arg or from DOMParser or array of nodes
-        if (content instanceof NodeList 
-            || (Array.isArray(content) 
-            && content.some(node => node.nodeType === 1))
-            ) {       
-            const fragment = document.createDocumentFragment();
-            content.forEach(element => {
+
+        // anything iterable
+        if(typeof content.forEach === 'function') {
+            // Array.from avoids problems with live collections
+            Array.from(content).forEach(element => {
                 fragment.append(element);
             })
             return fragment;
         }
-        
-        console.error('Expected Element|NodeList|Array|String|HTMLCode, got', content);
+
+        console.error('Expected Element|DocumentFragment|Iterable|String|HTMLCode, got', content);
     },
 
     /**
@@ -99,18 +102,16 @@ const create = function ({
     isSvg
 } = {}) {
     const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
-    if(tag === 'a' && attributes.href && !content) {
+    if (tag === 'a' && attributes.href && !content) {
         content = (new URL(attributes.href)).hostname;
     }
     for (let [key, value] of Object.entries(attributes)) {
         if (isSvg) {
             el.setAttributeNS(null, key, value.toString());
-        } 
-        else if(key === 'role' || key.startsWith('aria-')){
+        } else if (key === 'role' || key.startsWith('aria-')) {
             // won't work for `checked` etc.
             el.setAttribute(key, value);
-        }
-        else if(value !== false) {
+        } else if (value !== false) {
             el[key] = value.toString();
         }
     }
@@ -125,7 +126,7 @@ const create = function ({
     if (classNames.length) {
         el.classList.add(...classNames);
     }
-    if(typeof content !== 'undefined') {
+    if (typeof content !== 'undefined') {
         el.append(fn.toNode(content));
     }
     return el;

@@ -8,30 +8,30 @@
         $$: (expr, container = null) => {
             return [].slice.call((container || document).querySelectorAll(expr));
         },
-        toNode: content => {
-            if (content instanceof Element) {
+        toNode: (content) => {
+            const fragment = document.createDocumentFragment();
+            if (!content) {
+                return fragment;
+            }
+            if (content instanceof Element || content instanceof DocumentFragment) {
                 return content;
             }
-            if(typeof content === 'number') {
-                content = content .toString();
+            if (typeof content === 'number') {
+                content = content.toString();
             }
-            if (typeof content === 'string'
-            || content instanceof String
+            if (typeof content === 'string' ||
+                content instanceof String
             ) {
                 const doc = (new DOMParser()).parseFromString(content, 'text/html');
                 content = doc.body.childNodes;
             }
-            if (content instanceof NodeList
-                || (Array.isArray(content)
-                && content.some(node => node.nodeType === 1))
-                ) {
-                const fragment = document.createDocumentFragment();
-                content.forEach(element => {
+            if(typeof content.forEach === 'function') {
+                Array.from(content).forEach(element => {
                     fragment.append(element);
                 });
                 return fragment;
             }
-            console.error('Expected Element|NodeList|Array|String|HTMLCode, got', content);
+            console.error('Expected Element|DocumentFragment|Iterable|String|HTMLCode, got', content);
         },
         empty: element => {
             while (element.lastChild) {
@@ -52,17 +52,15 @@
         isSvg
     } = {}) {
         const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
-        if(tag === 'a' && attributes.href && !content) {
+        if (tag === 'a' && attributes.href && !content) {
             content = (new URL(attributes.href)).hostname;
         }
         for (let [key, value] of Object.entries(attributes)) {
             if (isSvg) {
                 el.setAttributeNS(null, key, value.toString());
-            }
-            else if(key === 'role' || key.startsWith('aria-')){
+            } else if (key === 'role' || key.startsWith('aria-')) {
                 el.setAttribute(key, value);
-            }
-            else if(value !== false) {
+            } else if (value !== false) {
                 el[key] = value.toString();
             }
         }
@@ -77,7 +75,7 @@
         if (classNames.length) {
             el.classList.add(...classNames);
         }
-        if(typeof content !== 'undefined') {
+        if (typeof content !== 'undefined') {
             el.append(fn.toNode(content));
         }
         return el;
@@ -172,7 +170,7 @@
             .map(word => word.toLowerCase())
             .join('-');
     };
-    const prefix = (term, mode = 'c') => {
+    const prefix = (term = '', mode = 'c') => {
         switch (mode) {
             case 'c':
                 return camel(pf + '_' + term);
@@ -189,12 +187,13 @@
     const completeLists = () => {
         lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.trigger(prefix('refreshUi'), { newData: true });
+        app.trigger(prefix('refreshUi'));
     };
     const initLists = foundTerms => {
         lists = {
             answers: sbData.answers,
             pangrams: sbData.pangrams,
+            letters: sbData.validLetters,
             foundTerms: foundTerms
         };
         completeLists();
@@ -204,6 +203,9 @@
     };
     const getId = () => {
         return sbData.id;
+    };
+    const getDate = () => {
+        return sbData.displayDate;
     };
     const getCenterLetter = () => {
         return sbData.centerLetter;
@@ -242,10 +244,11 @@
         getCount,
         getPoints,
         getId,
+        getDate,
         getCenterLetter
     };
 
-    var css = "[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}[data-ui=setUp] li{position:relative;margin:0 0 5px 22px}[data-ui=setUp] label{cursor:pointer;overflow:hidden}[data-ui=setUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUp] b{font-weight:bold}[data-ui=setUp] i{font-style:italic}[data-ui=setUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}[data-sba-has-overlay=true] .pz-game-wrapper{background:transparent !important}[data-sba-has-overlay=true] .sb-expanded{background:var(--body-bg-color)}.sba{position:absolute;left:100%;top:121px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:15px;left:12px}}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba{width:130px;top:158px;left:auto;right:12px;padding:0 5px 3px}.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile [data-ui=setUp] b{display:block}.pz-mobile [data-ui=setUp] i{margin-bottom:5px}.pz-mobile [data-ui=setUp] i::before{content:normal}}";
+    var css = "[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}[data-ui=setUp] li{position:relative;margin:0 0 5px 22px}[data-ui=setUp] label{cursor:pointer;overflow:hidden}[data-ui=setUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUp] b{font-weight:bold}[data-ui=setUp] i{font-style:italic}[data-ui=setUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}[data-sba-has-overlay=true] .pz-game-wrapper{background:transparent !important}[data-sba-has-overlay=true] .sb-expanded{background:var(--body-bg-color)}.sba{position:absolute;left:100%;top:121px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:15px;left:12px}}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba{width:130px;top:158px;left:auto;right:12px;padding:0 5px 3px}.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
 
     const icons = {
         options: {
@@ -501,7 +504,7 @@
         }
         create() {
             const frame = el.div({
-                classNames: ['sb-modal-frame', 'left-aligned'],
+                classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
                 attributes: {
                     role: 'button'
                 },
@@ -543,11 +546,12 @@
         }
         setContent(part, content) {
             if (!this.parts[part]) {
-                return !!console.error(`Unknown target ${part}`);
+                console.error(`Unknown target ${part}`);
+                return this;
             }
             this.parts[part] = el.empty(this.parts[part]);
             this.parts[part].append(el.toNode(content));
-            return true;
+            return this;
         }
         toggle(state) {
             const closer = el.$('.sb-modal-close', this.modalWrapper);
@@ -702,9 +706,6 @@
 
     class ProgressBar extends Plugin {
         run(evt) {
-    		if(!evt.detail.newData){
-    			return this;
-    		}
             let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
             progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
             this.ui.value = progress;
@@ -758,9 +759,6 @@
 
     class TablePane extends DisclosureBox {
     	run(evt) {
-    		if(!evt.detail.newData){
-    			return this;
-    		}
     		this.pane = el.empty(this.pane);
     		const tbody = el.tbody();
     		this.getData().forEach((rowData, i) => {
@@ -984,32 +982,124 @@
         }
     }
 
+    class Googlify extends Plugin {
+        toggle(state) {
+            super.toggle(state);
+            return this.run();
+        }
+        run() {
+            const args = this.app.getObserverArgs();
+            this.app.observer.disconnect();
+            const fn = this.getState() ? this.link : this.unlink;
+            el.$$('li', this.app.resultList).forEach(node => {
+                const newNode = fn(node);
+                if (!node.isSameNode(newNode)) {
+                    node.replaceWith(newNode);
+                }
+            });
+            this.app.observer.observe(args.target, args.options);
+            return this;
+        }
+        link(node) {
+            if (el.$('a', node)) {
+                return node;
+            }
+            const newNode = node.cloneNode();
+            const text = node.textContent;
+            newNode.append(el.a({
+                content: el.toNode(node.childNodes),
+                attributes: {
+                    href: `https://www.google.com/search?q=${text}`,
+                    target: prefix()
+                }
+            }));
+            return newNode;
+        }
+        unlink(node) {
+            const link = el.$('a', node);
+            if (!link) {
+                return node;
+            }
+            const newNode = node.cloneNode();
+            newNode.append(el.toNode(link.children));
+            return newNode;
+        }
+        constructor(app) {
+            super(app, 'Googlify', 'Link all result terms to Google', {
+                canChangeState: true,
+                runEvt: prefix('refreshUi')
+            });
+            this.run();
+        }
+    }
+
+    class HighlightPangrams extends Plugin {
+        toggle(state) {
+            super.toggle(state);
+            return this.run();
+        }
+        run(evt) {
+            const args = this.app.getObserverArgs();
+            this.app.observer.disconnect();
+            const pangrams = data.getList('pangrams');
+            el.$$('li', this.app.resultList).forEach(node => {
+                const term = node.textContent;
+                if (pangrams.includes(term)) {
+                    node.classList.toggle(this.marker, this.getState());
+                }
+            });
+            this.app.observer.observe(args.target, args.options);
+            return this;
+        }
+        constructor(app) {
+            super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
+                canChangeState: true,
+    			runEvt: prefix('refreshUi')
+            });
+            this.marker = prefix('pangram', 'd');
+            this.run();
+        }
+    }
+
     class Surrender extends DisclosureBox {
-    	run(evt) {
-    		const args = this.app.getObserverArgs();
-    		this.app.observer.disconnect();
-    		if (this.isResolved) {
-    			el.$$('.' + this.marker, this.app.resultList).forEach(termContainer => {
-    				termContainer.parentElement.remove();
-    			});
-    		} else if (evt.type === 'pointerup') {
-    			data.getList('remainders').forEach(term => this.app.resultList.append(this.buildEntry(term)));
-    		}
-    		this.isResolved = !this.isResolved;
-    		this.app.observer.observe(args.target, args.options);
-    		this.app.trigger(prefix('refreshUi', {
-    			newData: false
-    		}));
-    		return this;
+    	getDescription() {
+    		return el.div({
+    			classNames: ['sb-modal-date__today'],
+    			content: data.getDate()
+    		})
     	}
-    	buildEntry(term) {
-    		const classNames = ['sb-anagram', this.marker];
-    		return el.li({
-    			content: el.span({
-    				content: term,
-    				classNames
-    			})
+    	run(evt) {
+    		const answers = data.getList('answers');
+    		const foundTerms = data.getList('foundTerms');
+    		const pangrams = data.getList('pangrams');
+    		const letters = el.div({
+    			content: data.getList('letters').join(''),
+    			classNames: ['sb-modal-letters']
     		});
+    		const pane = el.ul({
+    			classNames: ['sb-modal-wordlist-items']
+    		});
+    		answers.forEach(term => {
+    			const checkClass = ['check'];
+    			if (foundTerms.includes(term)) {
+    				checkClass.push('checked');
+    			}
+    			pane.append(
+    				this.googlifier.link(el.li({
+    					classNames: pangrams.includes(term) ? [this.pangramHighlighter.marker] : [],
+    					content: [
+    						el.span({
+    							classNames: checkClass
+    						}), el.span({
+    							classNames: ['sb-anagram'],
+    							content: term
+    						})
+    					]
+    				}))
+    			);
+    		});
+    		this.popup.setContent('body', [letters, pane]).toggle(!this.popup.getState());
+    		return this;
     	}
     	constructor(app) {
     		super(app, 'Surrender', 'Reveals the solution of the game', {
@@ -1017,7 +1107,12 @@
     			runEvt: prefix('newInput')
     		});
     		this.marker = prefix('resolved', 'd');
-    		this.isResolved = false;
+    		this.popup = new Popup(this.app, 'Today’s Answers', this.getDescription(), {
+    			key: this.key + 'PopUp'
+    		});
+    		this.popup.add();
+    		this.googlifier = new Googlify(this.app);
+    		this.pangramHighlighter = new HighlightPangrams(this.app);
     		this.pane = el.div({
     			classNames: ['pane'],
     			content: el.button({
@@ -1035,78 +1130,6 @@
     	}
     }
 
-    class HighlightPangrams extends Plugin {
-        toggle(state) {
-            super.toggle(state);
-            return this.run();
-        }
-        run(evt) {
-            const args = this.app.getObserverArgs();
-            this.app.observer.disconnect();
-            const pangrams = data.getList('pangrams');
-            el.$$('li', this.app.resultList).forEach(node => {
-                const term = node.textContent;
-                if (pangrams.includes(term)) {
-                    node.classList.toggle(prefix('pangram', 'd'), this.getState());
-                }
-            });
-            this.app.observer.observe(args.target, args.options);
-            return this;
-        }
-        constructor(app) {
-            super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
-                canChangeState: true
-            });
-            this.observerBlocker = 'refreshUi';
-            this.run();
-        }
-    }
-
-    class Googlify extends Plugin {
-        toggle(state) {
-            super.toggle(state);
-            return this.run();
-        }
-        run() {
-            const args = this.app.getObserverArgs();
-            this.app.observer.disconnect();
-            const fn = this.getState() ? this.link : this.unlink;
-            el.$$('li', this.app.resultList).forEach(node => {
-                fn(node);
-            });
-            this.app.observer.observe(args.target, args.options);
-            return this;
-        }
-        link(node){
-            if (el.$('a', node)) {
-                return false;
-            }
-            node.append(el.a({
-                content: node.firstChild,
-                attributes: {
-                    href: `https://www.google.com/search?q=${encodeURI(node.textContent)}`,
-                    target: 'google'
-                }
-            }));
-        }
-        unlink(node) {
-            const link = el.$('a', node);
-            if (!link) {
-                return false;
-            }
-            const original = link.firstChild.cloneNode(true);
-            node = el.empty(node);
-            node.append(original);
-        }
-        constructor(app) {
-            super(app, 'Googlify', 'Link all result terms to Google', {
-                canChangeState: true,
-    			runEvt: prefix('refreshUi')
-            });
-            this.run();
-        }
-    }
-
     class Footer extends Plugin {
         constructor(app) {
             super(app, `${settings$1.get('label')}`, '', {
@@ -1116,7 +1139,7 @@
                 content: this.title,
                 attributes: {
                     href: settings$1.get('url'),
-                    target: '_blank'
+                    target: prefix()
                 }
             });
         }
@@ -1291,19 +1314,27 @@
                 }
             }
         }
-        gameIsUnlocked() {
+        getGameState() {
             const splash = el.$('#js-hook-pz-moment__welcome', this.gameWrapper);
             const contentBox = el.$('.sb-content-box', this.gameWrapper);
-            return splash && contentBox && !contentBox.classList.contains('sb-game-locked');
+            if (!splash) {
+                return -1;
+            }
+            if (contentBox && contentBox.classList.contains('sb-game-locked')) {
+                return 0;
+            }
+            if (!contentBox.classList.contains('sb-game-locked')) {
+                return 1;
+            }
         }
         getSyncData() {
             let sync = localStorage.getItem('sb-today');
             if (!sync) {
-                return false;
+                return null;
             }
             sync = JSON.parse(sync);
             if (!sync.id || sync.id !== data.getId()) {
-                return false;
+                return null;
             }
             return sync.words || [];
         }
@@ -1311,7 +1342,7 @@
             return document.body.classList.contains('pz-' + env);
         }
         async getResults() {
-            let tries = 50;
+            let tries = 10;
             return await new Promise(resolve => {
                 const interval = setInterval(() => {
                     const syncResults = this.getSyncData();
@@ -1323,17 +1354,34 @@
                 }, 300);
             });
         }
-        async waitForUnlock() {
-            let tries = 200;
+        async waitForGameState(threshold) {
+            let tries = 50;
             return await new Promise(resolve => {
                 const interval = setInterval(() => {
-                    if (!tries || this.gameIsUnlocked()) {
-                        resolve(true);
+                    const state = this.getGameState();
+                    if (!tries || this.getGameState() >= threshold) {
+                        resolve(state);
                         clearInterval(interval);
                     }
                     tries--;
                 }, 300);
             });
+        }
+        load() {
+            if (this.isLoaded) {
+                return false;
+            }
+            this.observer = this.buildObserver();
+            this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+            this.resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
+            this.waitForGameState(1)
+                .then(() => {
+                    this.add();
+                    this.gameWrapper.dataset.sbaActive = this.getState();
+                    this.registerPlugins();
+                    this.trigger(prefix('refreshUi'));
+                    this.isLoaded = true;
+                });
         }
         buildObserver() {
             const observer = new MutationObserver(mutationList => {
@@ -1438,23 +1486,27 @@
                 oldInstance.dispatchEvent(new Event(prefix('destroy')));
             }
             this.gameWrapper = gameWrapper;
-            Promise.all([this.getResults(), this.waitForUnlock()])
-                .then(values => {
-                    this.ui = this.buildUi();
-                    this.setDragProps();
-                    this.observer = this.buildObserver();
-                    this.container = el.div({
-                        classNames: [prefix('container')]
-                    });
-                    this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
-                    this.resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
-                    data.init(this, values[0]);
-                    this.add();
-                    this.gameWrapper.dataset.sbaActive = this.getState();
-                    this.registerPlugins();
-                    this.trigger(prefix('refreshUi'), {
-                        newData: true
-                    });
+            this.ui = this.buildUi();
+            this.setDragProps();
+            this.container = el.div({
+                classNames: [prefix('container')]
+            });
+            this.isLoaded = false;
+            this.getResults()
+                .then(results => {
+                    data.init(this, results);
+                })
+                .then(() => {
+                    this.waitForGameState(0)
+                        .then(state => {
+                            if (state === 0) {
+                                el.$('.pz-moment__button-wrapper .pz-moment__button.primary', this.gameWrapper).addEventListener('pointerup', () => {
+                                    this.load();
+                                });
+                            } else {
+                                this.load();
+                            }
+                        });
                 });
         }
     }

@@ -19,9 +19,6 @@ class ProgressBar extends Plugin {
      * @returns {Plugin}
      */
     run(evt) {
-		if(!evt.detail.newData){
-			return this;
-		}
         let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
         progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
         this.ui.value = progress;

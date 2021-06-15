@@ -36,7 +36,7 @@ class Popup extends Plugin {
      */
     create() {
         const frame = el.div({
-            classNames: ['sb-modal-frame', 'left-aligned'],
+            classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
             attributes: {
                 role: 'button'
             },
@@ -84,11 +84,12 @@ class Popup extends Plugin {
      */
     setContent(part, content) {
         if (!this.parts[part]) {
-            return !!console.error(`Unknown target ${part}`);
+            console.error(`Unknown target ${part}`);
+            return this;
         }
         this.parts[part] = el.empty(this.parts[part]);
         this.parts[part].append(el.toNode(content));
-        return true;
+        return this;
     }
 
     /**

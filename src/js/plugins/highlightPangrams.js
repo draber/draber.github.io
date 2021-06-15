@@ -36,7 +36,7 @@ class HighlightPangrams extends Plugin {
         el.$$('li', this.app.resultList).forEach(node => {
             const term = node.textContent;
             if (pangrams.includes(term)) {
-                node.classList.toggle(prefix('pangram', 'd'), this.getState());
+                node.classList.toggle(this.marker, this.getState());
             }
         });
         this.app.observer.observe(args.target, args.options);
@@ -53,6 +53,8 @@ class HighlightPangrams extends Plugin {
             canChangeState: true,
 			runEvt: prefix('refreshUi')
         });
+
+        this.marker = prefix('pangram', 'd');
 
         this.run();
     }

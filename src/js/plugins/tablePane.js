@@ -18,9 +18,6 @@ class TablePane extends DisclosureBox {
 	 * @returns {TablePane}
 	 */
 	run(evt) {
-		if(!evt.detail.newData){
-			return this;
-		}
 		this.pane = el.empty(this.pane);
 		const tbody = el.tbody();
 		this.getData().forEach((rowData, i) => {
