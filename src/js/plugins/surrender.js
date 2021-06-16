@@ -46,21 +46,24 @@ class Surrender extends DisclosureBox {
 			const checkClass = ['check'];
 			if (foundTerms.includes(term)) {
 				checkClass.push('checked');
-			}			
-			pane.append(
-				this.googlifier.link(el.li({
-					classNames: pangrams.includes(term) ? [this.pangramHighlighter.marker] : [],
-					content: [
-						el.span({
-							classNames: checkClass
-						}), el.span({
-							classNames: ['sb-anagram'],
-							content: term
-						})
-					]
-
-				}))
-			)
+			}		
+			let li = el.li({
+				content: [
+					el.span({
+						classNames: checkClass
+					}), el.span({
+						classNames: ['sb-anagram'],
+						content: term
+					})
+				]
+			});
+			if(this.pangramHighlighter.getState() && pangrams.includes(term)){
+				li.classList.add(this.pangramHighlighter.marker);
+			}
+			if(this.googlifier.getState()){
+				li = this.googlifier.link(li);
+			}
+			pane.append(li);
 		});
 
 		this.popup.setContent('body', [letters, pane]).toggle(!this.popup.getState());
@@ -75,8 +78,7 @@ class Surrender extends DisclosureBox {
 	constructor(app) {
 
 		super(app, 'Surrender', 'Reveals the solution of the game', {
-			canChangeState: true,
-			runEvt: prefix('newInput')
+			canChangeState: true
 		});
 
 		this.marker = prefix('resolved', 'd');

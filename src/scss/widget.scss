@@ -146,7 +146,7 @@ $offset: 12;
 }
 
 
-[data-ui="setUp"] {
+[data-ui="setUpPopUp"] {
 
     li {
         position: relative;
@@ -576,8 +576,12 @@ $offset: 12;
     }
 
     .sba {
-        top: 15px;
-        left: getOffset() * 1px;
+        // top: 15px;
+        // left: getOffset() * 1px;
+    }
+
+    .sb-controls-box {
+        max-width: 380px;
     }
 }
 

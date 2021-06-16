@@ -106,18 +106,22 @@ class Popup extends Plugin {
         if (state) {
             this.modalWrapper.append(this.ui);
             this.modalSystem.classList.add('sb-modal-open');
+            this.state = true;
         } else {
             this.getTarget().append(this.ui);
             this.modalSystem.classList.remove('sb-modal-open');
+            this.state = false;
         }
-
-        super.toggle(state);
 
         this.app.trigger(prefix('popup'), {
             plugin: this
         })
 
         return this;
+    }
+
+    getState() {
+        return this.state;
     }
 
 
@@ -138,6 +142,8 @@ class Popup extends Plugin {
             canChangeState: true,
             defaultState: false
         })
+
+        this.state = false;
 
         this.modalSystem = el.$('.sb-modal-system');
         this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);

@@ -4,6 +4,7 @@ import settings from '../modules/settings.js';
 import {
 	prefix
 } from '../modules/string.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Set-up plugin
@@ -11,15 +12,39 @@ import {
  * @param {App} app
  * @returns {Plugin} SetUp
  */
-class SetUp extends Popup {
+class SetUp extends Plugin {
+
+	/**
+	 *
+	 * @param {Event} evt
+	 * @returns {Plugin}
+	 */
+	run(evt) {
+
+		this.popup.toggle(!this.popup.getState());
+
+		return this;
+	}
+
+	toggle(state) {
+		this.run();
+		super.toggle();
+	}
 
 	constructor(app) {
 
-		super(app, settings.get('label'), 'Configure the assistant the way you want it.', {
+		super(app, settings.get('label'), '', {
 			canChangeState: true,
 			defaultState: false,
 			key: 'setUp'
 		});
+
+		this.popup = new Popup(this.app, settings.get('label'), 'Configure the assistant the way you want it.', {
+			key: this.key + 'PopUp',
+			defaultState: false,
+		});
+
+		this.popup.add();
 
 		/**
 		 * List of options
@@ -40,8 +65,8 @@ class SetUp extends Popup {
 			}
 		});
 
-        app.on(prefix('popup'), evt => {
-			if(evt.detail.plugin === this && this.getState()){
+		app.on(prefix('popup'), evt => {
+			if (evt.detail.plugin === this && this.getState()) {
 				const options = settings.get('options');
 				el.$$('input', pane).forEach(input => {
 					input.checked = !!options[input.name];
@@ -80,8 +105,8 @@ class SetUp extends Popup {
 					default: !!plugin.defaultState
 				});
 			})
-			this.setContent('body', pane);
-			this.parts.footer.append(el.div({
+			this.popup.setContent('body', pane);
+			this.popup.parts.footer.append(el.div({
 				classNames: [prefix('factory-reset', 'd')],
 				content: el.button({
 					classNames: ['hive-action'],
