@@ -1,4 +1,3 @@
-import Styles from '../plugins/styles.js';
 import Launcher from '../plugins/launcher.js';
 import DarkMode from '../plugins/darkMode.js';
 import Header from '../plugins/header.js';
@@ -14,9 +13,9 @@ import HighlightPangrams from '../plugins/highlightPangrams.js';
 import Googlify from '../plugins/googlify.js';
 import Footer from '../plugins/footer.js';
 import Positioning from '../plugins/positioning.js';
+import Styles from '../plugins/styles.js';
 
 const plugins = {
-     Styles,
      Launcher,
      DarkMode,
      Header,
@@ -31,7 +30,8 @@ const plugins = {
      HighlightPangrams,
      Googlify,
      Footer,
-     Positioning
+     Positioning,
+     Styles
 }
 
 /**

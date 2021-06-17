@@ -259,11 +259,13 @@ class App extends Widget {
 
     add() {
         this.container.append(this.ui);
-        if (this.envIs('mobile')) {
-            el.$('.sb-controls-box', this.gameWrapper).append(this.container);
-        } else {
-            this.gameWrapper.before(this.container);
-        }
+        el.$('.sb-content-box', this.gameWrapper).append(this.container);
+        // this.container.append(this.ui);
+        // if (this.envIs('mobile')) {
+        //     el.$('.sb-controls-box', this.gameWrapper).append(this.container);
+        // } else {
+        //     this.gameWrapper.before(this.container);
+        // }
     }
 
     /**

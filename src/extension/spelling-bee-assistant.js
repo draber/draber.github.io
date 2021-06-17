@@ -248,8 +248,6 @@
         getCenterLetter
     };
 
-    var css = "[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}[data-ui=setUpPopUp] li{position:relative;margin:0 0 5px 22px}[data-ui=setUpPopUp] label{cursor:pointer;overflow:hidden}[data-ui=setUpPopUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUpPopUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUpPopUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUpPopUp] b{font-weight:bold}[data-ui=setUpPopUp] i{font-style:italic}[data-ui=setUpPopUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}[data-sba-has-overlay=true] .pz-game-wrapper{background:transparent !important}[data-sba-has-overlay=true] .sb-expanded{background:var(--body-bg-color)}.sba{position:absolute;left:100%;top:121px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(max-width: 1444px){.sbaContainer{max-width:none}.sb-controls-box{max-width:380px}}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba{width:130px;top:158px;left:auto;right:12px;padding:0 5px 3px}.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
-
     const icons = {
         options: {
             children: {
@@ -398,18 +396,6 @@
                     this.run(evt);
                 });
             }
-        }
-    }
-
-    class Styles extends Plugin {
-        constructor(app) {
-            super(app, 'Styles', '');
-            this.target = el.$('head');
-            this.ui = el.style({
-                content: css
-            });
-            app.on(prefix('destroy'), () => this.ui.remove());
-            this.add();
         }
     }
 
@@ -1000,6 +986,106 @@
         }
     }
 
+    class Surrender extends DisclosureBox {
+    	getDescription() {
+    		return el.div({
+    			classNames: ['sb-modal-date__today'],
+    			content: data.getDate()
+    		})
+    	}
+    	run(evt) {
+    		const answers = data.getList('answers');
+    		const foundTerms = data.getList('foundTerms');
+    		const pangrams = data.getList('pangrams');
+    		const googlify = this.app.plugins.get('googlify');
+    		const highlightPangrams = this.app.plugins.get('highlightPangrams');
+    		const letters = el.div({
+    			content: data.getList('letters').join(''),
+    			classNames: ['sb-modal-letters']
+    		});
+    		const pane = el.ul({
+    			classNames: ['sb-modal-wordlist-items']
+    		});
+    		answers.forEach(term => {
+    			const checkClass = ['check'];
+    			if (foundTerms.includes(term)) {
+    				checkClass.push('checked');
+    			}
+    			let li = el.li({
+    				content: [
+    					el.span({
+    						classNames: checkClass
+    					}), el.span({
+    						classNames: ['sb-anagram'],
+    						content: term
+    					})
+    				]
+    			});
+    			if(highlightPangrams && highlightPangrams.getState() && pangrams.includes(term)){
+    				li.classList.add(highlightPangrams.marker);
+    			}
+    			if(googlify && googlify.getState()){
+    				li = googlify.link(li);
+    			}
+    			pane.append(li);
+    		});
+    		this.popup.setContent('body', [letters, pane]).toggle(!this.popup.getState());
+    		return this;
+    	}
+    	constructor(app) {
+    		super(app, 'Surrender', 'Reveals the solution of the game', {
+    			canChangeState: true
+    		});
+    		this.marker = prefix('resolved', 'd');
+    		this.popup = new Popup(this.app, 'Today’s Answers', this.getDescription(), {
+    			key: this.key + 'PopUp'
+    		});
+    		this.popup.add();
+    		this.pane = el.div({
+    			classNames: ['pane'],
+    			content: el.button({
+    				tag: 'button',
+    				classNames: ['hive-action'],
+    				content: 'Display answers',
+    				attributes: {
+    					type: 'button'
+    				},
+    				events: {
+    					pointerup: evt => this.run(evt)
+    				}
+    			})
+    		});
+    	}
+    }
+
+    class HighlightPangrams extends Plugin {
+        toggle(state) {
+            super.toggle(state);
+            return this.run();
+        }
+        run(evt) {
+            const args = this.app.getObserverArgs();
+            this.app.observer.disconnect();
+            const pangrams = data.getList('pangrams');
+            el.$$('li', this.app.resultList).forEach(node => {
+                const term = node.textContent;
+                if (pangrams.includes(term)) {
+                    node.classList.toggle(this.marker, this.getState());
+                }
+            });
+            this.app.observer.observe(args.target, args.options);
+            return this;
+        }
+        constructor(app) {
+            super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
+                canChangeState: true,
+    			runEvt: prefix('refreshUi')
+            });
+            this.marker = prefix('pangram', 'd');
+            this.run();
+        }
+    }
+
     class Googlify extends Plugin {
         toggle(state) {
             super.toggle(state);
@@ -1049,106 +1135,6 @@
             });
             this.run();
         }
-    }
-
-    class HighlightPangrams extends Plugin {
-        toggle(state) {
-            super.toggle(state);
-            return this.run();
-        }
-        run(evt) {
-            const args = this.app.getObserverArgs();
-            this.app.observer.disconnect();
-            const pangrams = data.getList('pangrams');
-            el.$$('li', this.app.resultList).forEach(node => {
-                const term = node.textContent;
-                if (pangrams.includes(term)) {
-                    node.classList.toggle(this.marker, this.getState());
-                }
-            });
-            this.app.observer.observe(args.target, args.options);
-            return this;
-        }
-        constructor(app) {
-            super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
-                canChangeState: true,
-    			runEvt: prefix('refreshUi')
-            });
-            this.marker = prefix('pangram', 'd');
-            this.run();
-        }
-    }
-
-    class Surrender extends DisclosureBox {
-    	getDescription() {
-    		return el.div({
-    			classNames: ['sb-modal-date__today'],
-    			content: data.getDate()
-    		})
-    	}
-    	run(evt) {
-    		const answers = data.getList('answers');
-    		const foundTerms = data.getList('foundTerms');
-    		const pangrams = data.getList('pangrams');
-    		const letters = el.div({
-    			content: data.getList('letters').join(''),
-    			classNames: ['sb-modal-letters']
-    		});
-    		const pane = el.ul({
-    			classNames: ['sb-modal-wordlist-items']
-    		});
-    		answers.forEach(term => {
-    			const checkClass = ['check'];
-    			if (foundTerms.includes(term)) {
-    				checkClass.push('checked');
-    			}
-    			let li = el.li({
-    				content: [
-    					el.span({
-    						classNames: checkClass
-    					}), el.span({
-    						classNames: ['sb-anagram'],
-    						content: term
-    					})
-    				]
-    			});
-    			if(this.pangramHighlighter.getState() && pangrams.includes(term)){
-    				li.classList.add(this.pangramHighlighter.marker);
-    			}
-    			if(this.googlifier.getState()){
-    				li = this.googlifier.link(li);
-    			}
-    			pane.append(li);
-    		});
-    		this.popup.setContent('body', [letters, pane]).toggle(!this.popup.getState());
-    		return this;
-    	}
-    	constructor(app) {
-    		super(app, 'Surrender', 'Reveals the solution of the game', {
-    			canChangeState: true
-    		});
-    		this.marker = prefix('resolved', 'd');
-    		this.popup = new Popup(this.app, 'Today’s Answers', this.getDescription(), {
-    			key: this.key + 'PopUp'
-    		});
-    		this.popup.add();
-    		this.googlifier = new Googlify(this.app);
-    		this.pangramHighlighter = new HighlightPangrams(this.app);
-    		this.pane = el.div({
-    			classNames: ['pane'],
-    			content: el.button({
-    				tag: 'button',
-    				classNames: ['hive-action'],
-    				content: 'Display answers',
-    				attributes: {
-    					type: 'button'
-    				},
-    				events: {
-    					pointerup: evt => this.run(evt)
-    				}
-    			})
-    		});
-    	}
     }
 
     class Footer extends Plugin {
@@ -1299,8 +1285,21 @@
         }
     }
 
+    var css = "[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}[data-ui=setUpPopUp] li{position:relative;margin:0 0 5px 22px}[data-ui=setUpPopUp] label{cursor:pointer;overflow:hidden}[data-ui=setUpPopUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUpPopUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUpPopUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUpPopUp] b{font-weight:bold}[data-ui=setUpPopUp] i{font-style:italic}[data-ui=setUpPopUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}[data-sba-has-overlay=true] .pz-game-wrapper{background:transparent !important}[data-sba-has-overlay=true] .sb-expanded{background:var(--body-bg-color)}.sba{position:absolute;left:100%;top:121px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(max-width: 1444px){.sbaContainer{max-width:none}.sb-controls-box{max-width:380px}}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba{width:130px;top:158px;left:auto;right:12px;padding:0 5px 3px}.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
+
+    class Styles extends Plugin {
+        constructor(app) {
+            super(app, 'Styles', '');
+            this.target = el.$('head');
+            this.ui = el.style({
+                content: css
+            });
+            app.on(prefix('destroy'), () => this.ui.remove());
+            this.add();
+        }
+    }
+
     const plugins = {
-         Styles,
          Launcher,
          DarkMode,
          Header,
@@ -1315,7 +1314,8 @@
          HighlightPangrams,
          Googlify,
          Footer,
-         Positioning
+         Positioning,
+         Styles
     };
     const getPlugins = app => {
          if(!app.envIs('desktop')){
@@ -1491,11 +1491,7 @@
         }
         add() {
             this.container.append(this.ui);
-            if (this.envIs('mobile')) {
-                el.$('.sb-controls-box', this.gameWrapper).append(this.container);
-            } else {
-                this.gameWrapper.before(this.container);
-            }
+            el.$('.sb-content-box', this.gameWrapper).append(this.container);
         }
         constructor(gameWrapper) {
             super(settings$1.get('label'), {

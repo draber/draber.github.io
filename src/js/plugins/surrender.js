@@ -5,8 +5,6 @@ import {
 } from '../modules/string.js';
 import DisclosureBox from './disclosureBox.js';
 import Popup from './popup.js';
-import Googlify from './googlify.js';
-import HighlightPangrams from './highlightPangrams.js';
 
 /**
  * Surrender plugin
@@ -33,6 +31,9 @@ class Surrender extends DisclosureBox {
 		const foundTerms = data.getList('foundTerms');
 		const pangrams = data.getList('pangrams');
 
+		const googlify = this.app.plugins.get('googlify');
+		const highlightPangrams = this.app.plugins.get('highlightPangrams')
+
 		const letters = el.div({
 			content: data.getList('letters').join(''),
 			classNames: ['sb-modal-letters']
@@ -57,12 +58,15 @@ class Surrender extends DisclosureBox {
 					})
 				]
 			});
-			if(this.pangramHighlighter.getState() && pangrams.includes(term)){
-				li.classList.add(this.pangramHighlighter.marker);
+
+			if(highlightPangrams && highlightPangrams.getState() && pangrams.includes(term)){
+				li.classList.add(highlightPangrams.marker);
 			}
-			if(this.googlifier.getState()){
-				li = this.googlifier.link(li);
+
+			if(googlify && googlify.getState()){
+				li = googlify.link(li);
 			}
+
 			pane.append(li);
 		});
 
@@ -87,9 +91,6 @@ class Surrender extends DisclosureBox {
 		});
 
 		this.popup.add();
-		
-		this.googlifier = new Googlify(this.app);
-		this.pangramHighlighter = new HighlightPangrams(this.app);
 
 		this.pane = el.div({
 			classNames: ['pane'],
