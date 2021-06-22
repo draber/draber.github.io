@@ -184,24 +184,6 @@ class App extends Widget {
         return observer;
     }
 
-    setDragProps() {
-
-        // Drag related
-        this.dragHandle = this.ui;
-        this.dragArea = this.gameWrapper;
-
-        /**
-         * The offset from the borders of the drag area in px
-         * @type {int|{top: int, right: int, bottom: int, left: int}}
-         */
-        this.dragOffset = {
-            top: 69,
-            right: 12,
-            bottom: 12,
-            left: 12
-        };
-    }
-
     buildUi() {
         const events = {};
         events[prefix('destroy')] = () => {
@@ -216,9 +198,6 @@ class App extends Widget {
         }
 
         return el.div({
-            attributes: {
-                draggable: this.envIs('desktop')
-            },
             data: {
                 id: this.key,
                 version: settings.get('version')
@@ -240,32 +219,12 @@ class App extends Widget {
             this.plugins.set(instance.key, instance);
         })
         this.trigger(prefix('pluginsReady'), this.plugins);
-        return this.registerTools();
-    }
-
-    /**
-     * Register tools for tool bar
-     * @returns {Widget}
-     */
-    registerTools() {
-        this.toolButtons = new Map();
-        this.plugins.forEach(plugin => {
-            if (plugin.tool) {
-                this.toolButtons.set(plugin.key, plugin.tool);
-            }
-        })
-        return this.trigger(prefix('toolsReady'), this.toolButtons);
+        return this;
     }
 
     add() {
-        // this.container.append(this.ui);
-        // el.$('.sb-content-box', this.gameWrapper).append(this.container);
         this.container.append(this.ui);
-        if (this.envIs('mobile')) {
-            el.$('.sb-controls-box', this.gameWrapper).append(this.container);
-        } else {
-            this.gameWrapper.before(this.container);
-        }
+        el.$('.sb-content-box', this.gameWrapper).append(this.container);
     }
 
     /**
@@ -291,11 +250,10 @@ class App extends Widget {
 
         // App UI
         this.ui = this.buildUi();
-        this.setDragProps();
 
         // init dom elements for external access
         this.container = el.div({
-            classNames: [prefix('container')]
+            classNames: [prefix('container', 'd')]
         });
 
         this.isLoaded = false;

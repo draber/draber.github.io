@@ -1,0 +1,112 @@
+[data-sba-theme="dark"] {
+    background: var(--body-bg-color);
+    color: var(--text-color);
+
+    .pz-moment__loading {
+        color: black;
+    }
+
+    .pz-game-wrapper {
+        background: inherit !important;
+        color: inherit;
+    }
+
+    .pz-nav__hamburger-inner,
+    .pz-nav__hamburger-inner::before,
+    .pz-nav__hamburger-inner::after {
+        background-color: var(--text-color);
+    }
+
+    .pz-nav {
+        width: 100%;
+        background: var(--body-bg-color);
+    }
+
+    .pz-nav__logo {
+        filter: invert(1);
+    }
+
+    .sb-modal-scrim {
+        background: var(--modal-bg-color);
+        color: var(--text-color);
+    }
+
+    .pz-modal__title,
+    .sb-modal-close {
+        color: var(--text-color);
+    }
+
+    .sb-modal-frame,
+    .pz-modal__button.white {
+        background: var(--body-bg-color);
+        color: var(--text-color);
+    }
+
+    .pz-modal__button.white:hover {
+        background: var(--area-bg-color);
+    }
+
+    .sb-message {
+        background: var(--area-bg-color);
+    }
+
+    .sb-input-invalid {
+        color: var(--invalid-color)
+    }
+
+    .sb-toggle-expand {
+        box-shadow: none;
+    }
+
+    .sb-progress-marker .sb-progress-value,
+    .hive-cell.center .cell-fill {
+        background: var(--highlight-color);
+        fill: var(--highlight-color);
+        color: var(--body-bg-color);
+    }
+
+    .sb-input-bright {
+        color: var(--highlight-color)
+    }
+
+    .hive-cell.outer .cell-fill {
+        fill: var(--area-bg-color);
+    }
+
+    .cell-fill {
+        stroke: var(--body-bg-color);
+    }
+
+    .cell-letter {
+        fill: var(--text-color);
+    }
+
+    .hive-cell.center .cell-letter {
+        fill: var(--body-bg-color);
+    }
+
+    .pz-toolbar-button, [data-ui="launcher"] label {
+        &:hover {
+            background: var(--area-bg-color);
+            color: var(--text-color);
+        }
+    }
+
+    .hive-action:not(.hive-action__shuffle) {
+        background: var(--body-bg-color);
+        color: var(--text-color);
+
+        &:hover {
+            background: var(--area-bg-color);
+        }
+    }
+
+    .hive-action__shuffle {
+        filter: invert(100%)
+    }
+
+    *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent) {
+        border-color: var(--border-color) !important
+    }
+
+}

@@ -1,0 +1,18 @@
+$gameOffset: 12;
+$gameWidth: 1280;
+
+[data-sba-active="true"] {
+    --sba-app-width: 138px;
+    --sba-app-padding: 0 5px 3px;
+    --sba-app-margin: 64px 0 0 0;
+    --sba-game-offset: #{$gameOffset * 1px};
+    --sba-game-width: #{$gameWidth - (2 * $gameOffset) * 1px};
+    --sba-mobile-threshold: {{mobileThreshold}}px
+}
+
+@media (min-width: 968px) {
+    [data-sba-active="true"] {
+        --sba-app-width: 160px;
+        --sba-app-padding: 0 8px 5px;
+    }
+}

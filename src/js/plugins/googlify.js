@@ -23,57 +23,26 @@ class Googlify extends Plugin {
         return this.run();
     }
 
+    listener(evt) {
+        if(!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')){
+            return false;
+        }
+        if(evt.button === 0) {            
+           return window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
+        }
+    }
+
     /**
      * Add or remove pangram underlines
      * @returns {Googlify}
      */
     run() {
-        const args = this.app.getObserverArgs();
-        this.app.observer.disconnect();
-        const fn = this.getState() ? this.link : this.unlink;
-        el.$$('li', this.app.resultList).forEach(node => {
-            const newNode = fn(node);
-            if (!node.isSameNode(newNode)) {
-                node.replaceWith(newNode)
-            }
-        });
-        this.app.observer.observe(args.target, args.options);
+        const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
+        this.app.resultList[method]('pointerup', this.listener);
+        this.app.resultList.classList.toggle(prefix('googlified', 'd'), this.getState());
         return this;
     }
 
-    /**
-     * Add link to a node
-     * @param {HTMLElement} node
-     */
-    link(node) {
-        if (el.$('a', node)) {
-            return node;
-        }
-        const newNode = node.cloneNode(); 
-        const text = node.textContent;    
-        newNode.append(el.a({
-            content: el.toNode(node.childNodes),
-            attributes: {
-                href: `https://www.google.com/search?q=${text}`,
-                target: prefix()
-            }
-        }));
-        return newNode;
-    }
-
-    /**
-     * Remove link from a node
-     * @param {HTMLElement} node
-     */
-    unlink(node) {
-        const link = el.$('a', node);
-        if (!link) {
-            return node;
-        }
-        const newNode = node.cloneNode();
-        newNode.append(el.toNode(link.children));
-        return newNode;
-    }
 
     /**
      * Googlify constructor
@@ -82,8 +51,7 @@ class Googlify extends Plugin {
     constructor(app) {
 
         super(app, 'Googlify', 'Link all result terms to Google', {
-            canChangeState: true,
-            runEvt: prefix('refreshUi')
+            canChangeState: false
         });
 
         this.run();

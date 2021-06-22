@@ -13,6 +13,7 @@ const settings = {
     prefix: config.prefix,
     repo: config.repo,
     targetUrl: config.targetUrl,
+    mobileThreshold: config.mobileThreshold,
     options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 };
 

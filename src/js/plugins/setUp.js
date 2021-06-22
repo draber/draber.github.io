@@ -21,15 +21,9 @@ class SetUp extends Plugin {
 	 */
 	run(evt) {
 
-		this.popup.toggle(!this.popup.getState());
-
-		return this;
+		return super.toggle();
 	}
 
-	toggle(state) {
-		this.run();
-		super.toggle();
-	}
 
 	constructor(app) {
 
@@ -39,12 +33,7 @@ class SetUp extends Plugin {
 			key: 'setUp'
 		});
 
-		this.popup = new Popup(this.app, settings.get('label'), 'Configure the assistant the way you want it.', {
-			key: this.key + 'PopUp',
-			defaultState: false,
-		});
-
-		this.popup.add();
+		this.target = el.$('[data-ui="launcher"]');
 
 		/**
 		 * List of options
@@ -65,14 +54,14 @@ class SetUp extends Plugin {
 			}
 		});
 
-		app.on(prefix('popup'), evt => {
-			if (evt.detail.plugin === this && this.getState()) {
-				const options = settings.get('options');
-				el.$$('input', pane).forEach(input => {
-					input.checked = !!options[input.name];
-				})
-			}
-		});
+		// app.on(prefix('popup'), evt => {
+		// 	if (evt.detail.plugin === this && this.getState()) {
+		// 		const options = settings.get('options');
+		// 		el.$$('input', pane).forEach(input => {
+		// 			input.checked = !!options[input.name];
+		// 		})
+		// 	}
+		// });
 
 		app.on(prefix('pluginsReady'), evt => {
 			const defaults = new Map();
@@ -92,10 +81,10 @@ class SetUp extends Plugin {
 						content: [
 							input,
 							el.b({
-								content: plugin.title
-							}),
-							el.i({
-								content: plugin.description
+								content: plugin.title,
+								attributes: {
+									title: plugin.description
+								}
 							})
 						]
 					})
@@ -105,34 +94,10 @@ class SetUp extends Plugin {
 					default: !!plugin.defaultState
 				});
 			})
-			this.popup.setContent('body', pane);
-			this.popup.parts.footer.append(el.div({
-				classNames: [prefix('factory-reset', 'd')],
-				content: el.button({
-					classNames: ['hive-action'],
-					content: 'Reset to defaults',
-					attributes: {
-						type: 'text'
-					},
-					events: {
-						'click': () => {
-							defaults.forEach(value => {
-								if (value.input.checked !== value.default) {
-									value.input.click();
-								}
-							})
-						}
-					}
-
-				})
-			}))
 		})
 
 		// Enforce false as start-up state
 		this.setState(false);
-
-		// Configure the launch button for this plugin
-		this.enableTool('options', 'Show set-up', 'Hide set-up');
 	}
 }
 

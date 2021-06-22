@@ -7,6 +7,7 @@
     "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
     "twitter": "@d_raber",
     "prefix": "sba",
+    "mobileThreshold": "900",
     "extension": {
         "manifest": {
             "template": "src/templates/extension/manifest.json",

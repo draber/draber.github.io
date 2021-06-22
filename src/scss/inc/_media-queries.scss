@@ -1,0 +1,107 @@
+// @media (max-width: 1444px) {
+
+//     .sba-container {
+//         max-width: none;
+//     }
+
+//     .sba {
+//         // top: 15px;
+//         // left: getOffset() * 1px;
+//     }
+
+//     .sb-controls-box {
+//         max-width: 380px;
+//     }
+// }
+
+
+
+
+// result list on the right
+@media (min-width: 768px) {
+
+   [data-sba-theme] {
+        &.pz-page {
+            .sba-pop-up {
+                &.left-aligned {
+                    .sb-modal-content {
+                        .sb-modal-body {
+                            padding-right: 56px;
+                        }
+
+                        .sb-modal-header {
+                            padding-right: 56px;
+                        }
+
+                        .sba-modal-footer {
+                            text-align: right;
+                            border-top: 1px solid var(--border-color);
+                            padding-top: 10px;
+                            width: calc(100% - 112px);
+                            margin: -8px auto 15px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// result list on top
+@media (max-width: 767.98px) {
+
+    .sba {
+
+        [data-ui="spillTheBeans"] {
+            .spill-title {
+                display: none
+            }
+        }
+    }
+
+    // [data-sba-active="true"] {
+    //     .sb-controls {
+    //         top: 0;
+    //         left: getOffset() * 1px;
+    //         transform: none;
+    //         max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
+    //     }
+
+    //     .hive-actions {
+    //         max-width: calc(100vw - #{((getOffset() * 3) + $appWidth) * 1px});
+
+    //         .hive-action {
+    //             max-width: none;
+    //             min-width: auto;
+    //             margin: 10px 0;
+    //             flex: auto;
+    //             padding: 10px;
+
+    //             &:nth-child(2) {
+    //                 margin: 10px 8px;
+    //                 width: 50px;
+    //                 height: 38px;
+    //                 width: 36px;
+    //             }
+    //         }
+    //     }
+    // }
+
+    .pz-mobile {
+
+        .sba-pop-up {
+
+            b {
+                display: block;
+            }
+
+            i {
+                &::before {
+                    content: normal;
+                }
+
+                margin-bottom: 5px;
+            }
+        }
+    }
+}

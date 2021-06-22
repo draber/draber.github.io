@@ -3,7 +3,7 @@ import data from '../modules/data.js';
 import {
 	prefix
 } from '../modules/string.js';
-import DisclosureBox from './disclosureBox.js';
+import Plugin from '../modules/plugin.js';
 import Popup from './popup.js';
 
 /**
@@ -12,7 +12,7 @@ import Popup from './popup.js';
  * @param {App} app
  * @returns {Plugin} Surrender
  */
-class Surrender extends DisclosureBox {
+class Surrender extends Plugin {
 
 	getDescription() {
 		return el.div({
@@ -26,7 +26,8 @@ class Surrender extends DisclosureBox {
 	 * @param {Event} evt
 	 * @returns {Plugin}
 	 */
-	run(evt) {
+	toggle() {
+
 		const answers = data.getList('answers');
 		const foundTerms = data.getList('foundTerms');
 		const pangrams = data.getList('pangrams');
@@ -39,15 +40,23 @@ class Surrender extends DisclosureBox {
 			classNames: ['sb-modal-letters']
 		})
 
+		const classNames = ['sb-modal-wordlist-items'];
+		const events = {};
+		if(googlify) {
+			classNames.push(prefix('googlified', 'd'));
+			events.pointerup = googlify.listener;
+		}
+
 		const pane = el.ul({
-			classNames: ['sb-modal-wordlist-items']
+			classNames,
+			events
 		})
 
 		answers.forEach(term => {
 			const checkClass = ['check'];
 			if (foundTerms.includes(term)) {
 				checkClass.push('checked');
-			}		
+			}
 			let li = el.li({
 				content: [
 					el.span({
@@ -59,12 +68,8 @@ class Surrender extends DisclosureBox {
 				]
 			});
 
-			if(highlightPangrams && highlightPangrams.getState() && pangrams.includes(term)){
+			if (highlightPangrams && pangrams.includes(term)) {
 				li.classList.add(highlightPangrams.marker);
-			}
-
-			if(googlify && googlify.getState()){
-				li = googlify.link(li);
 			}
 
 			pane.append(li);
@@ -82,7 +87,8 @@ class Surrender extends DisclosureBox {
 	constructor(app) {
 
 		super(app, 'Surrender', 'Reveals the solution of the game', {
-			canChangeState: true
+			canChangeState: true,
+			defaultState: false
 		});
 
 		this.marker = prefix('resolved', 'd');
@@ -92,20 +98,7 @@ class Surrender extends DisclosureBox {
 
 		this.popup.add();
 
-		this.pane = el.div({
-			classNames: ['pane'],
-			content: el.button({
-				tag: 'button',
-				classNames: ['hive-action'],
-				content: 'Display answers',
-				attributes: {
-					type: 'button'
-				},
-				events: {
-					pointerup: evt => this.run(evt)
-				}
-			})
-		});
+		this.ui = this.popup.ui;
 	}
 }
 

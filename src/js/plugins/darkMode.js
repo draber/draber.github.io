@@ -33,8 +33,6 @@ class DarkMode extends Plugin {
             defaultState: false
         });
 
-        this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
-
         // toggle body dataset
         this.toggle(this.getState());
     }

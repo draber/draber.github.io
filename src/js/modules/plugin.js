@@ -7,25 +7,23 @@ class Plugin extends Widget {
 
     /**
      * Attaches plugins to DOM, creates slot in app if needed
-     * @param {String} method
      * @returns {Widget}
      */
-    attach(method = 'append') {
+    attach() {
         if (!this.hasUi()) {
             return this;
         }
         this.ui.dataset.ui = this.key;
-        (this.target || this.app.ui)[method](this.ui);
+        (this.target || this.app.ui)[this.addMethod](this.ui);
         return this;
     }
 
     /**
      * Adds plugin to DOM and registers state in local storage
-     * @param {String} method
      * @returns {Widget}
      */
-    add(method = 'append') {
-        return this.attach(method);
+    add() {
+        return this.attach();
     }
 
     /**
@@ -49,7 +47,8 @@ class Plugin extends Widget {
         key,
         canChangeState,
         defaultState,
-        runEvt
+        runEvt,
+        addMethod
     } = {}) {
         super(title, {
             key,
@@ -74,6 +73,8 @@ class Plugin extends Widget {
          * @type {App}
          */
         this.app = app;
+
+        this.addMethod = addMethod || 'append';
 
         /**
          * Update plugin data on demand

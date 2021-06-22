@@ -3,7 +3,7 @@ import data from '../modules/data.js';
 import {
     prefix
 } from '../modules/string.js';
-import DisclosureBox from './disclosureBox.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Spill the beans plugin
@@ -11,7 +11,7 @@ import DisclosureBox from './disclosureBox.js';
  * @param {App} app
  * @returns {Plugin} SpillTheBeans
  */
-class SpillTheBeans extends DisclosureBox {
+class SpillTheBeans extends Plugin {
 
     /**
      * Check if the input matches a term in the remainder list
@@ -25,7 +25,7 @@ class SpillTheBeans extends DisclosureBox {
         else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
             emoji = '🙁';
         }
-        this.reaction.textContent = emoji;
+        this.ui.textContent = emoji;
     }
 
     /**
@@ -36,27 +36,22 @@ class SpillTheBeans extends DisclosureBox {
 
         super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
             canChangeState: true,
-            runEvt: prefix('newInput')
+            runEvt: prefix('newInput'),
+            addMethod: 'prepend'
         });
 
         /**
          * Emoji area
          */
-        this.reaction = el.div({
-            content: '😐',
-            classNames: ['spill']
+        this.ui = el.div({
+            content: '😐'
         });
 
-        this.pane = el.div({
-            classNames: ['pane'],
-            content: [
-                el.div({
-                    content: 'Watch my reaction!',
-                    classNames: ['spill-title']
-                }),
-                this.reaction
-            ]
-        });
+        this.target = el.$('.sb-controls', this.app.gameWrapper);
+
+        // toggle body dataset
+        this.toggle(this.getState());
+
     }
 }
 

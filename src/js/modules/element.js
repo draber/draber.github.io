@@ -31,7 +31,7 @@ const fn = {
     toNode: (content) => {
         const fragment = document.createDocumentFragment();
 
-        if (!content) {
+        if (typeof content === 'undefined') {
             return fragment;
         }
 

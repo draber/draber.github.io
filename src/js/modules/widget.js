@@ -48,32 +48,6 @@ class Widget {
     }
 
     /**
-     * Build a tool for the tool bar
-     * @param {String} iconKey
-     * @param {String} textToActivate
-     * @param {String} textToDeactivate
-     * @returns {Widget}
-     */
-    enableTool(iconKey, textToActivate, textToDeactivate) {
-        this.tool = el.div({
-            events: {
-                click: () => {
-                    this.toggle(!this.getState());
-                    this.tool.title = this.getState() ? textToDeactivate : textToActivate;
-                }
-            },
-            attributes: {
-                title: this.getState() ? textToDeactivate : textToActivate
-            },
-            data: {
-                tool: this.key
-            },
-            content: getIcon(iconKey)
-        })
-        return this;
-    }
-
-    /**
      * Some plugins have no UI
      * @returns {Boolean}
      */

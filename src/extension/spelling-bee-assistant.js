@@ -10,7 +10,7 @@
         },
         toNode: (content) => {
             const fragment = document.createDocumentFragment();
-            if (!content) {
+            if (typeof content === 'undefined') {
                 return fragment;
             }
             if (content instanceof Element || content instanceof DocumentFragment) {
@@ -104,6 +104,7 @@
     var repo = "draber/draber.github.io.git";
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix$1 = "sba";
+    var mobileThreshold = "900";
 
     var version = "3.2.1";
 
@@ -115,6 +116,7 @@
         prefix: prefix$1,
         repo: repo,
         targetUrl: targetUrl,
+        mobileThreshold: mobileThreshold,
         options: JSON.parse(localStorage.getItem(prefix$1 + '-settings') || '{}')
     };
     const saveOptions = () => {
@@ -248,47 +250,6 @@
         getCenterLetter
     };
 
-    const icons = {
-        options: {
-            children: {
-                path: 'M16 14c0-2.203-1.797-4-4-4s-4 1.797-4 4 1.797 4 4 4 4-1.797 4-4zm8-1.703v3.469c0 .234-.187.516-.438.562l-2.891.438a8.86 8.86 0 01-.609 1.422c.531.766 1.094 1.453 1.672 2.156.094.109.156.25.156.391s-.047.25-.141.359c-.375.5-2.484 2.797-3.016 2.797a.795.795 0 01-.406-.141l-2.156-1.687a9.449 9.449 0 01-1.422.594c-.109.953-.203 1.969-.453 2.906a.573.573 0 01-.562.438h-3.469c-.281 0-.531-.203-.562-.469l-.438-2.875a9.194 9.194 0 01-1.406-.578l-2.203 1.672c-.109.094-.25.141-.391.141s-.281-.063-.391-.172c-.828-.75-1.922-1.719-2.578-2.625a.607.607 0 01.016-.718c.531-.719 1.109-1.406 1.641-2.141a8.324 8.324 0 01-.641-1.547l-2.859-.422A.57.57 0 010 15.705v-3.469c0-.234.187-.516.422-.562l2.906-.438c.156-.5.359-.969.609-1.437a37.64 37.64 0 00-1.672-2.156c-.094-.109-.156-.234-.156-.375s.063-.25.141-.359c.375-.516 2.484-2.797 3.016-2.797.141 0 .281.063.406.156L7.828 5.94a9.449 9.449 0 011.422-.594c.109-.953.203-1.969.453-2.906a.573.573 0 01.562-.438h3.469c.281 0 .531.203.562.469l.438 2.875c.484.156.953.344 1.406.578l2.219-1.672c.094-.094.234-.141.375-.141s.281.063.391.156c.828.766 1.922 1.734 2.578 2.656a.534.534 0 01.109.344c0 .141-.047.25-.125.359-.531.719-1.109 1.406-1.641 2.141.266.5.484 1.016.641 1.531l2.859.438a.57.57 0 01.453.562z'
-            },
-            width: 24,
-            height: 28
-        },
-        darkMode: {
-            children: {
-                path: 'M12.018 1.982A12.018 12.018 0 000 14a12.018 12.018 0 0012.018 12.018A12.018 12.018 0 0024.036 14 12.018 12.018 0 0012.018 1.982zm0 3.293A8.725 8.725 0 0120.743 14a8.725 8.725 0 01-8.725 8.725z'
-            },
-            width: 24,
-            height: 28
-        }
-    };
-    const getIcon = key => {
-        if (!icons[key]) {
-            console.error(`Icon ${key} doesn't exist`);
-            return false;
-        }
-        const icon = icons[key];
-        const svg = el.svg({
-            attributes: {
-                ...{
-                    viewBox: `0 0 ${icon.width} ${icon.height}`
-                }
-            },
-            isSvg: true
-        });
-        for (const [type, d] of Object.entries(icon.children)) {
-            svg.append(el[type]({
-                attributes: {
-                    d
-                },
-                isSvg: true
-            }));
-        }
-        return svg;
-    };
-
     class Widget {
         getState() {
             const stored = settings$1.get(`options.${this.key}`);
@@ -308,24 +269,6 @@
             if (this.hasUi()) {
                 this.ui.classList.toggle('inactive', !state);
             }
-            return this;
-        }
-        enableTool(iconKey, textToActivate, textToDeactivate) {
-            this.tool = el.div({
-                events: {
-                    click: () => {
-                        this.toggle(!this.getState());
-                        this.tool.title = this.getState() ? textToDeactivate : textToActivate;
-                    }
-                },
-                attributes: {
-                    title: this.getState() ? textToDeactivate : textToActivate
-                },
-                data: {
-                    tool: this.key
-                },
-                content: getIcon(iconKey)
-            });
             return this;
         }
         hasUi() {
@@ -363,16 +306,16 @@
     }
 
     class Plugin extends Widget {
-        attach(method = 'append') {
+        attach() {
             if (!this.hasUi()) {
                 return this;
             }
             this.ui.dataset.ui = this.key;
-            (this.target || this.app.ui)[method](this.ui);
+            (this.target || this.app.ui)[this.addMethod](this.ui);
             return this;
         }
-        add(method = 'append') {
-            return this.attach(method);
+        add() {
+            return this.attach();
         }
         run(evt) {
             return this;
@@ -381,7 +324,8 @@
             key,
             canChangeState,
             defaultState,
-            runEvt
+            runEvt,
+            addMethod
         } = {}) {
             super(title, {
                 key,
@@ -391,46 +335,12 @@
             this.target;
             this.description = description || '';
             this.app = app;
+            this.addMethod = addMethod || 'append';
             if (runEvt) {
                 this.app.on(runEvt, evt => {
                     this.run(evt);
                 });
             }
-        }
-    }
-
-    class Launcher extends Plugin {
-        getTarget() {
-            let target;
-            if (this.app.envIs('mobile')) {
-                target = el.$('#js-mobile-toolbar');
-            } else {
-                target = el.div({
-                    content: el.$$('#portal-game-toolbar > span')
-                });
-                el.$('#portal-game-toolbar').append(target);
-            }
-            return target;
-        }
-        constructor(app) {
-            super(app, 'Launcher', '');
-            this.target = this.getTarget();
-            const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
-            this.ui = el.span({
-                content: settings$1.get('title'),
-                events: {
-                    click: () => {
-                        const nextState = !this.app.getState();
-                        this.app.toggle(nextState);
-                        this.app.gameWrapper.dataset.sbaActive = nextState.toString();
-                    }
-                },
-                attributes: {
-                    role: 'presentation'
-                },
-                classNames
-            });
-            app.on(prefix('destroy'), () => this.ui.remove());
         }
     }
 
@@ -445,7 +355,6 @@
                 canChangeState: true,
                 defaultState: false
             });
-            this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
             this.toggle(this.getState());
         }
     }
@@ -455,12 +364,12 @@
             super(app, settings$1.get('title'), '', {
                 key: 'header'
             });
-            this.ui = el.div();
-            app.dragHandle = el.div({
-                content: this.title,
-                classNames: ['header']
+            this.ui = el.div({
+                content: el.div({
+                    content: this.title,
+                    classNames: ['header']
+                })
             });
-            this.ui.append(app.dragHandle);
             app.on(prefix('toolsReady'), evt => {
                 const toolbar = el.div({
                     classNames: ['toolbar']
@@ -472,240 +381,6 @@
                 return this;
             });
         }
-    }
-
-    class Popup extends Plugin {
-        getTarget() {
-            const dataUi = prefix('popup-container', 'd');
-            let container = el.$(`[data-ui="${dataUi}"]`);
-            if (!container) {
-                container = el.template({
-                    data: {
-                        ui: dataUi
-                    }
-                });
-                el.$('body').append(container);
-            }
-            return container;
-        }
-        create() {
-            const frame = el.div({
-                classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
-                attributes: {
-                    role: 'button'
-                },
-                data: {
-                    ui: this.key
-                },
-                events: {
-                    click: e => {
-                        e.stopPropagation();
-                    }
-                },
-                content: [
-                    el.div({
-                        attributes: {
-                            role: 'button'
-                        },
-                        classNames: ['sb-modal-close'],
-                        content: '×',
-                        events: {
-                            click: () => {
-                                this.toggle(false);
-                            }
-                        }
-                    }),
-                    el.div({
-                        classNames: ['sb-modal-content'],
-                        content: [
-                            el.div({
-                                classNames: ['sb-modal-header'],
-                                content: [this.parts.title, this.parts.subtitle]
-                            }),
-                            this.parts.body,
-                            this.parts.footer
-                        ]
-                    })
-                ]
-            });
-            return frame;
-        }
-        setContent(part, content) {
-            if (!this.parts[part]) {
-                console.error(`Unknown target ${part}`);
-                return this;
-            }
-            this.parts[part] = el.empty(this.parts[part]);
-            this.parts[part].append(el.toNode(content));
-            return this;
-        }
-        toggle(state) {
-            const closer = el.$('.sb-modal-close', this.modalWrapper);
-            if (!this.getState() && closer) {
-                closer.click();
-            }
-            if (state) {
-                this.modalWrapper.append(this.ui);
-                this.modalSystem.classList.add('sb-modal-open');
-                this.state = true;
-            } else {
-                this.getTarget().append(this.ui);
-                this.modalSystem.classList.remove('sb-modal-open');
-                this.state = false;
-            }
-            this.app.trigger(prefix('popup'), {
-                plugin: this
-            });
-            return this;
-        }
-        getState() {
-            return this.state;
-        }
-        constructor(app, title, description, {
-            key
-        } = {}) {
-            super(app, title, description, {
-                key,
-                canChangeState: true,
-                defaultState: false
-            });
-            this.state = false;
-            this.modalSystem = el.$('.sb-modal-system');
-            this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);
-            this.parts = {
-                title: el.h3({
-                    classNames: ['sb-modal-title'],
-                    content: title
-                }),
-                subtitle: el.p({
-                    classNames: ['sb-modal-message'],
-                    content: description
-                }),
-                body: el.div({
-                    classNames: ['sb-modal-body']
-                }),
-                footer: el.div({
-                    classNames: ['sb-modal-message', 'sba-modal-footer'],
-                    content: [
-                        el.a({
-                            content: settings$1.get('label') + ' v' + settings$1.get('version'),
-                            attributes: {
-                                href: settings$1.get('url'),
-                                target: '_blank'
-                            }
-                        })
-                    ]
-                })
-            };
-            if (!this.app.popups) {
-                this.app.popups = new Map();
-            }
-            if (!this.app.popups.has(key)) {
-                this.app.popups.set(key, this.create());
-            }
-            this.target = this.getTarget();
-            this.ui = this.app.popups.get(key);
-        }
-    }
-
-    class SetUp extends Plugin {
-    	run(evt) {
-    		this.popup.toggle(!this.popup.getState());
-    		return this;
-    	}
-    	toggle(state) {
-    		this.run();
-    		super.toggle();
-    	}
-    	constructor(app) {
-    		super(app, settings$1.get('label'), '', {
-    			canChangeState: true,
-    			defaultState: false,
-    			key: 'setUp'
-    		});
-    		this.popup = new Popup(this.app, settings$1.get('label'), 'Configure the assistant the way you want it.', {
-    			key: this.key + 'PopUp',
-    			defaultState: false,
-    		});
-    		this.popup.add();
-    		const pane = el.ul({
-    			classNames: ['pane'],
-    			events: {
-    				click: evt => {
-    					if (evt.target.tagName === 'INPUT') {
-    						app.plugins.get(evt.target.name).toggle(evt.target.checked);
-    					}
-    				},
-    				toggle: evt => {
-    					if (!evt.target.open) {
-    						this.toggle(false);
-    					}
-    				}
-    			}
-    		});
-    		app.on(prefix('popup'), evt => {
-    			if (evt.detail.plugin === this && this.getState()) {
-    				const options = settings$1.get('options');
-    				el.$$('input', pane).forEach(input => {
-    					input.checked = !!options[input.name];
-    				});
-    			}
-    		});
-    		app.on(prefix('pluginsReady'), evt => {
-    			const defaults = new Map();
-    			evt.detail.forEach((plugin, key) => {
-    				if (!plugin.canChangeState || plugin === this) {
-    					return false;
-    				}
-    				const input = el.input({
-    					attributes: {
-    						type: 'checkbox',
-    						name: key,
-    						checked: !!plugin.getState()
-    					}
-    				});
-    				pane.append(el.li({
-    					content: el.label({
-    						content: [
-    							input,
-    							el.b({
-    								content: plugin.title
-    							}),
-    							el.i({
-    								content: plugin.description
-    							})
-    						]
-    					})
-    				}));
-    				defaults.set(key, {
-    					input,
-    					default: !!plugin.defaultState
-    				});
-    			});
-    			this.popup.setContent('body', pane);
-    			this.popup.parts.footer.append(el.div({
-    				classNames: [prefix('factory-reset', 'd')],
-    				content: el.button({
-    					classNames: ['hive-action'],
-    					content: 'Reset to defaults',
-    					attributes: {
-    						type: 'text'
-    					},
-    					events: {
-    						'click': () => {
-    							defaults.forEach(value => {
-    								if (value.input.checked !== value.default) {
-    									value.input.click();
-    								}
-    							});
-    						}
-    					}
-    				})
-    			}));
-    		});
-    		this.setState(false);
-    		this.enableTool('options', 'Show set-up', 'Hide set-up');
-    	}
     }
 
     class ProgressBar extends Plugin {
@@ -818,7 +493,7 @@
         }
     }
 
-    class SpillTheBeans extends DisclosureBox {
+    class SpillTheBeans extends Plugin {
         run(evt) {
             let emoji = '🙂';
             if (!evt.detail) {
@@ -827,27 +502,19 @@
             else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
                 emoji = '🙁';
             }
-            this.reaction.textContent = emoji;
+            this.ui.textContent = emoji;
         }
         constructor(app) {
             super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
                 canChangeState: true,
-                runEvt: prefix('newInput')
+                runEvt: prefix('newInput'),
+                addMethod: 'prepend'
             });
-            this.reaction = el.div({
-                content: '😐',
-                classNames: ['spill']
+            this.ui = el.div({
+                content: '😐'
             });
-            this.pane = el.div({
-                classNames: ['pane'],
-                content: [
-                    el.div({
-                        content: 'Watch my reaction!',
-                        classNames: ['spill-title']
-                    }),
-                    this.reaction
-                ]
-            });
+            this.target = el.$('.sb-controls', this.app.gameWrapper);
+            this.toggle(this.getState());
         }
     }
 
@@ -986,14 +653,148 @@
         }
     }
 
-    class Surrender extends DisclosureBox {
+    class Popup extends Plugin {
+        getTarget() {
+            const dataUi = prefix('popup-container', 'd');
+            let container = el.$(`[data-ui="${dataUi}"]`);
+            if (!container) {
+                container = el.template({
+                    data: {
+                        ui: dataUi
+                    }
+                });
+                el.$('body').append(container);
+            }
+            return container;
+        }
+        create() {
+            const frame = el.div({
+                classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
+                attributes: {
+                    role: 'button'
+                },
+                data: {
+                    ui: this.key
+                },
+                events: {
+                    click: e => {
+                        e.stopPropagation();
+                    }
+                },
+                content: [
+                    el.div({
+                        attributes: {
+                            role: 'button'
+                        },
+                        classNames: ['sb-modal-close'],
+                        content: '×',
+                        events: {
+                            click: () => {
+                                this.toggle(false);
+                            }
+                        }
+                    }),
+                    el.div({
+                        classNames: ['sb-modal-content'],
+                        content: [
+                            el.div({
+                                classNames: ['sb-modal-header'],
+                                content: [this.parts.title, this.parts.subtitle]
+                            }),
+                            this.parts.body,
+                            this.parts.footer
+                        ]
+                    })
+                ]
+            });
+            return frame;
+        }
+        setContent(part, content) {
+            if (!this.parts[part]) {
+                console.error(`Unknown target ${part}`);
+                return this;
+            }
+            this.parts[part] = el.empty(this.parts[part]);
+            this.parts[part].append(el.toNode(content));
+            return this;
+        }
+        toggle(state) {
+            const closer = el.$('.sb-modal-close', this.modalWrapper);
+            if (!this.getState() && closer) {
+                closer.click();
+            }
+            if (state) {
+                this.modalWrapper.append(this.ui);
+                this.modalSystem.classList.add('sb-modal-open');
+                this.state = true;
+            } else {
+                this.getTarget().append(this.ui);
+                this.modalSystem.classList.remove('sb-modal-open');
+                this.state = false;
+            }
+            this.app.trigger(prefix('popup'), {
+                plugin: this
+            });
+            return this;
+        }
+        getState() {
+            return this.state;
+        }
+        constructor(app, title, description, {
+            key
+        } = {}) {
+            super(app, title, description, {
+                key,
+                canChangeState: true,
+                defaultState: false
+            });
+            this.state = false;
+            this.modalSystem = el.$('.sb-modal-system');
+            this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);
+            this.parts = {
+                title: el.h3({
+                    classNames: ['sb-modal-title'],
+                    content: title
+                }),
+                subtitle: el.p({
+                    classNames: ['sb-modal-message'],
+                    content: description
+                }),
+                body: el.div({
+                    classNames: ['sb-modal-body']
+                }),
+                footer: el.div({
+                    classNames: ['sb-modal-message', 'sba-modal-footer'],
+                    content: [
+                        el.a({
+                            content: settings$1.get('label') + ' v' + settings$1.get('version'),
+                            attributes: {
+                                href: settings$1.get('url'),
+                                target: '_blank'
+                            }
+                        })
+                    ]
+                })
+            };
+            if (!this.app.popups) {
+                this.app.popups = new Map();
+            }
+            if (!this.app.popups.has(key)) {
+                this.app.popups.set(key, this.create());
+            }
+            this.target = this.getTarget();
+            this.ui = this.app.popups.get(key);
+        }
+    }
+
+    class Surrender extends Plugin {
     	getDescription() {
     		return el.div({
     			classNames: ['sb-modal-date__today'],
     			content: data.getDate()
     		})
     	}
-    	run(evt) {
+    	toggle() {
     		const answers = data.getList('answers');
     		const foundTerms = data.getList('foundTerms');
     		const pangrams = data.getList('pangrams');
@@ -1003,8 +804,15 @@
     			content: data.getList('letters').join(''),
     			classNames: ['sb-modal-letters']
     		});
+    		const classNames = ['sb-modal-wordlist-items'];
+    		const events = {};
+    		if(googlify) {
+    			classNames.push(prefix('googlified', 'd'));
+    			events.pointerup = googlify.listener;
+    		}
     		const pane = el.ul({
-    			classNames: ['sb-modal-wordlist-items']
+    			classNames,
+    			events
     		});
     		answers.forEach(term => {
     			const checkClass = ['check'];
@@ -1021,11 +829,8 @@
     					})
     				]
     			});
-    			if(highlightPangrams && highlightPangrams.getState() && pangrams.includes(term)){
+    			if (highlightPangrams && pangrams.includes(term)) {
     				li.classList.add(highlightPangrams.marker);
-    			}
-    			if(googlify && googlify.getState()){
-    				li = googlify.link(li);
     			}
     			pane.append(li);
     		});
@@ -1041,20 +846,7 @@
     			key: this.key + 'PopUp'
     		});
     		this.popup.add();
-    		this.pane = el.div({
-    			classNames: ['pane'],
-    			content: el.button({
-    				tag: 'button',
-    				classNames: ['hive-action'],
-    				content: 'Display answers',
-    				attributes: {
-    					type: 'button'
-    				},
-    				events: {
-    					pointerup: evt => this.run(evt)
-    				}
-    			})
-    		});
+    		this.ui = this.popup.ui;
     	}
     }
 
@@ -1077,8 +869,8 @@
             return this;
         }
         constructor(app) {
-            super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
-                canChangeState: true,
+            super(app, 'Highlight Pangrams', '', {
+                canChangeState: false,
     			runEvt: prefix('refreshUi')
             });
             this.marker = prefix('pangram', 'd');
@@ -1091,47 +883,23 @@
             super.toggle(state);
             return this.run();
         }
+        listener(evt) {
+            if(!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')){
+                return false;
+            }
+            if(evt.button === 0) {
+               return window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
+            }
+        }
         run() {
-            const args = this.app.getObserverArgs();
-            this.app.observer.disconnect();
-            const fn = this.getState() ? this.link : this.unlink;
-            el.$$('li', this.app.resultList).forEach(node => {
-                const newNode = fn(node);
-                if (!node.isSameNode(newNode)) {
-                    node.replaceWith(newNode);
-                }
-            });
-            this.app.observer.observe(args.target, args.options);
+            const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
+            this.app.resultList[method]('pointerup', this.listener);
+            this.app.resultList.classList.toggle(prefix('googlified', 'd'), this.getState());
             return this;
-        }
-        link(node) {
-            if (el.$('a', node)) {
-                return node;
-            }
-            const newNode = node.cloneNode();
-            const text = node.textContent;
-            newNode.append(el.a({
-                content: el.toNode(node.childNodes),
-                attributes: {
-                    href: `https://www.google.com/search?q=${text}`,
-                    target: prefix()
-                }
-            }));
-            return newNode;
-        }
-        unlink(node) {
-            const link = el.$('a', node);
-            if (!link) {
-                return node;
-            }
-            const newNode = node.cloneNode();
-            newNode.append(el.toNode(link.children));
-            return newNode;
         }
         constructor(app) {
             super(app, 'Googlify', 'Link all result terms to Google', {
-                canChangeState: true,
-                runEvt: prefix('refreshUi')
+                canChangeState: false
             });
             this.run();
         }
@@ -1152,142 +920,31 @@
         }
     }
 
-    class Positioning extends Plugin {
-        add() {
-            const stored = this.getState();
-            this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
-            this.reposition();
-            this.enableDrag();
-            return super.add();
-        }
-        getOffset(offset) {
-            return !isNaN(offset) ? {
-                top: offset,
-                right: offset,
-                bottom: offset,
-                left: offset
-            } : {
-                ...{
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0
-                },
-                ...offset
-            }
-        }
-        getRectangles() {
-            return {
-                canvas: this.app.dragArea.getBoundingClientRect(),
-                appContainer: this.app.ui.parentNode.getBoundingClientRect(),
-                app: this.app.ui.getBoundingClientRect()
-            }
-        }
-        getBoundaries() {
-            return {
-                top: {
-                    min: this.offset.top,
-                    max: this.rectangles.canvas.height - this.rectangles.app.height - this.offset.bottom
-                },
-                left: {
-                    min: this.offset.left - this.rectangles.appContainer.left,
-                    max: this.rectangles.canvas.width - this.rectangles.appContainer.left - this.rectangles.app.width - this.offset.right
-                }
-            }
-        }
-        validatePosition(position) {
-            if (position) {
-                this.position = position;
-            }
-            const boundaries = this.getBoundaries();
-            this.position.left = Math.min(boundaries.left.max, Math.max(boundaries.left.min, this.position.left));
-            this.position.top = Math.min(boundaries.top.max, Math.max(boundaries.top.min, this.position.top));
-            return this.position;
-        }
-        getMouse(evt) {
-            return {
-                left: evt.screenX,
-                top: evt.screenY
-            }
-        }
-        getPosition(evt) {
-            let coords;
-            if (evt) {
-                const mouse = this.getMouse(evt);
-                coords = {
-                    left: this.position.left + mouse.left - this.mouse.left,
-                    top: this.position.top += mouse.top - this.mouse.top
-                };
-            } else {
-                const style = getComputedStyle(this.app.ui);
-                let left = parseInt(style.left);
-                if (style.left.endsWith('%')) {
-                    left = left * parseInt(getComputedStyle(el.$('.sbaContainer')).width) / 100;
-                }
-                coords = {
-                    top: parseInt(style.top),
-                    left
-                };
-            }
-            return this.validatePosition(coords);
-        }
-        reposition() {
-            this.validatePosition();
-            Object.assign(this.app.ui.style, {
-                left: this.position.left + 'px',
-                top: this.position.top + 'px'
-            });
-            this.toggle(this.getState() ? this.position : false);
-            return this;
-        }
-        enableDrag() {
-            this.app.dragHandle.style.cursor = 'move';
-            this.app.on('pointerdown', evt => {
-                    this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
-                }).on('pointerup', () => {
-                    this.isLastTarget = false;
-                }).on('dragend', evt => {
-                    this.position = this.getPosition(evt);
-                    this.reposition();
-                    evt.target.style.opacity = '1';
-                }).on('dragstart', evt => {
-                    if (!this.isLastTarget) {
-                        evt.preventDefault();
-                        return false;
-                    }
-                    evt.target.style.opacity = '.2';
-                    this.position = this.getPosition();
-                    this.mouse = this.getMouse(evt);
-                })
-                .on('dragover', evt => evt.preventDefault());
-            this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
-            return this;
-        }
-        toggle(state) {
-            return super.toggle(state ? this.position : state);
-        }
-        constructor(app) {
-            super(app, 'Memorize position', 'Places the assistant where it had been moved to last time', {
-                key: 'positioning',
-                canChangeState: true,
-                defaultState: false
-            });
-            this.mouse;
-            this.offset = this.getOffset(this.app.dragOffset || 0);
-            this.isLastTarget = false;
-            this.rectangles = this.getRectangles();
-            ['orientationchange', 'resize'].forEach(handler => {
-                window.addEventListener(handler, () => {
-                    this.rectangles = this.getRectangles();
-                    this.reposition();
-                });
-            });
-        }
-    }
-
-    var css = "[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}[data-ui=setUpPopUp] li{position:relative;margin:0 0 5px 22px}[data-ui=setUpPopUp] label{cursor:pointer;overflow:hidden}[data-ui=setUpPopUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUpPopUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUpPopUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUpPopUp] b{font-weight:bold}[data-ui=setUpPopUp] i{font-style:italic}[data-ui=setUpPopUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}[data-sba-has-overlay=true] .pz-game-wrapper{background:transparent !important}[data-sba-has-overlay=true] .sb-expanded{background:var(--body-bg-color)}.sba{position:absolute;left:100%;top:121px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(max-width: 1444px){.sbaContainer{max-width:none}.sb-controls-box{max-width:380px}}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba{width:130px;top:158px;left:auto;right:12px;padding:0 5px 3px}.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
+    var css = "[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 3px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 5px}}[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 3px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 5px}}.sba-pop-up[data-ui=setUpPopUp] li{position:relative;margin:0 0 5px 22px}.sba-pop-up[data-ui=setUpPopUp] label{cursor:pointer;overflow:hidden}.sba-pop-up[data-ui=setUpPopUp] label:before{content:\"\";border:2px solid var(--border-color);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}.sba-pop-up[data-ui=setUpPopUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}.sba-pop-up[data-ui=setUpPopUp] input:checked:after{content:\"✔\";color:var(--highlight-color);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}.sba-pop-up[data-ui=setUpPopUp] b{font-weight:bold}.sba-pop-up[data-ui=setUpPopUp] i{font-style:italic}.sba-pop-up[data-ui=setUpPopUp] i::before{content:\" - \"}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .pz-toolbar-button:hover,[data-sba-theme=dark] [data-ui=launcher] label:hover{background:var(--area-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}.sba{margin:64px 0 0 0;width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:280%}[data-ui=spillTheBeans].inactive{display:none}[data-ui=launcher]{position:relative;z-index:1}[data-ui=launcher] .pane{position:absolute;background:var(--body-bg-color);border:1px var(--border-color) solid;top:55px;right:180px}[data-ui=launcher] .pane li{line-height:1.4;white-space:nowrap}[data-ui=launcher] .pane li:first-child{margin-top:5px}[data-ui=launcher] .pane label{display:block;padding:5px 10px;font-size:16px}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding)}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}[data-sba-active=true] .sba-container{position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset)}@media(min-width: 900px){[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.sb-modal-scrim{z-index:6}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
 
     class Styles extends Plugin {
+        modifyMq() {
+            let rules;
+            let sheet;
+            for (let _sheet of document.styleSheets) {
+                if (_sheet.href && _sheet.href.startsWith('https://www.nytimes.com/games-assets/v2/spelling-bee')) {
+                    sheet = _sheet;
+                    break;
+                }
+            }
+            rules = sheet.rules;
+            if (!rules) {
+                return
+            }
+            let l = rules.length;
+            for (let i = 0; i < l; i++) {
+                if (rules[i] instanceof CSSMediaRule && rules[i].conditionText.includes('min-width: 768px') && !rules[i].cssText.includes('.sb-modal')) {
+                    const newRule = rules[i].cssText.replace('min-width: 768px', `min-width: ${settings$1.get('mobileThreshold')}px`).replace(/(?:\\[rn]|[\r\n]+)+/g, '').replace(/\s+/g, ' ');
+                    sheet.deleteRule(i);
+                    sheet.insertRule(newRule, i);
+                }
+            }
+        }
         constructor(app) {
             super(app, 'Styles', '');
             this.target = el.$('head');
@@ -1296,32 +953,124 @@
             });
             app.on(prefix('destroy'), () => this.ui.remove());
             this.add();
+            this.modifyMq();
         }
     }
 
-    const plugins = {
-         Launcher,
-         DarkMode,
-         Header,
-         SetUp,
-         ProgressBar,
-         ScoreSoFar,
-         Spoilers,
-         StartingWith,
-         SpillTheBeans,
-         StepsToSuccess,
-         Surrender,
-         HighlightPangrams,
-         Googlify,
-         Footer,
-         Positioning,
-         Styles
-    };
+    class Menu extends Plugin {
+    	getTarget() {
+    		let target;
+    		if (this.app.envIs('mobile')) {
+    			target = el.$('#js-mobile-toolbar');
+    		} else {
+    			target = el.div({
+    				content: el.$$('#portal-game-toolbar > span')
+    			});
+    			el.$('#portal-game-toolbar').append(target);
+    		}
+    		return target;
+    	}
+    	run(evt) {
+    		return super.toggle();
+    	}
+    	constructor(app) {
+    		super(app, 'Launcher', '');
+    		this.target = this.getTarget();
+    		const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
+    		const pane = el.ul({
+    			classNames: ['pane'],
+    			events: {
+    				click: evt => {
+    					if (evt.target.tagName === 'INPUT') {
+    						if (evt.target.name === this.app.key) {
+    							const nextState = !this.app.getState();
+    							this.app.toggle(nextState);
+    							this.app.gameWrapper.dataset.sbaActive = nextState.toString();
+    						} else {
+    							app.plugins.get(evt.target.name).toggle(evt.target.checked);
+    						}
+    					}
+    				}
+    			},
+    			content: el.li({
+    				attributes: {
+    					title: this.app.title
+    				},
+    				content: el.label({
+    					content: [
+    						el.input({
+    							attributes: {
+    								type: 'checkbox',
+    								name: this.app.key,
+    								checked: !!this.app.getState()
+    							}
+    						}),
+    						`Toggle ${settings$1.get('title')}`
+    					]
+    				})
+    			})
+    		});
+    		this.ui = el.div({
+    			content: [
+    				settings$1.get('title'),
+    				pane
+    			],
+    			attributes: {
+    				role: 'presentation'
+    			},
+    			classNames
+    		});
+    		app.on(prefix('pluginsReady'), evt => {
+    			const defaults = new Map();
+    			evt.detail.forEach((plugin, key) => {
+    				if (!plugin.canChangeState || plugin === this) {
+    					return false;
+    				}
+    				const input = el.input({
+    					attributes: {
+    						type: 'checkbox',
+    						name: key,
+    						checked: !!plugin.getState()
+    					}
+    				});
+    				pane.append(el.li({
+    					attributes: {
+    						title: plugin.description
+    					},
+    					content: el.label({
+    						content: [
+    							input,
+    							plugin.title
+    						]
+    					})
+    				}));
+    				defaults.set(key, {
+    					input,
+    					default: !!plugin.defaultState
+    				});
+    			});
+    		});
+    		app.on(prefix('destroy'), () => this.ui.remove());
+    	}
+    }
+
     const getPlugins = app => {
-         if(!app.envIs('desktop')){
-              delete plugins.Positioning;
+         return {
+              DarkMode,
+              Header,
+              ProgressBar,
+              ScoreSoFar,
+              Spoilers,
+              StartingWith,
+              SpillTheBeans,
+              HighlightPangrams,
+              Googlify,
+              Footer,
+              Styles,
+              Menu,
+              StepsToSuccess,
+              Surrender
          }
-         return plugins
     };
 
     class App extends Widget {
@@ -1437,16 +1186,6 @@
             observer.observe(args.target, args.options);
             return observer;
         }
-        setDragProps() {
-            this.dragHandle = this.ui;
-            this.dragArea = this.gameWrapper;
-            this.dragOffset = {
-                top: 69,
-                right: 12,
-                bottom: 12,
-                left: 12
-            };
-        }
         buildUi() {
             const events = {};
             events[prefix('destroy')] = () => {
@@ -1459,9 +1198,6 @@
                 classNames.push('inactive');
             }
             return el.div({
-                attributes: {
-                    draggable: this.envIs('desktop')
-                },
                 data: {
                     id: this.key,
                     version: settings$1.get('version')
@@ -1472,22 +1208,13 @@
         }
         registerPlugins() {
             this.plugins = new Map();
-            Object.values(getPlugins(this)).forEach(plugin => {
+            Object.values(getPlugins()).forEach(plugin => {
                 const instance = new plugin(this);
                 instance.add();
                 this.plugins.set(instance.key, instance);
             });
             this.trigger(prefix('pluginsReady'), this.plugins);
-            return this.registerTools();
-        }
-        registerTools() {
-            this.toolButtons = new Map();
-            this.plugins.forEach(plugin => {
-                if (plugin.tool) {
-                    this.toolButtons.set(plugin.key, plugin.tool);
-                }
-            });
-            return this.trigger(prefix('toolsReady'), this.toolButtons);
+            return this;
         }
         add() {
             this.container.append(this.ui);
@@ -1504,9 +1231,8 @@
             }
             this.gameWrapper = gameWrapper;
             this.ui = this.buildUi();
-            this.setDragProps();
             this.container = el.div({
-                classNames: [prefix('container')]
+                classNames: [prefix('container', 'd')]
             });
             this.isLoaded = false;
             this.getResults()
