@@ -1,7 +1,6 @@
 @import './inc/sizes';
 @import './inc/colors';
 @import './inc/sizes';
-@import './inc/pop-up';
 @import './inc/dark-mode';
 @import './inc/sba';
 @import './inc/layout';
@@ -22,6 +21,13 @@
                 color: var(--invalid-color);
             }
         }
+    }
+}
+
+.pz-toolbar-button, [data-ui="launcher"] li {
+    &:hover {
+        background: var(--menu-hover-color);
+        color: var(--text-color);
     }
 }
 

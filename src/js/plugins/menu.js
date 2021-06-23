@@ -59,40 +59,16 @@ class Menu extends Plugin {
 			classNames: ['pane'],
 			events: {
 				click: evt => {
-					if (evt.target.tagName === 'INPUT') {
-						if (evt.target.name === this.app.key) {
-							const nextState = !this.app.getState();
-							this.app.toggle(nextState);
-							this.app.gameWrapper.dataset.sbaActive = nextState.toString();
-						} else {
-							app.plugins.get(evt.target.name).toggle(evt.target.checked);
-						}
+					const li = evt.target.closest('li');					
+					const target = li.dataset.target === this.app.key ? this.app : this.app.plugins.get(li.dataset.target);
+					const nextState = !target.getState();
+					target.toggle(nextState);
+					li.dataset.state = nextState;
+					if(target === this.app){
+						this.app.gameWrapper.dataset.sbaActive = nextState.toString();
 					}
 				}
-				/*,
-								toggle: evt => {
-									if (!evt.target.open) {
-										this.toggle(false);
-									}
-								}*/
-			},
-			content: el.li({
-				attributes: {
-					title: this.app.title
-				},
-				content: el.label({
-					content: [
-						el.input({
-							attributes: {
-								type: 'checkbox',
-								name: this.app.key,
-								checked: !!this.app.getState()
-							}
-						}),
-						`Toggle ${settings.get('title')}`
-					]
-				})
-			})
+			}
 		});
 
 		this.ui = el.div({
@@ -106,48 +82,34 @@ class Menu extends Plugin {
 			classNames
 		})
 
-		/*,
-		 */
-
-
-		// app.on(prefix('popup'), evt => {
-		// 	if (evt.detail.plugin === this && this.getState()) {
-		// 		const options = settings.get('options');
-		// 		el.$$('input', pane).forEach(input => {
-		// 			input.checked = !!options[input.name];
-		// 		})
-		// 	}
-		// });
-
 		app.on(prefix('pluginsReady'), evt => {
-			const defaults = new Map();
 			evt.detail.forEach((plugin, key) => {
 				if (!plugin.canChangeState || plugin === this) {
 					return false;
 				}
-				const input = el.input({
-					attributes: {
-						type: 'checkbox',
-						name: key,
-						checked: !!plugin.getState()
-					}
-				});
 				pane.append(el.li({
 					attributes: {
 						title: plugin.description
 					},
-					content: el.label({
-						content: [
-							input,
-							plugin.title
-						]
-					})
+					data: {
+						target: key,
+						state: !!plugin.getState(),
+						icon: plugin.menuIcon
+					},
+					content: plugin.title
 				}));
-				defaults.set(key, {
-					input,
-					default: !!plugin.defaultState
-				});
 			})
+			pane.append(el.li({
+				attributes: {
+					title: this.app.title
+				},
+				data: {
+					target: this.app.key,
+					state: !!this.app.getState(),
+					icon: 'checkbox'
+				},
+				content: `Toggle ${settings.get('title')}`
+			}))
 		})
 
 		app.on(prefix('destroy'), () => this.ui.remove());

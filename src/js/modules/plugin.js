@@ -47,6 +47,7 @@ class Plugin extends Widget {
         key,
         canChangeState,
         defaultState,
+        menuIcon,
         runEvt,
         addMethod
     } = {}) {
@@ -75,6 +76,8 @@ class Plugin extends Widget {
         this.app = app;
 
         this.addMethod = addMethod || 'append';
+
+        this.menuIcon = menuIcon || 'checkbox';
 
         /**
          * Update plugin data on demand

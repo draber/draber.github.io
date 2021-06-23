@@ -123,7 +123,8 @@ class Popup extends Plugin {
     getState() {
         return this.state;
     }
-
+    
+    
 
 
     /**

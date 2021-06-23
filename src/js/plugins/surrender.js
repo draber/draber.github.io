@@ -26,7 +26,12 @@ class Surrender extends Plugin {
 	 * @param {Event} evt
 	 * @returns {Plugin}
 	 */
-	toggle() {
+	toggle(state) {
+
+		if(!state) {
+			this.popup.toggle(state);
+			return this;
+		}
 
 		const answers = data.getList('answers');
 		const foundTerms = data.getList('foundTerms');
@@ -75,7 +80,7 @@ class Surrender extends Plugin {
 			pane.append(li);
 		});
 
-		this.popup.setContent('body', [letters, pane]).toggle(!this.popup.getState());
+		this.popup.setContent('body', [letters, pane]).toggle(state);
 
 		return this;
 	}
@@ -96,9 +101,10 @@ class Surrender extends Plugin {
 			key: this.key + 'PopUp'
 		});
 
-		this.popup.add();
+		this.menuIcon = 'warning'
 
 		this.ui = this.popup.ui;
+		this.toggle(false);
 	}
 }
 

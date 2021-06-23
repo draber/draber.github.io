@@ -85,13 +85,6 @@
         fill: var(--body-bg-color);
     }
 
-    .pz-toolbar-button, [data-ui="launcher"] label {
-        &:hover {
-            background: var(--area-bg-color);
-            color: var(--text-color);
-        }
-    }
-
     .hive-action:not(.hive-action__shuffle) {
         background: var(--body-bg-color);
         color: var(--text-color);

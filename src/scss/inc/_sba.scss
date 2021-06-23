@@ -210,19 +210,6 @@
         }
     }
 
-    [data-ui="surrender"] {
-        .pane {
-            padding: 10px 5px;
-        }
-
-        button {
-            margin: 0 auto;
-            display: block;
-            font-size: 100%;
-            white-space: nowrap;
-            padding: 12px 10px;
-        }
-    }
 
     label {
         cursor: pointer;
@@ -251,24 +238,84 @@
 [data-ui="launcher"] {
     position: relative;
     z-index: 1;
+
     .pane {
         position: absolute;
         background: var(--body-bg-color);
         border: 1px var(--border-color) solid;
         top: 55px;
         right: 180px; //0;
-        li {
-            line-height: 1.4;
-            white-space: nowrap;
-            &:first-child {
-                margin-top: 5px;
+    }
+
+
+    li {
+        position: relative;
+        line-height: 1.8;
+        white-space: nowrap;
+        cursor: pointer;
+        overflow: hidden;
+        display: block;
+        padding: 5px 25px 5px 38px;
+        font-size: 14px;
+
+        &:first-child {
+            margin-top: 5px;
+        }
+
+        &:last-child {
+            margin-bottom: 5px;
+        }
+
+        &::before,
+        &::after {
+            position: absolute;
+            display: block;
+        }
+
+        &[data-icon="checkbox"] {
+
+            &::before {
+                content: '';
+                border: 2px solid var(--text-color);
+                opacity: .15;
+                width: 14px;
+                height: 14px;
+                border-radius: 3px;
+                left: 15px;
+                top: 10px;
+            }
+
+            &[data-state="true"] {
+                &::after {
+                    content: '✔';
+                    color: var(--highlight-color);
+                    top: -3px;
+                    left: 16px;
+                    font-size: 20px;
+                }
             }
         }
-        label {
-            display: block;
-            padding: 5px 10px;
-            font-size: 16px;
+
+        &[data-icon="warning"] {
+            &::before {
+                content: "△";
+                color: #c00;
+                left: 13px;
+                top: -9px;
+                font-size: 27px;
+                font-weight: bold;
+            }
+
+            &::after {
+                content: "!";
+                color: var(--text-color);
+                top: 7px;
+                left: 23px;
+                font-weight: bold;
+                font-size: 12px;
+            }
         }
+
     }
 }
 
