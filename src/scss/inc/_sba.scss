@@ -244,6 +244,7 @@
         background: var(--body-bg-color);
         border: 1px var(--border-color) solid;
         top: 55px;
+        padding: 5px;
         right: 180px; //0;
     }
 
@@ -257,14 +258,6 @@
         display: block;
         padding: 5px 25px 5px 38px;
         font-size: 14px;
-
-        &:first-child {
-            margin-top: 5px;
-        }
-
-        &:last-child {
-            margin-bottom: 5px;
-        }
 
         &::before,
         &::after {
@@ -314,6 +307,10 @@
                 font-weight: bold;
                 font-size: 12px;
             }
+        }
+
+        &[data-target="stepsToSuccess"] {
+            border-top: 1px solid var(--border-color);
         }
 
     }

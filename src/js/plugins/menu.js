@@ -68,7 +68,18 @@ class Menu extends Plugin {
 						this.app.gameWrapper.dataset.sbaActive = nextState.toString();
 					}
 				}
-			}
+			},
+			content: el.li({
+				attributes: {
+					title: this.app.title
+				},
+				data: {
+					target: this.app.key,
+					state: !!this.app.getState(),
+					icon: 'checkbox'
+				},
+				content: `Toggle ${settings.get('title')}`
+			})
 		});
 
 		this.ui = el.div({
@@ -99,17 +110,6 @@ class Menu extends Plugin {
 					content: plugin.title
 				}));
 			})
-			pane.append(el.li({
-				attributes: {
-					title: this.app.title
-				},
-				data: {
-					target: this.app.key,
-					state: !!this.app.getState(),
-					icon: 'checkbox'
-				},
-				content: `Toggle ${settings.get('title')}`
-			}))
 		})
 
 		app.on(prefix('destroy'), () => this.ui.remove());
