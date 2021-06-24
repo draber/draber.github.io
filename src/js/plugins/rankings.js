@@ -8,7 +8,7 @@ import Popup from './popup.js';
  * @param {App} app
  * @returns {Plugin} Rankings
  */
-class Rankings extends TablePane {
+class Rankings extends Popup {
 
     toggle(state) {
 
@@ -18,7 +18,10 @@ class Rankings extends TablePane {
 		}
 
 
-	//	this.popup.setContent('body', ['letters, pane']).toggle(state);
+		this.popup
+        .setContent('subtitle', `You have currently ${data.getPoints('foundTerms')}/${data.getPoints('answers')} points.`)
+        .setContent('body', this.table.getPane())
+        .toggle(state);
 
 		return this;
 	}
@@ -64,20 +67,17 @@ class Rankings extends TablePane {
             defaultState: false
         });
 
-        this.popup = new Popup(this.app, 'this.title', 'this.description', {
+        this.popup = new Popup(this.app, this.title, this.description, {
             key: this.key + 'PopUp'
         });
 
         this.menuIcon = 'null';
 
-        /**
-         * Conditions ander which a line in the table should be marked with the class `sba-{$key}`
-         * @type {{preeminent: (function(*): boolean), completed: (function(*))}}
-         */
-        this.cssMarkers = {
+        
+        this.table = new TablePane(this.app, this.getData, {
             completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
             preeminent: rowData => rowData[1] === this.getCurrentTier()
-        }
+        })
 
         this.toggle(false);
     }

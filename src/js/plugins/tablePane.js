@@ -58,7 +58,7 @@ class TablePane {
 		this.cssMarkers = cssMarkers;
 		this.getData = getData;
 		this.pane = el.table({
-			classNames: ['pane']
+			classNames: ['pane', prefix('dataPane', 'd')]
 		});
 	}
 }

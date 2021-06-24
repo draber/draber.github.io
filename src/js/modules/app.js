@@ -224,7 +224,7 @@ class App extends Widget {
 
     add() {
         this.container.append(this.ui);
-        el.$('.sb-content-box', this.gameWrapper).append(this.container);
+        el.$('.sb-content-box', this.gameWrapper).prepend(this.container);
     }
 
     /**

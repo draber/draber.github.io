@@ -58,10 +58,11 @@
         margin-bottom: 2px;
     }
 
-    table {
-        border-collapse: collapse;
-        table-layout: fixed;
-    }
+}
+
+.sba-data-pane {
+    border-collapse: collapse;
+    table-layout: fixed;
 
     tr {
         &.sba-preeminent {
@@ -97,8 +98,19 @@
 
         }
     }
-
 }
+
+[data-ui="rankingsPopUp"] {
+    .sba-data-pane {
+        border-top: 1px solid var(--border-color);
+        width: 200px;
+        margin: auto;
+        td:first-of-type {
+            width: 40px;
+        }
+    }
+}
+
 
 [data-ui="header"] {
     font-weight: bold;
@@ -201,7 +213,8 @@
         right: 10000px;
     }
 
-    &.active, &:hover {
+    &.active,
+    &:hover {
         .pane {
             right: 0;
         }

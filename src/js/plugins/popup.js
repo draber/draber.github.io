@@ -50,16 +50,19 @@ class Popup extends Plugin {
             },
             content: [
                 el.div({
-                    attributes: {
-                        role: 'button'
-                    },
-                    classNames: ['sb-modal-close'],
-                    content: '×',
-                    events: {
-                        click: () => {
-                            this.toggle(false)
+                    classNames: ['sb-modal-top'],
+                    content: el.div({
+                        attributes: {
+                            role: 'button'
+                        },
+                        classNames: ['sb-modal-close'],
+                        content: '×',
+                        events: {
+                            click: () => {
+                                this.toggle(false)
+                            }
                         }
-                    }
+                    })
                 }),
                 el.div({
                     classNames: ['sb-modal-content'],
