@@ -1,13 +1,27 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
+import Popup from './popup.js';
 
 /**
  * Steps to success plugin
  * 
  * @param {App} app
- * @returns {Plugin} StepsToSuccess
+ * @returns {Plugin} Rankings
  */
-class StepsToSuccess extends TablePane {
+class Rankings extends TablePane {
+
+    toggle(state) {
+
+		if(!state) {
+			this.popup.toggle(state);
+			return this;
+		}
+
+
+	//	this.popup.setContent('body', ['letters, pane']).toggle(state);
+
+		return this;
+	}
 
     /**
      * Get the data for the table cells
@@ -40,14 +54,21 @@ class StepsToSuccess extends TablePane {
     }
 
     /**
-     * StepsToSuccess constructor
+     * Rankings constructor
      * @param {App} app
      */
     constructor(app) {
 
-        super(app, 'Steps to success', 'The number of points required for each level', {
-            canChangeState: true
+        super(app, 'Rankings', 'The number of points required for each level', {
+            canChangeState: true,
+            defaultState: false
         });
+
+        this.popup = new Popup(this.app, 'this.title', 'this.description', {
+            key: this.key + 'PopUp'
+        });
+
+        this.menuIcon = 'null';
 
         /**
          * Conditions ander which a line in the table should be marked with the class `sba-{$key}`
@@ -57,7 +78,9 @@ class StepsToSuccess extends TablePane {
             completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
             preeminent: rowData => rowData[1] === this.getCurrentTier()
         }
+
+        this.toggle(false);
     }
 }
 
-export default StepsToSuccess;
+export default Rankings;

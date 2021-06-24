@@ -1,13 +1,15 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
+import Plugin from '../modules/plugin.js';
+import el from '../modules/element.js';
 
 /**
- * Spoilers plugin
+ * LetterCount plugin
  * 
  * @param {App} app
- * @returns {Plugin} Spoilers
+ * @returns {Plugin} LetterCount
  */
-class Spoilers extends TablePane {
+class LetterCount extends Plugin {
 
 	/**
 	 * Get the data for the table cells
@@ -53,23 +55,28 @@ class Spoilers extends TablePane {
 	}
 
 	/**
-	 * Spoilers constructor
+	 * LetterCount constructor
 	 * @param {App} app
 	 */
 	constructor(app) {
 
-		super(app, 'Spoilers', 'The number of words by length, also the number of pangrams', {
+		super(app, 'Letter count', 'The number of words by length, also the number of pangrams', {
 			canChangeState: true
 		});
-
-        /**
-         * Conditions ander which a line in the table should be marked with the class `sba-{$key}`
-         * @type {{preeminent: (function(*): boolean), completed: (function(*))}}
-         */
-		this.cssMarkers = {
+		
+        const table = new TablePane(this.app, this.getData, {
 			completed: (rowData, i) => i > 0 && rowData[2] === 0,
 			preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
-		}
+		})
+
+        this.ui = el.details({
+            content: [
+                el.summary({
+                    content: this.title
+                }),
+                table.getPane()
+            ]
+        });
 	}
 }
-export default Spoilers;
+export default LetterCount;

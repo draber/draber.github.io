@@ -1,16 +1,15 @@
 import data from '../modules/data.js';
-import {
-    prefix
-} from '../modules/string.js';
 import TablePane from './tablePane.js';
+import Plugin from '../modules/plugin.js';
+import el from '../modules/element.js';
 
 /**
  * Score so far plugin
  * 
  * @param {App} app
- * @returns {Plugin} ScoreSoFar
+ * @returns {Plugin} Score
  */
-class ScoreSoFar extends TablePane {
+class Score extends Plugin {
 
     /**
      * Build table data set
@@ -26,16 +25,30 @@ class ScoreSoFar extends TablePane {
     }
 
     /**
-     * ScoreSoFar constructor
+     * Score constructor
      * @param {App} app
      */
     constructor(app) {
 
-        super(app, 'Score so far', 'The number of words and points and how many have been found', {
+        super(app, 'Score', 'The number of words and points and how many have been found', {
             canChangeState: true,
             open: true
+        });
+
+        const table = new TablePane(this.app, this.getData)
+
+        this.ui = el.details({
+            attributes: {
+                open: true
+            },
+            content: [
+                el.summary({
+                    content: this.title
+                }),
+                table.getPane()
+            ]
         });
     }
 }
 
-export default ScoreSoFar;
+export default Score;

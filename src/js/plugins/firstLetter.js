@@ -1,13 +1,15 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
+import Plugin from '../modules/plugin.js';
+import el from '../modules/element.js';
 
 /**
- * StartingWith plugin
+ * FirstLetter plugin
  * 
  * @param {App} app
- * @returns {Plugin} StartingWith
+ * @returns {Plugin} FirstLetter
  */
-class StartingWith extends TablePane {
+class FirstLetter extends Plugin {
 
 	/**
 	 * Get the data for the table cells
@@ -58,24 +60,29 @@ class StartingWith extends TablePane {
 
 
 	/**
-	 * StartingWith constructor
+	 * FirstLetter constructor
 	 * @param {App} app
 	 */
 	constructor(app) {
 
-		super(app, 'Starting with…', 'The number of words by first letter', {
+		super(app, 'First letter', 'The number of words by first letter', {
 			canChangeState: true
 		});
-
-        /**
-         * Conditions ander which a line in the table should be marked with the class `sba-{$key}`
-         * @type {{preeminent: (function(*): boolean), completed: (function(*))}}
-         */
-		this.cssMarkers = {
+		
+        const table = new TablePane(this.app, this.getData, {
 			completed: (rowData, i) => i > 0 && rowData[2] === 0,
 			preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
-		}
+		})
+
+        this.ui = el.details({
+            content: [
+                el.summary({
+                    content: this.title
+                }),
+                table.getPane()
+            ]
+        });
 	}
 }
 
-export default StartingWith;
+export default FirstLetter;

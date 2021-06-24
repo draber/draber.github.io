@@ -3,16 +3,10 @@
     margin: 64px 0 0 0;
     width: var(--sba-app-width);
     padding: var(--sba-app-padding);
-
     box-sizing: border-box;
     background: var(--body-bg-color);
-
-    border: {
-        width: 1px;
-        color: var(--border-color);
-        radius: 6px;
-        style: solid
-    }
+    border: 1px var(--border-color) solid;
+    border-radius: 6px;
 
     &.inactive {
         display: none;
@@ -30,65 +24,9 @@
         }
     }
 
-    [data-ui="header"] {
-        display: flex;
-        gap: 8px;
-
-        .toolbar {
-            display: flex;
-            align-items: stretch;
-            gap: 1px;
-
-            div {
-                padding: 10px 3px 2px 3px;
-            }
-        }
-
-        svg {
-            width: 11px;
-            cursor: pointer;
-            fill: currentColor
-        }
-    }
-
-
-    .header {
-        font-weight: bold;
-        line-height: 32px;
-        flex-grow: 2;
-        text-indent: 1px
-    }
-
-    progress {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 100%;
-        border-radius: 0;
-        margin: 0 0 2px 0;
-        height: 6px;
-        padding: 0;
-        border: 1px var(--border-color) solid;
+    ::selection {
         background: transparent;
-        display: block;
-
-        &.inactive {
-            display: none;
-        }
-
-        &::-webkit-progress-bar {
-            background-color: transparent;
-        }
-
-        &::-webkit-progress-value {
-            background-color: var(--highlight-color);
-            height: 4px;
-        }
-
-        &::-moz-progress-bar {
-            background-color: var(--highlight-color);
-        }
     }
-
 
     details {
         font-size: 90%;
@@ -160,68 +98,83 @@
         }
     }
 
-    [data-ui="scoreSoFar"],
-    [data-ui="spoilers"],
-    [data-ui="startingWith…"] {
-        tbody {
-            tr {
-                &:first-child {
-                    td {
-                        font-weight: bold;
-                        font-size: 92%;
-                    }
-                }
-            }
-        }
-    }
+}
 
-    [data-ui="startingWith…"] {
-        tbody {
-            tr {
+[data-ui="header"] {
+    font-weight: bold;
+    line-height: 32px;
+    flex-grow: 2;
+    text-indent: 1px
+}
+
+[data-ui="score"],
+[data-ui="letterCount"],
+[data-ui="firstLetter"] {
+    tbody {
+        tr {
+            &:first-child {
                 td {
-                    &:first-child {
-                        text-align: center;
-                        text-transform: uppercase;
-                    }
+                    font-weight: bold;
+                    font-size: 92%;
                 }
             }
         }
     }
+}
 
-    [data-ui="footer"] {
-        color: currentColor;
-        opacity: .6;
-        font-size: 10px;
-        text-align: right;
-        display: block;
-        padding-top: 8px;
-
-        &:hover {
-            opacity: .8;
-            text-decoration: underline
+[data-ui="firstLetter"] {
+    tbody {
+        tr {
+            td {
+                &:first-child {
+                    text-align: center;
+                    text-transform: uppercase;
+                }
+            }
         }
     }
+}
 
+[data-ui="footer"] {
+    color: currentColor;
+    opacity: .6;
+    font-size: 10px;
+    text-align: right;
+    display: block;
+    padding-top: 8px;
 
+    &:hover {
+        opacity: .8;
+        text-decoration: underline
+    }
+}
 
-    ul {
-        &.pane {
-            padding: 5px;
-        }
+[data-ui="progressBar"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    border-radius: 0;
+    margin: 0;
+    height: 6px;
+    padding: 0;
+    background: transparent;
+    display: block;
+
+    &.inactive {
+        display: none;
     }
 
+    &::-webkit-progress-bar {
+        background-color: transparent;
+    }
 
-    label {
-        cursor: pointer;
-        position: relative;
-        line-height: 19px;
-        white-space: nowrap;
+    &::-webkit-progress-value {
+        background-color: var(--highlight-color);
+        height: 4px;
+    }
 
-        input {
-            position: relative;
-            top: 2px;
-            margin: 0 5px 0 0;
-        }
+    &::-moz-progress-bar {
+        background-color: var(--highlight-color);
     }
 }
 
@@ -235,7 +188,7 @@
     }
 }
 
-[data-ui="launcher"] {
+[data-ui="menu"] {
     position: relative;
     z-index: 1;
 
@@ -245,7 +198,13 @@
         border: 1px var(--border-color) solid;
         top: 55px;
         padding: 5px;
-        right: 180px; //0;
+        right: 10000px;
+    }
+
+    &.active, &:hover {
+        .pane {
+            right: 0;
+        }
     }
 
 
@@ -267,24 +226,13 @@
 
         &[data-icon="checkbox"] {
 
-            &::before {
-                content: '';
-                border: 2px solid var(--text-color);
-                opacity: .15;
-                width: 14px;
-                height: 14px;
-                border-radius: 3px;
-                left: 15px;
-                top: 10px;
-            }
-
             &[data-state="true"] {
                 &::after {
                     content: '✔';
                     color: var(--highlight-color);
-                    top: -3px;
-                    left: 16px;
-                    font-size: 20px;
+                    top: 2px;
+                    left: 12px;
+                    font-size: 16px;
                 }
             }
         }
@@ -293,7 +241,7 @@
             &::before {
                 content: "△";
                 color: #c00;
-                left: 13px;
+                left: 9px;
                 top: -9px;
                 font-size: 27px;
                 font-weight: bold;
@@ -303,13 +251,13 @@
                 content: "!";
                 color: var(--text-color);
                 top: 7px;
-                left: 23px;
+                left: 19px;
                 font-weight: bold;
                 font-size: 12px;
             }
         }
 
-        &[data-target="stepsToSuccess"] {
+        &[data-target="rankings"] {
             border-top: 1px solid var(--border-color);
         }
 
@@ -326,5 +274,11 @@
             text-decoration: underline;
             color: var(--link-hover-color);
         }
+    }
+}
+
+#portal-game-toolbar {
+    [role="presentation"]::selection {
+        background: transparent
     }
 }

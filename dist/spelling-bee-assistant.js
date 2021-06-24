@@ -106,7 +106,7 @@
     var prefix$1 = "sba";
     var mobileThreshold = "900";
 
-    var version = "3.2.1";
+    var version = "4.0.0";
 
     const settings = {
         version: version,
@@ -367,20 +367,7 @@
                 key: 'header'
             });
             this.ui = el.div({
-                content: el.div({
-                    content: this.title,
-                    classNames: ['header']
-                })
-            });
-            app.on(prefix('toolsReady'), evt => {
-                const toolbar = el.div({
-                    classNames: ['toolbar']
-                });
-                evt.detail.forEach(tool => {
-                    toolbar.append(tool);
-                });
-                this.ui.append(toolbar);
-                return this;
+                content: this.title
             });
         }
     }
@@ -390,62 +377,33 @@
             let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
             progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
             this.ui.value = progress;
-            this.ui.textContent = el.toNode(progress + '%');
+            this.ui.textContent = progress + '%';
             this.ui.title = `Progress: ${progress}%`;
             return this;
         }
         constructor(app) {
             super(app, 'Progress Bar', 'Displays your progress as a yellow bar', {
                 canChangeState: true,
-                runEvt: prefix('refreshUi')
+                runEvt: prefix('refreshUi'),
+                addMethod: 'before'
             });
             this.ui = el.progress({
                 attributes: {
                     max: 100
                 }
             });
+            this.target = el.$('.sb-wordlist-heading', this.app.gameWrapper);
         }
     }
 
-    class DisclosureBox extends Plugin {
-        add(method = 'append') {
-            this.ui = el.details({
-                attributes: {
-                    open: this.open
-                },
-                content: [
-                    el.summary({
-                        content: this.title
-                    }),
-                    this.pane
-                ]
-            });
-    		super.add(method);
-        }
-    	constructor(app, title, description, {
-            canChangeState,
-            defaultState = true,
-            open = false,
-            runEvt
-        } = {})  {
-    		super(app, title, description, {
-    			canChangeState,
-                defaultState,
-                runEvt
-    		});
-            this.title = title;
-            this.open = open;
-    	}
-    }
-
-    class TablePane extends DisclosureBox {
-    	run(evt) {
+    class TablePane {
+    	run() {
     		this.pane = el.empty(this.pane);
     		const tbody = el.tbody();
     		this.getData().forEach((rowData, i) => {
     			const classNames = [];
     			for (const [marker, fn] of Object.entries(this.cssMarkers)) {
-    				if(fn(rowData, i)) {
+    				if (fn(rowData, i)) {
     					classNames.push(prefix(marker, 'd'));
     				}
     			}
@@ -459,26 +417,22 @@
     		this.pane.append(tbody);
     		return this;
     	}
-    	constructor(app, title, description, {
-            canChangeState,
-            defaultState = true,
-            open = false,
-    		runEvt = prefix('refreshUi')
-        } = {}) {
-    		super(app, title, description, {
-    			canChangeState,
-    			defaultState,
-    			open,
-    			runEvt
+    	getPane() {
+    		return this.pane;
+    	}
+    	constructor(app, getData, cssMarkers = {}) {
+    		app.on(prefix('refreshUi'), evt => {
+    			this.run();
     		});
-    		this.cssMarkers = {};
+    		this.cssMarkers = cssMarkers;
+    		this.getData = getData;
     		this.pane = el.table({
     			classNames: ['pane']
     		});
     	}
     }
 
-    class ScoreSoFar extends TablePane {
+    class Score extends Plugin {
         getData() {
             const keys = ['foundTerms', 'remainders', 'answers'];
             return [
@@ -488,9 +442,21 @@
             ];
         }
         constructor(app) {
-            super(app, 'Score so far', 'The number of words and points and how many have been found', {
+            super(app, 'Score', 'The number of words and points and how many have been found', {
                 canChangeState: true,
                 open: true
+            });
+            const table = new TablePane(this.app, this.getData);
+            this.ui = el.details({
+                attributes: {
+                    open: true
+                },
+                content: [
+                    el.summary({
+                        content: this.title
+                    }),
+                    table.getPane()
+                ]
             });
         }
     }
@@ -516,11 +482,11 @@
                 content: '😐'
             });
             this.target = el.$('.sb-controls', this.app.gameWrapper);
-            this.toggle(this.getState());
+    		this.toggle(false);
         }
     }
 
-    class Spoilers extends TablePane {
+    class LetterCount extends Plugin {
     	getData() {
     		const counts = {};
     		const pangramCount = data.getCount('pangrams');
@@ -560,17 +526,25 @@
     		return cellData;
     	}
     	constructor(app) {
-    		super(app, 'Spoilers', 'The number of words by length, also the number of pangrams', {
+    		super(app, 'Letter count', 'The number of words by length, also the number of pangrams', {
     			canChangeState: true
     		});
-    		this.cssMarkers = {
+            const table = new TablePane(this.app, this.getData, {
     			completed: (rowData, i) => i > 0 && rowData[2] === 0,
     			preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
-    		};
+    		});
+            this.ui = el.details({
+                content: [
+                    el.summary({
+                        content: this.title
+                    }),
+                    table.getPane()
+                ]
+            });
     	}
     }
 
-    class StartingWith extends TablePane {
+    class FirstLetter extends Plugin {
     	getData() {
     		const letters = {};
     		const answers = data.getList('answers').sort((a, b) => {
@@ -613,46 +587,22 @@
     		return cellData;
     	}
     	constructor(app) {
-    		super(app, 'Starting with…', 'The number of words by first letter', {
+    		super(app, 'First letter', 'The number of words by first letter', {
     			canChangeState: true
     		});
-    		this.cssMarkers = {
+            const table = new TablePane(this.app, this.getData, {
     			completed: (rowData, i) => i > 0 && rowData[2] === 0,
     			preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
-    		};
-    	}
-    }
-
-    class StepsToSuccess extends TablePane {
-        getData() {
-            const maxPoints = data.getPoints('answers');
-            return [
-                ['Beginner', 0],
-                ['Good Start', 2],
-                ['Moving Up', 5],
-                ['Good', 8],
-                ['Solid', 15],
-                ['Nice', 25],
-                ['Great', 40],
-                ['Amazing', 50],
-                ['Genius', 70],
-                ['Queen Bee', 100]
-            ].map(entry => {
-                return [entry[0], Math.round(entry[1] / 100 * maxPoints)];
-            })
-        }
-        getCurrentTier() {
-            return this.getData().filter(entry => entry[1] <= data.getPoints('foundTerms')).pop()[1];
-        }
-        constructor(app) {
-            super(app, 'Steps to success', 'The number of points required for each level', {
-                canChangeState: true
+    		});
+            this.ui = el.details({
+                content: [
+                    el.summary({
+                        content: this.title
+                    }),
+                    table.getPane()
+                ]
             });
-            this.cssMarkers = {
-                completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
-                preeminent: rowData => rowData[1] === this.getCurrentTier()
-            };
-        }
+    	}
     }
 
     class Popup extends Plugin {
@@ -769,7 +719,7 @@
                     classNames: ['sb-modal-message', 'sba-modal-footer'],
                     content: [
                         el.a({
-                            content: settings$1.get('label') + ' v' + settings$1.get('version'),
+                            content: settings$1.get('label') + ' ' + settings$1.get('version'),
                             attributes: {
                                 href: settings$1.get('url'),
                                 target: '_blank'
@@ -789,7 +739,52 @@
         }
     }
 
-    class Surrender extends Plugin {
+    class Rankings extends TablePane {
+        toggle(state) {
+    		if(!state) {
+    			this.popup.toggle(state);
+    			return this;
+    		}
+    		return this;
+    	}
+        getData() {
+            const maxPoints = data.getPoints('answers');
+            return [
+                ['Beginner', 0],
+                ['Good Start', 2],
+                ['Moving Up', 5],
+                ['Good', 8],
+                ['Solid', 15],
+                ['Nice', 25],
+                ['Great', 40],
+                ['Amazing', 50],
+                ['Genius', 70],
+                ['Queen Bee', 100]
+            ].map(entry => {
+                return [entry[0], Math.round(entry[1] / 100 * maxPoints)];
+            })
+        }
+        getCurrentTier() {
+            return this.getData().filter(entry => entry[1] <= data.getPoints('foundTerms')).pop()[1];
+        }
+        constructor(app) {
+            super(app, 'Rankings', 'The number of points required for each level', {
+                canChangeState: true,
+                defaultState: false
+            });
+            this.popup = new Popup(this.app, 'this.title', 'this.description', {
+                key: this.key + 'PopUp'
+            });
+            this.menuIcon = 'null';
+            this.cssMarkers = {
+                completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
+                preeminent: rowData => rowData[1] === this.getCurrentTier()
+            };
+            this.toggle(false);
+        }
+    }
+
+    class Answers extends Plugin {
     	getDescription() {
     		return el.div({
     			classNames: ['sb-modal-date__today'],
@@ -844,7 +839,7 @@
     		return this;
     	}
     	constructor(app) {
-    		super(app, 'Surrender', 'Reveals the solution of the game', {
+    		super(app, 'Show answers', 'Reveals the solution of the game', {
     			canChangeState: true,
     			defaultState: false
     		});
@@ -853,7 +848,6 @@
     			key: this.key + 'PopUp'
     		});
     		this.menuIcon = 'warning';
-    		this.ui = this.popup.ui;
     		this.toggle(false);
     	}
     }
@@ -928,7 +922,7 @@
         }
     }
 
-    var css = "[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 3px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 5px}}[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17;--menu-hover-color:#f4f4f4}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537;--menu-hover-color:#393939}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 3px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 5px}}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}.sba{margin:64px 0 0 0;width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box;background:var(--body-bg-color);border-width:1px;border-color:var(--border-color);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--border-color) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--highlight-color);height:4px}.sba progress::-moz-progress-bar{background-color:var(--highlight-color)}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba ul.pane{padding:5px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:280%}[data-ui=spillTheBeans].inactive{display:none}[data-ui=launcher]{position:relative;z-index:1}[data-ui=launcher] .pane{position:absolute;background:var(--body-bg-color);border:1px var(--border-color) solid;top:55px;padding:5px;right:180px}[data-ui=launcher] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 25px 5px 38px;font-size:14px}[data-ui=launcher] li::before,[data-ui=launcher] li::after{position:absolute;display:block}[data-ui=launcher] li[data-icon=checkbox]::before{content:\"\";border:2px solid var(--text-color);opacity:.15;width:14px;height:14px;border-radius:3px;left:15px;top:10px}[data-ui=launcher] li[data-icon=checkbox][data-state=true]::after{content:\"✔\";color:var(--highlight-color);top:-3px;left:16px;font-size:20px}[data-ui=launcher] li[data-icon=warning]::before{content:\"△\";color:#c00;left:13px;top:-9px;font-size:27px;font-weight:bold}[data-ui=launcher] li[data-icon=warning]::after{content:\"!\";color:var(--text-color);top:7px;left:23px;font-weight:bold;font-size:12px}[data-ui=launcher] li[data-target=stepsToSuccess]{border-top:1px solid var(--border-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding)}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}[data-sba-active=true] .sba-container{position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset)}@media(min-width: 900px){[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.pz-toolbar-button:hover,[data-ui=launcher] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.sb-modal-scrim{z-index:6}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
+    var css = "[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 3px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 5px}}[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17;--menu-hover-color:#f4f4f4}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537;--menu-hover-color:#393939}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 3px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 5px}}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}.sba{margin:64px 0 0 0;width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box;background:var(--body-bg-color);border:1px var(--border-color) solid;border-radius:6px}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba ::selection{background:transparent}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}[data-ui=score] tbody tr:first-child td,[data-ui=letterCount] tbody tr:first-child td,[data-ui=firstLetter] tbody tr:first-child td{font-weight:bold;font-size:92%}[data-ui=firstLetter] tbody tr td:first-child{text-align:center;text-transform:uppercase}[data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}[data-ui=footer]:hover{opacity:.8;text-decoration:underline}[data-ui=progressBar]{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;height:6px;padding:0;background:transparent;display:block}[data-ui=progressBar].inactive{display:none}[data-ui=progressBar]::-webkit-progress-bar{background-color:transparent}[data-ui=progressBar]::-webkit-progress-value{background-color:var(--highlight-color);height:4px}[data-ui=progressBar]::-moz-progress-bar{background-color:var(--highlight-color)}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:280%}[data-ui=spillTheBeans].inactive{display:none}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{position:absolute;background:var(--body-bg-color);border:1px var(--border-color) solid;top:55px;padding:5px;right:10000px}[data-ui=menu].active .pane,[data-ui=menu]:hover .pane{right:0}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 25px 5px 38px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkbox][data-state=true]::after{content:\"✔\";color:var(--highlight-color);top:2px;left:12px;font-size:16px}[data-ui=menu] li[data-icon=warning]::before{content:\"△\";color:#c00;left:9px;top:-9px;font-size:27px;font-weight:bold}[data-ui=menu] li[data-icon=warning]::after{content:\"!\";color:var(--text-color);top:7px;left:19px;font-weight:bold;font-size:12px}[data-ui=menu] li[data-target=rankings]{border-top:1px solid var(--border-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}#portal-game-toolbar [role=presentation]::selection{background:transparent}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding)}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}[data-sba-active=true] .sba-container{position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset)}@media(min-width: 900px){[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.sb-modal-scrim{z-index:6}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
 
     class Styles extends Plugin {
         modifyMq() {
@@ -982,7 +976,7 @@
     		return super.toggle();
     	}
     	constructor(app) {
-    		super(app, 'Launcher', '');
+    		super(app, 'Menu', '');
     		this.target = this.getTarget();
     		const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
     		const pane = el.ul({
@@ -1008,7 +1002,7 @@
     					state: !!this.app.getState(),
     					icon: 'checkbox'
     				},
-    				content: `Toggle ${settings$1.get('title')}`
+    				content: `Show ${settings$1.get('title')}`
     			})
     		});
     		this.ui = el.div({
@@ -1016,6 +1010,13 @@
     				settings$1.get('title'),
     				pane
     			],
+    			events: {
+    				pointerup: evt => {
+    					if(!evt.target.isSameNode(pane)){
+    						evt.target.classList.toggle('active');
+    					}
+    				}
+    			},
     			attributes: {
     				role: 'presentation'
     			},
@@ -1045,20 +1046,20 @@
 
     const getPlugins = app => {
          return {
-              DarkMode,
               Header,
-              ProgressBar,
-              ScoreSoFar,
-              Spoilers,
-              StartingWith,
+              Score,
+              LetterCount,
+              FirstLetter,
               SpillTheBeans,
-              HighlightPangrams,
+              ProgressBar,
+              DarkMode,
+              Pangrams: HighlightPangrams,
               Googlify,
               Footer,
               Styles,
               Menu,
-              StepsToSuccess,
-              Surrender
+              Rankings,
+              Answers
          }
     };
 

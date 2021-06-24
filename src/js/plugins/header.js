@@ -1,9 +1,6 @@
 import el from '../modules/element.js';
 import settings from '../modules/settings.js';
 import Plugin from '../modules/plugin.js';
-import {
-    prefix
-} from '../modules/string.js';
 
 /**
  * Header plugin
@@ -24,22 +21,8 @@ class Header extends Plugin {
         });
 
         this.ui = el.div({
-            content: el.div({
-                content: this.title,
-                classNames: ['header']
-            })
+            content: this.title
         });
-
-        app.on(prefix('toolsReady'), evt => {
-            const toolbar = el.div({
-                classNames: ['toolbar']
-            })
-            evt.detail.forEach(tool => {
-                toolbar.append(tool);
-            })
-            this.ui.append(toolbar)
-            return this;
-        })
     }
 }
 

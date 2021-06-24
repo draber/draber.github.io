@@ -44,7 +44,7 @@ class Menu extends Plugin {
 
 	constructor(app) {
 
-		super(app, 'Launcher', '');
+		super(app, 'Menu', '');
 
 		this.target = this.getTarget();
 
@@ -78,7 +78,7 @@ class Menu extends Plugin {
 					state: !!this.app.getState(),
 					icon: 'checkbox'
 				},
-				content: `Toggle ${settings.get('title')}`
+				content: `Show ${settings.get('title')}`
 			})
 		});
 
@@ -87,6 +87,13 @@ class Menu extends Plugin {
 				settings.get('title'),
 				pane
 			],
+			events: {
+				pointerup: evt => {
+					if(!evt.target.isSameNode(pane)){
+						evt.target.classList.toggle('active');
+					}
+				}
+			},
 			attributes: {
 				role: 'presentation'
 			},

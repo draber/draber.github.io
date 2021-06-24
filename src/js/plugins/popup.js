@@ -168,7 +168,7 @@ class Popup extends Plugin {
                 classNames: ['sb-modal-message', 'sba-modal-footer'],
                 content: [
                     el.a({
-                        content: settings.get('label') + ' v' + settings.get('version'),
+                        content: settings.get('label') + ' ' + settings.get('version'),
                         attributes: {
                             href: settings.get('url'),
                             target: '_blank'

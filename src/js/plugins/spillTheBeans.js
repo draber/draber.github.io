@@ -49,8 +49,7 @@ class SpillTheBeans extends Plugin {
 
         this.target = el.$('.sb-controls', this.app.gameWrapper);
 
-        // toggle body dataset
-        this.toggle(this.getState());
+		this.toggle(false);
 
     }
 }

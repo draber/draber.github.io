@@ -22,7 +22,7 @@ class ProgressBar extends Plugin {
         let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
         progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
         this.ui.value = progress;
-        this.ui.textContent = el.toNode(progress + '%');
+        this.ui.textContent = progress + '%';
         this.ui.title = `Progress: ${progress}%`;
         return this;
     }
@@ -35,14 +35,17 @@ class ProgressBar extends Plugin {
 
         super(app, 'Progress Bar', 'Displays your progress as a yellow bar', {
             canChangeState: true,
-            runEvt: prefix('refreshUi')
+            runEvt: prefix('refreshUi'),
+            addMethod: 'before'
         });
 
         this.ui = el.progress({
             attributes: {
                 max: 100
             }
-        })   
+        }) 
+        
+        this.target = el.$('.sb-wordlist-heading', this.app.gameWrapper);
     }
 }
 

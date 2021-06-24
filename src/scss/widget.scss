@@ -24,7 +24,7 @@
     }
 }
 
-.pz-toolbar-button, [data-ui="launcher"] li {
+.pz-toolbar-button, [data-ui="menu"] li {
     &:hover {
         background: var(--menu-hover-color);
         color: var(--text-color);

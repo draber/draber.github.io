@@ -1,13 +1,13 @@
 import DarkMode from '../plugins/darkMode.js';
 import Header from '../plugins/header.js';
 import ProgressBar from '../plugins/ProgressBar.js';
-import ScoreSoFar from '../plugins/scoreSoFar.js';
+import Score from '../plugins/score.js';
 import SpillTheBeans from '../plugins/spillTheBeans.js';
-import Spoilers from '../plugins/spoilers.js';
-import StartingWith from '../plugins/startingWith.js';
-import StepsToSuccess from '../plugins/stepsToSuccess.js';
-import Surrender from '../plugins/surrender.js';
-import HighlightPangrams from '../plugins/highlightPangrams.js';
+import LetterCount from '../plugins/letterCount.js';
+import FirstLetter from '../plugins/firstLetter.js';
+import Rankings from '../plugins/rankings.js';
+import Answers from '../plugins/answers.js';
+import Pangrams from '../plugins/pangrams.js';
 import Googlify from '../plugins/googlify.js';
 import Footer from '../plugins/footer.js';
 import Styles from '../plugins/styles.js';
@@ -21,13 +21,13 @@ import Menu from '../plugins/menu.js';
  *   DarkMode,
  *   Header,
  *   ProgressBar,
- *   ScoreSoFar,
- *   Spoilers,
- *   StartingWith,
+ *   Score,
+ *   LetterCount,
+ *   FirstLetter,
  *   SpillTheBeans,
- *   StepsToSuccess,
- *   Surrender,
- *   HighlightPangrams,
+ *   Rankings,
+ *   Answers,
+ *   Pangrams,
  *   Googlify,
  *   Footer,
  *   Menu
@@ -35,20 +35,20 @@ import Menu from '../plugins/menu.js';
  */
 const getPlugins = app => {
      return {
-          DarkMode,
           Header,
-          ProgressBar,
-          ScoreSoFar,
-          Spoilers,
-          StartingWith,
+          Score,
+          LetterCount,
+          FirstLetter,
           SpillTheBeans,
-          HighlightPangrams,
+          ProgressBar,
+          DarkMode,
+          Pangrams,
           Googlify,
           Footer,
           Styles,
           Menu,
-          StepsToSuccess,
-          Surrender
+          Rankings,
+          Answers
      }
 }
 

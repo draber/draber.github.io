@@ -7,12 +7,12 @@ import Plugin from '../modules/plugin.js';
 import Popup from './popup.js';
 
 /**
- * Surrender plugin
+ * Answers plugin
  * 
  * @param {App} app
- * @returns {Plugin} Surrender
+ * @returns {Plugin} Answers
  */
-class Surrender extends Plugin {
+class Answers extends Plugin {
 
 	getDescription() {
 		return el.div({
@@ -86,12 +86,12 @@ class Surrender extends Plugin {
 	}
 
 	/**
-	 * Surrender constructor
+	 * Answers constructor
 	 * @param {App} app
 	 */
 	constructor(app) {
 
-		super(app, 'Surrender', 'Reveals the solution of the game', {
+		super(app, 'Show answers', 'Reveals the solution of the game', {
 			canChangeState: true,
 			defaultState: false
 		});
@@ -101,11 +101,9 @@ class Surrender extends Plugin {
 			key: this.key + 'PopUp'
 		});
 
-		this.menuIcon = 'warning'
-
-		this.ui = this.popup.ui;
+		this.menuIcon = 'warning';
 		this.toggle(false);
 	}
 }
 
-export default Surrender;
+export default Answers;

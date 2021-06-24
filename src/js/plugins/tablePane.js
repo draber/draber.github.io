@@ -1,7 +1,6 @@
 import el from '../modules/element.js';
-import DisclosureBox from './disclosureBox.js';
 import {
-    prefix
+	prefix
 } from '../modules/string.js';
 
 /**
@@ -10,21 +9,20 @@ import {
  * @param {App} app
  * @returns {Plugin} TablePane
  */
-class TablePane extends DisclosureBox {
+class TablePane {
 
 	/**
 	 * Build/refresh pane
-	 * @param {Event} evt
 	 * @returns {TablePane}
 	 */
-	run(evt) {
+	run() {
 		this.pane = el.empty(this.pane);
 		const tbody = el.tbody();
 		this.getData().forEach((rowData, i) => {
 			const classNames = [];
 			for (const [marker, fn] of Object.entries(this.cssMarkers)) {
-				if(fn(rowData, i)) {					
-					classNames.push(prefix(marker, 'd')) 
+				if (fn(rowData, i)) {
+					classNames.push(prefix(marker, 'd'))
 				}
 			}
 			tbody.append(el.tr({
@@ -38,6 +36,10 @@ class TablePane extends DisclosureBox {
 		return this;
 	}
 
+	getPane() {
+		return this.pane;
+	}
+
 	/**
 	 * TablePane constructor
 	 * @param {App} app
@@ -45,25 +47,16 @@ class TablePane extends DisclosureBox {
 	 * @param {String} description
 	 * @param {Boolean} canChangeState
 	 * @param {Boolean} defaultState
-	 * @param {Boolean} open
 	 * @param {String} runEvt
 	 */
-	constructor(app, title, description, {
-        canChangeState,
-        defaultState = true,
-        open = false,
-		runEvt = prefix('refreshUi')
-    } = {}) {
+	constructor(app, getData, cssMarkers = {}) {
 
-		super(app, title, description, {
-			canChangeState,
-			defaultState,
-			open,
-			runEvt
+		app.on(prefix('refreshUi'), evt => {
+			this.run();
 		});
 
-		this.cssMarkers = {};
-      
+		this.cssMarkers = cssMarkers;
+		this.getData = getData;
 		this.pane = el.table({
 			classNames: ['pane']
 		});
