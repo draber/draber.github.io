@@ -48,7 +48,7 @@ class Answers extends Plugin {
 		});
 
 		this.popup
-			.setContent('title', `Today’s Answers`)
+			.setContent('title', this.title)
 			.setContent('subtitle', data.getDate())
 			.setContent('body', [
 				el.div({
@@ -68,7 +68,7 @@ class Answers extends Plugin {
 	 */
 	constructor(app) {
 
-		super(app, 'Show answers', 'Reveals the solution of the game', {
+		super(app, 'Today’s Answers', 'Reveals the solution of the game', {
 			canChangeState: true,
 			defaultState: false
 		});
