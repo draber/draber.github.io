@@ -38,8 +38,10 @@ class Googlify extends Plugin {
      */
     run() {
         const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
-        this.app.resultList[method]('pointerup', this.listener);
-        this.app.resultList.classList.toggle(prefix('googlified', 'd'), this.getState());
+        [this.app.modalWrapper, this.app.resultList].forEach(container => {
+            container[method]('pointerup', this.listener);
+            container.classList.toggle(prefix('googlified', 'd'), this.getState());
+        });
         return this;
     }
 

@@ -69,17 +69,15 @@ class FirstLetter extends Plugin {
 			canChangeState: true
 		});
 		
-        const table = new TablePane(this.app, this.getData, {
-			completed: (rowData, i) => i > 0 && rowData[2] === 0,
-			preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
-		})
-
         this.ui = el.details({
             content: [
                 el.summary({
                     content: this.title
                 }),
-                table.getPane()
+                new TablePane(app, this.getData, {
+					completed: (rowData, i) => i > 0 && rowData[2] === 0,
+					preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
+				}).getPane()
             ]
         });
 	}

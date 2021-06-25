@@ -2,14 +2,13 @@ import el from "../modules/element";
 import {
     prefix
 } from "../modules/string";
-import Plugin from '../modules/plugin.js';
 import settings from "../modules/settings";
 
 
 /**
  * Plugin base class
  */
-class Popup extends Plugin {
+class Popup {
 
     /**
      * Get a reference to the `<template>` that holds the pop-ups while idle
@@ -101,51 +100,31 @@ class Popup extends Plugin {
      * @returns {Popup}
      */
     toggle(state) {
+        
         const closer = el.$('.sb-modal-close', this.modalWrapper);
-        if (!this.getState() && closer) {
+        if (!state && closer) {
             closer.click();
         }
 
         if (state) {
             this.modalWrapper.append(this.ui);
             this.modalSystem.classList.add('sb-modal-open');
-            this.state = true;
         } else {
             this.getTarget().append(this.ui);
             this.modalSystem.classList.remove('sb-modal-open');
-            this.state = false;
         }
-
-        this.app.trigger(prefix('popup'), {
-            plugin: this
-        })
 
         return this;
     }
 
-    getState() {
-        return this.state;
-    }
-    
-    
-
 
     /**
-     * Build an instance of a plugin
-     * @param {App} app
-     * @param {String} title
-     * @param {String} description
+     * Build an instance
      * @param key
      */
-    constructor(app, title, description, {
-        key
-    } = {}) {
+    constructor(key) {
 
-        super(app, title, description, {
-            key,
-            canChangeState: true,
-            defaultState: false
-        })
+        this.key = key;
 
         this.state = false;
 
@@ -154,13 +133,11 @@ class Popup extends Plugin {
 
         this.parts = {
             title: el.h3({
-                classNames: ['sb-modal-title'],
-                content: title
+                classNames: ['sb-modal-title']
             }),
 
             subtitle: el.p({
-                classNames: ['sb-modal-message'],
-                content: description
+                classNames: ['sb-modal-message']
             }),
 
             body: el.div({
@@ -171,28 +148,19 @@ class Popup extends Plugin {
                 classNames: ['sb-modal-message', 'sba-modal-footer'],
                 content: [
                     el.a({
-                        content: settings.get('label') + ' ' + settings.get('version'),
+                        content: settings.get('label'),
                         attributes: {
                             href: settings.get('url'),
                             target: '_blank'
                         }
                     })
                 ]
-
             })
         }
 
+        this.ui = this.create();
 
-        if (!this.app.popups) {
-            this.app.popups = new Map();
-        }
-
-        if (!this.app.popups.has(key)) {
-            this.app.popups.set(key, this.create());
-        }
-
-        this.target = this.getTarget();
-        this.ui = this.app.popups.get(key);
+        this.getTarget().append(this.ui);
     }
 
 }

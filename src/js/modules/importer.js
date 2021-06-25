@@ -9,7 +9,6 @@ import Rankings from '../plugins/rankings.js';
 import Answers from '../plugins/answers.js';
 import Pangrams from '../plugins/pangrams.js';
 import Googlify from '../plugins/googlify.js';
-import Footer from '../plugins/footer.js';
 import Styles from '../plugins/styles.js';
 import Menu from '../plugins/menu.js';
 
@@ -29,7 +28,6 @@ import Menu from '../plugins/menu.js';
  *   Answers,
  *   Pangrams,
  *   Googlify,
- *   Footer,
  *   Menu
  * }}
  */
@@ -44,7 +42,6 @@ const getPlugins = app => {
           DarkMode,
           Pangrams,
           Googlify,
-          Footer,
           Styles,
           Menu,
           Rankings,

@@ -40,18 +40,9 @@ class TablePane {
 		return this.pane;
 	}
 
-	/**
-	 * TablePane constructor
-	 * @param {App} app
-	 * @param {String} title
-	 * @param {String} description
-	 * @param {Boolean} canChangeState
-	 * @param {Boolean} defaultState
-	 * @param {String} runEvt
-	 */
 	constructor(app, getData, cssMarkers = {}) {
 
-		app.on(prefix('refreshUi'), evt => {
+		app.on(prefix('refreshUi'), () => {
 			this.run();
 		});
 

@@ -100,13 +100,45 @@
     }
 }
 
-[data-ui="rankingsPopUp"] {
+[data-ui="yourProgress"] {
+    b {
+        font-weight: 700;
+    }
     .sba-data-pane {
-        border-top: 1px solid var(--border-color);
-        width: 200px;
-        margin: auto;
-        td:first-of-type {
-            width: 40px;
+        margin-left: 5px;
+        max-width: 300px;
+        td {
+            border: none;
+        }
+
+        tr {
+            &.sba-completed {
+                color: var(--text-color);
+            }
+            td {
+                &:first-child {
+                    &:before {
+                        content: '•';
+                        display: inline-block;
+                        margin-right: 10px;
+                    }
+                }
+                &:nth-child(n+2)  {
+                    text-align: right;
+                    width: 80px;
+                }
+                &:nth-child(2)  {
+                    &::after{
+                        content: ' pts.';
+                    }
+                }
+                &:last-child  {
+                    &::after{
+                        content: '%';
+                    }
+                }
+            }
+
         }
     }
 }
@@ -116,7 +148,13 @@
     font-weight: bold;
     line-height: 32px;
     flex-grow: 2;
-    text-indent: 1px
+    text-indent: 1px;
+    color: currentColor;
+
+    &:hover {
+        color: var(--link-hover-color);
+        text-decoration: underline
+    }
 }
 
 [data-ui="score"],
@@ -144,20 +182,6 @@
                 }
             }
         }
-    }
-}
-
-[data-ui="footer"] {
-    color: currentColor;
-    opacity: .6;
-    font-size: 10px;
-    text-align: right;
-    display: block;
-    padding-top: 8px;
-
-    &:hover {
-        opacity: .8;
-        text-decoration: underline
     }
 }
 
@@ -270,7 +294,7 @@
             }
         }
 
-        &[data-target="rankings"] {
+        &[data-target="yourProgress"] {
             border-top: 1px solid var(--border-color);
         }
 

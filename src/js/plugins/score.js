@@ -31,11 +31,8 @@ class Score extends Plugin {
     constructor(app) {
 
         super(app, 'Score', 'The number of words and points and how many have been found', {
-            canChangeState: true,
-            open: true
+            canChangeState: true
         });
-
-        const table = new TablePane(this.app, this.getData)
 
         this.ui = el.details({
             attributes: {
@@ -45,7 +42,7 @@ class Score extends Plugin {
                 el.summary({
                     content: this.title
                 }),
-                table.getPane()
+                new TablePane(app, this.getData).getPane()
             ]
         });
     }

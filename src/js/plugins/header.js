@@ -1,6 +1,7 @@
 import el from '../modules/element.js';
 import settings from '../modules/settings.js';
 import Plugin from '../modules/plugin.js';
+import { prefix } from '../modules/string.js';
 
 /**
  * Header plugin
@@ -20,8 +21,13 @@ class Header extends Plugin {
             key: 'header'
         });
 
-        this.ui = el.div({
-            content: this.title
+        this.ui = el.a({
+            content: this.title,
+            attributes: {
+                href: settings.get('url'),
+                target: prefix(),
+                title: (new URL(settings.get('url'))).hostname 
+            }
         });
     }
 }

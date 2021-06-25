@@ -31,10 +31,6 @@
     }
 }
 
-.sb-modal-scrim {
-    z-index: 6;
-}
-
 .pz-desktop {
     .sba {
 
@@ -73,17 +69,21 @@
     }
 }
 
-
 [data-sba-theme] {
     &.pz-spelling-bee-congrats {
-        .sba-pop-up {
-            &.left-aligned {
-                .sb-modal-content {
-                    .sba-pangram {
+        .sb-modal-wordlist-items {
+            li {
+                .sb-anagram {
+                    &.pangram {
                         font-weight: 700;
                         border-bottom: 2px var(--highlight-color) solid;
                     }
-
+                }
+            }
+        }
+        .sba-pop-up {
+            &.left-aligned {
+                .sb-modal-content {
                     .sba-modal-footer {
                         text-align: right;
                         border-top: 1px solid var(--border-color);

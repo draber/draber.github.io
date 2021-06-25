@@ -14,13 +14,6 @@ import Popup from './popup.js';
  */
 class Answers extends Plugin {
 
-	getDescription() {
-		return el.div({
-			classNames: ['sb-modal-date__today'],
-			content: data.getDate()
-		})
-	}
-
 	/**
 	 *
 	 * @param {Event} evt
@@ -28,59 +21,43 @@ class Answers extends Plugin {
 	 */
 	toggle(state) {
 
-		if(!state) {
+		if (!state) {
 			this.popup.toggle(state);
 			return this;
 		}
 
-		const answers = data.getList('answers');
 		const foundTerms = data.getList('foundTerms');
 		const pangrams = data.getList('pangrams');
 
-		const googlify = this.app.plugins.get('googlify');
-		const highlightPangrams = this.app.plugins.get('highlightPangrams')
-
-		const letters = el.div({
-			content: data.getList('letters').join(''),
-			classNames: ['sb-modal-letters']
-		})
-
-		const classNames = ['sb-modal-wordlist-items'];
-		const events = {};
-		if(googlify) {
-			classNames.push(prefix('googlified', 'd'));
-			events.pointerup = googlify.listener;
-		}
-
 		const pane = el.ul({
-			classNames,
-			events
+			classNames: ['sb-modal-wordlist-items']
 		})
 
-		answers.forEach(term => {
-			const checkClass = ['check'];
-			if (foundTerms.includes(term)) {
-				checkClass.push('checked');
-			}
-			let li = el.li({
+		data.getList('answers').forEach(term => {
+			pane.append(el.li({
+				classNames: pangrams.includes(term) ? ['pangram'] : [],
 				content: [
 					el.span({
-						classNames: checkClass
+						classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
 					}), el.span({
 						classNames: ['sb-anagram'],
 						content: term
 					})
 				]
-			});
-
-			if (highlightPangrams && pangrams.includes(term)) {
-				li.classList.add(highlightPangrams.marker);
-			}
-
-			pane.append(li);
+			}));
 		});
 
-		this.popup.setContent('body', [letters, pane]).toggle(state);
+		this.popup
+			.setContent('title', `Today’s Answers`)
+			.setContent('subtitle', data.getDate())
+			.setContent('body', [
+				el.div({
+					content: data.getList('letters').join(''),
+					classNames: ['sb-modal-letters']
+				}), 
+				pane
+			])
+			.toggle(state);
 
 		return this;
 	}
@@ -97,12 +74,9 @@ class Answers extends Plugin {
 		});
 
 		this.marker = prefix('resolved', 'd');
-		this.popup = new Popup(this.app, 'Today’s Answers', this.getDescription(), {
-			key: this.key + 'PopUp'
-		});
+		this.popup = new Popup(this.key);
 
 		this.menuIcon = 'warning';
-		this.toggle(false);
 	}
 }
 

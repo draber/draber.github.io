@@ -1,6 +1,8 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
 import Popup from './popup.js';
+import Plugin from '../modules/plugin.js';
+import el from '../modules/element.js';
 
 /**
  * Steps to success plugin
@@ -8,23 +10,37 @@ import Popup from './popup.js';
  * @param {App} app
  * @returns {Plugin} Rankings
  */
-class Rankings extends Popup {
+class Rankings extends Plugin {
 
     toggle(state) {
 
-		if(!state) {
-			this.popup.toggle(state);
-			return this;
-		}
+        if (!state) {
+            this.popup.toggle(state);
+            return this;
+        }
 
+        const progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
 
-		this.popup
-        .setContent('subtitle', `You have currently ${data.getPoints('foundTerms')}/${data.getPoints('answers')} points.`)
-        .setContent('body', this.table.getPane())
-        .toggle(state);
+        this.popup
+            .setContent('title', this.title)
+            .setContent('subtitle', el.span({
+                content: [
+                    'You are currently at ',
+                    el.b({
+                        content: data.getPoints('foundTerms') + '/' + data.getPoints('answers')
+                    }),
+                    ' points or ',
+                    el.b({
+                        content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
+                    }),
+                    '.',
+                ]
+            }))
+            .setContent('body', this.table.getPane())
+            .toggle(state);
 
-		return this;
-	}
+        return this;
+    }
 
     /**
      * Get the data for the table cells
@@ -44,7 +60,7 @@ class Rankings extends Popup {
             ['Genius', 70],
             ['Queen Bee', 100]
         ].map(entry => {
-            return [entry[0], Math.round(entry[1] / 100 * maxPoints)];
+            return [entry[0], Math.round(entry[1] / 100 * maxPoints), entry[1]];
         })
     }
 
@@ -62,24 +78,18 @@ class Rankings extends Popup {
      */
     constructor(app) {
 
-        super(app, 'Rankings', 'The number of points required for each level', {
+        super(app, 'Your Progress', 'The number of points required for each level', {
             canChangeState: true,
             defaultState: false
         });
 
-        this.popup = new Popup(this.app, this.title, this.description, {
-            key: this.key + 'PopUp'
-        });
-
+        this.popup = new Popup(this.key);
         this.menuIcon = 'null';
 
-        
-        this.table = new TablePane(this.app, this.getData, {
+        this.table = new TablePane(app, this.getData, {
             completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
             preeminent: rowData => rowData[1] === this.getCurrentTier()
         })
-
-        this.toggle(false);
     }
 }
 
