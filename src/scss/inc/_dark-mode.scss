@@ -2,6 +2,21 @@
     background: var(--body-bg-color);
     color: var(--text-color);
 
+    #js-logo-nav {
+        rect {
+            fill: var(--body-bg-color);
+        }
+
+        path {
+            fill: var(--text-color);
+        }
+    }
+
+    .pz-footer {
+        background: var(--body-bg-color);
+        color: var(--text-color);
+    }
+
     .pz-moment__loading {
         color: black;
     }
@@ -20,10 +35,6 @@
     .pz-nav {
         width: 100%;
         background: var(--body-bg-color);
-    }
-
-    .pz-nav__logo {
-        filter: invert(1);
     }
 
     .sb-modal-scrim {

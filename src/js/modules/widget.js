@@ -21,7 +21,7 @@ class Widget {
 
     /**
      * Write new state to memory
-     * @param {Boolean} state
+     * @param {Boolean|Object} state
      * @returns {Widget}
      */
     setState(state) {

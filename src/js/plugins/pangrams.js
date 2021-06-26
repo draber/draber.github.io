@@ -9,14 +9,14 @@ import data from '../modules/data.js';
  * Highlight Pangrams plugin
  *
  * @param {App} app
- * @returns {Plugin} HighlightPangrams
+ * @returns {Plugin} Pangrams
  */
-class HighlightPangrams extends Plugin {
+class Pangrams extends Plugin {
 
     /**
      * Toggle state
      * @param state
-     * @returns {HighlightPangrams}
+     * @returns {Pangrams}
      */
     toggle(state) {
         super.toggle(state);
@@ -26,7 +26,7 @@ class HighlightPangrams extends Plugin {
     /**
      * Add or remove pangram underlines
      * @param {Event} evt
-     * @returns {HighlightPangrams}
+     * @returns {Pangrams}
      */
     // eslint-disable-next-line no-unused-vars
     run(evt) {
@@ -44,7 +44,7 @@ class HighlightPangrams extends Plugin {
     }
 
     /**
-     * HighlightPangrams constructor
+     * Pangrams constructor
      * @param {App} app
      */
     constructor(app) {
@@ -60,4 +60,4 @@ class HighlightPangrams extends Plugin {
     }
 }
 
-export default HighlightPangrams;
+export default Pangrams;

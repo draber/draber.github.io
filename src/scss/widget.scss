@@ -24,7 +24,8 @@
     }
 }
 
-.pz-toolbar-button, [data-ui="menu"] li {
+.pz-toolbar-button,
+[data-ui="menu"] li {
     &:hover {
         background: var(--menu-hover-color);
         color: var(--text-color);
@@ -81,6 +82,7 @@
                 }
             }
         }
+
         .sba-pop-up {
             &.left-aligned {
                 .sb-modal-content {
@@ -89,18 +91,8 @@
                         border-top: 1px solid var(--border-color);
                         padding-top: 10px;
                         font-size: 13px;
-                        display: flex;
-                        flex-direction: row-reverse;
-                        justify-content: space-between;
-                        align-items: center;
-                        text-align: right;
                         border-top: 1px solid var(--border-color);
                         padding-top: 10px;
-
-                        button {
-                            padding: 6px 10px;
-                            margin: 0
-                        }
                     }
                 }
             }
@@ -110,10 +102,8 @@
     &.pz-spelling-bee-congrats {
         .left-aligned {
             .sb-modal-content {
-                .sb-modal-body {
-                    &::after {
-                        background: linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%);
-                    }
+                &::after {
+                    background: linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%);
                 }
             }
         }

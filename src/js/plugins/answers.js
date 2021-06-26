@@ -21,11 +21,6 @@ class Answers extends Plugin {
 	 */
 	toggle(state) {
 
-		if (!state) {
-			this.popup.toggle(state);
-			return this;
-		}
-
 		const foundTerms = data.getList('foundTerms');
 		const pangrams = data.getList('pangrams');
 
@@ -76,6 +71,7 @@ class Answers extends Plugin {
 		this.marker = prefix('resolved', 'd');
 		this.popup = new Popup(this.key);
 
+        this.menuAction = 'popup';
 		this.menuIcon = 'warning';
 	}
 }

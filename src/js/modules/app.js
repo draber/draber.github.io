@@ -213,7 +213,7 @@ class App extends Widget {
      */
     registerPlugins() {
         this.plugins = new Map();
-        Object.values(getPlugins(this)).forEach(plugin => {
+        Object.values(getPlugins()).forEach(plugin => {
             const instance = new plugin(this);
             instance.add();
             this.plugins.set(instance.key, instance);

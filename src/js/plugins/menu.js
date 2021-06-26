@@ -1,5 +1,4 @@
 import el from '../modules/element.js';
-import Popup from './popup.js';
 import settings from '../modules/settings.js';
 import {
 	prefix
@@ -41,6 +40,16 @@ class Menu extends Plugin {
 		return super.toggle();
 	}
 
+	getComponent(entry) {
+		if(entry.dataset.component === this.app.key) {
+			return this.app
+		}
+		if(this.app.plugins.has(entry.dataset.component)) {
+			return this.app.plugins.get(entry.dataset.component);
+		}
+		return null;
+	}
+
 
 	constructor(app) {
 
@@ -58,25 +67,31 @@ class Menu extends Plugin {
 		const pane = el.ul({
 			classNames: ['pane'],
 			events: {
-				click: evt => {
-					const li = evt.target.closest('li');					
-					const target = li.dataset.target === this.app.key ? this.app : this.app.plugins.get(li.dataset.target);
-					const nextState = !target.getState();
-					target.toggle(nextState);
-					li.dataset.state = nextState;
-					if(target === this.app){
-						this.app.gameWrapper.dataset.sbaActive = nextState.toString();
+				pointerup: evt => {
+					const entry = evt.target.closest('li');
+					const component = this.getComponent(entry);
+					if (evt.button === 0 && entry.dataset.action === 'boolean') {
+						const nextState = !component.getState();
+						component.toggle(nextState);
+						entry.classList.toggle('checked', nextState);
+						if (component === this.app) {
+							this.app.gameWrapper.dataset.sbaActive = nextState.toString();
+						}
+					}
+					else if (entry.dataset.action === 'popup'){
+						component.toggle(true);
 					}
 				}
 			},
 			content: el.li({
+				classNames: this.app.getState() ? ['checked'] : [],
 				attributes: {
 					title: this.app.title
 				},
 				data: {
-					target: this.app.key,
-					state: !!this.app.getState(),
-					icon: 'checkbox'
+					component: this.app.key,
+					icon: 'checkmark',
+					action: 'boolean'
 				},
 				content: `Show ${settings.get('title')}`
 			})
@@ -87,13 +102,6 @@ class Menu extends Plugin {
 				settings.get('title'),
 				pane
 			],
-			events: {
-				pointerup: evt => {
-					if(!evt.target.isSameNode(pane)){
-						evt.target.classList.toggle('active');
-					}
-				}
-			},
 			attributes: {
 				role: 'presentation'
 			},
@@ -105,18 +113,38 @@ class Menu extends Plugin {
 				if (!plugin.canChangeState || plugin === this) {
 					return false;
 				}
+				const action = plugin.menuAction || 'boolean';
 				pane.append(el.li({
+					classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
 					attributes: {
 						title: plugin.description
 					},
-					data: {
-						target: key,
-						state: !!plugin.getState(),
-						icon: plugin.menuIcon
+					data: {				
+						component: key,
+						icon: action === 'boolean' ? 'checkmark' : (plugin.menuIcon || null),
+						action
 					},
 					content: plugin.title
 				}));
 			})
+
+			pane.append(el.li({
+				attributes: {
+					title: settings.get('label') + ' Website'
+				},
+				data: {
+					icon: 'sba',
+					component: 'sbaWeb',
+					action: 'link'
+				},
+				content: el.a({
+					content: settings.get('label'),
+					attributes: {
+						href: settings.get('url'),
+						target: prefix()
+					}
+				})
+			}))
 		})
 
 		app.on(prefix('destroy'), () => this.ui.remove());

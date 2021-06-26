@@ -361,18 +361,206 @@
         }
     }
 
+    class Popup {
+        getTarget() {
+            const dataUi = prefix('popup-container', 'd');
+            let container = el.$(`[data-ui="${dataUi}"]`);
+            if (!container) {
+                container = el.template({
+                    data: {
+                        ui: dataUi
+                    }
+                });
+                el.$('body').append(container);
+            }
+            return container;
+        }
+        create() {
+            const frame = el.div({
+                classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
+                attributes: {
+                    role: 'button'
+                },
+                data: {
+                    ui: this.key
+                },
+                events: {
+                    click: e => {
+                        e.stopPropagation();
+                    }
+                },
+                content: [
+                    el.div({
+                        classNames: ['sb-modal-top'],
+                        content: el.div({
+                            attributes: {
+                                role: 'button'
+                            },
+                            classNames: ['sb-modal-close'],
+                            content: '×',
+                            events: {
+                                click: () => {
+                                    this.toggle(false);
+                                }
+                            }
+                        })
+                    }),
+                    el.div({
+                        classNames: ['sb-modal-content'],
+                        content: [
+                            el.div({
+                                classNames: ['sb-modal-header'],
+                                content: [this.parts.title, this.parts.subtitle]
+                            }),
+                            this.parts.body,
+                            this.parts.footer
+                        ]
+                    })
+                ]
+            });
+            return frame;
+        }
+        setContent(part, content) {
+            if (!this.parts[part]) {
+                console.error(`Unknown target ${part}`);
+                return this;
+            }
+            this.parts[part] = el.empty(this.parts[part]);
+            this.parts[part].append(el.toNode(content));
+            return this;
+        }
+        toggle(state) {
+            const closer = el.$('.sb-modal-close', this.modalWrapper);
+            if (!state && closer) {
+                closer.click();
+            }
+            if (state) {
+                this.modalWrapper.append(this.ui);
+                this.modalSystem.classList.add('sb-modal-open');
+            } else {
+                this.getTarget().append(this.ui);
+                this.modalSystem.classList.remove('sb-modal-open');
+            }
+            return this;
+        }
+        constructor(key) {
+            this.key = key;
+            this.state = false;
+            this.modalSystem = el.$('.sb-modal-system');
+            this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);
+            this.parts = {
+                title: el.h3({
+                    classNames: ['sb-modal-title']
+                }),
+                subtitle: el.p({
+                    classNames: ['sb-modal-message']
+                }),
+                body: el.div({
+                    classNames: ['sb-modal-body']
+                }),
+                footer: el.div({
+                    classNames: ['sb-modal-message', 'sba-modal-footer'],
+                    content: [
+                        el.a({
+                            content: settings$1.get('label'),
+                            attributes: {
+                                href: settings$1.get('url'),
+                                target: '_blank'
+                            }
+                        })
+                    ]
+                })
+            };
+            this.ui = this.create();
+            this.getTarget().append(this.ui);
+        }
+    }
+
+    class DarkModeConfig extends Plugin {
+        toggle(state) {
+            this.popup
+                .setContent('title', this.title)
+                .setContent('subtitle', this.description)
+                .setContent('body', this.pane)
+                .toggle(state);
+        }
+        constructor(app) {
+            super(app, 'Dark Mode Colors', 'Select your favorite Dark Mode color scheme.', {
+                canChangeState: true,
+                defaultState: {
+                    hue: 0,
+                    sat: 0
+                }
+            });
+            this.state = this.getState();
+            this.menuAction = 'popup';
+            this.menuIcon = 'null';
+            const swatches = el.div({
+                classNames: [prefix('swatches', 'd')]
+            });
+            for (let hue = 0; hue < 360; hue += 30) {
+                const sat = hue === 0 ? 0 : 45;
+                swatches.append(el.label({
+                    style: {
+                        background: `hsl(${hue}, ${sat}%, 7%)`
+                    },
+                    content: el.input({
+                        attributes: {
+                            name: 'color-picker',
+                            type: 'radio',
+                            value: hue,
+                            checked: hue === this.state.hue
+                        },
+                        events: {
+                            change: () => {
+                                document.body.style.setProperty('--h-base', hue);
+                                document.body.style.setProperty('--s-base', sat + '%');
+                                this.state = {
+                                    hue,
+                                    sat
+                                };
+                                super.toggle(this.state);
+                            }
+                        }
+                    })
+                }));
+            }
+            this.menuIcon = 'null';
+            this.popup = new Popup(this.key);
+            this.pane = el.div({
+                classNames: [prefix('color-selector', 'd')],
+                content: [
+                    swatches,
+                    el.div({
+                        content: el.svg({
+                            attributes: {
+                                viewBox: `0 0 24 21`
+                            },
+                            content: el.path({
+                                isSvg: true,
+                                attributes: {
+                                    d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
+                                }
+                            })
+                        })
+                    }),
+                    el.span({
+                        content: 'S'
+                    })
+                ]
+            });
+            document.body.style.setProperty('--h-base', this.state.hue);
+            document.body.style.setProperty('--s-base', this.state.sat + '%');
+        }
+    }
+
     class Header extends Plugin {
         constructor(app) {
             super(app, settings$1.get('title'), '', {
                 key: 'header'
             });
-            this.ui = el.a({
-                content: this.title,
-                attributes: {
-                    href: settings$1.get('url'),
-                    target: prefix(),
-                    title: (new URL(settings$1.get('url'))).hostname
-                }
+            this.ui = el.div({
+                content: this.title
             });
         }
     }
@@ -606,127 +794,8 @@
     	}
     }
 
-    class Popup {
-        getTarget() {
-            const dataUi = prefix('popup-container', 'd');
-            let container = el.$(`[data-ui="${dataUi}"]`);
-            if (!container) {
-                container = el.template({
-                    data: {
-                        ui: dataUi
-                    }
-                });
-                el.$('body').append(container);
-            }
-            return container;
-        }
-        create() {
-            const frame = el.div({
-                classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
-                attributes: {
-                    role: 'button'
-                },
-                data: {
-                    ui: this.key
-                },
-                events: {
-                    click: e => {
-                        e.stopPropagation();
-                    }
-                },
-                content: [
-                    el.div({
-                        classNames: ['sb-modal-top'],
-                        content: el.div({
-                            attributes: {
-                                role: 'button'
-                            },
-                            classNames: ['sb-modal-close'],
-                            content: '×',
-                            events: {
-                                click: () => {
-                                    this.toggle(false);
-                                }
-                            }
-                        })
-                    }),
-                    el.div({
-                        classNames: ['sb-modal-content'],
-                        content: [
-                            el.div({
-                                classNames: ['sb-modal-header'],
-                                content: [this.parts.title, this.parts.subtitle]
-                            }),
-                            this.parts.body,
-                            this.parts.footer
-                        ]
-                    })
-                ]
-            });
-            return frame;
-        }
-        setContent(part, content) {
-            if (!this.parts[part]) {
-                console.error(`Unknown target ${part}`);
-                return this;
-            }
-            this.parts[part] = el.empty(this.parts[part]);
-            this.parts[part].append(el.toNode(content));
-            return this;
-        }
-        toggle(state) {
-            const closer = el.$('.sb-modal-close', this.modalWrapper);
-            if (!state && closer) {
-                closer.click();
-            }
-            if (state) {
-                this.modalWrapper.append(this.ui);
-                this.modalSystem.classList.add('sb-modal-open');
-            } else {
-                this.getTarget().append(this.ui);
-                this.modalSystem.classList.remove('sb-modal-open');
-            }
-            return this;
-        }
-        constructor(key) {
-            this.key = key;
-            this.state = false;
-            this.modalSystem = el.$('.sb-modal-system');
-            this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);
-            this.parts = {
-                title: el.h3({
-                    classNames: ['sb-modal-title']
-                }),
-                subtitle: el.p({
-                    classNames: ['sb-modal-message']
-                }),
-                body: el.div({
-                    classNames: ['sb-modal-body']
-                }),
-                footer: el.div({
-                    classNames: ['sb-modal-message', 'sba-modal-footer'],
-                    content: [
-                        el.a({
-                            content: settings$1.get('label'),
-                            attributes: {
-                                href: settings$1.get('url'),
-                                target: '_blank'
-                            }
-                        })
-                    ]
-                })
-            };
-            this.ui = this.create();
-            this.getTarget().append(this.ui);
-        }
-    }
-
     class Rankings extends Plugin {
         toggle(state) {
-            if (!state) {
-                this.popup.toggle(state);
-                return this;
-            }
             const progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
             this.popup
                 .setContent('title', this.title)
@@ -773,6 +842,7 @@
                 defaultState: false
             });
             this.popup = new Popup(this.key);
+            this.menuAction = 'popup';
             this.menuIcon = 'null';
             this.table = new TablePane(app, this.getData, {
                 completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
@@ -783,10 +853,6 @@
 
     class Answers extends Plugin {
     	toggle(state) {
-    		if (!state) {
-    			this.popup.toggle(state);
-    			return this;
-    		}
     		const foundTerms = data.getList('foundTerms');
     		const pangrams = data.getList('pangrams');
     		const pane = el.ul({
@@ -825,11 +891,12 @@
     		});
     		this.marker = prefix('resolved', 'd');
     		this.popup = new Popup(this.key);
+            this.menuAction = 'popup';
     		this.menuIcon = 'warning';
     	}
     }
 
-    class HighlightPangrams extends Plugin {
+    class Pangrams extends Plugin {
         toggle(state) {
             super.toggle(state);
             return this.run();
@@ -886,7 +953,7 @@
         }
     }
 
-    var css = "[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px}}[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17;--menu-hover-color:#f4f4f4}[data-sba-theme=dark]{--text-color:#e7eae1;--site-text-color:rgba(255,255,255,.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:#111;--modal-bg-color:rgba(17,17,17,.85);--border-color:#333;--area-bg-color:#393939;--invalid-color:#666;--card-color:#393939;--success-color:#47c537;--menu-hover-color:#393939}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px}}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}.sba{margin:64px 0 0 0;width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box;background:var(--body-bg-color);border:1px var(--border-color) solid;border-radius:6px}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba ::selection{background:transparent}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba-data-pane{border-collapse:collapse;table-layout:fixed}.sba-data-pane tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba-data-pane tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane tr.sba-hidden{display:none}.sba-data-pane td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba-data-pane td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}[data-ui=yourProgress] b{font-weight:700}[data-ui=yourProgress] .sba-data-pane{margin-left:5px;max-width:300px}[data-ui=yourProgress] .sba-data-pane td{border:none}[data-ui=yourProgress] .sba-data-pane tr.sba-completed{color:var(--text-color)}[data-ui=yourProgress] .sba-data-pane tr td:first-child:before{content:\"•\";display:inline-block;margin-right:10px}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(n+2){text-align:right;width:80px}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(2)::after{content:\" pts.\"}[data-ui=yourProgress] .sba-data-pane tr td:last-child::after{content:\"%\"}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px;color:currentColor}[data-ui=header]:hover{color:var(--link-hover-color);text-decoration:underline}[data-ui=score] tbody tr:first-child td,[data-ui=letterCount] tbody tr:first-child td,[data-ui=firstLetter] tbody tr:first-child td{font-weight:bold;font-size:92%}[data-ui=firstLetter] tbody tr td:first-child{text-align:center;text-transform:uppercase}[data-ui=progressBar]{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;height:6px;padding:0;background:transparent;display:block}[data-ui=progressBar].inactive{display:none}[data-ui=progressBar]::-webkit-progress-bar{background-color:transparent}[data-ui=progressBar]::-webkit-progress-value{background-color:var(--highlight-color);height:4px}[data-ui=progressBar]::-moz-progress-bar{background-color:var(--highlight-color)}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:280%}[data-ui=spillTheBeans].inactive{display:none}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{position:absolute;background:var(--body-bg-color);border:1px var(--border-color) solid;top:55px;padding:5px;right:10000px}[data-ui=menu].active .pane,[data-ui=menu]:hover .pane{right:0}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 25px 5px 38px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkbox][data-state=true]::after{content:\"✔\";color:var(--highlight-color);top:2px;left:12px;font-size:16px}[data-ui=menu] li[data-icon=warning]::before{content:\"△\";color:#c00;left:9px;top:-9px;font-size:27px;font-weight:bold}[data-ui=menu] li[data-icon=warning]::after{content:\"!\";color:var(--text-color);top:7px;left:19px;font-weight:bold;font-size:12px}[data-ui=menu] li[data-target=yourProgress]{border-top:1px solid var(--border-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}#portal-game-toolbar [role=presentation]::selection{background:transparent}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding)}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}[data-sba-active=true] .sba-container{position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset)}@media(min-width: 900px){[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sb-modal-wordlist-items li .sb-anagram.pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
+    var css = "[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px}}[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--link-color:#326891;--link-visited-color:#326891;--link-hover-color:#5f8ab1;--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dcdcdc;--area-bg-color:#e6e6e6;--invalid-color:#a2a2a2;--card-color:rgba(248,205,5,.1);--success-color:#248a17;--menu-hover-color:#f4f4f4}[data-sba-theme=dark]{--h-base: 0;--s-base: 0%;--text-color:hsl(var(--h-base), var(--s-base), 90%);--site-text-color:hsl(var(--h-base), var(--s-base), 100%, 0.9);--link-color:#51a9f7;--link-visited-color:#8dc6f8;--link-hover-color:#8dc6f8;--body-bg-color:hsl(var(--h-base), var(--s-base), 7%);--modal-bg-color:hsl(var(--h-base), var(--s-base), 7%, 0.85);--border-color:hsl(var(--h-base), var(--s-base), 20%);--area-bg-color:hsl(var(--h-base), var(--s-base), 22%);--invalid-color:hsl(var(--h-base), var(--s-base), 40%);--card-color:hsl(var(--h-base), var(--s-base), 22%);--success-color:#47c537;--menu-hover-color:hsl(var(--h-base), var(--s-base), 22%)}html{--highlight-color: rgb(248, 205, 5);--shadow-light-color: rgba(248, 205, 5, .35);--shadow-dark-color: rgba(248, 205, 5, .7)}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px;--sba-app-margin: 64px 0 0 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px }@media(min-width: 968px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px}}[data-sba-theme=dark]{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] #js-logo-nav rect{fill:var(--body-bg-color)}[data-sba-theme=dark] #js-logo-nav path{fill:var(--text-color)}[data-sba-theme=dark] .pz-footer{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--text-color)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--body-bg-color)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--text-color)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}[data-sba-theme=dark] .sb-input-invalid{color:var(--invalid-color)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--highlight-color);fill:var(--highlight-color);color:var(--body-bg-color)}[data-sba-theme=dark] .sb-input-bright{color:var(--highlight-color)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--area-bg-color)}[data-sba-theme=dark] .cell-fill{stroke:var(--body-bg-color)}[data-sba-theme=dark] .cell-letter{fill:var(--text-color)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--body-bg-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--body-bg-color);color:var(--text-color)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--area-bg-color)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--border-color) !important}.sba{margin:64px 0 0 0;width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box;background:var(--body-bg-color);border:1px var(--border-color) solid;border-radius:6px}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba ::selection{background:transparent}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba-data-pane{border-collapse:collapse;table-layout:fixed}.sba-data-pane tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-color) !important}.sba-data-pane tr.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane tr.sba-hidden{display:none}.sba-data-pane td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba-data-pane td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}[data-ui=yourProgress] b{font-weight:700}[data-ui=yourProgress] .sba-data-pane{margin-left:5px;max-width:300px}[data-ui=yourProgress] .sba-data-pane td{border:none}[data-ui=yourProgress] .sba-data-pane tr.sba-completed{color:var(--text-color)}[data-ui=yourProgress] .sba-data-pane tr td:first-child:before{content:\"•\";display:inline-block;margin-right:10px}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(n+2){text-align:right;width:80px}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(2)::after{content:\" pts.\"}[data-ui=yourProgress] .sba-data-pane tr td:last-child::after{content:\"%\"}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}[data-ui=score] tbody tr:first-child td,[data-ui=letterCount] tbody tr:first-child td,[data-ui=firstLetter] tbody tr:first-child td{font-weight:bold;font-size:92%}[data-ui=firstLetter] tbody tr td:first-child{text-align:center;text-transform:uppercase}[data-ui=progressBar]{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;height:6px;padding:0;background:transparent;display:block}[data-ui=progressBar].inactive{display:none}[data-ui=progressBar]::-webkit-progress-bar{background-color:transparent}[data-ui=progressBar]::-webkit-progress-value{background-color:var(--highlight-color);height:4px}[data-ui=progressBar]::-moz-progress-bar{background-color:var(--highlight-color)}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:280%}[data-ui=spillTheBeans].inactive{display:none}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{position:absolute;background:var(--body-bg-color);border:1px var(--border-color) solid;top:55px;padding:5px;right:10000px}[data-ui=menu].active .pane,[data-ui=menu]:hover .pane{right:0}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 25px 5px 38px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-color);top:2px;left:12px;font-size:16px}[data-ui=menu] li[data-icon=warning]::before{content:\"△\";color:#c00;left:9px;top:-9px;font-size:27px;font-weight:bold}[data-ui=menu] li[data-icon=warning]::after{content:\"!\";color:var(--text-color);top:7px;left:19px;font-weight:bold;font-size:12px}[data-ui=menu] li[data-target=darkModeColors],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]::before{content:\"\";background:url(data:image/webp;base64,UklGRkYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSLgAAAABgFpt2/LmVbGJI8u8QgaIZSxqxgEYFTM7VMzMNEBPB2gVcx/xff/7/4UBImIC6F+16CWBxZsmlmH+9a7HROR4BxDmdADArZOOAKCdsyTgOguxkFMokb/oObTDyRBbN/kk+yoitfMAvr/xVevlJa5eoNzKaQN/S6dQC/Eb+PwScCQLQv1crKykJnqiAd5X9y46SrVYJXFQg5CERlSVk2LlF+s1n5iu/geF+14r8Y2x+ompsdqokf4uVlA4IGgBAABwBwCdASoYABgAPpE+m0kloyKhKAqosBIJbAAjwDeRZaSiFfn3Zr1QP9Ud0ADEskPPzxJU2pre8kHbnjqgPRfZb8zq4AD9IaAZD2vQgXhhU4vU6iI9307byI0qRvcdYUVqITfvs+c25tJHp68Tb8QbbjuwTz0j+xXnVHcdq1O53Cem6tFr6zIo8VPHzofJrvlKQnvp1W5bdpH3HE+2rDOikrPkzD5qdR91khmLUr2/65qN81K7n/5Ztjb/URQJxilNBdj/22TMy3S5+24re6Kkfvbzc9n/kNAlBuAaKYxSAgHTAELvJElqGMJ9psshwQ9Hinh1y4MVKzbf8UDf/8aFRjwHnN+c4w1Zb8LpKYQTgVuzyDsB7crn5PhK9sLJaU7CApsBz7CTzw1L6VpU0HoDsNv54wX6rtilmqIwjJzvnBL5H2aH/M7tuhCNyahJ+EDMv/cyE4Kqn918j7n693a1ovztxeo8AAA=) center center/contain no-repeat;left:9px;top:4px;width:24px;height:24px}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}.sba-color-selector{display:flex}.sba-color-selector svg{width:120px;height:120px;display:block}.sba-color-selector svg path{fill:#639}.sba-swatches{display:flex;flex-wrap:wrap;list-style:none;gap:4px;padding:0;width:250px}.sba-swatches label{position:relative;border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer}.sba-swatches input{position:absolute;left:-100px}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}#portal-game-toolbar [role=presentation]::selection{background:transparent}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding)}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}[data-sba-active=true] .sba-container{position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset)}@media(min-width: 900px){[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--highlight-color) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--invalid-color)}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sb-modal-wordlist-items li .sb-anagram.pangram{font-weight:700;border-bottom:2px var(--highlight-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;font-size:13px;border-top:1px solid var(--border-color);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}@media(max-width: 767.98px){.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile .sba-pop-up b{display:block}.pz-mobile .sba-pop-up i{margin-bottom:5px}.pz-mobile .sba-pop-up i::before{content:normal}}";
 
     class Styles extends Plugin {
         modifyMq() {
@@ -939,6 +1006,15 @@
     	run(evt) {
     		return super.toggle();
     	}
+    	getComponent(entry) {
+    		if(entry.dataset.component === this.app.key) {
+    			return this.app
+    		}
+    		if(this.app.plugins.has(entry.dataset.component)) {
+    			return this.app.plugins.get(entry.dataset.component);
+    		}
+    		return null;
+    	}
     	constructor(app) {
     		super(app, 'Menu', '');
     		this.target = this.getTarget();
@@ -946,25 +1022,31 @@
     		const pane = el.ul({
     			classNames: ['pane'],
     			events: {
-    				click: evt => {
-    					const li = evt.target.closest('li');
-    					const target = li.dataset.target === this.app.key ? this.app : this.app.plugins.get(li.dataset.target);
-    					const nextState = !target.getState();
-    					target.toggle(nextState);
-    					li.dataset.state = nextState;
-    					if(target === this.app){
-    						this.app.gameWrapper.dataset.sbaActive = nextState.toString();
+    				pointerup: evt => {
+    					const entry = evt.target.closest('li');
+    					const component = this.getComponent(entry);
+    					if (evt.button === 0 && entry.dataset.action === 'boolean') {
+    						const nextState = !component.getState();
+    						component.toggle(nextState);
+    						entry.classList.toggle('checked', nextState);
+    						if (component === this.app) {
+    							this.app.gameWrapper.dataset.sbaActive = nextState.toString();
+    						}
+    					}
+    					else if (entry.dataset.action === 'popup'){
+    						component.toggle(true);
     					}
     				}
     			},
     			content: el.li({
+    				classNames: this.app.getState() ? ['checked'] : [],
     				attributes: {
     					title: this.app.title
     				},
     				data: {
-    					target: this.app.key,
-    					state: !!this.app.getState(),
-    					icon: 'checkbox'
+    					component: this.app.key,
+    					icon: 'checkmark',
+    					action: 'boolean'
     				},
     				content: `Show ${settings$1.get('title')}`
     			})
@@ -974,13 +1056,6 @@
     				settings$1.get('title'),
     				pane
     			],
-    			events: {
-    				pointerup: evt => {
-    					if(!evt.target.isSameNode(pane)){
-    						evt.target.classList.toggle('active');
-    					}
-    				}
-    			},
     			attributes: {
     				role: 'presentation'
     			},
@@ -991,24 +1066,43 @@
     				if (!plugin.canChangeState || plugin === this) {
     					return false;
     				}
+    				const action = plugin.menuAction || 'boolean';
     				pane.append(el.li({
+    					classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
     					attributes: {
     						title: plugin.description
     					},
     					data: {
-    						target: key,
-    						state: !!plugin.getState(),
-    						icon: plugin.menuIcon
+    						component: key,
+    						icon: action === 'boolean' ? 'checkmark' : (plugin.menuIcon || null),
+    						action
     					},
     					content: plugin.title
     				}));
     			});
+    			pane.append(el.li({
+    				attributes: {
+    					title: settings$1.get('label') + ' Website'
+    				},
+    				data: {
+    					icon: 'sba',
+    					component: 'sbaWeb',
+    					action: 'link'
+    				},
+    				content: el.a({
+    					content: settings$1.get('label'),
+    					attributes: {
+    						href: settings$1.get('url'),
+    						target: prefix()
+    					}
+    				})
+    			}));
     		});
     		app.on(prefix('destroy'), () => this.ui.remove());
     	}
     }
 
-    const getPlugins = app => {
+    const getPlugins = () => {
          return {
               Header,
               Score,
@@ -1017,7 +1111,8 @@
               SpillTheBeans,
               ProgressBar,
               DarkMode,
-              Pangrams: HighlightPangrams,
+              DarkModeConfig,
+              Pangrams,
               Googlify,
               Styles,
               Menu,

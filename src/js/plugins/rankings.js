@@ -14,11 +14,6 @@ class Rankings extends Plugin {
 
     toggle(state) {
 
-        if (!state) {
-            this.popup.toggle(state);
-            return this;
-        }
-
         const progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
 
         this.popup
@@ -84,6 +79,8 @@ class Rankings extends Plugin {
         });
 
         this.popup = new Popup(this.key);
+
+        this.menuAction = 'popup';
         this.menuIcon = 'null';
 
         this.table = new TablePane(app, this.getData, {

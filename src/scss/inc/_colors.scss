@@ -18,25 +18,29 @@ $themeColors: (
         menu-hover: #f4f4f4
     ),
     dark: (
-        text: #e7eae1,
-        site-text: rgba(255,255,255,.9),
+        text: hsl(var(--h-base), var(--s-base), 90%),
+        site-text: hsl(var(--h-base), var(--s-base), 100%, 0.9),
         link: #51a9f7,
         link-visited:  #8dc6f8,
         link-hover: #8dc6f8,
-        body-bg: #111,
-        modal-bg:rgba(17,17,17, .85),
-        border: #333,
-        area-bg: #393939,
-        invalid: #666,
-        card:  #393939,
+        body-bg: hsl(var(--h-base), var(--s-base), 7%),
+        modal-bg:hsl(var(--h-base), var(--s-base), 7%, 0.85),
+        border: hsl(var(--h-base), var(--s-base), 20%),
+        area-bg: hsl(var(--h-base), var(--s-base), 22%),
+        invalid: hsl(var(--h-base), var(--s-base), 40%),
+        card:  hsl(var(--h-base), var(--s-base), 22%),
         success: #47c537,
-        menu-hover: #393939
+        menu-hover: hsl(var(--h-base), var(--s-base), 22%)
     )
 );
 
 
 @each $theme, $colors in $themeColors {
     [data-sba-theme="#{$theme}"] {
+        @if($theme == 'dark'){
+            --h-base: 0;
+            --s-base: 0%;
+        }
         @each $purpose, $color in $colors {
             #{'--' + $purpose + '-color'} : $color;
         }

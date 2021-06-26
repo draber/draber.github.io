@@ -1,4 +1,5 @@
 import DarkMode from '../plugins/darkMode.js';
+import DarkModeConfig from '../plugins/darkModeConfig.js';
 import Header from '../plugins/header.js';
 import ProgressBar from '../plugins/ProgressBar.js';
 import Score from '../plugins/score.js';
@@ -18,6 +19,7 @@ import Menu from '../plugins/menu.js';
  * @returns {{
  *   Styles,
  *   DarkMode,
+ *   DarkModeConfig,
  *   Header,
  *   ProgressBar,
  *   Score,
@@ -31,7 +33,7 @@ import Menu from '../plugins/menu.js';
  *   Menu
  * }}
  */
-const getPlugins = app => {
+const getPlugins = () => {
      return {
           Header,
           Score,
@@ -40,6 +42,7 @@ const getPlugins = app => {
           SpillTheBeans,
           ProgressBar,
           DarkMode,
+          DarkModeConfig,
           Pangrams,
           Googlify,
           Styles,
