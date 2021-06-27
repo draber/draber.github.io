@@ -19,7 +19,7 @@ class Answers extends Plugin {
 	 * @param {Event} evt
 	 * @returns {Plugin}
 	 */
-	toggle(state) {
+	run() {
 
 		const foundTerms = data.getList('foundTerms');
 		const pangrams = data.getList('pangrams');
@@ -30,7 +30,7 @@ class Answers extends Plugin {
 
 		data.getList('answers').forEach(term => {
 			pane.append(el.li({
-				classNames: pangrams.includes(term) ? ['pangram'] : [],
+				classNames: pangrams.includes(term) ? [prefix('pangram', 'd')] : [],
 				content: [
 					el.span({
 						classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
@@ -43,16 +43,14 @@ class Answers extends Plugin {
 		});
 
 		this.popup
-			.setContent('title', this.title)
-			.setContent('subtitle', data.getDate())
 			.setContent('body', [
 				el.div({
 					content: data.getList('letters').join(''),
 					classNames: ['sb-modal-letters']
-				}), 
+				}),
 				pane
 			])
-			.toggle(state);
+			.toggle(true);
 
 		return this;
 	}
@@ -69,9 +67,11 @@ class Answers extends Plugin {
 		});
 
 		this.marker = prefix('resolved', 'd');
-		this.popup = new Popup(this.key);
+		this.popup = new Popup(this.key)
+			.setContent('title', this.title)
+			.setContent('subtitle', data.getDate());
 
-        this.menuAction = 'popup';
+		this.menuAction = 'popup';
 		this.menuIcon = 'warning';
 	}
 }

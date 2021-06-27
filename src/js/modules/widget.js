@@ -2,8 +2,6 @@ import {
     camel
 } from './string.js';
 import settings from './settings.js';
-import getIcon from './icons.js';
-import el from './element.js';
 
 /**
  * Plugin base class

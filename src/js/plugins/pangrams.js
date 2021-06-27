@@ -30,16 +30,14 @@ class Pangrams extends Plugin {
      */
     // eslint-disable-next-line no-unused-vars
     run(evt) {
-        const args = this.app.getObserverArgs();
-        this.app.observer.disconnect();
         const pangrams = data.getList('pangrams');
-        el.$$('li', this.app.resultList).forEach(node => {
+        const container = evt && evt.detail ? evt.detail : this.app.resultList;
+        el.$$('li', container).forEach(node => {
             const term = node.textContent;
-            if (pangrams.includes(term)) {
+            if (pangrams.includes(term) || el.$('.pangram', node)) {
                 node.classList.toggle(this.marker, this.getState());
             }
         });
-        this.app.observer.observe(args.target, args.options);
         return this;
     }
 
@@ -51,10 +49,14 @@ class Pangrams extends Plugin {
 
         super(app, 'Highlight Pangrams', '', {
             canChangeState: false,
-			runEvt: prefix('refreshUi')
+            runEvt: prefix('refreshUi')
         });
 
         this.marker = prefix('pangram', 'd');
+
+        this.app.on(prefix('yesterday'), evt => {
+            this.run(evt);
+        })
 
         this.run();
     }

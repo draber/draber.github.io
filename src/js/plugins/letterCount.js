@@ -75,6 +75,8 @@ class LetterCount extends Plugin {
 				}).getPane()
             ]
         });
+		
+		this.toggle(this.getState());
 	}
 }
 export default LetterCount;

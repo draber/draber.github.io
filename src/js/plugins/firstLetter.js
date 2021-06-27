@@ -80,6 +80,8 @@ class FirstLetter extends Plugin {
 				}).getPane()
             ]
         });
+		
+		this.toggle(this.getState());
 	}
 }
 

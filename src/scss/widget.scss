@@ -10,19 +10,7 @@
     color: inherit;
 }
 
-.sb-wordlist-items-pag {
-    &>li {
-        &.sba-pangram {
-            border-bottom: 2px var(--highlight-color) solid;
-        }
 
-        &.sb-anagram {
-            a {
-                color: var(--invalid-color);
-            }
-        }
-    }
-}
 
 .pz-toolbar-button,
 [data-ui="menu"] li {
@@ -72,13 +60,13 @@
 
 [data-sba-theme] {
     &.pz-spelling-bee-congrats {
+
+        .sb-wordlist-items-pag,
         .sb-modal-wordlist-items {
-            li {
-                .sb-anagram {
-                    &.pangram {
-                        font-weight: 700;
-                        border-bottom: 2px var(--highlight-color) solid;
-                    }
+            &>li {
+                &.sba-pangram {
+                    font-weight: 700;
+                    border-bottom: 2px var(--highlight-color) solid;
                 }
             }
         }

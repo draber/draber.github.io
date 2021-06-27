@@ -159,7 +159,10 @@ class App extends Widget {
                         // modal is open
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.modalWrapper):
-                        document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();
+                        document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();                      
+                        if(el.$('.sb-modal-frame.yesterday', mutation.target)) {
+                            this.trigger(prefix('yesterday'), mutation.target);
+                        }
                         break;
 
                         // text input

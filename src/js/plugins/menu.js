@@ -50,6 +50,12 @@ class Menu extends Plugin {
 		return null;
 	}
 
+	toggleSubMenu(evt) {
+		if(!evt.target.dataset.action || evt.target.dataset.action !== 'boolean') {
+			document.body.classList.toggle(prefix('submenu-open', 'd'));
+		}
+	}
+
 
 	constructor(app) {
 
@@ -69,6 +75,9 @@ class Menu extends Plugin {
 			events: {
 				pointerup: evt => {
 					const entry = evt.target.closest('li');
+					if(!entry) {
+						return false;
+					}
 					const component = this.getComponent(entry);
 					if (evt.button === 0 && entry.dataset.action === 'boolean') {
 						const nextState = !component.getState();
@@ -79,7 +88,7 @@ class Menu extends Plugin {
 						}
 					}
 					else if (entry.dataset.action === 'popup'){
-						component.toggle(true);
+						component.run();
 					}
 				}
 			},
@@ -98,6 +107,9 @@ class Menu extends Plugin {
 		});
 
 		this.ui = el.div({
+				events: {
+					pointerup: evt => this.toggleSubMenu(evt)
+				},
 			content: [
 				settings.get('title'),
 				pane

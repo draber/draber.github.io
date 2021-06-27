@@ -12,27 +12,53 @@ import el from '../modules/element.js';
  */
 class Rankings extends Plugin {
 
-    toggle(state) {
+    run() {
 
-        const progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
+        const points = data.getPoints('foundTerms');
+        const max = data.getPoints('answers');
+        const missing = this.getNextTier();
 
-        this.popup
-            .setContent('title', this.title)
-            .setContent('subtitle', el.span({
+        let content;
+
+        if(points < max) {
+            content = el.span({
                 content: [
                     'You are currently at ',
                     el.b({
-                        content: data.getPoints('foundTerms') + '/' + data.getPoints('answers')
+                        content: points + '/' + max
                     }),
                     ' points or ',
                     el.b({
                         content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
                     }),
-                    '.',
+                    '. You need ',
+                    el.b({
+                        content: this.getNextTier()
+                    }),
+                    ' more points to go to the next level.',
                 ]
+            })
+        }
+        else {
+            content = el.span({
+                content: [
+                    'Congratulations, you’ve found all ',
+                    el.b({
+                        content: points
+                    }),
+                    ' points!',
+                ]
+            })
+        }
+
+        const progress = points * 100 / max;
+
+        this.popup
+            .setContent('subtitle', el.span({
+                content
             }))
             .setContent('body', this.table.getPane())
-            .toggle(state);
+            .toggle(true);
 
         return this;
     }
@@ -68,6 +94,15 @@ class Rankings extends Plugin {
     }
 
     /**
+     * Get current tier
+     * @param {String}
+     */
+    getNextTier() {
+        const remainders = this.getData().filter(entry => entry[1] > data.getPoints('foundTerms')).pop();
+        return remainders ? remainders[1] : null;
+    }
+
+    /**
      * Rankings constructor
      * @param {App} app
      */
@@ -78,7 +113,8 @@ class Rankings extends Plugin {
             defaultState: false
         });
 
-        this.popup = new Popup(this.key);
+        this.popup = new Popup(this.key)
+            .setContent('title', this.title);
 
         this.menuAction = 'popup';
         this.menuIcon = 'null';
