@@ -23,6 +23,9 @@ body {
         *:not(.sba-pangram):not(.sba-preeminent):not(.sba-swatches label) {
             border-color: var(--border-color);
         }
+        .sb-toggle-icon {
+            filter: invert(1);
+        }
     }
 }
 
@@ -69,6 +72,7 @@ body {
     .sb-modal-frame {
         border: 1px solid var(--border-color);
         background: var(--body-bg-color);
+        color: var(--text-color);
     }
 
     .pz-modal__title,
@@ -114,6 +118,12 @@ body {
         background: var(--area-bg-color);
     }
 }
+
+.sb-toggle-expand {
+    background: var(--body-bg-color);
+}
+
+
 
 .hive-action__shuffle {
     background: none;
