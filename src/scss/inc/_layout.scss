@@ -36,7 +36,7 @@ $gameWidth: 1280;
 
     .pz-game-toolbar {
         position: relative;
-        z-index: 2;
+        z-index: 4;
     }
 
     [data-ui="menu"] {
@@ -49,7 +49,7 @@ $gameWidth: 1280;
     &.pz-desktop {
         .sba {
             left: -163px;
-            top: -305px;
+            top: -277px;
         }
 
         .pane {
@@ -75,6 +75,12 @@ $gameWidth: 1280;
         transform: translate(0, -50%);
         right: var(--sba-game-offset);
         z-index: 1;
+    }
+
+    .sb-expanded {
+        .sba-container {
+            z-index: -1;
+        }
     }
 
     .sb-content-box {
@@ -145,6 +151,12 @@ $gameWidth: 1280;
         .sba-container {
             position: static;
             transform: none;
+        }
+
+        .sb-expanded {
+            .sba-container {
+                z-index: 1;
+            }
         }
 
         &.pz-desktop {
