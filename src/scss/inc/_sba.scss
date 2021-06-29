@@ -1,28 +1,7 @@
-.sba-submenu-open {
-
-    .sba {
-        position: relative;
-        left: -167px;
-        top: -294px;
-        z-index: 1;
-    }
-}
-
 .sba {
-
-    margin: 64px 0 0 0;
-    width: var(--sba-app-width);
-    padding: var(--sba-app-padding);
-    box-sizing: border-box;
     background: var(--body-bg-color);
     border: 1px var(--border-color) solid;
     border-radius: 6px;
-
-    *,
-    *:before,
-    *:after {
-        box-sizing: border-box;
-    }
 
     * {
         &:focus {
@@ -75,7 +54,7 @@
     tr {
         &.sba-preeminent {
             font-weight: bold;
-            border-bottom: 2px solid var(--highlight-color) !important;
+            border-bottom: 2px solid var(--highlight-bg-color) !important;
         }
 
         &.sba-completed {
@@ -209,12 +188,12 @@
     }
 
     &::-webkit-progress-value {
-        background-color: var(--highlight-color);
+        background-color: var(--highlight-bg-color);
         height: 4px;
     }
 
     &::-moz-progress-bar {
-        background-color: var(--highlight-color);
+        background-color: var(--highlight-bg-color);
     }
 }
 
@@ -225,28 +204,16 @@
     margin-top: -24px;
 }
 
-.sba-submenu-open {
-
-    [data-ui="menu"] {
-        .pane {
-            color: var(--text-color);
-            right: -16px;
-            top: 49px;
-        }
-    }
-}
 
 [data-ui="menu"] {
     position: relative;
     z-index: 1;
 
     .pane {
-        position: absolute;
+        color: var(--text-color);
         background: var(--body-bg-color);
         border: 1px var(--border-color) solid;
-        top: 55px;
         padding: 5px;
-        right: 10000px;
     }
 
     li {
@@ -270,7 +237,7 @@
             &.checked {
                 &::after {
                     content: '✔';
-                    color: var(--highlight-color);
+                    color: var(--highlight-bg-color);
                     top: 3px;
                     left: 7px;
                     font-size: 16px;
@@ -375,7 +342,7 @@
         left: -100px;
 
         &:checked~label {
-            border-color: var(--highlight-color);
+            border-color: var(--highlight-bg-color);
         }
     }
 }
@@ -412,7 +379,7 @@
                     &::after {
                         position: relative;
                         content: '✔';
-                        color: var(--highlight-color);
+                        color: var(--highlight-bg-color);
                         top: 4px;
                         font-size: 16px;
                     }
@@ -425,6 +392,101 @@
         .sb-modal-letters {
             position: relative;
             top: -5px;
+        }
+    }
+}
+
+
+
+.pz-game-field {
+    background: inherit;
+    color: inherit;
+}
+
+
+
+.pz-toolbar-button,
+[data-ui="menu"] li {
+    &:hover {
+        background: var(--menu-hover-color);
+        color: var(--text-color);
+    }
+}
+
+.pz-desktop {
+    .sba {
+
+        details {
+
+            &[open] {
+                summary {
+                    &:before {
+                        transform: rotate(-90deg);
+                        left: 10px;
+                        top: 1px;
+                    }
+                }
+            }
+        }
+
+        summary {
+            list-style: none;
+            padding: 1px 15px 0 21px;
+
+            &::marker {
+                display: none
+            }
+
+            &:before {
+                content: "❯";
+                font-size: 9px;
+                position: absolute;
+                display: inline-block;
+                transform: rotate(90deg);
+                transform-origin: center;
+                left: 7px;
+                top: 0
+            }
+        }
+    }
+}
+
+[data-sba-theme] {
+    &.pz-spelling-bee-congrats {
+
+        .sb-wordlist-items-pag,
+        .sb-modal-wordlist-items {
+            &>li {
+                &.sba-pangram {
+                    font-weight: 700;
+                    border-bottom: 2px var(--highlight-bg-color) solid;
+                }
+            }
+        }
+
+        .sba-pop-up {
+            &.left-aligned {
+                .sb-modal-content {
+                    .sba-modal-footer {
+                        text-align: right;
+                        border-top: 1px solid var(--border-color);
+                        padding-top: 10px;
+                        font-size: 13px;
+                        border-top: 1px solid var(--border-color);
+                        padding-top: 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    &.pz-spelling-bee-congrats {
+        .left-aligned {
+            .sb-modal-content {
+                &::after {
+                    background: linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%);
+                }
+            }
         }
     }
 }

@@ -14,6 +14,20 @@ import {
  */
 class App extends Widget {
 
+    domSet(key, value){
+        document.body.dataset[prefix(key)] = value;
+        return this;
+    }
+
+    domUnset(key){
+        delete document.body.dataset[prefix(key)];
+        return this;
+    }
+
+    domGet(key){
+        return JSON.parse(document.body.dataset[prefix(key)]);
+    }
+
     getObserverArgs() {
         return {
             target: this.gameWrapper,
@@ -129,12 +143,18 @@ class App extends Widget {
         this.waitForGameState(1)
             .then(() => {
                 this.add();
-                this.gameWrapper.dataset.sbaActive = this.getState();
+                this.domSet('active', this.getState());
                 this.registerPlugins();
                 this.trigger(prefix('refreshUi'));
                 this.isLoaded = true;
             })
 
+    }
+
+    toggle(state) {
+        this.setState(state);
+        this.domSet('active', state);
+        return this;
     }
 
     /**
@@ -151,15 +171,15 @@ class App extends Widget {
                 switch (true) {
 
                     // result list toggles open
-                    case mutation.type === 'attributes' &&
-                    mutation.target.classList.contains('sb-content-box'):
-                        document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
-                        break;
+                    // case mutation.type === 'attributes' &&
+                    // mutation.target.classList.contains('sb-content-box'):
+                    //     this.domSet('hasOverlay', mutation.target.classList.contains('sb-expanded'));
+                    //     break;
 
                         // modal is open
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.modalWrapper):
-                        document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();                      
+                        //this.domSet('hasOverlay', !!mutation.target.hasChildNodes());                      
                         if(el.$('.sb-modal-frame.yesterday', mutation.target)) {
                             this.trigger(prefix('yesterday'), mutation.target);
                         }
@@ -192,13 +212,11 @@ class App extends Widget {
         events[prefix('destroy')] = () => {
             this.observer.disconnect();
             this.container.remove();
-            delete document.body.dataset[prefix('theme')];
+            this.domUnset('theme');
         };
 
+
         const classNames = [settings.get('prefix')];
-        if (this.getState() === false) {
-            classNames.push('inactive');
-        }
 
         return el.div({
             data: {
@@ -208,6 +226,7 @@ class App extends Widget {
             classNames,
             events
         });
+
     }
 
     /**

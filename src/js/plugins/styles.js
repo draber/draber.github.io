@@ -27,14 +27,28 @@ class Styles extends Plugin {
         if (!rules) {
             return
         }
+        const theirCond = 'min-width: 768px';
+        const myCond = theirCond.replace('768', '900');
+        const marker = `data-${prefix('active', 'd')}`;
+        const theirMarker = `[${marker}="false"]`;
+        const myMarker = `[${marker}="true"]`;
+        const markerRe = new RegExp(marker, 'g');
+        let newRules = [];
         let l = rules.length;
-        for (let i = 0; i < l; i++) {
-            if (rules[i] instanceof CSSMediaRule && rules[i].conditionText.includes('min-width: 768px') && !rules[i].cssText.includes('.sb-modal')) {
-                const newRule = rules[i].cssText.replace('min-width: 768px', `min-width: ${settings.get('mobileThreshold')}px`).replace(/(?:\\[rn]|[\r\n]+)+/g, '').replace(/\s+/g, ' ');
-                sheet.deleteRule(i);
-                sheet.insertRule(newRule, i);
+        while (l--) {
+            if (rules[l] instanceof CSSMediaRule && rules[l].conditionText.includes(theirCond) && !rules[l].cssText.includes('.sb-modal')) {
+                rules[l].cssRules.forEach(rule => {
+                    const selectorText = rule.selectorText.split(',').map(selector => `${marker} ${selector.trim()}`).join(', ');
+                    newRules.push(rule.cssText.replace(rule.selectorText, selectorText))
+                });
+                sheet.deleteRule(l);
             }
         }
+        newRules = newRules.join('');
+        const theirRule = `@media (${theirCond}) { ${newRules.replace(markerRe, theirMarker)} }`;
+        const myRule = `@media (${myCond}) { ${newRules.replace(markerRe, myMarker)} }`;
+        sheet.insertRule(theirRule);
+        sheet.insertRule(myRule);
     }
 
     /**
@@ -51,7 +65,7 @@ class Styles extends Plugin {
             content: css
         });
         app.on(prefix('destroy'), () => this.ui.remove());
-        
+
         this.add();
         this.modifyMq();
     }

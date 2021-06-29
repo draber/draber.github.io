@@ -1,10 +1,82 @@
+$gameOffset: 12;
+$gameWidth: 1280;
+
+.sba-container {
+    display: none;
+}
+
 .sba {
     margin: var(--sba-app-margin);
     width: var(--sba-app-width);
     padding: var(--sba-app-padding);
+    box-sizing: border-box;
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+    }
 }
 
+
+[data-ui="menu"] {
+    .pane {
+        position: absolute;
+        top: 0;
+        right: -10000px;
+    }
+}
+
+[data-sba-submenu="true"] {
+    .sba {
+        position: relative;
+        left: -167px;
+        top: -175px;
+    }
+
+    .pz-game-toolbar {
+        position: relative;
+        z-index: 2;
+    }
+
+    [data-ui="menu"] {
+        .pane {
+            right: -16px;
+            top: 49px;
+        }
+    }
+
+    &.pz-desktop {
+        .sba {
+            left: -163px;
+            top: -305px;
+        }
+
+        .pane {
+            right: -16px;
+            top: 55px;
+        }
+    }
+}
+
+
 [data-sba-active="true"] {
+    --sba-app-width: 138px;
+    --sba-app-padding: 0 5px 5px;
+    --sba-app-margin: 0;
+    --sba-game-offset: #{$gameOffset * 1px};
+    --sba-game-width: #{$gameWidth - (2 * $gameOffset) * 1px};
+    --sba-mobile-threshold: 900px;
+
+    .sba-container {
+        display: block;
+        position: absolute;
+        top: 50%;
+        transform: translate(0, -50%);
+        right: var(--sba-game-offset);
+        z-index: 1;
+    }
+
     .sb-content-box {
         max-width: var(--sba-game-width);
         justify-content: space-between;
@@ -15,16 +87,53 @@
         max-width: calc(100vw - var(--sba-app-width))
     }
 
-    .sba-container {
-        position: absolute;
-        top: 50%;
-        transform: translate(0, -50%);
-        right: var(--sba-game-offset);
+}
+
+[data-sba-active] {
+    &.pz-desktop {
+        .pz-game-toolbar {
+            .pz-row {
+                padding: 0;
+            }
+        }
+    }
+}
+
+@media (min-width: 516px) {
+    [data-sba-active] {
+        &.pz-desktop {
+
+            // avoid break between yest. and assistant 
+            .pz-game-toolbar {
+                .pz-row {
+                    padding: 0 12px;
+                }
+            }
+
+            .sba {
+                left: -175px;
+            }
+        }
     }
 }
 
 @media (min-width: 900px) {
+
+    [data-sba-submenu="true"] {
+        [data-ui="menu"] {
+            .pane {
+                right: 0;
+                top: 55px;
+            }
+        }
+    }
+
     [data-sba-active="true"] {
+
+        --sba-app-width: 160px;
+        --sba-app-padding: 0 8px 8px;
+        --sba-app-margin: 64px 0 0 0;
+
         .sb-content-box {
             padding: 0 var(--sba-game-offset);
         }
@@ -38,17 +147,55 @@
             transform: none;
         }
 
-        &.sba-submenu-open {
-
-            [data-ui="menu"] {
-                .pane {
-                    right: 0;
-                    top: 0;
+        &.pz-desktop {
+            &[data-sba-submenu="true"] {
+                .sba {
+                    left: -191px;
+                    top: -65px;
                 }
             }
+        }
+    }
+}
 
-            .sba {
-                left: -250px;
+@media (min-width: 1298px) {
+    [data-sba-active="true"] {
+        &.pz-desktop {
+            &[data-sba-submenu="true"] {
+                .sba {
+                    left: -179px;
+                }
+            }
+        }
+    }
+}
+
+
+// result list on the right
+@media (min-width: 768px) {
+
+    [data-sba-theme] {
+        &.pz-page {
+            .sba-pop-up {
+                &.left-aligned {
+                    .sb-modal-content {
+                        .sb-modal-body {
+                            padding-right: 56px;
+                        }
+
+                        .sb-modal-header {
+                            padding-right: 56px;
+                        }
+
+                        .sba-modal-footer {
+                            text-align: right;
+                            border-top: 1px solid var(--border-color);
+                            padding-top: 10px;
+                            width: calc(100% - 112px);
+                            margin: -8px auto 15px;
+                        }
+                    }
+                }
             }
         }
     }

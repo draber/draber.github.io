@@ -1,0 +1,128 @@
+body {
+    background: var(--body-bg-color);
+    color: var(--text-color);
+
+    .pz-game-wrapper {
+        background: var(--body-bg-color) !important;
+        color: var(--text-color);
+
+        .sb-progress-marker .sb-progress-value,
+        .hive-cell:first-child .cell-fill {
+            background: var(--highlight-bg-color);
+            fill: var(--highlight-bg-color);
+            color: var(--highlight-text-color);
+        }
+
+        .sba-color-selector .hive .hive-cell .cell-fill,
+        .hive-cell .cell-fill {
+            fill: var(--area-bg-color);
+        }
+    }
+
+    &[data-sba-theme="dark"] {
+        *:not(.sba-pangram):not(.sba-preeminent):not(.sba-swatches label) {
+            border-color: var(--border-color);
+        }
+    }
+}
+
+#js-logo-nav {
+    rect {
+        fill: var(--body-bg-color);
+    }
+
+    path {
+        fill: var(--text-color);
+    }
+}
+
+.pz-moment__loading {
+    color: black;
+}
+
+.pz-nav__hamburger-inner,
+.pz-nav__hamburger-inner::before,
+.pz-nav__hamburger-inner::after {
+    background-color: var(--text-color);
+}
+
+.pz-nav {
+    width: 100%;
+    background: var(--body-bg-color);
+}
+
+.pz-modal__button.white,
+.pz-footer,
+.pz-moment,
+.sb-modal-scrim {
+    background: var(--modal-bg-color) !important;
+    color: var(--text-color) !important;
+
+    .pz-moment__button {
+        &.secondary {
+            color: white;
+        }
+    }
+}
+
+.sb-modal-wrapper {
+    .sb-modal-frame {
+        border: 1px solid var(--border-color);
+        background: var(--body-bg-color);
+    }
+
+    .pz-modal__title,
+    .sb-modal-close {
+        color: var(--text-color);
+    }
+}
+
+.pz-modal__button.white:hover,
+.sb-message {
+    background: var(--area-bg-color);
+}
+
+.sb-input-invalid {
+    color: var(--invalid-color)
+}
+
+.sb-toggle-expand {
+    box-shadow: none;
+}
+
+.sb-input-bright {
+    color: var(--highlight-bg-color)
+}
+
+.cell-fill {
+    stroke: var(--body-bg-color);
+}
+
+.cell-letter {
+    fill: var(--text-color);
+}
+
+.hive-cell.center .cell-letter {
+    fill: var(--highhlight-text-color);
+}
+
+.hive-action {
+    background: var(--body-bg-color);
+    color: var(--text-color);
+
+    &:hover {
+        background: var(--area-bg-color);
+    }
+}
+
+.hive-action__shuffle {
+    background: none;
+
+    svg {
+        width: 23px;
+
+        path {
+            fill: var(--text-color);
+        }
+    }
+}

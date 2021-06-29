@@ -5,22 +5,22 @@ import Plugin from '../modules/plugin.js';
 import el from '../modules/element.js';
 
 /**
- * Steps to success plugin
+ * YourProgress plugin
  * 
  * @param {App} app
- * @returns {Plugin} Rankings
+ * @returns {Plugin} YourProgress
  */
-class Rankings extends Plugin {
+class YourProgress extends Plugin {
 
     run() {
 
         const points = data.getPoints('foundTerms');
         const max = data.getPoints('answers');
-        const missing = this.getNextTier();
+        const next = this.getPointsToNextTier();
 
         let content;
 
-        if(points < max) {
+        if(next) {
             content = el.span({
                 content: [
                     'You are currently at ',
@@ -29,11 +29,11 @@ class Rankings extends Plugin {
                     }),
                     ' points or ',
                     el.b({
-                        content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
+                        content: Math.min(Number(Math.round(points + 'e2') + 'e-2'), 100) + '%'
                     }),
                     '. You need ',
                     el.b({
-                        content: this.getNextTier()
+                        content: next - points
                     }),
                     ' more points to go to the next level.',
                 ]
@@ -97,8 +97,8 @@ class Rankings extends Plugin {
      * Get current tier
      * @param {String}
      */
-    getNextTier() {
-        const remainders = this.getData().filter(entry => entry[1] > data.getPoints('foundTerms')).pop();
+    getPointsToNextTier() {
+        const remainders = this.getData().filter(entry => entry[1] > data.getPoints('foundTerms')).shift();
         return remainders ? remainders[1] : null;
     }
 
@@ -126,4 +126,4 @@ class Rankings extends Plugin {
     }
 }
 
-export default Rankings;
+export default YourProgress;

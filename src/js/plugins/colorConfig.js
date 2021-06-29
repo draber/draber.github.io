@@ -9,14 +9,19 @@ import {
  * Dark Mode plugin
  *
  * @param {App} app
- * @returns {Plugin} DarkModeConfig
+ * @returns {Plugin} ColorConfig
  */
-class DarkModeConfig extends Plugin {
+class ColorConfig extends Plugin {
 
     toggle(state) {
-        el.$$('[data-sba-theme]').forEach(element => {            
-            element.style.setProperty('--h-base', state.hue);
-            element.style.setProperty('--s-base', state.sat + '%');
+        el.$$('[data-sba-theme]').forEach(element => {
+            if (state.sat) {
+                element.style.setProperty('--dhue', state.hue);
+                element.style.setProperty('--dsat', state.sat + '%');
+            } else if (state.lgt) {
+                element.style.setProperty('--lhue', state.hue);
+                element.style.setProperty('--llgt', state.lgt + '%');
+            }
         });
         super.toggle(state);
     }
@@ -24,7 +29,7 @@ class DarkModeConfig extends Plugin {
     /**
      * Toggle dark mode
      * @param state
-     * @returns {DarkModeConfig}
+     * @returns {ColorConfig}
      */
     run() {
         this.popup.toggle(true);
@@ -32,7 +37,7 @@ class DarkModeConfig extends Plugin {
 
 
     /**
-     * DarkModeConfig constructor
+     * ColorConfig constructor
      * @param {App} app
      */
     constructor(app) {
@@ -88,6 +93,8 @@ class DarkModeConfig extends Plugin {
 
         this.menuIcon = 'null';
 
+        // light: hsla(30, 25%, 65%, 1)
+
         this.popup = new Popup(this.key)
             .setContent('title', this.title)
             .setContent('subtitle', this.description)
@@ -132,4 +139,4 @@ class DarkModeConfig extends Plugin {
     }
 }
 
-export default DarkModeConfig;
+export default ColorConfig;

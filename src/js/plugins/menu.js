@@ -52,7 +52,7 @@ class Menu extends Plugin {
 
 	toggleSubMenu(evt) {
 		if(!evt.target.dataset.action || evt.target.dataset.action !== 'boolean') {
-			document.body.classList.toggle(prefix('submenu-open', 'd'));
+			this.app.domSet('submenu', !this.app.domGet('submenu'));
 		}
 	}
 
@@ -65,7 +65,7 @@ class Menu extends Plugin {
 
 		const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
 
-
+		this.app.domSet('submenu', false);
 
 		/**
 		 * List of options
@@ -84,7 +84,7 @@ class Menu extends Plugin {
 						component.toggle(nextState);
 						entry.classList.toggle('checked', nextState);
 						if (component === this.app) {
-							this.app.gameWrapper.dataset.sbaActive = nextState.toString();
+							this.app.toggle(nextState);
 						}
 					}
 					else if (entry.dataset.action === 'popup'){

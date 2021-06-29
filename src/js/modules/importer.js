@@ -1,12 +1,12 @@
 import DarkMode from '../plugins/darkMode.js';
-import DarkModeConfig from '../plugins/darkModeConfig.js';
+import ColorConfig from '../plugins/colorConfig.js';
 import Header from '../plugins/header.js';
 import ProgressBar from '../plugins/ProgressBar.js';
 import Score from '../plugins/score.js';
 import SpillTheBeans from '../plugins/spillTheBeans.js';
 import LetterCount from '../plugins/letterCount.js';
 import FirstLetter from '../plugins/firstLetter.js';
-import Rankings from '../plugins/rankings.js';
+import YourProgress from '../plugins/yourProgress.js';
 import Answers from '../plugins/answers.js';
 import Pangrams from '../plugins/pangrams.js';
 import Googlify from '../plugins/googlify.js';
@@ -14,24 +14,9 @@ import Styles from '../plugins/styles.js';
 import Menu from '../plugins/menu.js';
 
 /**
- * Plugins (minus Positioning on mobiles)
+ * Plugins
  * @param app
- * @returns {{
- *   Styles,
- *   DarkMode,
- *   DarkModeConfig,
- *   Header,
- *   ProgressBar,
- *   Score,
- *   LetterCount,
- *   FirstLetter,
- *   SpillTheBeans,
- *   Rankings,
- *   Answers,
- *   Pangrams,
- *   Googlify,
- *   Menu
- * }}
+ * @returns {Object}
  */
 const getPlugins = () => {
      return {
@@ -42,12 +27,12 @@ const getPlugins = () => {
           SpillTheBeans,
           ProgressBar,
           DarkMode,
-          DarkModeConfig,
+          ColorConfig,
           Pangrams,
           Googlify,
           Styles,
           Menu,
-          Rankings,
+          YourProgress,
           Answers
      }
 }

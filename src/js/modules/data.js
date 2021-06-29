@@ -63,6 +63,14 @@ const getDate = () => {
  * Returns the gameId
  * @returns {String}
  */
+const getLetters = () => {
+    return sbData.validLetters;
+}
+
+/**
+ * Returns the gameId
+ * @returns {String}
+ */
 const getCenterLetter = () => {
     return sbData.centerLetter;
 }
@@ -125,5 +133,6 @@ export default {
     getPoints,
     getId,
     getDate,
-    getCenterLetter
+    getCenterLetter,
+    getLetters
 }

@@ -1,53 +1,58 @@
+[data-sba-theme] {
+    --dhue: 0;
+    --dsat: 0%;
+    --link-hue: 206;
+    --shadow-light-color: hsl(49, 96%, 50%, 0.35);
+    --shadow-dark-color: hsl(49, 96%, 50%, 0.7);
+    --highlight-text-color: hsl(0, 0%, 0%);
+}
+
 // add new themes here
 // you can add any key as long as you do it in all themes
 // CSS variables will be '--' + key name + 'color' => foo becomes --foo-color
 $themeColors: (
     light: (
-        text: #000,
-        site-text: rgba(0,0,0,.9),
-        link:#326891,
-        link-visited:  #326891,
-        link-hover: #5f8ab1,
-        body-bg: #fff,
-        modal-bg:rgba(255,255,255, .85),
-        border:#dcdcdc,
-        area-bg: #e6e6e6,
-        invalid: #a2a2a2,
-        card: rgba(248, 205, 5, .1),
-        success: #248a17,
-        menu-hover: #f4f4f4
+        highlight-bg: hsl(52, 93%, 55%),
+        text:        hsl(50, 0%, 0%),
+        site-text:   hsl(50, 0%, 0%, 0.9),
+        body-bg:     hsl(50, 0%, 100%),
+        modal-bg:    hsl(50, 0%, 100%, 0.85),
+        border:      hsl(50, 0%, 86%),
+        area-bg:     hsl(50, 0%, 90%),
+        invalid:     hsl(50, 0%, 64%),
+        card: 	     hsl(50, 96%, 50%, 0.1),
+        menu-hover:  hsl(50, 0%, 96%),
+        link:        hsl(var(--link-hue), 45%, 38%),
+        link-visited:hsl(var(--link-hue), 45%, 53%),
+        link-hover:  hsl(var(--link-hue), 45%, 53%),
+        success:     hsl(113, 71%, 38%),
     ),
     dark: (
-        text: hsl(var(--h-base), var(--s-base), 90%),
-        site-text: hsl(var(--h-base), var(--s-base), 100%, 0.9),
-        link: #51a9f7,
-        link-visited:  #8dc6f8,
-        link-hover: #8dc6f8,
-        body-bg: hsl(var(--h-base), var(--s-base), 7%),
-        modal-bg:hsl(var(--h-base), var(--s-base), 7%, 0.85),
-        border: hsl(var(--h-base), var(--s-base), 20%),
-        area-bg: hsl(var(--h-base), var(--s-base), 22%),
-        invalid: hsl(var(--h-base), var(--s-base), 40%),
-        card:  hsl(var(--h-base), var(--s-base), 22%),
-        success: #47c537,
-        menu-hover: hsl(var(--h-base), var(--s-base), 22%)
+        highlight-bg: hsl(49, 96%, 50%),
+        text:          hsl(var(--dhue), var(--dsat), 90%),
+        site-text:     hsl(var(--dhue), var(--dsat), 100%, 0.9),
+        body-bg:       hsl(var(--dhue), var(--dsat), 7%),
+        modal-bg:      hsl(var(--dhue), var(--dsat), 7%, 0.85),
+        border:        hsl(var(--dhue), var(--dsat), 20%),
+        area-bg:       hsl(var(--dhue), var(--dsat), 22%),
+        invalid:       hsl(var(--dhue), var(--dsat), 40%),
+        card:          hsl(var(--dhue), var(--dsat), 22%),
+        menu-hover:    hsl(var(--dhue), var(--dsat), 22%),
+        link:          hsl(var(--link-hue), 90%, 64%),
+        link-visited:  hsl(var(--link-hue), 90%, 76%),
+        link-hover:    hsl(var(--link-hue), 90%, 76%),
+        success:     hsl(113, 90%, 64%),
     )
 );
 
 
 @each $theme, $colors in $themeColors {
     [data-sba-theme="#{$theme}"] {
-        @if($theme == 'dark'){
-            --h-base: 0;
-            --s-base: 0%;
-        }
-        @each $purpose, $color in $colors {
-            #{'--' + $purpose + '-color'} : $color;
+
+        @each $purpose,
+        $color in $colors {
+            #{'--' + $purpose + '-color'}: $color;
         }
     }
 }
-html {    
-    --highlight-color: rgb(248, 205, 5);
-    --shadow-light-color: rgba(248, 205, 5, .35);
-    --shadow-dark-color: rgba(248, 205, 5, .7);
-}
+
