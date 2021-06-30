@@ -413,6 +413,34 @@
     }
 }
 
+[data-ui="grid"] {
+    table {
+        border-top: 1px solid var(--border-color)
+    }
+
+    tbody {
+        tr {
+            &:first-child {
+                td {
+                    font-weight: bold;
+                    text-transform: uppercase
+                }
+            }
+
+            td {
+                width: auto;
+                font-size: 14px;
+
+                &:first-of-type {
+                    text-align: center;
+                    padding: 3px 0px;
+                    font-weight:bold;
+                }
+            }
+        }
+    }
+}
+
 .pz-desktop {
     .sba {
 

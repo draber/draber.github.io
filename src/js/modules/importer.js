@@ -7,11 +7,12 @@ import SpillTheBeans from '../plugins/spillTheBeans.js';
 import LetterCount from '../plugins/letterCount.js';
 import FirstLetter from '../plugins/firstLetter.js';
 import YourProgress from '../plugins/yourProgress.js';
-import Answers from '../plugins/answers.js';
+import TodaysAnswers from '../plugins/todaysAnswers.js';
 import Pangrams from '../plugins/pangrams.js';
 import Googlify from '../plugins/googlify.js';
 import Styles from '../plugins/styles.js';
 import Menu from '../plugins/menu.js';
+import Grid from '../plugins/grid.js';
 
 /**
  * Plugins
@@ -27,13 +28,14 @@ const getPlugins = () => {
           SpillTheBeans,
           ProgressBar,
           DarkMode,
+          Grid,
           ColorConfig,
           Pangrams,
           Googlify,
           Styles,
           Menu,
           YourProgress,
-          Answers
+          TodaysAnswers
      }
 }
 

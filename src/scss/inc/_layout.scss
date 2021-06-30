@@ -1,6 +1,14 @@
 $gameOffset: 12;
 $gameWidth: 1280;
 
+html, body {
+    scroll-snap-type: y mandatory;
+}
+
+.spelling-bee-container {
+    scroll-snap-align: start;
+}
+
 .sba-container {
     display: none;
 }
@@ -138,7 +146,7 @@ $gameWidth: 1280;
 
         --sba-app-width: 160px;
         --sba-app-padding: 0 8px 8px;
-        --sba-app-margin: 64px 0 0 0;
+        --sba-app-margin: 65px 0 0 0;
 
         .sb-content-box {
             padding: 0 var(--sba-game-offset);

@@ -51,8 +51,6 @@ class YourProgress extends Plugin {
             })
         }
 
-        const progress = points * 100 / max;
-
         this.popup
             .setContent('subtitle', el.span({
                 content

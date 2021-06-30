@@ -7,12 +7,12 @@ import Plugin from '../modules/plugin.js';
 import Popup from './popup.js';
 
 /**
- * Answers plugin
+ * TodaysAnswers plugin
  * 
  * @param {App} app
- * @returns {Plugin} Answers
+ * @returns {Plugin} TodaysAnswers
  */
-class Answers extends Plugin {
+class TodaysAnswers extends Plugin {
 
 	/**
 	 *
@@ -56,14 +56,15 @@ class Answers extends Plugin {
 	}
 
 	/**
-	 * Answers constructor
+	 * TodaysAnswers constructor
 	 * @param {App} app
 	 */
 	constructor(app) {
 
-		super(app, 'Today’s Answers', 'Reveals the solution of the game', {
+		super(app, 'Today’s TodaysAnswers', 'Reveals the solution of the game', {
 			canChangeState: true,
-			defaultState: false
+			defaultState: false,
+			key: 'todaysAnswers'
 		});
 
 		this.marker = prefix('resolved', 'd');
@@ -76,4 +77,4 @@ class Answers extends Plugin {
 	}
 }
 
-export default Answers;
+export default TodaysAnswers;
