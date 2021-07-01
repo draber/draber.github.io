@@ -1,6 +1,5 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
-import Plugin from '../modules/plugin.js';
 import el from '../modules/element.js';
 
 /**
@@ -9,7 +8,7 @@ import el from '../modules/element.js';
  * @param {App} app
  * @returns {Plugin} FirstLetter
  */
-class FirstLetter extends Plugin {
+class FirstLetter extends TablePane {
 
 	/**
 	 * Get the data for the table cells
@@ -66,21 +65,21 @@ class FirstLetter extends Plugin {
 	constructor(app) {
 
 		super(app, 'First letter', 'The number of words by first letter', {
-			canChangeState: true
+			cssMarkers: {
+				completed: (rowData, i) => i > 0 && rowData[2] === 0,
+				preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
+			}
 		});
-		
-        this.ui = el.details({
-            content: [
-                el.summary({
-                    content: this.title
-                }),
-                new TablePane(app, this.getData, {
-					completed: (rowData, i) => i > 0 && rowData[2] === 0,
-					preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
-				}).getPane()
-            ]
-        });
-		
+
+		this.ui = el.details({
+			content: [
+				el.summary({
+					content: this.title
+				}),
+				this.getPane()
+			]
+		});
+
 		this.toggle(this.getState());
 	}
 }

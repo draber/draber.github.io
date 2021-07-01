@@ -17,6 +17,7 @@ class Styles extends Plugin {
     modifyMq() {
         let rules;
         let sheet;
+        //  document.querySelector('link[href^="https://www.nytimes.com/games-assets/v2/spelling-bee"]')
         for (let _sheet of document.styleSheets) {
             if (_sheet.href && _sheet.href.startsWith('https://www.nytimes.com/games-assets/v2/spelling-bee')) {
                 sheet = _sheet;

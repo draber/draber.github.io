@@ -25,15 +25,15 @@ const getPlugins = () => {
           Score,
           LetterCount,
           FirstLetter,
-          SpillTheBeans,
           ProgressBar,
+          SpillTheBeans,
           DarkMode,
-          Grid,
           ColorConfig,
           Pangrams,
           Googlify,
           Styles,
           Menu,
+          Grid,
           YourProgress,
           TodaysAnswers
      }

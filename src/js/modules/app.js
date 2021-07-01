@@ -143,7 +143,7 @@ class App extends Widget {
         this.waitForGameState(1)
             .then(() => {
                 this.add();
-                this.domSet('active', this.getState());
+                this.domSet('active', true);
                 this.registerPlugins();
                 this.trigger(prefix('refreshUi'));
                 this.isLoaded = true;
@@ -152,7 +152,6 @@ class App extends Widget {
     }
 
     toggle(state) {
-        this.setState(state);
         this.domSet('active', state);
         return this;
     }

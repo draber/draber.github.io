@@ -1,14 +1,6 @@
 $gameOffset: 12;
 $gameWidth: 1280;
 
-html, body {
-    scroll-snap-type: y mandatory;
-}
-
-.spelling-bee-container {
-    scroll-snap-align: start;
-}
-
 .sba-container {
     display: none;
 }
@@ -54,11 +46,12 @@ html, body {
         }
     }
 
+    .sba {
+        left: -163px;
+        top: 0;
+    }
+
     &.pz-desktop {
-        .sba {
-            left: -163px;
-            top: -277px;
-        }
 
         .pane {
             right: -16px;
@@ -85,9 +78,17 @@ html, body {
         z-index: 1;
     }
 
+    &[data-sba-submenu="true"] {
+        .sba-container {
+            top: 0;
+            height: 0;
+        }
+    }
+
     .sb-expanded {
         .sba-container {
-            z-index: -1;
+            visibility: hidden;
+            pointer-events: none;
         }
     }
 
@@ -104,29 +105,25 @@ html, body {
 }
 
 [data-sba-active] {
-    &.pz-desktop {
-        .pz-game-toolbar {
-            .pz-row {
-                padding: 0;
-            }
+    .pz-game-toolbar {
+        .pz-row {
+            padding: 0;
         }
     }
 }
 
 @media (min-width: 516px) {
     [data-sba-active] {
-        &.pz-desktop {
 
-            // avoid break between yest. and assistant 
-            .pz-game-toolbar {
-                .pz-row {
-                    padding: 0 12px;
-                }
+        // avoid break between yest. and assistant 
+        .pz-game-toolbar {
+            .pz-row {
+                padding: 0 12px;
             }
+        }
 
-            .sba {
-                left: -175px;
-            }
+        .sba {
+            left: -175px;
         }
     }
 }
@@ -167,12 +164,10 @@ html, body {
             }
         }
 
-        &.pz-desktop {
-            &[data-sba-submenu="true"] {
-                .sba {
-                    left: -191px;
-                    top: -65px;
-                }
+        &[data-sba-submenu="true"] {
+            .sba {
+                left: -191px;
+                top: -65px;
             }
         }
     }
@@ -180,11 +175,9 @@ html, body {
 
 @media (min-width: 1298px) {
     [data-sba-active="true"] {
-        &.pz-desktop {
-            &[data-sba-submenu="true"] {
-                .sba {
-                    left: -179px;
-                }
+        &[data-sba-submenu="true"] {
+            .sba {
+                left: -179px;
             }
         }
     }

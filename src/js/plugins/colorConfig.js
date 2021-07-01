@@ -15,13 +15,8 @@ class ColorConfig extends Plugin {
 
     toggle(state) {
         el.$$('[data-sba-theme]').forEach(element => {
-            if (state.sat) {
-                element.style.setProperty('--dhue', state.hue);
-                element.style.setProperty('--dsat', state.sat + '%');
-            } else if (state.lgt) {
-                element.style.setProperty('--lhue', state.hue);
-                element.style.setProperty('--llgt', state.lgt + '%');
-            }
+            element.style.setProperty('--dhue', state.hue);
+            element.style.setProperty('--dsat', state.sat + '%');
         });
         super.toggle(state);
     }
@@ -31,7 +26,7 @@ class ColorConfig extends Plugin {
      * @param state
      * @returns {ColorConfig}
      */
-    run() {
+    display() {
         this.popup.toggle(true);
     }
 
@@ -42,7 +37,7 @@ class ColorConfig extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Dark Mode Colors', 'Select your favorite Dark Mode color scheme.', {
+        super(app, 'Dark Mode Colors', 'Select your favorite color scheme for the Dark Mode.', {
             canChangeState: true,
             defaultState: {
                 hue: 0,
@@ -59,7 +54,7 @@ class ColorConfig extends Plugin {
         });
 
         for (let hue = 0; hue < 360; hue += 30) {
-            const sat = hue === 0 ? 0 : 45;
+            const sat = hue === 0 ? 0 : 25;
             swatches.append(el.li({
                 content: [
                     el.input({
@@ -93,9 +88,7 @@ class ColorConfig extends Plugin {
 
         this.menuIcon = 'null';
 
-        // light: hsla(30, 25%, 65%, 1)
-
-        this.popup = new Popup(this.key)
+        this.popup = new Popup(this.app, this.key)
             .setContent('title', this.title)
             .setContent('subtitle', this.description)
             .setContent('body', el.div({

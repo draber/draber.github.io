@@ -1,6 +1,5 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
-import Plugin from '../modules/plugin.js';
 import el from '../modules/element.js';
 
 /**
@@ -9,7 +8,7 @@ import el from '../modules/element.js';
  * @param {App} app
  * @returns {Plugin} Score
  */
-class Score extends Plugin {
+class Score extends TablePane {
 
     /**
      * Build table data set
@@ -30,9 +29,7 @@ class Score extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Score', 'The number of words and points and how many have been found', {
-            canChangeState: true
-        });
+        super(app, 'Score', 'The number of words and points and how many have been found');
 
         this.ui = el.details({
             attributes: {
@@ -42,7 +39,7 @@ class Score extends Plugin {
                 el.summary({
                     content: this.title
                 }),
-                new TablePane(app, this.getData).getPane()
+                this.getPane()
             ]
         });
     }

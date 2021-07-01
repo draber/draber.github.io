@@ -1,7 +1,6 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
 import Popup from './popup.js';
-import Plugin from '../modules/plugin.js';
 import el from '../modules/element.js';
 
 /**
@@ -10,17 +9,17 @@ import el from '../modules/element.js';
  * @param {App} app
  * @returns {Plugin} YourProgress
  */
-class YourProgress extends Plugin {
+class YourProgress extends TablePane {
 
-    run() {
-
+    display() {
         const points = data.getPoints('foundTerms');
         const max = data.getPoints('answers');
         const next = this.getPointsToNextTier();
+        const progress = points * 100 / max;
 
         let content;
 
-        if(next) {
+        if (next) {
             content = el.span({
                 content: [
                     'You are currently at ',
@@ -29,7 +28,7 @@ class YourProgress extends Plugin {
                     }),
                     ' points or ',
                     el.b({
-                        content: Math.min(Number(Math.round(points + 'e2') + 'e-2'), 100) + '%'
+                        content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
                     }),
                     '. You need ',
                     el.b({
@@ -38,8 +37,7 @@ class YourProgress extends Plugin {
                     ' more points to go to the next level.',
                 ]
             })
-        }
-        else {
+        } else {
             content = el.span({
                 content: [
                     'Congratulations, you’ve found all ',
@@ -55,7 +53,7 @@ class YourProgress extends Plugin {
             .setContent('subtitle', el.span({
                 content
             }))
-            .setContent('body', this.table.getPane())
+            .setContent('body', this.getPane())
             .toggle(true);
 
         return this;
@@ -107,20 +105,18 @@ class YourProgress extends Plugin {
     constructor(app) {
 
         super(app, 'Your Progress', 'The number of points required for each level', {
-            canChangeState: true,
-            defaultState: false
+            cssMarkers: {
+                completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
+                preeminent: rowData => rowData[1] === this.getCurrentTier()
+            }
         });
 
-        this.popup = new Popup(this.key)
+        this.popup = new Popup(this.app, this.key)
             .setContent('title', this.title);
 
         this.menuAction = 'popup';
         this.menuIcon = 'null';
 
-        this.table = new TablePane(app, this.getData, {
-            completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
-            preeminent: rowData => rowData[1] === this.getCurrentTier()
-        })
     }
 }
 

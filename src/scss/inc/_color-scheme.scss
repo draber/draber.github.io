@@ -2,9 +2,29 @@ body {
     background: var(--body-bg-color);
     color: var(--text-color);
 
+    .pz-game-field {
+        background: var(--body-bg-color);
+        color: var(--text-color);
+    }
+
     .pz-game-wrapper {
         background: var(--body-bg-color) !important;
         color: var(--text-color);
+
+        .sb-modal-message {
+            a {
+                color: var(--link-color);
+
+                &:visited {
+                    color: var(--link-visited-color);
+                }
+
+                &:hover {
+                    color: var(--link-hover-color);
+                }
+            }
+        }
+
 
         .sb-progress-marker .sb-progress-value,
         .hive-cell:first-child .cell-fill {
@@ -20,11 +40,37 @@ body {
     }
 
     &[data-sba-theme="dark"] {
-        *:not(.sba-pangram):not(.sba-preeminent):not(.sba-swatches label) {
-            border-color: var(--border-color);
+        .sb-message {
+            background: var(--area-bg-color);
         }
-        .sb-toggle-icon {
-            filter: invert(1);
+
+        .hive-action__shuffle {
+            position: relative;
+        }
+
+        .sb-toggle-icon,
+        .sb-kebob .sb-bob-arrow,
+        .hive-action__shuffle {
+            background-position: -1000px;
+
+            &:after {
+                content: '';
+                opacity: 0.85;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                position: absolute;
+                z-index: 0;
+                filter: invert(1);
+
+                background: {
+                    image: inherit;
+                    repeat: inherit;
+                    position: center;
+                    size: inherit;
+                }
+            }
         }
     }
 }
@@ -81,8 +127,7 @@ body {
     }
 }
 
-.pz-modal__button.white:hover,
-.sb-message {
+.pz-modal__button.white:hover {
     background: var(--area-bg-color);
 }
 
@@ -94,7 +139,8 @@ body {
     box-shadow: none;
 }
 
-.sb-input-bright {
+.sb-input-bright,
+.sb-progress-dot.completed::after {
     color: var(--highlight-bg-color)
 }
 
@@ -111,28 +157,37 @@ body {
 }
 
 .hive-action {
-    background: var(--body-bg-color);
+    background-color: var(--body-bg-color);
     color: var(--text-color);
 
-    &:hover {
-        background: var(--area-bg-color);
+    &.push-active {
+        background: var(--menu-hover-color);
     }
+}
+
+.pz-spelling-bee-congrats .sb-modal-wordlist-items li,
+.sb-wordlist-items-pag>li,
+.pz-ad-box,
+.pz-game-toolbar,
+.pz-spelling-bee-wordlist .hive-action,
+.sb-wordlist-box,
+.sb-message {
+    border-color: var(--border-color);
 }
 
 .sb-toggle-expand {
     background: var(--body-bg-color);
 }
 
+.sb-progress-line,
+.sb-progress-dot::after {
+    background: var(--border-color);
+}
 
+.sb-bob {
+    background-color: var(--border-color);
 
-.hive-action__shuffle {
-    background: none;
-
-    svg {
-        width: 23px;
-
-        path {
-            fill: var(--text-color);
-        }
+    &.active {
+        background-color: var(--text-color);
     }
 }

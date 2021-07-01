@@ -41,17 +41,24 @@ class Menu extends Plugin {
 	}
 
 	getComponent(entry) {
-		if(entry.dataset.component === this.app.key) {
+		if (entry.dataset.component === this.app.key) {
 			return this.app
 		}
-		if(this.app.plugins.has(entry.dataset.component)) {
+		if (this.app.plugins.has(entry.dataset.component)) {
 			return this.app.plugins.get(entry.dataset.component);
 		}
 		return null;
 	}
 
-	toggleSubMenu(evt) {
-		if(!evt.target.dataset.action || evt.target.dataset.action !== 'boolean') {
+	toggleSubMenu(evt, forceClose) {
+		if(forceClose) {
+			this.app.domSet('submenu', false);
+		}
+		else if (!evt.target.dataset.action 
+			|| (evt.target.dataset.action 
+				&& evt.target.dataset.action !== 'boolean' 
+				&& evt.target.dataset.action !== 'link')
+				) {
 			this.app.domSet('submenu', !this.app.domGet('submenu'));
 		}
 	}
@@ -75,7 +82,7 @@ class Menu extends Plugin {
 			events: {
 				pointerup: evt => {
 					const entry = evt.target.closest('li');
-					if(!entry) {
+					if (!entry) {
 						return false;
 					}
 					const component = this.getComponent(entry);
@@ -86,9 +93,8 @@ class Menu extends Plugin {
 						if (component === this.app) {
 							this.app.toggle(nextState);
 						}
-					}
-					else if (entry.dataset.action === 'popup'){
-						component.run();
+					} else if (entry.dataset.action === 'popup') {
+						component.display();
 					}
 				}
 			},
@@ -107,9 +113,9 @@ class Menu extends Plugin {
 		});
 
 		this.ui = el.div({
-				events: {
-					pointerup: evt => this.toggleSubMenu(evt)
-				},
+			events: {
+				pointerup: evt => this.toggleSubMenu(evt)
+			},
 			content: [
 				settings.get('title'),
 				pane
@@ -118,6 +124,14 @@ class Menu extends Plugin {
 				role: 'presentation'
 			},
 			classNames
+		})
+
+		this.app.gameWrapper.addEventListener('pointerdown', evt => {
+			if (!evt.target.isSameNode(this.ui) &&
+				!evt.target.parentElement.isSameNode(pane) &&
+				!evt.target.isSameNode(pane)) {
+				this.toggleSubMenu(evt, true);
+			}
 		})
 
 		app.on(prefix('pluginsReady'), evt => {
@@ -131,7 +145,7 @@ class Menu extends Plugin {
 					attributes: {
 						title: plugin.description
 					},
-					data: {				
+					data: {
 						component: key,
 						icon: action === 'boolean' ? 'checkmark' : (plugin.menuIcon || null),
 						action

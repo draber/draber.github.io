@@ -19,7 +19,7 @@ class TodaysAnswers extends Plugin {
 	 * @param {Event} evt
 	 * @returns {Plugin}
 	 */
-	run() {
+	display() {
 
 		const foundTerms = data.getList('foundTerms');
 		const pangrams = data.getList('pangrams');
@@ -61,14 +61,14 @@ class TodaysAnswers extends Plugin {
 	 */
 	constructor(app) {
 
-		super(app, 'Today’s TodaysAnswers', 'Reveals the solution of the game', {
+		super(app, 'Today’s Answers', 'Reveals the solution of the game', {
 			canChangeState: true,
 			defaultState: false,
 			key: 'todaysAnswers'
 		});
 
 		this.marker = prefix('resolved', 'd');
-		this.popup = new Popup(this.key)
+		this.popup = new Popup(this.app, this.key)
 			.setContent('title', this.title)
 			.setContent('subtitle', data.getDate());
 

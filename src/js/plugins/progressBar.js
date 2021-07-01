@@ -46,6 +46,8 @@ class ProgressBar extends Plugin {
         }) 
         
         this.target = el.$('.sb-wordlist-heading', this.app.gameWrapper);
+        
+		this.toggle(this.getState());
     }
 }
 

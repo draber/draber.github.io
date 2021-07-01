@@ -1,6 +1,5 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
-import Plugin from '../modules/plugin.js';
 import el from '../modules/element.js';
 
 /**
@@ -9,7 +8,7 @@ import el from '../modules/element.js';
  * @param {App} app
  * @returns {Plugin} LetterCount
  */
-class LetterCount extends Plugin {
+class LetterCount extends TablePane {
 
 	/**
 	 * Get the data for the table cells
@@ -61,21 +60,21 @@ class LetterCount extends Plugin {
 	constructor(app) {
 
 		super(app, 'Letter count', 'The number of words by length, also the number of pangrams', {
-			canChangeState: true
-		});		
-		
-        this.ui = el.details({
-            content: [
-                el.summary({
-                    content: this.title
-                }),
-                new TablePane(app, this.getData, {
-					completed: (rowData, i) => i > 0 && rowData[2] === 0,
-					preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
-				}).getPane()
-            ]
-        });
-		
+			cssMarkers: {
+				completed: (rowData, i) => i > 0 && rowData[2] === 0,
+				preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
+			}
+		});
+
+		this.ui = el.details({
+			content: [
+				el.summary({
+					content: this.title
+				}),
+				this.getPane()
+			]
+		});
+
 		this.toggle(this.getState());
 	}
 }

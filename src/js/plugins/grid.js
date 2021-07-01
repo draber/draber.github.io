@@ -1,6 +1,5 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
-import Plugin from '../modules/plugin.js';
 import Popup from './popup.js';
 
 /**
@@ -9,63 +8,59 @@ import Popup from './popup.js';
  * @param {App} app
  * @returns {Plugin} Grid
  */
-class Grid extends Plugin {
+class Grid extends TablePane {
 
-	run() {
+	display() {
 
-        this.popup
-            .setContent('subtitle', this.description)
-            .setContent('body', this.table.getPane())
-            .toggle(true);
+		this.popup
+			.setContent('subtitle', this.description)
+			.setContent('body', this.getPane())
+			.toggle(true);
 
-        return this;
-    }
+		return this;
+	}
 
 	/**
 	 * Get the data for the table cells
 	 * @returns {Array}
 	 */
 	getData() {
-		let counts = {};
 		const foundTerms = data.getList('foundTerms');
 		const allTerms = data.getList('answers');
-		const cols = Array.from(new Set(data.getList('answers').map(entry => entry.charAt(0))));
-		cols.sort();
-		const cellData = [];
+		const allLetters = Array.from(new Set(allTerms.map(entry => entry.charAt(0)))).concat(['∑']);
+		const allDigits = Array.from(new Set(allTerms.map(term => term.length))).concat(['∑']);
+		allDigits.sort((a, b) => a - b);
+		allLetters.sort();
+		const cellData = [[''].concat(allLetters)];
+		let letterTpl = Object.fromEntries(allLetters.map(letter => [letter, {
+			fnd: 0,
+			all: 0
+		}]));
+		let rows = Object.fromEntries(allDigits.map(digit => [digit, JSON.parse(JSON.stringify(letterTpl))]));
+
 		allTerms.forEach(term => {
-			const first = term.charAt(0);
-			counts[term.length] = counts[term.length] || (() => {
-				const tpl = {};
-				cols.forEach(letter => {
-					tpl[letter] = {
-						found: 0,
-						total: 0
-					}
-				});
-				return tpl;
-			})();
+			const letter = term.charAt(0);
+			const digit = term.length;
+			rows[digit][letter].all++;
+			rows[digit]['∑'].all++;
+			rows['∑'][letter].all++;
+			rows['∑']['∑'].all++;
 			if (foundTerms.includes(term)) {
-				counts[term.length][first].found++;
+				rows[digit][letter].fnd++;
+				rows[digit]['∑'].fnd++;
+				rows['∑'][letter].fnd++;
+				rows['∑']['∑'].fnd++;
 			}
-			counts[term.length][first].total++;
-		});
-		let keys = Object.keys(counts);
-		keys.sort((a, b) => a - b);
-		cellData.push([''].concat(cols).concat(['∑']));
-		for (let [count, values] of Object.entries(counts)) {
-			const row = [count];
-			let total = 0;
-			let found = 0;
-			Object.values(values).forEach(value => {
-				total += value.total;
-				found += value.found;
-				row.push(value.total > 0 ? `${value.found}/${value.total}` : '-');
+		})
+
+		for (let [digit, cols] of Object.entries(rows)) {
+			const cellVals = [digit];
+			Object.values(cols).forEach(colVals => {
+				cellVals.push(colVals.all > 0 ? `${colVals.fnd}/${colVals.all}` : '-');
 			})
-			row.push(`${found}/${total}`);
-			cellData.push(row);
+			cellData.push(cellVals);
 		}
 
-		console.log(cellData)
 		return cellData;
 	}
 
@@ -75,17 +70,13 @@ class Grid extends Plugin {
 	 */
 	constructor(app) {
 
-		super(app, 'Grid', 'The number of words by length, combined with the words by first letter', {
-			canChangeState: true
-		});		
+		super(app, 'Grid', 'The number of words by length and by first letter');
 
-        this.popup = new Popup(this.key)
-            .setContent('title', this.title);
+		this.popup = new Popup(this.app, this.key)
+			.setContent('title', this.title);
 
-        this.menuAction = 'popup';
-        this.menuIcon = 'null';
-
-        this.table = new TablePane(app, this.getData);
+		this.menuAction = 'popup';
+		this.menuIcon = 'null';
 	}
 }
 export default Grid;

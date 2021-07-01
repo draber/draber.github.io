@@ -10,6 +10,16 @@ import settings from "../modules/settings";
  */
 class Popup {
 
+    enableKeyClose() {
+        document.addEventListener('keyup', evt => {
+            this.app.popupCloser = el.$('.sb-modal-wrapper .sb-modal-close', this.app.gameWrapper);
+            if (this.app.popupCloser && evt.code === 'Escape') {
+                this.app.popupCloser.click();
+            }
+            delete(this.app.popupCloser);
+        })
+    }
+
     /**
      * Get a reference to the `<template>` that holds the pop-ups while idle
      * Create one if it doesn't exist yet
@@ -100,14 +110,14 @@ class Popup {
      * @returns {Popup}
      */
     toggle(state) {
-        
-        const closer = el.$('.sb-modal-close', this.modalWrapper);
+
+        const closer = el.$('.sb-modal-close', this.app.modalWrapper);
         if (!state && closer) {
             closer.click();
         }
 
         if (state) {
-            this.modalWrapper.append(this.ui);
+            this.app.modalWrapper.append(this.ui);
             this.modalSystem.classList.add('sb-modal-open');
         } else {
             this.getTarget().append(this.ui);
@@ -122,14 +132,15 @@ class Popup {
      * Build an instance
      * @param key
      */
-    constructor(key) {
+    constructor(app, key) {
 
         this.key = key;
 
+        this.app = app;
+
         this.state = false;
 
-        this.modalSystem = el.$('.sb-modal-system');
-        this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);
+        this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
 
         this.parts = {
             title: el.h3({
@@ -159,6 +170,8 @@ class Popup {
         }
 
         this.ui = this.create();
+
+        this.enableKeyClose();
 
         this.getTarget().append(this.ui);
     }
