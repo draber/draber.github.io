@@ -51,20 +51,19 @@
     border-collapse: collapse;
     table-layout: fixed;
 
-    tr {
-        &.sba-preeminent {
-            font-weight: bold;
-            border-bottom: 2px solid var(--highlight-bg-color) !important;
-        }
 
-        &.sba-completed {
-            color: var(--invalid-color);
-            font-weight: normal;
-        }
+    .sba-preeminent {
+        font-weight: bold;
+        border-bottom: 2px solid var(--highlight-bg-color) !important;
+    }
 
-        &.sba-hidden {
-            display: none
-        }
+    .sba-completed {
+        color: var(--invalid-color);
+        font-weight: normal;
+    }
+
+    .sba-hidden {
+        display: none;
     }
 
     td {
@@ -106,14 +105,6 @@
             }
 
             td {
-                &:first-child {
-                    &:before {
-                        content: '•';
-                        display: inline-block;
-                        margin-right: 10px;
-                    }
-                }
-
                 &:nth-child(n+2) {
                     text-align: right;
                     width: 80px;
@@ -416,29 +407,44 @@
 
 [data-ui="grid"] {
     table {
-        border-top: 1px solid var(--border-color)
+        border-top: 1px solid var(--border-color);
+        table-layout: fixed;
+        width: 100%;
     }
 
     tbody {
         tr {
+
             &:first-child,
             &:last-child {
                 td {
                     font-weight: bold;
-                    text-transform: uppercase
+                    text-transform: uppercase;
                 }
             }
 
             td {
                 width: auto;
                 font-size: 14px;
+                padding: 5px 0 !important;
 
                 &:last-of-type,
                 &:first-of-type {
                     text-align: center;
-                    padding: 3px 0px;
                     font-weight: bold;
                 }
+
+                &:first-of-type {
+                    border-right: 2px solid var(--highlight-bg-color) !important;
+                }
+
+                &:last-of-type {
+                    border-left: 2px solid var(--highlight-bg-color) !important;
+                }
+            }
+            
+            &:last-of-type {
+                border-top: 2px solid var(--highlight-bg-color) !important;
             }
         }
     }

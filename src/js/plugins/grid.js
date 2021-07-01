@@ -1,6 +1,10 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
 import Popup from './popup.js';
+import el from '../modules/element.js';
+import {
+	prefix
+} from '../modules/string.js';
 
 /**
  * Grid plugin
@@ -17,6 +21,17 @@ class Grid extends TablePane {
 			.setContent('body', this.getPane())
 			.toggle(true);
 
+		return this;
+	}
+
+	run() {
+		super.run();
+		el.$$('td', this.pane).forEach(cell => {
+			const cellArr = cell.textContent.trim().split('/');
+			if(cellArr.length === 2 && cellArr[0] === cellArr[1]){
+				cell.classList.add(prefix('completed', 'd'));
+			}
+		})
 		return this;
 	}
 
@@ -70,7 +85,11 @@ class Grid extends TablePane {
 	 */
 	constructor(app) {
 
-		super(app, 'Grid', 'The number of words by length and by first letter');
+		super(app, 'Grid', 'The number of words by length and by first letter', {
+			cssMarkers: {
+				preeminent: (rowData, i) => i === 0,
+			}
+		});
 
 		this.popup = new Popup(this.app, this.key)
 			.setContent('title', this.title);
