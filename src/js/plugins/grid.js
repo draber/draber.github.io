@@ -87,7 +87,7 @@ class Grid extends TablePane {
 
 		super(app, 'Grid', 'The number of words by length and by first letter', {
 			cssMarkers: {
-				preeminent: (rowData, i) => i === 0,
+				preeminent: (rowData, i, l) => i === 0 || i === l - 2,
 			}
 		});
 

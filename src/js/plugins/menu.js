@@ -50,20 +50,6 @@ class Menu extends Plugin {
 		return null;
 	}
 
-	toggleSubMenu(evt, forceClose) {
-		if(forceClose) {
-			this.app.domSet('submenu', false);
-		}
-		else if (!evt.target.dataset.action 
-			|| (evt.target.dataset.action 
-				&& evt.target.dataset.action !== 'boolean' 
-				&& evt.target.dataset.action !== 'link')
-				) {
-			this.app.domSet('submenu', !this.app.domGet('submenu'));
-		}
-	}
-
-
 	constructor(app) {
 
 		super(app, 'Menu', '');
@@ -79,22 +65,33 @@ class Menu extends Plugin {
 		 */
 		const pane = el.ul({
 			classNames: ['pane'],
+			data: {
+				ui: 'submenu'
+			},
 			events: {
 				pointerup: evt => {
 					const entry = evt.target.closest('li');
-					if (!entry) {
+					if (!entry || evt.button !== 0) {
 						return false;
 					}
 					const component = this.getComponent(entry);
-					if (evt.button === 0 && entry.dataset.action === 'boolean') {
-						const nextState = !component.getState();
-						component.toggle(nextState);
-						entry.classList.toggle('checked', nextState);
-						if (component === this.app) {
-							this.app.toggle(nextState);
-						}
-					} else if (entry.dataset.action === 'popup') {
-						component.display();
+					switch (entry.dataset.action) {
+						case 'boolean':
+							const nextState = !component.getState();
+							component.toggle(nextState);
+							entry.classList.toggle('checked', nextState);
+							if (component === this.app) {
+								this.app.toggle(nextState);
+							}
+							break;
+						case 'popup':
+							this.app.domSet('submenu', false);
+							component.display();
+							break;
+						default:
+							setTimeout(() => {
+								this.app.domSet('submenu', false);
+							}, 60)
 					}
 				}
 			},
@@ -114,7 +111,11 @@ class Menu extends Plugin {
 
 		this.ui = el.div({
 			events: {
-				pointerup: evt => this.toggleSubMenu(evt)
+				pointerup: evt => {
+					if (!evt.target.dataset.action) {
+						this.app.domSet('submenu', !this.app.domGet('submenu'));
+					}
+				}
 			},
 			content: [
 				settings.get('title'),
@@ -126,13 +127,17 @@ class Menu extends Plugin {
 			classNames
 		})
 
-		this.app.gameWrapper.addEventListener('pointerdown', evt => {
-			if (!evt.target.isSameNode(this.ui) &&
-				!evt.target.parentElement.isSameNode(pane) &&
-				!evt.target.isSameNode(pane)) {
-				this.toggleSubMenu(evt, true);
+		document.addEventListener('keyup', evt => {
+			if (this.app.domGet('submenu') === true) {
+				this.app.domSet('submenu', false)
 			}
-		})
+		});
+
+		el.$('#pz-game-root').addEventListener('pointerdown', evt => {
+			if (this.app.domGet('submenu') === true) {
+				this.app.domSet('submenu', false)
+			}
+		});
 
 		app.on(prefix('pluginsReady'), evt => {
 			evt.detail.forEach((plugin, key) => {
@@ -159,8 +164,8 @@ class Menu extends Plugin {
 					title: settings.get('label') + ' Website'
 				},
 				data: {
-					icon: 'sba',
-					component: 'sbaWeb',
+					icon: prefix(),
+					component: prefix('web'),
 					action: 'link'
 				},
 				content: el.a({

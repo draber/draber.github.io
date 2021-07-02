@@ -15,21 +15,16 @@ import settings from '../modules/settings.js';
 class Styles extends Plugin {
 
     modifyMq() {
-        let rules;
-        let sheet;
-        //  document.querySelector('link[href^="https://www.nytimes.com/games-assets/v2/spelling-bee"]')
-        for (let _sheet of document.styleSheets) {
-            if (_sheet.href && _sheet.href.startsWith('https://www.nytimes.com/games-assets/v2/spelling-bee')) {
-                sheet = _sheet;
-                break;
-            }
-        }
-        rules = sheet.rules;
-        if (!rules) {
-            return
+        const sheet = Array.from(document.styleSheets).find(sheet => sheet.href && sheet.href.startsWith('https://www.nytimes.com/games-assets/v2/spelling-bee'));
+        if (!sheet) {
+            return false;
         }
         const theirCond = 'min-width: 768px';
         const myCond = theirCond.replace('768', '900');
+        const rules = Array.from(sheet.cssRules).filter(rule => rule instanceof CSSMediaRule && rule.conditionText.includes(theirCond) && !rule.cssText.includes('.sb-modal'));
+        if (!rules) {
+            return
+        }
         const marker = `data-${prefix('active', 'd')}`;
         const theirMarker = `[${marker}="false"]`;
         const myMarker = `[${marker}="true"]`;
@@ -37,13 +32,11 @@ class Styles extends Plugin {
         let newRules = [];
         let l = rules.length;
         while (l--) {
-            if (rules[l] instanceof CSSMediaRule && rules[l].conditionText.includes(theirCond) && !rules[l].cssText.includes('.sb-modal')) {
-                rules[l].cssRules.forEach(rule => {
-                    const selectorText = rule.selectorText.split(',').map(selector => `${marker} ${selector.trim()}`).join(', ');
-                    newRules.push(rule.cssText.replace(rule.selectorText, selectorText))
-                });
-                sheet.deleteRule(l);
-            }
+            rules[l].cssRules.forEach(rule => {
+                const selectorText = rule.selectorText.split(',').map(selector => `${marker} ${selector.trim()}`).join(', ');
+                newRules.push(rule.cssText.replace(rule.selectorText, selectorText))
+            });
+            sheet.deleteRule(l);
         }
         newRules = newRules.join('');
         const theirRule = `@media (${theirCond}) { ${newRules.replace(markerRe, theirMarker)} }`;

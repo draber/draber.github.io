@@ -393,15 +393,14 @@
     }
 }
 
-
-
-
-
 .pz-toolbar-button,
 [data-ui="menu"] li {
     &:hover {
         background: var(--menu-hover-color);
         color: var(--text-color);
+    }
+    &::selection {
+        background-color: transparent;
     }
 }
 
@@ -441,10 +440,6 @@
                 &:last-of-type {
                     border-left: 2px solid var(--highlight-bg-color) !important;
                 }
-            }
-            
-            &:last-of-type {
-                border-top: 2px solid var(--highlight-bg-color) !important;
             }
         }
     }

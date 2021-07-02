@@ -14,17 +14,20 @@ import {
  */
 class App extends Widget {
 
-    domSet(key, value){
+    domSet(key, value) {
         document.body.dataset[prefix(key)] = value;
         return this;
     }
 
-    domUnset(key){
+    domUnset(key) {
         delete document.body.dataset[prefix(key)];
         return this;
     }
 
-    domGet(key){
+    domGet(key) {
+        if (typeof document.body.dataset[prefix(key)] === 'undefined') {
+            return false;
+        }
         return JSON.parse(document.body.dataset[prefix(key)]);
     }
 
@@ -147,8 +150,15 @@ class App extends Widget {
                 this.registerPlugins();
                 this.trigger(prefix('refreshUi'));
                 this.isLoaded = true;
+                if (document.body.classList.contains('pz-desktop')) {
+                    window.scrollTo(0, 470);
+                }
             })
 
+    }
+
+    getState() {
+        return this.domGet('active');
     }
 
     toggle(state) {
@@ -175,11 +185,11 @@ class App extends Widget {
                     //     this.domSet('hasOverlay', mutation.target.classList.contains('sb-expanded'));
                     //     break;
 
-                        // modal is open
+                    // modal is open
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.modalWrapper):
                         //this.domSet('hasOverlay', !!mutation.target.hasChildNodes());                      
-                        if(el.$('.sb-modal-frame.yesterday', mutation.target)) {
+                        if (el.$('.sb-modal-frame.yesterday', mutation.target)) {
                             this.trigger(prefix('yesterday'), mutation.target);
                         }
                         break;

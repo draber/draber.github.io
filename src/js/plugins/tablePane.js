@@ -19,10 +19,12 @@ class TablePane extends Plugin {
 	run() {
 		this.pane = el.empty(this.pane);
 		const tbody = el.tbody();
-		this.getData().forEach((rowData, i) => {
+		const data = this.getData();
+		const l = data.length;
+		data.forEach((rowData, i) => {
 			const classNames = [];
 			for (const [marker, fn] of Object.entries(this.cssMarkers)) {
-				if (fn(rowData, i)) {
+				if (fn(rowData, i, l)) {
 					classNames.push(prefix(marker, 'd'))
 				}
 			}
