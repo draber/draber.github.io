@@ -364,7 +364,7 @@
     class Popup {
         enableKeyClose() {
             document.addEventListener('keyup', evt => {
-                this.app.popupCloser = el.$('.sb-modal-wrapper .sb-modal-close', this.app.gameWrapper);
+                this.app.popupCloser = this.getCloseButton();
                 if (this.app.popupCloser && evt.code === 'Escape') {
                     this.app.popupCloser.click();
                 }

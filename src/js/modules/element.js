@@ -136,6 +136,7 @@ const create = function ({
 /**
  * Dispatcher for the `create()`, `$` and `$$`
  * Examples (for $, $$ see docs on the functions):
+ * @example
  * el.div() returns a div element, where `div` can be any element
  * el.a({
  *     content: HTMLElement|NodeList|Array|String|HTMLCode,

@@ -64,15 +64,18 @@ class App extends Widget {
 
     /**
      * Whether the splash screen has gone and the content box isn't set to `sb-game-locked`
+     * @example
+     * Overview of possible states
+     * 
+     * splash    | .sb-game-locked | state      | action
+     * ===========================================================	
+     * absent    | absent          | loading    | wait for promise
+     * visible   | present         | locked     | launch on click
+     * hidden    | absent          | unlocked   | launch
+     * 
      * @returns {Number}
      */
     getGameState() {
-        // splash    | .sb-game-locked | state	    | action
-        // ===========================================================	
-        // absent	 | absent	       | loading	| wait for promise
-        // visible	 | present	       | locked	    | launch on click
-        // hidden	 | absent	       | unlocked	| launch
-
         const splash = el.$('#js-hook-pz-moment__welcome', this.gameWrapper);
         const contentBox = el.$('.sb-content-box', this.gameWrapper);
         if (!splash) {
@@ -90,14 +93,17 @@ class App extends Widget {
 
     /**
      * Retrieve sync data
+     * @example 
+     * On a fresh game `localStorage::sb-today` can have the following states
+     * 
+     * pristine:                    absent
+     * at least one word locally:   loads along with splash (with tiny delay)
+     * on remote entry:             no change
+     * at least one word remotely:  loads along with splash (with delay)
+     * 
      * @returns {Null|Array}
      */
     getSyncData() {
-        // starting on a fresh game we get the following values for `sb-today`
-        // pristine:                    absent
-        // at least one word locally:   loads along with splash (with tiny delay)
-        // on remote entry:             no change
-        // at least one word remotely:  loads along with splash (with delay)
         let sync = localStorage.getItem('sb-today');
         if (!sync) {
             return null;

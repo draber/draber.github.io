@@ -560,6 +560,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#popupgetclosebutton'
+                        class='regular pre-open'>
+                        #getCloseButton
+                      </a></li>
+                      
+                      <li><a
                         href='#popuptoggle'
                         class='regular pre-open'>
                         #toggle
@@ -1720,28 +1726,7 @@ Querying can optionally be restricted to {container}’s descendants</p>
   
 
   <p>Dispatcher for the <code>create()</code>, <code>$</code> and <code>$$</code>
-Examples (for $, $$ see docs on the functions):
-el.div() returns a div element, where <code>div</code> can be any element
-el.a({
-content: HTMLElement|NodeList|Array|String|HTMLCode,
-attributes: {
-href: '<a href="http://example.com">http://example.com</a>'
-},
-style: {
-color: 'red'
-},
-data: {
-foo: 'bar'
-},
-events: {
-click: () => alert('quux')
-},
-classNames: [
-'boom'
-],
-isSvg: true|false (default)
-})
-returns the element <code>&#x3C;a href="http://example.com" style="color: red" data-foo="bar" class="boom">My link&#x3C;/a></code> that issues an alert when clicked</p>
+Examples (for $, $$ see docs on the functions):</p>
 
     <div class='pre p1 fill-light mt0'>el</div>
   
@@ -1764,6 +1749,32 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
 
   
 
+  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'>el.div() returns a div element, where <span class="hljs-string">`div`</span> can be any element
+el.a({
+    <span class="hljs-attr">content</span>: HTMLElement|NodeList|<span class="hljs-built_in">Array</span>|<span class="hljs-built_in">String</span>|HTMLCode,
+    <span class="hljs-attr">attributes</span>: {
+        <span class="hljs-attr">href</span>: <span class="hljs-string">&#x27;http://example.com&#x27;</span>
+    },
+    <span class="hljs-attr">style</span>: {
+        <span class="hljs-attr">color</span>: <span class="hljs-string">&#x27;red&#x27;</span>
+    },
+    <span class="hljs-attr">data</span>: {
+        <span class="hljs-attr">foo</span>: <span class="hljs-string">&#x27;bar&#x27;</span>
+    },
+    <span class="hljs-attr">events</span>: {
+        <span class="hljs-attr">click</span>: <span class="hljs-function">() =&gt;</span> alert(<span class="hljs-string">&#x27;quux&#x27;</span>)
+    },
+    <span class="hljs-attr">classNames</span>: [
+        <span class="hljs-string">&#x27;boom&#x27;</span>
+    ],
+    <span class="hljs-attr">isSvg</span>: <span class="hljs-literal">true</span>|<span class="hljs-literal">false</span> (<span class="hljs-keyword">default</span>)
+})
+returns the element <span class="hljs-string">`&lt;a href=&quot;http://example.com&quot; style=&quot;color: red&quot; data-foo=&quot;bar&quot; class=&quot;boom&quot;&gt;My link&lt;/a&gt;`</span> that issues an alert when clicked</pre>
+    
   
 
   
@@ -2247,6 +2258,18 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
   
 
   
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'>Overview <span class="hljs-keyword">of</span> possible states
+
+splash    | .sb-game-locked | state      | action
+===========================================================	
+absent    | absent          | loading    | wait <span class="hljs-keyword">for</span> promise
+visible   | present         | locked     | launch on click
+hidden    | absent          | unlocked   | launch</pre>
+    
+  
 
   
 
@@ -2302,6 +2325,17 @@ returns the element <code>&#x3C;a href="http://example.com" style="color: red" d
 
   
 
+  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      
+      <pre class='p1 overflow-auto round fill-light'>On a fresh game <span class="hljs-string">`localStorage::sb-today`</span> can have the following states
+
+<span class="hljs-attr">pristine</span>:                    absent
+at least one word locally:   loads along <span class="hljs-keyword">with</span> splash (<span class="hljs-keyword">with</span> tiny delay)
+on remote entry:             no change
+at least one word remotely:  loads along <span class="hljs-keyword">with</span> splash (<span class="hljs-keyword">with</span> delay)</pre>
+    
   
 
   
@@ -5111,6 +5145,62 @@ Create one if it doesn't exist yet</p>
 
   
 
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='popupgetclosebutton'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getCloseButton()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Get the close button of the various pop-up formats</p>
+
+    <div class='pre p1 fill-light mt0'>getCloseButton(): (<a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>)</code>:
+        
+      
+    
   
 
   

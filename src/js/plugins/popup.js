@@ -16,7 +16,7 @@ class Popup {
      */
     enableKeyClose() {
         document.addEventListener('keyup', evt => {
-            this.app.popupCloser = el.$('.sb-modal-wrapper .sb-modal-close', this.app.gameWrapper);
+            this.app.popupCloser = this.getCloseButton();
             if (this.app.popupCloser && evt.code === 'Escape') {
                 this.app.popupCloser.click();
             }
@@ -108,6 +108,10 @@ class Popup {
         return this;
     }
 
+    /**
+     * Get the close button of the various pop-up formats
+     * @returns {HTMLElement|Boolean}
+     */
     getCloseButton() {
         for(let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
             const closer = el.$(selector, this.app.gameWrapper);
