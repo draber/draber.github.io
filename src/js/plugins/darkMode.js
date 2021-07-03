@@ -2,7 +2,6 @@ import {
     prefix
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
-import el from '../modules/element.js';
 
 /**
  * Dark Mode plugin

@@ -1,7 +1,10 @@
 .sba {
     background: var(--body-bg-color);
-    border: 1px var(--border-color) solid;
-    border-radius: 6px;
+    border: {
+        radius: 6px;
+        style: solid;
+        width: 1px;
+    }
 
     * {
         &:focus {
@@ -420,6 +423,14 @@
                     font-weight: bold;
                     text-transform: uppercase;
                 }
+            }
+
+            &:first-of-type {
+                border-bottom: 2px solid var(--highlight-bg-color) !important;
+            }
+
+            &:last-of-type {
+                border-top: 2px solid var(--highlight-bg-color) !important;
             }
 
             td {

@@ -370,6 +370,7 @@
                 }
                 delete(this.app.popupCloser);
             });
+            return this;
         }
         getTarget() {
             const dataUi = prefix('popup-container', 'd');
@@ -385,7 +386,7 @@
             return container;
         }
         create() {
-            const frame = el.div({
+            return el.div({
                 classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
                 attributes: {
                     role: 'button'
@@ -427,7 +428,6 @@
                     })
                 ]
             });
-            return frame;
         }
         setContent(part, content) {
             if (!this.parts[part]) {
@@ -438,8 +438,17 @@
             this.parts[part].append(el.toNode(content));
             return this;
         }
+        getCloseButton() {
+            for(let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
+                const closer = el.$(selector, this.app.gameWrapper);
+                if(closer) {
+                    return closer;
+                }
+            }
+            return false;
+        }
         toggle(state) {
-            const closer = el.$('.sb-modal-close', this.app.modalWrapper);
+            const closer = this.getCloseButton();
             if (!state && closer) {
                 closer.click();
             }
@@ -474,7 +483,7 @@
                             content: settings$1.get('label'),
                             attributes: {
                                 href: settings$1.get('url'),
-                                target: '_blank'
+                                target: prefix()
                             }
                         })
                     ]
@@ -492,10 +501,11 @@
                 element.style.setProperty('--dhue', state.hue);
                 element.style.setProperty('--dsat', state.sat + '%');
             });
-            super.toggle(state);
+            return super.toggle(state);
         }
         display() {
             this.popup.toggle(true);
+            el.$('input:checked', this.popup.ui).focus();
         }
         constructor(app) {
             super(app, 'Dark Mode Colors', 'Select your favorite color scheme for the Dark Mode.', {
@@ -559,12 +569,12 @@
                                 },
                                 isSvg: true,
                                 content: [el.path({
-                                        classNames: ['cell-fill'],
-                                        isSvg: true,
-                                        attributes: {
-                                            d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
-                                        }
-                                    }),
+                                    classNames: ['cell-fill'],
+                                    isSvg: true,
+                                    attributes: {
+                                        d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
+                                    }
+                                }),
                                     el.text({
                                         classNames: ['cell-letter'],
                                         attributes: {
@@ -622,7 +632,7 @@
     }
 
     class TablePane extends Plugin {
-    	run() {
+    	run(evt) {
     		this.pane = el.empty(this.pane);
     		const tbody = el.tbody();
     		const data = this.getData();
@@ -701,6 +711,7 @@
                 emoji = '🙁';
             }
             this.ui.textContent = emoji;
+            return this;
         }
         constructor(app) {
             super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
@@ -717,122 +728,122 @@
     }
 
     class LetterCount extends TablePane {
-    	getData() {
-    		const counts = {};
-    		const pangramCount = data.getCount('pangrams');
-    		const foundPangramCount = data.getCount('foundPangrams');
-    		const cellData = [
-    			['', '✓', '?', '∑']
-    		];
-    		data.getList('answers').forEach(term => {
-    			counts[term.length] = counts[term.length] || {
-    				found: 0,
-    				missing: 0,
-    				total: 0
-    			};
-    			if (data.getList('foundTerms').includes(term)) {
-    				counts[term.length].found++;
-    			} else {
-    				counts[term.length].missing++;
-    			}
-    			counts[term.length].total++;
-    		});
-    		let keys = Object.keys(counts);
-    		keys.sort((a, b) => a - b);
-    		keys.forEach(count => {
-    			cellData.push([
-    				count + ' ' + (count > 1 ? 'letters' : 'letter'),
-    				counts[count].found,
-    				counts[count].missing,
-    				counts[count].total
-    			]);
-    		});
-    		cellData.push([
-    			'Pangrams',
-    			foundPangramCount,
-    			pangramCount - foundPangramCount,
-    			pangramCount
-    		]);
-    		return cellData;
-    	}
-    	constructor(app) {
-    		super(app, 'Letter count', 'The number of words by length, also the number of pangrams', {
-    			cssMarkers: {
-    				completed: (rowData, i) => i > 0 && rowData[2] === 0,
-    				preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
-    			}
-    		});
-    		this.ui = el.details({
-    			content: [
-    				el.summary({
-    					content: this.title
-    				}),
-    				this.getPane()
-    			]
-    		});
-    		this.toggle(this.getState());
-    	}
+        getData() {
+            const counts = {};
+            const pangramCount = data.getCount('pangrams');
+            const foundPangramCount = data.getCount('foundPangrams');
+            const cellData = [
+                ['', '✓', '?', '∑']
+            ];
+            data.getList('answers').forEach(term => {
+                counts[term.length] = counts[term.length] || {
+                    found: 0,
+                    missing: 0,
+                    total: 0
+                };
+                if (data.getList('foundTerms').includes(term)) {
+                    counts[term.length].found++;
+                } else {
+                    counts[term.length].missing++;
+                }
+                counts[term.length].total++;
+            });
+            let keys = Object.keys(counts);
+            keys.sort((a, b) => a - b);
+            keys.forEach(count => {
+                cellData.push([
+                    count + ' ' + (count > 1 ? 'letters' : 'letter'),
+                    counts[count].found,
+                    counts[count].missing,
+                    counts[count].total
+                ]);
+            });
+            cellData.push([
+                'Pangrams',
+                foundPangramCount,
+                pangramCount - foundPangramCount,
+                pangramCount
+            ]);
+            return cellData;
+        }
+        constructor(app) {
+            super(app, 'Letter count', 'The number of words by length, also the number of pangrams', {
+                cssMarkers: {
+                    completed: (rowData, i) => i > 0 && rowData[2] === 0,
+                    preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
+                }
+            });
+            this.ui = el.details({
+                content: [
+                    el.summary({
+                        content: this.title
+                    }),
+                    this.getPane()
+                ]
+            });
+            this.toggle(this.getState());
+        }
     }
 
     class FirstLetter extends TablePane {
-    	getData() {
-    		const letters = {};
-    		const answers = data.getList('answers').sort((a, b) => {
-    			if (a.startsWith(this.centerLetter)) {
-    				return -1;
-    			}
-    			if (b.startsWith(this.centerLetter)) {
-    				return 1;
-    			}
-    			return a < b ? -1 : 1;
-    		});
-    		const remainders = data.getList('remainders');
-    		const tpl = {
-    			foundTerms: 0,
-    			remainders: 0,
-    			total: 0
-    		};
-    		answers.forEach(term => {
-    			const letter = term.charAt(0);
-    			if (typeof letters[letter] === 'undefined') {
-    				letters[letter] = {
-    					...tpl
-    				};
-    			}
-    			if (remainders.includes(term)) {
-    				letters[letter].remainders++;
-    			} else {
-    				letters[letter].foundTerms++;
-    			}
-    			letters[letter].total++;
-    		});
-    		const cellData = [
-    			['', '✓', '?', '∑']
-    		];
-    		for (let [letter, values] of Object.entries(letters)) {
-    			values = Object.values(values);
-    			values.unshift(letter);
-    			cellData.push(values);
-    		}
-    		return cellData;
-    	}
-    	constructor(app) {
-    		super(app, 'First letter', 'The number of words by first letter', {
-    			cssMarkers: {
-    				completed: (rowData, i) => i > 0 && rowData[2] === 0,
-    				preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
-    			}
-    		});
-    		this.ui = el.details({
-    			content: [
-    				el.summary({
-    					content: this.title
-    				}),
-    				this.getPane()
-    			]
-    		});
-    		this.toggle(this.getState());
-    	}
+        getData() {
+            const letters = {};
+            const answers = data.getList('answers').sort((a, b) => {
+                if (a.startsWith(this.centerLetter)) {
+                    return -1;
+                }
+                if (b.startsWith(this.centerLetter)) {
+                    return 1;
+                }
+                return a < b ? -1 : 1;
+            });
+            const remainders = data.getList('remainders');
+            const tpl = {
+                foundTerms: 0,
+                remainders: 0,
+                total: 0
+            };
+            answers.forEach(term => {
+                const letter = term.charAt(0);
+                if (typeof letters[letter] === 'undefined') {
+                    letters[letter] = {
+                        ...tpl
+                    };
+                }
+                if (remainders.includes(term)) {
+                    letters[letter].remainders++;
+                } else {
+                    letters[letter].foundTerms++;
+                }
+                letters[letter].total++;
+            });
+            const cellData = [
+                ['', '✓', '?', '∑']
+            ];
+            for (let [letter, values] of Object.entries(letters)) {
+                values = Object.values(values);
+                values.unshift(letter);
+                cellData.push(values);
+            }
+            return cellData;
+        }
+        constructor(app) {
+            super(app, 'First letter', 'The number of words by first letter', {
+                cssMarkers: {
+                    completed: (rowData, i) => i > 0 && rowData[2] === 0,
+                    preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
+                }
+            });
+            this.ui = el.details({
+                content: [
+                    el.summary({
+                        content: this.title
+                    }),
+                    this.getPane()
+                ]
+            });
+            this.toggle(this.getState());
+        }
     }
 
     class YourProgress extends TablePane {
@@ -998,14 +1009,15 @@
             return this.run();
         }
         listener(evt) {
-            if(!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')){
+            if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
                 return false;
             }
-            if(evt.button === 0) {
-               return window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
+            if (evt.button === 0) {
+                window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
+                return true;
             }
         }
-        run() {
+        run(evt=null) {
             const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
             [this.app.modalWrapper, this.app.resultList].forEach(container => {
                 container[method]('pointerup', this.listener);
@@ -1021,7 +1033,7 @@
         }
     }
 
-    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--highlight-bg-color:#f7db22;--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dbdbdb;--area-bg-color:#e6e6e6;--invalid-color:#adadad;--menu-hover-color:#f5f5f5;--card-color:rgba(250,5,5,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--success-color:#2ca61c}[data-sba-theme=dark]{--highlight-bg-color:#facd05;--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), 7%);--modal-bg-color:hsl(var(--dhue), var(--dsat), 7%, 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 50%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--success-color:#64f651}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-wrapper{background:var(--body-bg-color) !important;color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--highlight-bg-color);fill:var(--highlight-bg-color);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.pz-modal__button.white,.pz-footer,.pz-moment,.sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}.pz-modal__button.white .pz-moment__button.secondary,.pz-footer .pz-moment__button.secondary,.pz-moment .pz-moment__button.secondary,.sb-modal-scrim .pz-moment__button.secondary{color:#fff}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--highlight-bg-color)}.cell-fill{stroke:var(--body-bg-color)}.cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highhlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}.pz-spelling-bee-congrats .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist .hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}.sba{background:var(--body-bg-color);border:1px var(--border-color) solid;border-radius:6px}.sba *:focus{outline:0}.sba ::selection{background:transparent}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}[data-ui].inactive{display:none}.sba-data-pane{border-collapse:collapse;table-layout:fixed}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-bg-color) !important}.sba-data-pane .sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba-data-pane td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}[data-ui=yourProgress] b{font-weight:700}[data-ui=yourProgress] .sba-data-pane{margin-left:5px;max-width:300px}[data-ui=yourProgress] .sba-data-pane td{border:none}[data-ui=yourProgress] .sba-data-pane tr.sba-completed{color:var(--text-color)}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(n+2){text-align:right;width:80px}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(2)::after{content:\" pts.\"}[data-ui=yourProgress] .sba-data-pane tr td:last-child::after{content:\"%\"}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}[data-ui=score] tbody tr:first-child td,[data-ui=letterCount] tbody tr:first-child td,[data-ui=firstLetter] tbody tr:first-child td{font-weight:bold;font-size:92%}[data-ui=firstLetter] tbody tr td:first-child{text-align:center;text-transform:uppercase}[data-ui=progressBar]{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;height:6px;padding:0;background:transparent;display:block;border-bottom:1px var(--border-color) solid}[data-ui=progressBar]::-webkit-progress-bar{background-color:transparent}[data-ui=progressBar]::-webkit-progress-value{background-color:var(--highlight-bg-color);height:4px}[data-ui=progressBar]::-moz-progress-bar{background-color:var(--highlight-bg-color)}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 28px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-bg-color);top:3px;left:7px;font-size:16px}[data-ui=menu] li[data-icon=warning]::before{content:\"\";background:url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyLjAwNiAyLjI1NWwxMS4yNTUgMTkuNDlILjc1NXoiIGZpbGw9IiNmOGNkMDUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cGF0aCBkPSJNMTMuNDQxIDkuMDAybC0uMzE3IDcuMzA2aC0yLjI0N2wtLjMxNy03LjMwNnptLS4wNDggMTAuMjYyaC0yLjc4NXYtMS44MmgyLjc4NXoiLz48L3N2Zz4=) center center/contain no-repeat;left:3px;top:6px;width:20px;height:20px}[data-ui=menu] li[data-target=darkModeColors],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]::before{content:\"\";background:url(data:image/webp;base64,UklGRkYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSLgAAAABgFpt2/LmVbGJI8u8QgaIZSxqxgEYFTM7VMzMNEBPB2gVcx/xff/7/4UBImIC6F+16CWBxZsmlmH+9a7HROR4BxDmdADArZOOAKCdsyTgOguxkFMokb/oObTDyRBbN/kk+yoitfMAvr/xVevlJa5eoNzKaQN/S6dQC/Eb+PwScCQLQv1crKykJnqiAd5X9y46SrVYJXFQg5CERlSVk2LlF+s1n5iu/geF+14r8Y2x+ompsdqokf4uVlA4IGgBAABwBwCdASoYABgAPpE+m0kloyKhKAqosBIJbAAjwDeRZaSiFfn3Zr1QP9Ud0ADEskPPzxJU2pre8kHbnjqgPRfZb8zq4AD9IaAZD2vQgXhhU4vU6iI9307byI0qRvcdYUVqITfvs+c25tJHp68Tb8QbbjuwTz0j+xXnVHcdq1O53Cem6tFr6zIo8VPHzofJrvlKQnvp1W5bdpH3HE+2rDOikrPkzD5qdR91khmLUr2/65qN81K7n/5Ztjb/URQJxilNBdj/22TMy3S5+24re6Kkfvbzc9n/kNAlBuAaKYxSAgHTAELvJElqGMJ9psshwQ9Hinh1y4MVKzbf8UDf/8aFRjwHnN+c4w1Zb8LpKYQTgVuzyDsB7crn5PhK9sLJaU7CApsBz7CTzw1L6VpU0HoDsNv54wX6rtilmqIwjJzvnBL5H2aH/M7tuhCNyahJ+EDMv/cyE4Kqn918j7n693a1ovztxeo8AAA=) center center/contain no-repeat;left:5px;top:6px;width:20px;height:20px}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}.sba-color-selector{display:flex;justify-content:space-between;gap:10px}.sba-color-selector svg{width:120px;height:120px;display:block}[data-ui=darkModeColors] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkModeColors] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkModeColors] .cell-letter{font-size:8px;font-weight:600}.sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:220px}.sba-swatches li{position:relative;overflow:hidden;margin-bottom:5px}.sba-swatches label{border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer}.sba-swatches input{position:absolute;left:-100px}.sba-swatches input:checked~label{border-color:var(--highlight-bg-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}#portal-game-toolbar [role=presentation]::selection{background:transparent}.pz-spelling-bee-congrats .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}.pz-spelling-bee-congrats .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--highlight-bg-color);top:4px;font-size:16px}.pz-spelling-bee-congrats .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:transparent}[data-ui=grid] table{border-top:1px solid var(--border-color);table-layout:fixed;width:100%}[data-ui=grid] tbody tr:first-child td,[data-ui=grid] tbody tr:last-child td{font-weight:bold;text-transform:uppercase}[data-ui=grid] tbody tr td{width:auto;font-size:14px;padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type,[data-ui=grid] tbody tr td:first-of-type{text-align:center;font-weight:bold}[data-ui=grid] tbody tr td:first-of-type{border-right:2px solid var(--highlight-bg-color) !important}[data-ui=grid] tbody tr td:last-of-type{border-left:2px solid var(--highlight-bg-color) !important}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sb-wordlist-items-pag>li.sba-pangram,[data-sba-theme].pz-spelling-bee-congrats .sb-modal-wordlist-items>li.sba-pangram{font-weight:700;border-bottom:2px var(--highlight-bg-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{position:absolute;top:0;right:-10000px}[data-sba-submenu=true] .sba{position:relative;left:-167px;top:-175px}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{right:-16px;top:49px}[data-sba-submenu=true] .sba{left:-163px;top:0}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba-container{top:0;height:0}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active] .sba{left:-175px}}@media(min-width: 900px){[data-sba-submenu=true] [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 65px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba{left:-191px;top:-65px}}@media(min-width: 1298px){[data-sba-active=true][data-sba-submenu=true] .sba{left:-179px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}";
+    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--highlight-bg-color:#f7db22;--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dbdbdb;--area-bg-color:#e6e6e6;--invalid-color:#adadad;--menu-hover-color:#f5f5f5;--card-color:rgba(250,5,5,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--success-color:#2ca61c}[data-sba-theme=dark]{--highlight-bg-color:#facd05;--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), 7%);--modal-bg-color:hsl(var(--dhue), var(--dsat), 7%, 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 50%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--success-color:#64f651}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-wrapper{background:var(--body-bg-color) !important;color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--highlight-bg-color);fill:var(--highlight-bg-color);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.pz-modal__button.white,.pz-footer,.pz-moment,.sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}.pz-modal__button.white .pz-moment__button.secondary,.pz-footer .pz-moment__button.secondary,.pz-moment .pz-moment__button.secondary,.sb-modal-scrim .pz-moment__button.secondary{color:#fff}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--highlight-bg-color)}.cell-fill{stroke:var(--body-bg-color)}.cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highhlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}.pz-spelling-bee-congrats .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist .hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:transparent}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--border-color);border-top:none;width:100%;font-size:85%;margin-bottom:2px}[data-ui].inactive{display:none}.sba-data-pane{border-collapse:collapse;table-layout:fixed}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-bg-color) !important}.sba-data-pane .sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane td{border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba-data-pane td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}[data-ui=yourProgress] b{font-weight:700}[data-ui=yourProgress] .sba-data-pane{margin-left:5px;max-width:300px}[data-ui=yourProgress] .sba-data-pane td{border:none}[data-ui=yourProgress] .sba-data-pane tr.sba-completed{color:var(--text-color)}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(n+2){text-align:right;width:80px}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(2)::after{content:\" pts.\"}[data-ui=yourProgress] .sba-data-pane tr td:last-child::after{content:\"%\"}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}[data-ui=score] tbody tr:first-child td,[data-ui=letterCount] tbody tr:first-child td,[data-ui=firstLetter] tbody tr:first-child td{font-weight:bold;font-size:92%}[data-ui=firstLetter] tbody tr td:first-child{text-align:center;text-transform:uppercase}[data-ui=progressBar]{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;height:6px;padding:0;background:transparent;display:block;border-bottom:1px var(--border-color) solid}[data-ui=progressBar]::-webkit-progress-bar{background-color:transparent}[data-ui=progressBar]::-webkit-progress-value{background-color:var(--highlight-bg-color);height:4px}[data-ui=progressBar]::-moz-progress-bar{background-color:var(--highlight-bg-color)}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 28px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-bg-color);top:3px;left:7px;font-size:16px}[data-ui=menu] li[data-icon=warning]::before{content:\"\";background:url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyLjAwNiAyLjI1NWwxMS4yNTUgMTkuNDlILjc1NXoiIGZpbGw9IiNmOGNkMDUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cGF0aCBkPSJNMTMuNDQxIDkuMDAybC0uMzE3IDcuMzA2aC0yLjI0N2wtLjMxNy03LjMwNnptLS4wNDggMTAuMjYyaC0yLjc4NXYtMS44MmgyLjc4NXoiLz48L3N2Zz4=) center center/contain no-repeat;left:3px;top:6px;width:20px;height:20px}[data-ui=menu] li[data-target=darkModeColors],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]::before{content:\"\";background:url(data:image/webp;base64,UklGRkYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSLgAAAABgFpt2/LmVbGJI8u8QgaIZSxqxgEYFTM7VMzMNEBPB2gVcx/xff/7/4UBImIC6F+16CWBxZsmlmH+9a7HROR4BxDmdADArZOOAKCdsyTgOguxkFMokb/oObTDyRBbN/kk+yoitfMAvr/xVevlJa5eoNzKaQN/S6dQC/Eb+PwScCQLQv1crKykJnqiAd5X9y46SrVYJXFQg5CERlSVk2LlF+s1n5iu/geF+14r8Y2x+ompsdqokf4uVlA4IGgBAABwBwCdASoYABgAPpE+m0kloyKhKAqosBIJbAAjwDeRZaSiFfn3Zr1QP9Ud0ADEskPPzxJU2pre8kHbnjqgPRfZb8zq4AD9IaAZD2vQgXhhU4vU6iI9307byI0qRvcdYUVqITfvs+c25tJHp68Tb8QbbjuwTz0j+xXnVHcdq1O53Cem6tFr6zIo8VPHzofJrvlKQnvp1W5bdpH3HE+2rDOikrPkzD5qdR91khmLUr2/65qN81K7n/5Ztjb/URQJxilNBdj/22TMy3S5+24re6Kkfvbzc9n/kNAlBuAaKYxSAgHTAELvJElqGMJ9psshwQ9Hinh1y4MVKzbf8UDf/8aFRjwHnN+c4w1Zb8LpKYQTgVuzyDsB7crn5PhK9sLJaU7CApsBz7CTzw1L6VpU0HoDsNv54wX6rtilmqIwjJzvnBL5H2aH/M7tuhCNyahJ+EDMv/cyE4Kqn918j7n693a1ovztxeo8AAA=) center center/contain no-repeat;left:5px;top:6px;width:20px;height:20px}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}.sba-color-selector{display:flex;justify-content:space-between;gap:10px}.sba-color-selector svg{width:120px;height:120px;display:block}[data-ui=darkModeColors] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkModeColors] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkModeColors] .cell-letter{font-size:8px;font-weight:600}.sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:220px}.sba-swatches li{position:relative;overflow:hidden;margin-bottom:5px}.sba-swatches label{border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer}.sba-swatches input{position:absolute;left:-100px}.sba-swatches input:checked~label{border-color:var(--highlight-bg-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}#portal-game-toolbar [role=presentation]::selection{background:transparent}.pz-spelling-bee-congrats .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}.pz-spelling-bee-congrats .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--highlight-bg-color);top:4px;font-size:16px}.pz-spelling-bee-congrats .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:transparent}[data-ui=grid] table{border-top:1px solid var(--border-color);table-layout:fixed;width:100%}[data-ui=grid] tbody tr:first-child td,[data-ui=grid] tbody tr:last-child td{font-weight:bold;text-transform:uppercase}[data-ui=grid] tbody tr:first-of-type{border-bottom:2px solid var(--highlight-bg-color) !important}[data-ui=grid] tbody tr:last-of-type{border-top:2px solid var(--highlight-bg-color) !important}[data-ui=grid] tbody tr td{width:auto;font-size:14px;padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type,[data-ui=grid] tbody tr td:first-of-type{text-align:center;font-weight:bold}[data-ui=grid] tbody tr td:first-of-type{border-right:2px solid var(--highlight-bg-color) !important}[data-ui=grid] tbody tr td:last-of-type{border-left:2px solid var(--highlight-bg-color) !important}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats .sb-wordlist-items-pag>li.sba-pangram,[data-sba-theme].pz-spelling-bee-congrats .sb-modal-wordlist-items>li.sba-pangram{font-weight:700;border-bottom:2px var(--highlight-bg-color) solid}[data-sba-theme].pz-spelling-bee-congrats .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{position:absolute;top:0;right:-10000px}[data-sba-submenu=true] .sba{position:relative;left:-167px;top:-175px}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{right:-16px;top:49px}[data-sba-submenu=true] .sba{left:-163px;top:0}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:transparent}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true][data-sba-submenu=true] .sba-container{top:0;height:0}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 400px){[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:block}}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}}@media(min-width: 900px){[data-sba-submenu=true].pz-desktop [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 65px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba{top:-65px}[data-sba-active=true].pz-desktop .sba{left:-191px}}@media(min-width: 1298px){[data-sba-active=true][data-sba-submenu=true] .sba{left:-179px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}";
 
     class Styles extends Plugin {
         modifyMq() {
@@ -1029,12 +1041,12 @@
             if (!sheet) {
                 return false;
             }
+            const rules = sheet.cssRules;
+            if (!rules) {
+                return false;
+            }
             const theirCond = 'min-width: 768px';
             const myCond = theirCond.replace('768', '900');
-            const rules = Array.from(sheet.cssRules).filter(rule => rule instanceof CSSMediaRule && rule.conditionText.includes(theirCond) && !rule.cssText.includes('.sb-modal'));
-            if (!rules) {
-                return
-            }
             const marker = `data-${prefix('active', 'd')}`;
             const theirMarker = `[${marker}="false"]`;
             const myMarker = `[${marker}="true"]`;
@@ -1042,17 +1054,20 @@
             let newRules = [];
             let l = rules.length;
             while (l--) {
-                rules[l].cssRules.forEach(rule => {
-                    const selectorText = rule.selectorText.split(',').map(selector => `${marker} ${selector.trim()}`).join(', ');
-                    newRules.push(rule.cssText.replace(rule.selectorText, selectorText));
-                });
-                sheet.deleteRule(l);
+                if (rules[l] instanceof CSSMediaRule && rules[l].conditionText.includes(theirCond) && !rules[l].cssText.includes('.sb-modal')) {
+                    rules[l].cssRules.forEach(rule => {
+                        const selectorText = rule.selectorText.split(',').map(selector => `${marker} ${selector.trim()}`).join(', ');
+                        newRules.push(rule.cssText.replace(rule.selectorText, selectorText));
+                    });
+                    sheet.deleteRule(l);
+                }
             }
             newRules = newRules.join('');
             const theirRule = `@media (${theirCond}) { ${newRules.replace(markerRe, theirMarker)} }`;
             const myRule = `@media (${myCond}) { ${newRules.replace(markerRe, myMarker)} }`;
             sheet.insertRule(theirRule);
             sheet.insertRule(myRule);
+            return this;
         }
         constructor(app) {
             super(app, 'Styles', '');
@@ -1062,151 +1077,151 @@
             });
             app.on(prefix('destroy'), () => this.ui.remove());
             this.add();
-            this.modifyMq();
+            setTimeout(() => {
+                this.modifyMq();
+            }, 100);
         }
     }
 
     class Menu extends Plugin {
-    	getTarget() {
-    		let target;
-    		if (this.app.envIs('mobile')) {
-    			target = el.$('#js-mobile-toolbar');
-    		} else {
-    			target = el.div({
-    				content: el.$$('#portal-game-toolbar > span')
-    			});
-    			el.$('#portal-game-toolbar').append(target);
-    		}
-    		return target;
-    	}
-    	run(evt) {
-    		return super.toggle();
-    	}
-    	getComponent(entry) {
-    		if (entry.dataset.component === this.app.key) {
-    			return this.app
-    		}
-    		if (this.app.plugins.has(entry.dataset.component)) {
-    			return this.app.plugins.get(entry.dataset.component);
-    		}
-    		return null;
-    	}
-    	constructor(app) {
-    		super(app, 'Menu', '');
-    		this.target = this.getTarget();
-    		const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
-    		this.app.domSet('submenu', false);
-    		const pane = el.ul({
-    			classNames: ['pane'],
-    			data: {
-    				ui: 'submenu'
-    			},
-    			events: {
-    				pointerup: evt => {
-    					const entry = evt.target.closest('li');
-    					if (!entry || evt.button !== 0) {
-    						return false;
-    					}
-    					const component = this.getComponent(entry);
-    					switch (entry.dataset.action) {
-    						case 'boolean':
-    							const nextState = !component.getState();
-    							component.toggle(nextState);
-    							entry.classList.toggle('checked', nextState);
-    							if (component === this.app) {
-    								this.app.toggle(nextState);
-    							}
-    							break;
-    						case 'popup':
-    							this.app.domSet('submenu', false);
-    							component.display();
-    							break;
-    						default:
-    							setTimeout(() => {
-    								this.app.domSet('submenu', false);
-    							}, 60);
-    					}
-    				}
-    			},
-    			content: el.li({
-    				classNames: this.app.getState() ? ['checked'] : [],
-    				attributes: {
-    					title: this.app.title
-    				},
-    				data: {
-    					component: this.app.key,
-    					icon: 'checkmark',
-    					action: 'boolean'
-    				},
-    				content: `Show ${settings$1.get('title')}`
-    			})
-    		});
-    		this.ui = el.div({
-    			events: {
-    				pointerup: evt => {
-    					if (!evt.target.dataset.action) {
-    						this.app.domSet('submenu', !this.app.domGet('submenu'));
-    					}
-    				}
-    			},
-    			content: [
-    				settings$1.get('title'),
-    				pane
-    			],
-    			attributes: {
-    				role: 'presentation'
-    			},
-    			classNames
-    		});
-    		document.addEventListener('keyup', evt => {
-    			if (this.app.domGet('submenu') === true) {
-    				this.app.domSet('submenu', false);
-    			}
-    		});
-    		el.$('#pz-game-root').addEventListener('pointerdown', evt => {
-    			if (this.app.domGet('submenu') === true) {
-    				this.app.domSet('submenu', false);
-    			}
-    		});
-    		app.on(prefix('pluginsReady'), evt => {
-    			evt.detail.forEach((plugin, key) => {
-    				if (!plugin.canChangeState || plugin === this) {
-    					return false;
-    				}
-    				const action = plugin.menuAction || 'boolean';
-    				pane.append(el.li({
-    					classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
-    					attributes: {
-    						title: plugin.description
-    					},
-    					data: {
-    						component: key,
-    						icon: action === 'boolean' ? 'checkmark' : (plugin.menuIcon || null),
-    						action
-    					},
-    					content: plugin.title
-    				}));
-    			});
-    			pane.append(el.li({
-    				attributes: {
-    					title: settings$1.get('label') + ' Website'
-    				},
-    				data: {
-    					icon: prefix(),
-    					component: prefix('web'),
-    					action: 'link'
-    				},
-    				content: el.a({
-    					content: settings$1.get('label'),
-    					attributes: {
-    						href: settings$1.get('url'),
-    						target: prefix()
-    					}
-    				})
-    			}));
-    		});
-    		app.on(prefix('destroy'), () => this.ui.remove());
-    	}
+        getTarget() {
+            let target;
+            if (this.app.envIs('mobile')) {
+                target = el.$('#js-mobile-toolbar');
+            } else {
+                target = el.div({
+                    content: el.$$('#portal-game-toolbar > span')
+                });
+                el.$('#portal-game-toolbar').append(target);
+            }
+            return target;
+        }
+        getComponent(entry) {
+            if (entry.dataset.component === this.app.key) {
+                return this.app
+            }
+            if (this.app.plugins.has(entry.dataset.component)) {
+                return this.app.plugins.get(entry.dataset.component);
+            }
+            return null;
+        }
+        constructor(app) {
+            super(app, 'Menu', '');
+            this.target = this.getTarget();
+            const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
+            this.app.domSet('submenu', false);
+            const pane = el.ul({
+                classNames: ['pane'],
+                data: {
+                    ui: 'submenu'
+                },
+                events: {
+                    pointerup: evt => {
+                        const entry = evt.target.closest('li');
+                        if (!entry || evt.button !== 0) {
+                            return false;
+                        }
+                        const component = this.getComponent(entry);
+                        switch (entry.dataset.action) {
+                            case 'boolean': {
+                                let nextState = !component.getState();
+                                component.toggle(nextState);
+                                entry.classList.toggle('checked', nextState);
+                                if (component === this.app) {
+                                    this.app.toggle(nextState);
+                                }
+                                break;
+                            }
+                            case 'popup':
+                                this.app.domSet('submenu', false);
+                                component.display();
+                                break;
+                            default:
+                                setTimeout(() => {
+                                    this.app.domSet('submenu', false);
+                                }, 60);
+                        }
+                    }
+                },
+                content: el.li({
+                    classNames: this.app.getState() ? ['checked'] : [],
+                    attributes: {
+                        title: this.app.title
+                    },
+                    data: {
+                        component: this.app.key,
+                        icon: 'checkmark',
+                        action: 'boolean'
+                    },
+                    content: `Show ${settings$1.get('title')}`
+                })
+            });
+            this.ui = el.div({
+                events: {
+                    pointerup: evt => {
+                        if (!evt.target.dataset.action) {
+                            this.app.domSet('submenu', !this.app.domGet('submenu'));
+                        }
+                    }
+                },
+                content: [
+                    settings$1.get('title'),
+                    pane
+                ],
+                attributes: {
+                    role: 'presentation'
+                },
+                classNames
+            });
+            document.addEventListener('keyup', () => {
+                if (this.app.domGet('submenu') === true) {
+                    this.app.domSet('submenu', false);
+                }
+            });
+            el.$('#pz-game-root').addEventListener('pointerdown', () => {
+                if (this.app.domGet('submenu') === true) {
+                    this.app.domSet('submenu', false);
+                }
+            });
+            app.on(prefix('pluginsReady'), evt => {
+                evt.detail.forEach((plugin, key) => {
+                    if (!plugin.canChangeState || plugin === this) {
+                        return false;
+                    }
+                    const action = plugin.menuAction || 'boolean';
+                    pane.append(el.li({
+                        classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
+                        attributes: {
+                            title: plugin.description
+                        },
+                        data: {
+                            component: key,
+                            icon: action === 'boolean' ? 'checkmark' : (plugin.menuIcon || null),
+                            action
+                        },
+                        content: plugin.title
+                    }));
+                });
+                pane.append(el.li({
+                    attributes: {
+                        title: settings$1.get('label') + ' Website'
+                    },
+                    data: {
+                        icon: prefix(),
+                        component: prefix('web'),
+                        action: 'link'
+                    },
+                    content: el.a({
+                        content: settings$1.get('label'),
+                        attributes: {
+                            href: settings$1.get('url'),
+                            target: prefix()
+                        }
+                    })
+                }));
+            });
+            app.on(prefix('destroy'), () => this.ui.remove());
+        }
     }
 
     class Grid extends TablePane {
@@ -1217,8 +1232,8 @@
     			.toggle(true);
     		return this;
     	}
-    	run() {
-    		super.run();
+    	run(evt) {
+    		super.run(evt);
     		el.$$('td', this.pane).forEach(cell => {
     			const cellArr = cell.textContent.trim().split('/');
     			if(cellArr.length === 2 && cellArr[0] === cellArr[1]){
@@ -1264,11 +1279,7 @@
     		return cellData;
     	}
     	constructor(app) {
-    		super(app, 'Grid', 'The number of words by length and by first letter', {
-    			cssMarkers: {
-    				preeminent: (rowData, i, l) => i === 0 || i === l - 2,
-    			}
-    		});
+    		super(app, 'Grid', 'The number of words by length and by first letter.');
     		this.popup = new Popup(this.app, this.key)
     			.setContent('title', this.title);
     		this.menuAction = 'popup';
@@ -1277,23 +1288,23 @@
     }
 
     const getPlugins = () => {
-         return {
-              Header,
-              Score,
-              LetterCount,
-              FirstLetter,
-              ProgressBar,
-              SpillTheBeans,
-              DarkMode,
-              ColorConfig,
-              Pangrams,
-              Googlify,
-              Styles,
-              Menu,
-              Grid,
-              YourProgress,
-              TodaysAnswers
-         }
+        return {
+            Header,
+            Score,
+            LetterCount,
+            FirstLetter,
+            ProgressBar,
+            SpillTheBeans,
+            DarkMode,
+            ColorConfig,
+            Pangrams,
+            Googlify,
+            Styles,
+            Menu,
+            Grid,
+            YourProgress,
+            TodaysAnswers
+        }
     };
 
     class App extends Widget {
@@ -1388,8 +1399,8 @@
                     this.registerPlugins();
                     this.trigger(prefix('refreshUi'));
                     this.isLoaded = true;
-                    if (document.body.classList.contains('pz-desktop')) {
-                        window.scrollTo(0, 470);
+                    if (this.envIs('desktop')) {
+                        window.scrollTo(0, 472);
                     }
                 });
         }

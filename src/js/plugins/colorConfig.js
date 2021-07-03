@@ -13,12 +13,16 @@ import {
  */
 class ColorConfig extends Plugin {
 
+    /**
+     * Set hue and saturation of the dark mode theme as a body style
+     * @param state
+     */
     toggle(state) {
         el.$$('[data-sba-theme]').forEach(element => {
             element.style.setProperty('--dhue', state.hue);
             element.style.setProperty('--dsat', state.sat + '%');
         });
-        super.toggle(state);
+        return super.toggle(state);
     }
 
     /**
@@ -28,6 +32,7 @@ class ColorConfig extends Plugin {
      */
     display() {
         this.popup.toggle(true);
+        el.$('input:checked', this.popup.ui).focus();
     }
 
 
@@ -104,12 +109,12 @@ class ColorConfig extends Plugin {
                             },
                             isSvg: true,
                             content: [el.path({
-                                    classNames: ['cell-fill'],
-                                    isSvg: true,
-                                    attributes: {
-                                        d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
-                                    }
-                                }),
+                                classNames: ['cell-fill'],
+                                isSvg: true,
+                                attributes: {
+                                    d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
+                                }
+                            }),
                                 el.text({
                                     classNames: ['cell-letter'],
                                     attributes: {

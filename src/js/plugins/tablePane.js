@@ -14,9 +14,11 @@ class TablePane extends Plugin {
 
 	/**
 	 * Build/refresh pane
+	 * @param evt
 	 * @returns {TablePane}
 	 */
-	run() {
+	// eslint-disable-next-line no-unused-vars
+	run(evt) {
 		this.pane = el.empty(this.pane);
 		const tbody = el.tbody();
 		const data = this.getData();
@@ -39,6 +41,10 @@ class TablePane extends Plugin {
 		return this;
 	}
 
+	/**
+	 * Retrieve table view
+	 * @returns {HTMLElement}
+	 */
 	getPane() {
 		return this.pane;
 	}

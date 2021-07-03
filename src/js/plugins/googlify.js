@@ -1,7 +1,6 @@
 import {
     prefix
 } from '../modules/string.js';
-import el from '../modules/element.js';
 import Plugin from '../modules/plugin.js';
 
 // noinspection SpellCheckingInspection
@@ -23,20 +22,28 @@ class Googlify extends Plugin {
         return this.run();
     }
 
+    /**
+     * Search for term in Google
+     * @param evt
+     * @returns {boolean}
+     */
     listener(evt) {
-        if(!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')){
+        if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
             return false;
         }
-        if(evt.button === 0) {            
-           return window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
+        if (evt.button === 0) {
+            window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
+            return true;
         }
     }
 
     /**
      * Add or remove pangram underlines
+     * @param evt
      * @returns {Googlify}
      */
-    run() {
+    // eslint-disable-next-line no-unused-vars
+    run(evt=null) {
         const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
         [this.app.modalWrapper, this.app.resultList].forEach(container => {
             container[method]('pointerup', this.listener);

@@ -14,8 +14,11 @@ import {
  */
 class Grid extends TablePane {
 
+	/**
+	 * Display pop-up
+	 * @returns {Grid}
+	 */
 	display() {
-
 		this.popup
 			.setContent('subtitle', this.description)
 			.setContent('body', this.getPane())
@@ -24,8 +27,13 @@ class Grid extends TablePane {
 		return this;
 	}
 
-	run() {
-		super.run();
+	/**
+	 * Update table and mark completed cells
+	 * @param evt
+	 * @returns {Grid}
+	 */
+	run(evt) {
+		super.run(evt);
 		el.$$('td', this.pane).forEach(cell => {
 			const cellArr = cell.textContent.trim().split('/');
 			if(cellArr.length === 2 && cellArr[0] === cellArr[1]){
@@ -85,11 +93,7 @@ class Grid extends TablePane {
 	 */
 	constructor(app) {
 
-		super(app, 'Grid', 'The number of words by length and by first letter', {
-			cssMarkers: {
-				preeminent: (rowData, i, l) => i === 0 || i === l - 2,
-			}
-		});
+		super(app, 'Grid', 'The number of words by length and by first letter.');
 
 		this.popup = new Popup(this.app, this.key)
 			.setContent('title', this.title);

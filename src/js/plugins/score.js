@@ -4,7 +4,7 @@ import el from '../modules/element.js';
 
 /**
  * Score so far plugin
- * 
+ *
  * @param {App} app
  * @returns {Plugin} Score
  */

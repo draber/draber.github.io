@@ -15,12 +15,11 @@ import Popup from './popup.js';
 class TodaysAnswers extends Plugin {
 
 	/**
-	 *
+	 * Display pop-up
 	 * @param {Event} evt
-	 * @returns {Plugin}
+	 * @returns {TodaysAnswers}
 	 */
 	display() {
-
 		const foundTerms = data.getList('foundTerms');
 		const pangrams = data.getList('pangrams');
 

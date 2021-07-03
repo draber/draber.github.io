@@ -18,6 +18,7 @@ class ProgressBar extends Plugin {
      * @param {Event} evt
      * @returns {Plugin}
      */
+    // eslint-disable-next-line no-unused-vars
     run(evt) {
         let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
         progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);

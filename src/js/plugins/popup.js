@@ -10,6 +10,10 @@ import settings from "../modules/settings";
  */
 class Popup {
 
+    /**
+     * Enable closing the popup by clicking on the x button
+     * @returns {Popup}
+     */
     enableKeyClose() {
         document.addEventListener('keyup', evt => {
             this.app.popupCloser = el.$('.sb-modal-wrapper .sb-modal-close', this.app.gameWrapper);
@@ -18,6 +22,7 @@ class Popup {
             }
             delete(this.app.popupCloser);
         })
+        return this;
     }
 
     /**
@@ -41,10 +46,10 @@ class Popup {
 
     /**
      * Create a pop-up, this mimics the pop-ups already available in Spelling Bee
-     * @returns {*}
+     * @returns {HTMLElement}
      */
     create() {
-        const frame = el.div({
+        return el.div({
             classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
             attributes: {
                 role: 'button'
@@ -86,7 +91,6 @@ class Popup {
                 })
             ]
         });
-        return frame;
     }
 
     /**
@@ -104,14 +108,23 @@ class Popup {
         return this;
     }
 
+    getCloseButton() {
+        for(let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
+            const closer = el.$(selector, this.app.gameWrapper);
+            if(closer) {
+                return closer;
+            }
+        }
+        return false;
+    }
+
     /**
      * Open/close popup
      * @param state
      * @returns {Popup}
      */
     toggle(state) {
-
-        const closer = el.$('.sb-modal-close', this.app.modalWrapper);
+        const closer = this.getCloseButton();
         if (!state && closer) {
             closer.click();
         }
@@ -130,6 +143,7 @@ class Popup {
 
     /**
      * Build an instance
+     * @param app
      * @param key
      */
     constructor(app, key) {
@@ -162,7 +176,7 @@ class Popup {
                         content: settings.get('label'),
                         attributes: {
                             href: settings.get('url'),
-                            target: '_blank'
+                            target: prefix()
                         }
                     })
                 ]

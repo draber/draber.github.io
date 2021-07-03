@@ -48,6 +48,10 @@ body {
             position: relative;
         }
 
+        .sb-progress-value {
+            font-weight: bold;
+        }
+
         .sb-toggle-icon,
         .sb-kebob .sb-bob-arrow,
         .hive-action__shuffle {
@@ -127,6 +131,12 @@ body {
     }
 }
 
+.pz-moment__close {
+    &::before, &::after {
+        background: var(--text-color);
+    }
+}
+
 .pz-modal__button.white:hover {
     background: var(--area-bg-color);
 }
@@ -180,7 +190,8 @@ body {
 }
 
 .sb-progress-line,
-.sb-progress-dot::after {
+.sb-progress-dot::after,
+.pz-nav::after {
     background: var(--border-color);
 }
 

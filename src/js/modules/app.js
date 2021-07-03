@@ -14,16 +14,32 @@ import {
  */
 class App extends Widget {
 
+    /**
+     * Set a `data` value on `<body>`
+     * @param key
+     * @param value
+     * @returns {App}
+     */
     domSet(key, value) {
         document.body.dataset[prefix(key)] = value;
         return this;
     }
 
+    /**
+     * Remove a `data` value from `<body>`
+     * @param key
+     * @returns {App}
+     */
     domUnset(key) {
         delete document.body.dataset[prefix(key)];
         return this;
     }
 
+    /**
+     * Retrieve a `data` value from `<body>`
+     * @param key
+     * @returns {App}
+     */
     domGet(key) {
         if (typeof document.body.dataset[prefix(key)] === 'undefined') {
             return false;
@@ -31,6 +47,10 @@ class App extends Widget {
         return JSON.parse(document.body.dataset[prefix(key)]);
     }
 
+    /**
+     * Retrieve observer arguments, can be used in cases where the observer needs to be interrupted
+     * @returns {{options: {subtree: boolean, childList: boolean, attributes: boolean}, target: HTMLElement}}
+     */
     getObserverArgs() {
         return {
             target: this.gameWrapper,
@@ -99,7 +119,7 @@ class App extends Widget {
     }
 
     /**
-     * Retrieve existing results
+     * Retrieve existing results from other devices
      * @returns {Promise<Array>}
      */
     async getResults() {
@@ -150,17 +170,25 @@ class App extends Widget {
                 this.registerPlugins();
                 this.trigger(prefix('refreshUi'));
                 this.isLoaded = true;
-                if (document.body.classList.contains('pz-desktop')) {
-                    window.scrollTo(0, 470);
+                if (this.envIs('desktop')) {
+                    window.scrollTo(0, 472);
                 }
             })
-
     }
 
+    /**
+     * See if the app is displayed or not
+     * @returns {App}
+     */
     getState() {
         return this.domGet('active');
     }
 
+    /**
+     * Change app state
+     * @param state
+     * @returns {App}
+     */
     toggle(state) {
         this.domSet('active', state);
         return this;
@@ -179,28 +207,21 @@ class App extends Widget {
 
                 switch (true) {
 
-                    // result list toggles open
-                    // case mutation.type === 'attributes' &&
-                    // mutation.target.classList.contains('sb-content-box'):
-                    //     this.domSet('hasOverlay', mutation.target.classList.contains('sb-expanded'));
-                    //     break;
-
-                    // modal is open
+                    // 'yesterday' modal is open
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.modalWrapper):
-                        //this.domSet('hasOverlay', !!mutation.target.hasChildNodes());                      
                         if (el.$('.sb-modal-frame.yesterday', mutation.target)) {
                             this.trigger(prefix('yesterday'), mutation.target);
                         }
                         break;
 
-                        // text input
+                    // text input
                     case mutation.type === 'childList' &&
                     mutation.target.classList.contains('sb-hive-input-content'):
                         this.trigger(prefix('newInput'), mutation.target.textContent.trim());
                         break;
 
-                        // term added to word list
+                    // term added to word list
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.resultList) &&
                     !!mutation.addedNodes.length &&
@@ -216,6 +237,10 @@ class App extends Widget {
         return observer;
     }
 
+    /**
+     * Build the app UI
+     * @returns {HTMLElement}
+     */
     buildUi() {
         const events = {};
         events[prefix('destroy')] = () => {
@@ -223,7 +248,6 @@ class App extends Widget {
             this.container.remove();
             this.domUnset('theme');
         };
-
 
         const classNames = [settings.get('prefix')];
 
@@ -240,7 +264,7 @@ class App extends Widget {
 
     /**
      * Register all plugins
-     * @returns {Widget}
+     * @returns {App}
      */
     registerPlugins() {
         this.plugins = new Map();
@@ -253,6 +277,9 @@ class App extends Widget {
         return this;
     }
 
+    /**
+     * Add app to the DOM
+     */
     add() {
         this.container.append(this.ui);
         el.$('.sb-content-box', this.gameWrapper).prepend(this.container);

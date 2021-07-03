@@ -15,7 +15,7 @@ class SpillTheBeans extends Plugin {
 
     /**
      * Check if the input matches a term in the remainder list
-     * @param {Event} evt
+     * @param evt
      */
     run(evt) {
         let emoji = '🙂';
@@ -26,6 +26,7 @@ class SpillTheBeans extends Plugin {
             emoji = '🙁';
         }
         this.ui.textContent = emoji;
+        return this;
     }
 
     /**

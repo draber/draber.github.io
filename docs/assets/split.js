@@ -131,7 +131,7 @@
     //     aMin: Number,
     //     bMin: Number,
     //     dragging: Boolean,
-    //     container: DOM element,
+    //     parent: DOM element,
     //     direction: 'horizontal' | 'vertical'
     // }
     //
@@ -161,15 +161,15 @@
             ids = Array.from(ids);
         }
 
-        // All DOM elements in the split should have a common container. We can grab
-        // the first elements container and hope users read the docs because the
+        // All DOM elements in the split should have a common parent. We can grab
+        // the first elements parent and hope users read the docs because the
         // behavior will be whacky otherwise.
         var firstElement = elementOrSelector(ids[0]);
         var parent = firstElement.parentNode;
         var parentStyle = getComputedStyle ? getComputedStyle(parent) : null;
         var parentFlexDirection = parentStyle ? parentStyle.flexDirection : null;
 
-        // Set default options.sizes to equal percentages of the container element.
+        // Set default options.sizes to equal percentages of the parent element.
         var sizes = getOption(options, 'sizes') || ids.map(function () { return 100 / ids.length; });
 
         // Standardize minSize to an array if it isn't already. This allows minSize
@@ -262,7 +262,7 @@
         // calc is used to allow calc(percentage + gutterpx) on the whole split instance,
         // which allows the viewport to be resized without additional logic.
         // Element a's size is the same as offset. b's size is total size - a size.
-        // Both sizes are calculated from the initial container percentage,
+        // Both sizes are calculated from the initial parent percentage,
         // then the gutter size is subtracted.
         function adjust(offset) {
             var a = elements[this.a];
@@ -343,7 +343,7 @@
         // ------------------------------------------------
         // | <- start                             size -> |
         function calculateSizes() {
-            // Figure out the container size minus padding.
+            // Figure out the parent size minus padding.
             var a = elements[this.a].element;
             var b = elements[this.b].element;
 
@@ -361,7 +361,7 @@
 
         function innerSize(element) {
             // Return nothing if getComputedStyle is not supported (< IE9)
-            // Or if container element has no layout yet
+            // Or if parent element has no layout yet
             if (!getComputedStyle) { return null }
 
             var computedStyle = getComputedStyle(element);
@@ -390,7 +390,7 @@
         // (and decreased from the other elements) to make space for the pixels
         // subtracted by the gutters.
         function trimToMin(sizesToTrim) {
-            // Try to get inner size of container element.
+            // Try to get inner size of parent element.
             // If it's no supported, return original sizes.
             var parentSize = innerSize(parent);
             if (parentSize === null) {
@@ -622,7 +622,7 @@
                     gutterAlign
                 );
 
-                // if the container has a reverse flex-direction, switch the pair elements.
+                // if the parent has a reverse flex-direction, switch the pair elements.
                 if (
                     parentFlexDirection === 'row-reverse' ||
                     parentFlexDirection === 'column-reverse'

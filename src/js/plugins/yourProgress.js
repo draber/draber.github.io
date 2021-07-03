@@ -5,12 +5,16 @@ import el from '../modules/element.js';
 
 /**
  * YourProgress plugin
- * 
+ *
  * @param {App} app
  * @returns {Plugin} YourProgress
  */
 class YourProgress extends TablePane {
 
+    /**
+     * Display pop-up
+     * @returns {YourProgress}
+     */
     display() {
         const points = data.getPoints('foundTerms');
         const max = data.getPoints('answers');
@@ -83,15 +87,15 @@ class YourProgress extends TablePane {
 
     /**
      * Get current tier
-     * @param {String}
+     * @returns {Array}
      */
     getCurrentTier() {
         return this.getData().filter(entry => entry[1] <= data.getPoints('foundTerms')).pop()[1];
     }
 
     /**
-     * Get current tier
-     * @param {String}
+     * Get points to nex tier
+     * @returns {Number|null}
      */
     getPointsToNextTier() {
         const remainders = this.getData().filter(entry => entry[1] > data.getPoints('foundTerms')).shift();

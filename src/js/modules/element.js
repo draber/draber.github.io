@@ -90,6 +90,7 @@ const fn = {
  * @param classNames: Array
  * @param isSvg: Boolean
  * @returns {*}
+ * @todo Distinguish between attributes and properties
  */
 const create = function ({
     tag,

@@ -62,8 +62,8 @@ $gameWidth: 1280;
 
 
 [data-sba-active="true"] {
-    --sba-app-width: 138px;
-    --sba-app-padding: 0 5px 5px;
+    --sba-app-width: 100px;
+    --sba-app-padding: 0;
     --sba-app-margin: 0;
     --sba-game-offset: #{$gameOffset * 1px};
     --sba-game-width: #{$gameWidth - (2 * $gameOffset) * 1px};
@@ -76,6 +76,14 @@ $gameWidth: 1280;
         transform: translate(0, -50%);
         right: var(--sba-game-offset);
         z-index: 1;
+    }
+
+    .sba {
+        border-color: transparent;
+    }
+
+    [data-ui="header"] {
+        display: none;
     }
 
     &[data-sba-submenu="true"] {
@@ -101,13 +109,48 @@ $gameWidth: 1280;
     .sb-controls-box {
         max-width: calc(100vw - var(--sba-app-width))
     }
-
 }
+
+// if app
+@media (max-width: 370px) {
+    [data-sba-active="true"] {
+        .sb-hive {
+            width: 70%;
+        }
+        &.pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle) {
+            font-size: 0.9em;
+            margin: 0 4px 8px;
+            padding: 23px 0;
+        }
+    
+        .hive-action:not(.hive-action__shuffle) {
+            width: 71px;
+            min-width: auto;
+        }
+    }
+}
+//end if app
+
 
 [data-sba-active] {
     .pz-game-toolbar {
         .pz-row {
             padding: 0;
+        }
+    }
+}
+
+@media (min-width: 400px) {
+    [data-sba-active="true"] {
+        --sba-app-width: 138px;
+        --sba-app-padding: 0 5px 5px;
+
+        .sba {
+            border-color: var(--border-color);
+        }
+
+        [data-ui="header"] {
+            display: block;
         }
     }
 }
@@ -122,8 +165,10 @@ $gameWidth: 1280;
             }
         }
 
-        .sba {
-            left: -175px;
+        &.pz-desktop {
+            .sba {
+                left: -175px;
+            }
         }
     }
 }
@@ -131,10 +176,12 @@ $gameWidth: 1280;
 @media (min-width: 900px) {
 
     [data-sba-submenu="true"] {
-        [data-ui="menu"] {
-            .pane {
-                right: 0;
-                top: 55px;
+        &.pz-desktop {
+            [data-ui="menu"] {
+                .pane {
+                    right: 0;
+                    top: 55px;
+                }
             }
         }
     }
@@ -166,8 +213,13 @@ $gameWidth: 1280;
 
         &[data-sba-submenu="true"] {
             .sba {
-                left: -191px;
                 top: -65px;
+            }
+        }
+
+        &.pz-desktop {
+            .sba {
+                left: -191px;
             }
         }
     }

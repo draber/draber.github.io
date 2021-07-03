@@ -31,6 +31,7 @@ if(settings.options.version && settings.options.version !== settings.version){
     settings.options.oldVersion = settings.options.version;
 }
 
+// @todo actually use this
 settings.options.version = settings.version;
 saveOptions();
 

@@ -20,23 +20,23 @@ import Grid from '../plugins/grid.js';
  * @returns {Object}
  */
 const getPlugins = () => {
-     return {
-          Header,
-          Score,
-          LetterCount,
-          FirstLetter,
-          ProgressBar,
-          SpillTheBeans,
-          DarkMode,
-          ColorConfig,
-          Pangrams,
-          Googlify,
-          Styles,
-          Menu,
-          Grid,
-          YourProgress,
-          TodaysAnswers
-     }
+    return {
+        Header,
+        Score,
+        LetterCount,
+        FirstLetter,
+        ProgressBar,
+        SpillTheBeans,
+        DarkMode,
+        ColorConfig,
+        Pangrams,
+        Googlify,
+        Styles,
+        Menu,
+        Grid,
+        YourProgress,
+        TodaysAnswers
+    }
 }
 
 export default getPlugins;
