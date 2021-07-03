@@ -17,21 +17,6 @@ const escapedRe = (pattern, flags) => {
 }
 
 /**
- * Shorten the name of a custom property
- * @param {String} prefix
- * @returns {string}
- */
-const getShort = prefix => {
-    let i = 0;
-    prefix = '--' + prefix;
-    while (keys.has(prefix + i)) {
-        i++;
-    }
-    keys.add(prefix + i)
-    return prefix + i;
-}
-
-/**
  * Find custom properties, both definitions an usages
  * @param css
  * @returns {{}}
@@ -72,33 +57,7 @@ const removeBom = css => {
     return css.replace(/(\uFEFF|\\n)/gu, '');
 }
 
-/**
- * Removes unused custom props, optionally shortens remaining ones
- * @param css
- * @param shortCodes
- * @param prefix
- * @returns {*}
- */
-const handleCustomProps = (css, {
-    shortCodes = true,
-    prefix = 'x'
-} = {}) => {
-    const findings = getFindings(css);
-
-    for (const [key, value] of Object.entries(findings)) {
-        if (!value.found) {
-            value.defs.forEach(def => {
-                css = css.replace(escapedRe(def, 'g'), '');
-            })
-        } else if (shortCodes) {
-            css = css.replace(escapedRe(key, 'g'), getShort(prefix));
-        }
-    }
-    return css;
-}
-
 const cssUtils = {
-    handleCustomProps,
     removeBom,
 }
 

@@ -173,6 +173,7 @@
 						<a href="{{extension.operaStore.url}}" rel="noopener" target="_blank">Opera</a>.
 
 					</p>
+					<p>While most browsers update the extensions immediately after the release, this might take considerably longer for Edge due to Microsoft’s review process.</p>
 				</li>
 				<li class="card">
 					<h3>Bookmarklet</h3>
@@ -182,9 +183,9 @@
 								src="assets/img/bookmarklet.svg?{{version}}&cache-id={{cacheId}}" alt="{{label}}" /></a>
 					</div>
 					<p>Alternatively you can use the <a class="help" href="#bookmarklet">bookmarklet</a>. It will start
-						the
-						assistant with a mouse click.</p>
+						the	assistant with a mouse click.</p>
 					<p>To install, grab the badge above and drag it to your browser’s bookmark menu.</p>
+					<p>Please keep in mind that this is a pure hobby project and that the bookmarklet doesn’t get the same attention as the extension. Updates happen less regularly.</p>
 				</li>
 			</ul>
 			<p class="legacy">It seems that you’re using a legacy web browser on which {{label}} won’t work.</p>
@@ -193,6 +194,52 @@
 		<section id="features">
 			<h2>Features</h2>
 			<ul class="card-listing">
+				<li class="card score-so-far">
+					<h3>Score</h3>
+					<div class="lft">
+						<figure>
+							<div class="img-box" data-state="score-so-far"> <img alt="Score so far"
+									src="assets/img/score-so-far-light.png?{{version}}&cache-id={{cacheId}}"></div>
+							<figcaption> What you already bagged </figcaption>
+						</figure>
+
+					</div>
+					<p>Where have you got to so far and how far away is the top? How many points will
+						you need to become <em>Queen Bee</em>? That’s the sort of question you get answered here.</p>
+					<ul class="score-so-far">
+						<li><strong>✓</strong>What you achieved</li>
+						<li><strong>?</strong>What you still can achieve</li>
+						<li><strong>∑</strong>The sum thereof</li>
+					</ul>
+				</li>
+				<li class="card">
+					<h3>Letter Count</h3>
+					<div class="lft">
+						<figure>
+							<div class="img-box" data-state="spoilers"> <img alt="Spoilers"
+									src="assets/img/spoilers-light.png?{{version}}&cache-id={{cacheId}}"></div>
+							<figcaption> What you still need to find </figcaption>
+						</figure>
+
+					</div>
+					<p>Are there more words with four or five letters? Is there another pangram hidden in the hive? Or
+						at least a good long term that moves you to the next level?</p>
+					<p>The <em>Spoiler</em> panel won’t tell you the words, but it will tell you how many of each length
+						still lie ahead of you.</p>
+				</li>
+				<li class="card">
+					<h3>First letter</h3>
+					<div class="lft">
+						<figure>
+							<div class="img-box" data-state="starting-with"><img alt="Starting with…"
+									src="assets/img/starting-with-light.png?{{version}}&cache-id={{cacheId}}"></div>
+							<figcaption> First letters </figcaption>
+						</figure>
+					</div>
+					<p>Maybe you'd like to know if there is still a word with a certain first letter. And
+						who knows - there might even be more than just a single one…
+					</p>
+				</li>
 				<li class="card overview">
 					<h3>Toolbar</h3>
 					<div class="lft">
@@ -234,52 +281,6 @@
 							Looking for the minimizer button? Check out the new <i>{{title}}</i> button in the main menu of the game!
 						</li>
 					</ul>
-				</li>
-				<li class="card score-so-far">
-					<h3>Score so far</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box" data-state="score-so-far"> <img alt="Score so far"
-									src="assets/img/score-so-far-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> What you already bagged </figcaption>
-						</figure>
-
-					</div>
-					<p>Where have you got to so far and how far away is the top? How many points will
-						you need to become <em>Queen Bee</em>? That’s the sort of question you get answered here.</p>
-					<ul class="score-so-far">
-						<li><strong>✓</strong>What you achieved</li>
-						<li><strong>?</strong>What you still can achieve</li>
-						<li><strong>∑</strong>The sum thereof</li>
-					</ul>
-				</li>
-				<li class="card">
-					<h3>Spoilers</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box" data-state="spoilers"> <img alt="Spoilers"
-									src="assets/img/spoilers-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> What you still need to find </figcaption>
-						</figure>
-
-					</div>
-					<p>Are there more words with four or five letters? Is there another pangram hidden in the hive? Or
-						at least a good long term that moves you to the next level?</p>
-					<p>The <em>Spoiler</em> panel won’t tell you the words, but it will tell you how many of each length
-						still lie ahead of you.</p>
-				</li>
-				<li class="card">
-					<h3>Starting with…</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box" data-state="starting-with"><img alt="Starting with…"
-									src="assets/img/starting-with-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> First letters </figcaption>
-						</figure>
-					</div>
-					<p>Maybe you'd like to know if there is still a word with a certain first letter. And
-						who knows - there might even be more than just a single one…
-					</p>
 				</li>
 				<li class="card">
 					<h3>Spill the beans</h3>
@@ -407,7 +408,7 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td>Chrome/Chromium-based</td>
+							<td>Chromium-based ¹</td>
 							<td class="win-10"><svg>
 									<title>Extension</title>
 									<use xlink:href="#icon-extension"></use>
@@ -438,38 +439,9 @@
 							<td class="android"><svg>
 									<title>Extension</title>
 									<use xlink:href="#icon-extension"></use>
-								</svg><svg>
-									<title>Bookmarklet</title>
-									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+								</svg>³</td>
 							<th class="ios"></th>
 						</tr>
-
-						<tr>
-							<td>Edge</td>
-							<td class="win-10"><svg>
-									<title>Extension</title>
-									<use xlink:href="#icon-extension"></use>
-								</svg>
-								<svg>
-									<title>Bookmarklet</title>
-									<use xlink:href="#icon-bookmark"></use>
-								</svg>
-							</td>
-							<td class="mac-os"><svg>
-									<title>Extension</title>
-									<use xlink:href="#icon-extension"></use>
-								</svg>
-								<svg>
-									<title>Bookmarklet</title>
-									<use xlink:href="#icon-bookmark"></use>
-								</svg>
-							</td>
-							<td class="linux"></td>
-							<td class="android"></td>
-							<th class="ios"></th>
-						</tr>
-
 
 						<tr>
 							<td>Firefox</td>
@@ -509,7 +481,7 @@
 							<th class="ios"><svg>
 									<title>Bookmarklet</title>
 									<use xlink:href="#icon-bookmark"></use>
-								</svg>*</th>
+								</svg>³</th>
 						</tr>
 					</tbody>
 				</table>
@@ -517,7 +489,7 @@
 						<use xlink:href="#icon-extension"></use>
 					</svg> Browser extension | <svg>
 						<use xlink:href="#icon-bookmark"></use>
-					</svg> Bookmarklet | * based on user report | empty: not tested</figcaption>
+					</svg> Bookmarklet | ¹ Chrome, Edge, Brave, Opera, Kiwi, Vivaldi… | ² Kiwi | ³ based on user report | empty: not tested</figcaption>
 			</figure>
 			<p>Installing bookmarklets on a phone or a tablet is a bit complex but feasible.
 				<a href="https://www.google.com/search?q=Installing+bookmarklets+on+a+moblie+device" rel="noopener"
@@ -528,12 +500,12 @@
 				from here:
 			</p>
 			<textarea class="card">{{bookmarklet.code}}</textarea>
-			<p><em>Note: {{label}} cannot be installed inside the NYT app!</em></p>
+			<p><em>Note: {{label}} cannot be installed inside the NYT app - I suggest using <a href="https://www.shunn.net/bee/" target="_blank" rel="noopener">W. Shunn’s excellent site</a> instead.</em></p>
 			<div class="rgt"><a href="#">Back to top</a></div>
 		</section>
 		<section>
 			<h2>Doesn’t it spoil the game?</h2>
-			<p>There are <a href="https://www.shunn.net/bee/" target="_blank" rel="noopener"> other tools</a> with a
+			<p>There are <a href="https://www.reddit.com/r/NYTSpellingBee/wiki/index#wiki_nyt_spelling_bee_helpers" target="_blank" rel="noopener">numerous websites</a> with a
 				similar purpose,
 				which - according to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html"
 					rel="noopener" target="_blank">this article</a>

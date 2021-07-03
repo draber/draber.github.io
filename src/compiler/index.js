@@ -55,11 +55,6 @@ const getCss = path => {
         file: path,
         outputStyle: 'compressed'
     }).css.toString();
-    if(!debug){        
-        css = cssUtils.handleCustomProps(css, {
-            prefix: settings.get('prefix')
-        });
-    }
     css = cssUtils.removeBom(css);
     css = substituteVars(css, settings);
     return css;
