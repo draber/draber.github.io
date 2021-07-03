@@ -2,3 +2,4 @@
 /node_modules
 .vscode
 /credentials
+./src/server/*.pem
