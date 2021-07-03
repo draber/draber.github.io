@@ -176,6 +176,7 @@
     padding: 0;
     background: transparent;
     display: block;
+    border: none;
     border-bottom: 1px var(--border-color) solid;
 
     &::-webkit-progress-bar {
