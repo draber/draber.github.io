@@ -89,7 +89,7 @@ const fn = {
  * @param events: Object
  * @param classNames: Array
  * @param isSvg: Boolean
- * @returns {*}
+ * @returns {HTMLElement}
  * @todo Distinguish between attributes and properties
  */
 const create = function ({

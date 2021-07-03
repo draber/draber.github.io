@@ -104,7 +104,6 @@
     var repo = "draber/draber.github.io.git";
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix$1 = "sba";
-    var mobileThreshold = "900";
 
     var version = "4.0.0";
 
@@ -116,7 +115,6 @@
         prefix: prefix$1,
         repo: repo,
         targetUrl: targetUrl,
-        mobileThreshold: mobileThreshold,
         options: JSON.parse(localStorage.getItem(prefix$1 + '-settings') || '{}')
     };
     const saveOptions = () => {

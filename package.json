@@ -26,7 +26,7 @@
     "debug-ext": "node ./src/compiler/ -t appcss -d true & rollup -c ./src/config/rollup.js & node ./src/compiler/ -t extension -d true",
     "watch-ext": "node ./src/compiler/ -t extension -w",
     "start:firefox": "web-ext build --source-dir ./src/extension/",
-    "build": "npm run compile-ext & npm run compile-site"
+    "build": "npm run compile-ext & npm run compile-site & documentation build ./src/js/main.js -f html -o ./docs"
   },
   "files": [
     "dist"
