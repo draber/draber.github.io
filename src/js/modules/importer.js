@@ -1,4 +1,10 @@
-import DarkMode from '../plugins/darkMode.js';
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+ import DarkMode from '../plugins/darkMode.js';
 import ColorConfig from '../plugins/colorConfig.js';
 import Header from '../plugins/header.js';
 import ProgressBar from '../plugins/ProgressBar.js';
