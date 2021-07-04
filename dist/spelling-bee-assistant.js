@@ -1053,6 +1053,9 @@
             let l = rules.length;
             while (l--) {
                 if (rules[l] instanceof CSSMediaRule && rules[l].conditionText.includes(theirCond) && !rules[l].cssText.includes('.sb-modal')) {
+                    if(typeof rules[l].cssRules.forEach !== 'function') {
+                       continue;
+                    }
                     rules[l].cssRules.forEach(rule => {
                         const selectorText = rule.selectorText.split(',').map(selector => `${marker} ${selector.trim()}`).join(', ');
                         newRules.push(rule.cssText.replace(rule.selectorText, selectorText));
@@ -1077,7 +1080,7 @@
             this.add();
             setTimeout(() => {
                 this.modifyMq();
-            }, 100);
+            }, 200);
         }
     }
 
@@ -1171,8 +1174,8 @@
                 },
                 classNames
             });
-            document.addEventListener('keyup', () => {
-                if (this.app.domGet('submenu') === true) {
+            document.addEventListener('keyup', evt => {
+                if (this.app.domGet('submenu') === true && /^(Ent|Esc|Key|Dig)/.test(evt.code)) {
                     this.app.domSet('submenu', false);
                 }
             });
@@ -1358,7 +1361,7 @@
             return document.body.classList.contains('pz-' + env);
         }
         async getResults() {
-            let tries = 10;
+            let tries = 20;
             return await new Promise(resolve => {
                 const interval = setInterval(() => {
                     const syncResults = this.getSyncData();

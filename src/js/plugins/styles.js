@@ -43,6 +43,9 @@ class Styles extends Plugin {
         let l = rules.length;
         while (l--) {
             if (rules[l] instanceof CSSMediaRule && rules[l].conditionText.includes(theirCond) && !rules[l].cssText.includes('.sb-modal')) {
+                if(typeof rules[l].cssRules.forEach !== 'function') {
+                   continue;
+                }
                 rules[l].cssRules.forEach(rule => {
                     const selectorText = rule.selectorText.split(',').map(selector => `${marker} ${selector.trim()}`).join(', ');
                     newRules.push(rule.cssText.replace(rule.selectorText, selectorText))
@@ -77,7 +80,7 @@ class Styles extends Plugin {
 
         setTimeout(() => {
             this.modifyMq();
-        }, 100);
+        }, 200);
     }
 }
 

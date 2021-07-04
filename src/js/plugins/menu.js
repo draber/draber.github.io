@@ -129,8 +129,8 @@ class Menu extends Plugin {
             classNames
         })
 
-        document.addEventListener('keyup', () => {
-            if (this.app.domGet('submenu') === true) {
+        document.addEventListener('keyup', evt => {
+            if (this.app.domGet('submenu') === true && /^(Ent|Esc|Key|Dig)/.test(evt.code)) {
                 this.app.domSet('submenu', false)
             }
         });

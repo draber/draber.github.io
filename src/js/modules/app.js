@@ -135,7 +135,7 @@ class App extends Widget {
      * @returns {Promise<Array>}
      */
     async getResults() {
-        let tries = 10;
+        let tries = 20;
         return await new Promise(resolve => {
             const interval = setInterval(() => {
                 const syncResults = this.getSyncData();
