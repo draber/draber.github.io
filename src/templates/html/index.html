@@ -25,7 +25,7 @@
 	<script src="assets/js/modernizr-custom.js"></script>
 </head>
 
-<body><svg aria-hidden="true" class="symbols" version="1.1" xmlns="http://www.w3.org/2000/svg"
+<body data-sba-theme="light"><svg aria-hidden="true" class="symbols" version="1.1" xmlns="http://www.w3.org/2000/svg"
 		xmlns:xlink="http://www.w3.org/1999/xlink">
 		<defs>
 			<symbol id="icon-extension" viewBox="0 0 24 24">
@@ -134,7 +134,7 @@
 			</div>
 			<div class="desktop-only">
 				<figure>
-					<div class="start-up-img img-box desktop-only" data-state="start-up">
+					<div class="start-up-img img-box desktop-only">
 						<span data-footer="{{label}}">
 							<img alt="{{label}}"
 								src="assets/img/start-up-light.png?{{version}}&cache-id={{cacheId}}"></span>
@@ -173,7 +173,7 @@
 						<a href="{{extension.operaStore.url}}" rel="noopener" target="_blank">Opera</a>.
 
 					</p>
-					<p>While most browsers update the extensions immediately after the release, this might take considerably longer for Edge due to Microsoft’s review process.</p>
+					<p><em>Note that the Edge version will be considerably delayed due to Microsoft’s review process.</em></p>
 				</li>
 				<li class="card">
 					<h3>Bookmarklet</h3>
@@ -185,38 +185,65 @@
 					<p>Alternatively you can use the <a class="help" href="#bookmarklet">bookmarklet</a>. It will start
 						the	assistant with a mouse click.</p>
 					<p>To install, grab the badge above and drag it to your browser’s bookmark menu.</p>
-					<p>Please keep in mind that this is a pure hobby project and that the bookmarklet doesn’t get the same attention as the extension. Updates happen less regularly.</p>
+					<p>This is a pure hobby project and the bookmarklet doesn’t get the same attention as the extension. Updates happen less regularly.</p>
 				</li>
 			</ul>
 			<p class="legacy">It seems that you’re using a legacy web browser on which {{label}} won’t work.</p>
 			<p><a href="#requirements">I want to install {{label}} on a tablet or a smartphone</a></p>
 		</section>
+		<section id="news">
+			<h2>What’s new in SBA 4?</h2>
+			<p>One of the main goals was to improve the user experience on smaller screens. While mobile compatibilty is <a href="#requirements">limited</a>, the Assistant usually works well with <a href="https://play.google.com/store/apps/details?id=com.kiwibrowser.browser" rel="noopener" target="_blank">Kiwi</a> on Android.</p>
+			<p>This has mainly been achieved by moving some features from the main panel to more appropriate places and by an improved responsive design strategy. The latter in turn removed the necessity for a drag’n’drop implementation</p> 
+			<p>If you are missing some features - they are still available under the <em>Assistant</em> menu. And they got company! The dark mode offers now different schemes. A grid, representing words by length and by first letter has been added.</p>
+			<p>All features have been renamed to represent better what they are for. Naming them as alliteration became first difficult then tiring, then silly.</p>
+		</section>
 		<section id="features">
-			<h2>Features</h2>
+			<h2>Feature Overview</h2>
 			<ul class="card-listing">
 				<li class="card score-so-far">
-					<h3>Score</h3>
+					<h3>The {{title}} panel</h3>
 					<div class="lft">
 						<figure>
-							<div class="img-box" data-state="score-so-far"> <img alt="Score so far"
-									src="assets/img/score-so-far-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> What you already bagged </figcaption>
+							<div class="img-box"> <img alt="{{label}}"
+									src="assets/img/assistant-open.png?{{version}}&cache-id={{cacheId}}"></div>
+							<figcaption>{{label}}</figcaption>
 						</figure>
 
 					</div>
-					<p>Where have you got to so far and how far away is the top? How many points will
-						you need to become <em>Queen Bee</em>? That’s the sort of question you get answered here.</p>
+					<p><em>Score</em>, <em>Letter count</em> and <em>First letter</em> have been features from the beginning on, albeit under different names. They all use three columns to display your score.</p>
 					<ul class="score-so-far">
 						<li><strong>✓</strong>What you achieved</li>
 						<li><strong>?</strong>What you still can achieve</li>
 						<li><strong>∑</strong>The sum thereof</li>
 					</ul>
+					<p>Completed lines are greyed out and the most important line in each table is highlighted.</p>
+					<p>Under the <em>{{title}}</em> menu is another view called <em>Grid</em> that combines both, <em>Letter count</em> and <em>First letter</em>.</p>
+				</li>
+				<li class="card menu">
+					<h3>The {{title}} menu</h3>
+					<div class="lft">
+						<figure>
+							<div class="img-box"> <img alt="{{title}} Menu"
+									src="assets/img/assistant-menu.png?{{version}}&cache-id={{cacheId}}"></div>
+							<figcaption>{{title}} Menu</figcaption>
+						</figure>
+
+					</div>
+					<p><em>Score</em>, <em>Letter count</em> and <em>First letter</em> have been features from the beginning on, albeit under different names. They all use three columns to display your score.</p>
+					<ul class="score-so-far">
+						<li><strong>✓</strong>What you achieved</li>
+						<li><strong>?</strong>What you still can achieve</li>
+						<li><strong>∑</strong>The sum thereof</li>
+					</ul>
+					<p>Completed lines are greyed out and the most important line in each table is highlighted.</p>
+					<p>Under the <em>Assitant</em> menu is another view called <em>Grid</em> that combines both, <em>Letter count</em> and <em>First letter</em>.</p>
 				</li>
 				<li class="card">
 					<h3>Letter Count</h3>
 					<div class="lft">
 						<figure>
-							<div class="img-box" data-state="spoilers"> <img alt="Spoilers"
+							<div class="img-box"> <img alt="Spoilers"
 									src="assets/img/spoilers-light.png?{{version}}&cache-id={{cacheId}}"></div>
 							<figcaption> What you still need to find </figcaption>
 						</figure>
@@ -231,7 +258,7 @@
 					<h3>First letter</h3>
 					<div class="lft">
 						<figure>
-							<div class="img-box" data-state="starting-with"><img alt="Starting with…"
+							<div class="img-box"><img alt="Starting with…"
 									src="assets/img/starting-with-light.png?{{version}}&cache-id={{cacheId}}"></div>
 							<figcaption> First letters </figcaption>
 						</figure>
@@ -244,7 +271,7 @@
 					<h3>Toolbar</h3>
 					<div class="lft">
 						<figure id="overview">
-							<div class="img-box" data-state="closed">
+							<div class="img-box">
 								<span class="closed" data-footer="{{label}}">
 									<img alt="Overview" usemap="#header-links"
 										src="assets/img/closed-light.png?{{version}}&cache-id={{cacheId}}"></span>
@@ -286,7 +313,7 @@
 					<h3>Spill the beans</h3>
 					<div class="lft">
 						<figure>
-							<div class="img-box" data-state="spill-the-beans"><img alt="Spill the beans"
+							<div class="img-box"><img alt="Spill the beans"
 									src="assets/img/spill-the-beans-light.png?{{version}}&cache-id={{cacheId}}"></div>
 							<figcaption> Tiny hints, letter-wise </figcaption>
 						</figure>
@@ -303,7 +330,7 @@
 					<h3>Steps to success</h3>
 					<div class="lft">
 						<figure>
-							<div class="img-box" data-state="steps-to-success"> <img alt="Steps to success"
+							<div class="img-box"> <img alt="Steps to success"
 									src="assets/img/steps-to-success-light.png?{{version}}&cache-id={{cacheId}}"> </div>
 							<figcaption> Where to go next </figcaption>
 						</figure>
@@ -315,7 +342,7 @@
 					<h3>Surrender</h3>
 					<div class="lft">
 						<figure>
-							<div class="img-box" data-state="surrender"><img alt="Surrender"
+							<div class="img-box"><img alt="Surrender"
 									src="assets/img/surrender-light.png?{{version}}&cache-id={{cacheId}}"></div>
 							<figcaption> Ready to give up? </figcaption>
 						</figure>
@@ -329,7 +356,7 @@
 					<h3>Other features</h3>
 					<div class="lft" id="launcher">
 						<figure class="auto-height">
-							<div class="img-box" data-state="launcher"> <img alt="Launcher"
+							<div class="img-box"> <img alt="Launcher"
 									src="assets/img/launcher-light.png?{{version}}&cache-id={{cacheId}}"> </div>
 							<figcaption> Launcher </figcaption>
 						</figure>
@@ -338,7 +365,7 @@
 					<br style="clear: left;">
 					<div class="lft">
 						<figure class="auto-height">
-							<div class="img-box" data-state="progress-bar"> <img alt="Progress Bar"
+							<div class="img-box"> <img alt="Progress Bar"
 									src="assets/img/progress-bar-light.png?{{version}}&cache-id={{cacheId}}"> </div>
 							<figcaption> Progress bar </figcaption>
 						</figure>
@@ -347,7 +374,7 @@
 					<br style="clear: left;">
 					<div class="lft">
 						<figure class="auto-height">
-							<div class="img-box" data-state="highlight-pangrams"> <img alt="Highlight Pangrams"
+							<div class="img-box"> <img alt="Highlight Pangrams"
 									src="assets/img/highlight-pangrams-light.png?{{version}}&cache-id={{cacheId}}">
 							</div>
 							<figcaption> Underline pangrams </figcaption>
@@ -357,7 +384,7 @@
 					<br style="clear: left;">
 					<div class="lft">
 						<figure class="auto-height">
-							<div class="img-box" data-state="highlight-lines"> <img alt="Highlight lines"
+							<div class="img-box"> <img alt="Highlight lines"
 									src="assets/img/highlight-lines-light.png?{{version}}&cache-id={{cacheId}}"> </div>
 							<figcaption> Table line markers </figcaption>
 						</figure>
@@ -370,13 +397,28 @@
 					<h3>Set-up</h3>
 					<div class="lft">
 						<figure>
-							<div class="img-box" data-state="set-up-pu-crop"> <img alt="Set-up"
+							<div class="img-box"> <img alt="Set-up"
 									src="assets/img/set-up-pu-crop-light.png?{{version}}&cache-id={{cacheId}}"> </div>
 							<figcaption> Use only what you like </figcaption>
 						</figure>
 					</div>
 					<p>Obviously, not every feature is right for everybody. If there is anything in {{label}} that
 						doesn’t suit your needs you can simply disable it in this pop-up.</p>
+				</li>
+				<li class="card">
+					<h3>Letter Count</h3>
+					<div class="lft">
+						<figure>
+							<div class="img-box"> <img alt="Spoilers"
+									src="assets/img/spoilers-light.png?{{version}}&cache-id={{cacheId}}"></div>
+							<figcaption> What you still need to find </figcaption>
+						</figure>
+
+					</div>
+					<p>Are there more words with four or five letters? Is there another pangram hidden in the hive? Or
+						at least a good long term that moves you to the next level?</p>
+					<p>The <em>Spoiler</em> panel won’t tell you the words, but it will tell you how many of each length
+						still lie ahead of you.</p>
 				</li>
 			</ul>
 			<div class="rgt"><a href="#">Back to top</a></div>
@@ -515,7 +557,7 @@
 		<section>
 			<h2 id="bookmarklet">What is a bookmarklet?</h2>
 			<div class="lft">
-				<figure class="img-box bookmarklet" data-state="bookmarklet">
+				<figure class="img-box bookmarklet">
 					<img alt="Bookmarklet" src="assets/img/bookmarklet-light.png?{{version}}&cache-id={{cacheId}}">
 				</figure>
 				<figcaption>
@@ -584,35 +626,6 @@
 			}
 			d.documentElement.classList.add(browserType);
 		})(document);
-		((d) => {
-
-			const overviewBox = d.querySelector('#overview [data-state]');
-			d.body.dataset.sbaTheme = localStorage.getItem('theme') === 'dark' ? 'dark' : 'light';
-			d.querySelectorAll('[href^="#"]').forEach(toggle => {
-				toggle.addEventListener('click', evt => {
-					switch (evt.target.getAttribute('href')) {
-						case '#dark-mode':
-							evt.preventDefault();
-							d.body.dataset.sbaTheme = d.body.dataset.sbaTheme === 'dark' ? 'light' :
-								'dark';
-							localStorage.setItem('theme', d.body.dataset.sbaTheme);
-							break;
-						case '#inactive':
-							evt.preventDefault();
-							overviewBox.dataset.state = overviewBox.dataset.state === 'inactive' ?
-								'closed' : 'inactive';
-							break;
-						case '#set-up-demo':
-							evt.preventDefault();
-							overviewBox.dataset.state = overviewBox.dataset.state === 'set-up-demo' ?
-								'closed' : 'set-up-demo';
-							break;
-						default:
-							overviewBox.dataset.state = 'closed';
-					}
-				})
-			})
-		})(document)
 	</script>
 </body>
 

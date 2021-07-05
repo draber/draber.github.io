@@ -82,16 +82,7 @@ a {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
-ul {
-    &.score-so-far {
-        strong {
-            display: inline-block;
-            width: 1.6rem;
-            position: relative;
-            top: -.1rem
-        }
-    }
-}
+
 
 svg.symbols {
     position: absolute;
@@ -227,44 +218,6 @@ header {
 }
 
 
-[data-sba-theme="dark"] {
-
-    
-    ::selection {
-        color: var(--body-bg-color);
-    }
-
-    .social {
-        svg {
-            filter: invert(100%)
-        }
-    }
-
-    main {
-        img:not(.store-icon) {
-            opacity: 0;
-        }
-    }
-
-    * {
-        border-color: #333 !important
-    }
-
-    .hive-box {
-        .cells {
-            path:not(.center) {
-                fill: var(--area-bg-color);
-            }
-        }
-
-        .text {
-            path:not(.center) {
-                fill: var(--site-text-color);
-            }
-        }
-    }
-}
-
 .wrapper {
     margin: 0 auto;
     width: 102.4rem;
@@ -345,6 +298,10 @@ section {
     margin: .5rem 2rem .3rem 0;
 }
 
+.flx {
+    display: flex;
+}
+
 .clr {
     clear: both;
 }
@@ -386,42 +343,6 @@ section {
     }
 }
 
-[data-state] {
-    background: {
-        repeat: no-repeat;
-        position: center 1rem;
-    }
-}
-
-$features: closed,
-bookmarklet,
-dark-mode,
-header,
-launcher,
-closed,
-pangram-underline,
-score-so-far,
-start-up,
-starting-with,
-set-up-pu-crop,
-spill-the-beans,
-letterCount,
-steps-to-success,
-set-up-demo,
-highlight-pangrams,
-inactive,
-progress-bar,
-highlight-lines,
-surrender;
-
-[data-sba-theme="dark"] {
-    @each $feature in $features {
-        [data-state="#{$feature}"] {
-            background-image: url(../img/#{$feature}-dark.png?#{$version}&cache-id=#{cacheId})
-        }
-    }
-}
-
 figure {
     margin: 0;
     padding: 0;
@@ -459,6 +380,7 @@ textarea.card {
 
 #requirement-chart {
     overflow: auto;
+
     svg {
         display: inline-block;
         width: 1.2rem;
@@ -518,53 +440,28 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     background: var(--card-color);
 
     ul {
-        margin: 0;
+        margin: 0 0 1rem 0;
         padding: 0;
         list-style: none;
+
+        &.score-so-far {
+            position: relative;
+            left:  2rem;
+
+            strong {
+                display: inline-block;
+                width: 1.6rem;
+                position: relative;
+                top: -.2rem;
+                font-size: 1.3rem;
+            }
+        }
     }
 
     figure:not(.auto-height) {
         min-height: 19rem;
     }
 
-    [data-state="closed"] {
-
-        .inactive,
-        .set-up-demo {
-            display: none;
-        }
-
-        &~.inactive,
-        &~.set-up-demo {
-            display: none;
-        }
-    }
-
-    [data-state="inactive"] {
-
-        .closed,
-        .set-up-demo {
-            display: none;
-        }
-
-        &~.closed,
-        &~.set-up-demo {
-            display: none;
-        }
-    }
-
-    [data-state="set-up-demo"] {
-
-        .closed,
-        .inactive {
-            display: none;
-        }
-
-        &~.inactive,
-        &~.closed {
-            display: none;
-        }
-    }
 
     &:after {
         content: '';
@@ -576,7 +473,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 
 #features,
 #installation {
-    ul {
+    &>ul {
         list-style: none;
         padding: 0;
         margin: 0;
