@@ -167,13 +167,14 @@
 							href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener" target="_blank">Spelling
 							Bee</a> web site.</p>
 					<p>It is available for
-						<a href="{{extension.chromeStore.url}}" rel="noopener" target="_blank">Chrome</a>, 
-						<a href="{{extension.firefoxStore.url}}" rel="noopener" target="_blank">Firefox</a>, 
-						<a href="{{extension.msStore.url}}" rel="noopener" target="_blank">Edge</a> and  
+						<a href="{{extension.chromeStore.url}}" rel="noopener" target="_blank">Chrome</a>,
+						<a href="{{extension.firefoxStore.url}}" rel="noopener" target="_blank">Firefox</a>,
+						<a href="{{extension.msStore.url}}" rel="noopener" target="_blank">Edge</a> and
 						<a href="{{extension.operaStore.url}}" rel="noopener" target="_blank">Opera</a>.
 
 					</p>
-					<p><em>Note that the Edge version will be considerably delayed due to Microsoft’s review process.</em></p>
+					<p><em>Note that the Edge version will be considerably delayed due to Microsoft’s review
+							process.</em></p>
 				</li>
 				<li class="card">
 					<h3>Bookmarklet</h3>
@@ -183,9 +184,10 @@
 								src="assets/img/bookmarklet.svg?{{version}}&cache-id={{cacheId}}" alt="{{label}}" /></a>
 					</div>
 					<p>Alternatively you can use the <a class="help" href="#bookmarklet">bookmarklet</a>. It will start
-						the	assistant with a mouse click.</p>
+						the assistant with a mouse click.</p>
 					<p>To install, grab the badge above and drag it to your browser’s bookmark menu.</p>
-					<p>This is a pure hobby project and the bookmarklet doesn’t get the same attention as the extension. Updates happen less regularly.</p>
+					<p>This is a pure hobby project and the bookmarklet doesn’t get the same attention as the extension.
+						Updates happen less regularly.</p>
 				</li>
 			</ul>
 			<p class="legacy">It seems that you’re using a legacy web browser on which {{label}} won’t work.</p>
@@ -193,131 +195,77 @@
 		</section>
 		<section id="news">
 			<h2>What’s new in SBA 4?</h2>
-			<p>One of the main goals was to improve the user experience on smaller screens. While mobile compatibilty is <a href="#requirements">limited</a>, the Assistant usually works well with <a href="https://play.google.com/store/apps/details?id=com.kiwibrowser.browser" rel="noopener" target="_blank">Kiwi</a> on Android.</p>
-			<p>This has mainly been achieved by moving some features from the main panel to more appropriate places and by an improved responsive design strategy. The latter in turn removed the necessity for a drag’n’drop implementation</p> 
-			<p>If you are missing some features - they are still available under the <em>Assistant</em> menu. And they got company! The dark mode offers now different schemes. A grid, representing words by length and by first letter has been added.</p>
-			<p>All features have been renamed to represent better what they are for. Naming them as alliteration became first difficult then tiring, then silly.</p>
+			<p>One of the main goals was to improve the user experience on smaller screens. While mobile compatibilty is
+				<a href="#requirements">limited</a>, the Assistant usually works well with <a
+					href="https://play.google.com/store/apps/details?id=com.kiwibrowser.browser" rel="noopener"
+					target="_blank">Kiwi</a> on Android.</p>
+			<p>This has mainly been achieved by moving some features from the main panel to more appropriate places and
+				by an improved responsive design strategy. The latter in turn removed the necessity for a drag’n’drop
+				implementation</p>
+			<p>If you are missing some features - they are still available under the <em>Assistant</em> menu. And they
+				got company! The dark mode offers now different schemes. A grid, representing words by length and by
+				first letter has been added.</p>
+			<p>All features have been renamed to represent better what they are for. Naming them as alliteration became
+				first difficult then tiring, then silly.</p>
 		</section>
 		<section id="features">
 			<h2>Feature Overview</h2>
 			<ul class="card-listing">
 				<li class="card score-so-far">
-					<h3>The {{title}} panel</h3>
+					<h3>The {{title}} Panel</h3>
 					<div class="lft">
 						<figure>
 							<div class="img-box"> <img alt="{{label}}"
 									src="assets/img/assistant-open.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption>{{label}}</figcaption>
+
 						</figure>
 
 					</div>
-					<p><em>Score</em>, <em>Letter count</em> and <em>First letter</em> have been features from the beginning on, albeit under different names. They all use three columns to display your score.</p>
+					<p><em>Score</em>, <em>Letter count</em> and <em>First letter</em> have been features from the
+						beginning on, albeit under different names. They all use three columns to display your score.
+					</p>
 					<ul class="score-so-far">
 						<li><strong>✓</strong>What you achieved</li>
 						<li><strong>?</strong>What you still can achieve</li>
 						<li><strong>∑</strong>The sum thereof</li>
 					</ul>
 					<p>Completed lines are greyed out and the most important line in each table is highlighted.</p>
-					<p>Under the <em>{{title}}</em> menu is another view called <em>Grid</em> that combines both, <em>Letter count</em> and <em>First letter</em>.</p>
+
 				</li>
 				<li class="card menu">
-					<h3>The {{title}} menu</h3>
+					<h3>The {{title}} Menu</h3>
 					<div class="lft">
 						<figure>
 							<div class="img-box"> <img alt="{{title}} Menu"
 									src="assets/img/assistant-menu.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption>{{title}} Menu</figcaption>
 						</figure>
 
 					</div>
-					<p><em>Score</em>, <em>Letter count</em> and <em>First letter</em> have been features from the beginning on, albeit under different names. They all use three columns to display your score.</p>
+					<p>{{label}} has a number of features that are too large for the panel. </p>
 					<ul class="score-so-far">
 						<li><strong>✓</strong>What you achieved</li>
 						<li><strong>?</strong>What you still can achieve</li>
 						<li><strong>∑</strong>The sum thereof</li>
 					</ul>
 					<p>Completed lines are greyed out and the most important line in each table is highlighted.</p>
-					<p>Under the <em>Assitant</em> menu is another view called <em>Grid</em> that combines both, <em>Letter count</em> and <em>First letter</em>.</p>
+					<p>Under the <em>Assitant</em> menu is another view called <em>Grid</em> that combines both,
+						<em>Letter count</em> and <em>First letter</em>.</p>
 				</li>
 				<li class="card">
-					<h3>Letter Count</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"> <img alt="Spoilers"
-									src="assets/img/spoilers-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> What you still need to find </figcaption>
-						</figure>
+					<h3>Progress Bar</h3>
+					<figure class="screen">
+						<img alt="Progress Bar" src="assets/img/progress-bar.png?{{version}}&cache-id={{cacheId}}">
 
-					</div>
-					<p>Are there more words with four or five letters? Is there another pangram hidden in the hive? Or
-						at least a good long term that moves you to the next level?</p>
-					<p>The <em>Spoiler</em> panel won’t tell you the words, but it will tell you how many of each length
-						still lie ahead of you.</p>
+					</figure>
+					<p>The progress bar displays your advancement, based on your points so far.</p>
 				</li>
 				<li class="card">
-					<h3>First letter</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"><img alt="Starting with…"
-									src="assets/img/starting-with-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> First letters </figcaption>
-						</figure>
-					</div>
-					<p>Maybe you'd like to know if there is still a word with a certain first letter. And
-						who knows - there might even be more than just a single one…
-					</p>
-				</li>
-				<li class="card overview">
-					<h3>Toolbar</h3>
-					<div class="lft">
-						<figure id="overview">
-							<div class="img-box">
-								<span class="closed" data-footer="{{label}}">
-									<img alt="Overview" usemap="#header-links"
-										src="assets/img/closed-light.png?{{version}}&cache-id={{cacheId}}"></span>
-								<img class="inactive" alt="Minimized" usemap="#header-links"
-									src="assets/img/inactive-light.png?{{version}}&cache-id={{cacheId}}">
-								<img class="set-up-demo" alt="Set-up" usemap="#header-links"
-									src="assets/img/set-up-demo-light.png?{{version}}&cache-id={{cacheId}}">
-							</div>
-							<figcaption class="closed">All panels closed</figcaption>
-							<figcaption class="inactive">Minimized</figcaption>
-							<figcaption class="set-up-demo">Options</figcaption>
-						</figure>
-					</div>
-					<ul class="toolbar">
-						<li>
-							<svg class="drag">
-								<use xlink:href="#icon-move"></use>
-							</svg>
-							Grab the assistant by the title to drag it anywhere inside the game area
-						</li>
-						<li>
-							<a href="#dark-mode"><svg>
-									<use xlink:href="#icon-dark-mode"></use>
-								</svg></a>
-							Toggle <a href="#dark-mode">dark mode</a>
-						</li>
-						<li>
-							<svg class="drag">
-									<use xlink:href="#icon-set-up"></use>
-								</svg>
-							Display the options pop-up
-						</li>
-						<li><br><br>
-							Looking for the minimizer button? Check out the new <i>{{title}}</i> button in the main menu of the game!
-						</li>
-					</ul>
-				</li>
-				<li class="card">
-					<h3>Spill the beans</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"><img alt="Spill the beans"
-									src="assets/img/spill-the-beans-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> Tiny hints, letter-wise </figcaption>
-						</figure>
-					</div>
+					<h3>Spill the Beans</h3>
+					<figure class="screen">
+						<img alt="Spill the Beans"
+							src="assets/img/spill-the-beans.png?{{version}}&cache-id={{cacheId}}">
+
+					</figure>
 					<p>This little face might know a thing or
 						two that you don't, so watch it while you type!</p>
 					<ul>
@@ -327,98 +275,62 @@
 					</ul>
 				</li>
 				<li class="card">
-					<h3>Steps to success</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"> <img alt="Steps to success"
-									src="assets/img/steps-to-success-light.png?{{version}}&cache-id={{cacheId}}"> </div>
-							<figcaption> Where to go next </figcaption>
-						</figure>
-					</div>
+					<h3>Dark Mode</h3>
+					<figure class="screen">
+						<img alt="Dark Mode" src="assets/img/dark-mode.png?{{version}}&cache-id={{cacheId}}">
+
+					</figure>
+
+				</li>
+				<li class="card">
+					<h3>Dark Mode Color Scheme</h3>
+					<figure class="screen">
+						<img alt="Dark Mode Color Scheme"
+							src="assets/img/color-scheme.png?{{version}}&cache-id={{cacheId}}">
+
+					</figure>
+
+				</li>
+				<li class="card">
+					<h3>Your Progress</h3>
+					<figure class="screen">
+						<img alt="Your Progress" src="assets/img/your-progress.png?{{version}}&cache-id={{cacheId}}">
+
+					</figure>
 					<p>This panel gives you a nice overview of the different ranks with the added bonus of
 						revealing the road to <em>Queen Bee</em>.</p>
 				</li>
 				<li class="card">
-					<h3>Surrender</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"><img alt="Surrender"
-									src="assets/img/surrender-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> Ready to give up? </figcaption>
-						</figure>
-					</div>
+					<h3>Grid</h3>
+					<figure class="screen">
+						<img alt="Grid" src="assets/img/grid.png?{{version}}&cache-id={{cacheId}}">
+
+					</figure>
+					<p>Under the <em>{{title}}</em> menu is another view called <em>Grid</em> that combines both,
+						<em>Letter count</em> and <em>First letter</em>.</p>
+
+				</li>
+				<li class="card">
+					<h3>Today’s Answers</h3>
+					<figure class="screen">
+						<img alt="Today’s Answers" src="assets/img/todays-answers.png?{{version}}&cache-id={{cacheId}}">
+
+					</figure>
 					<p>When you’re eventually out of words but are dying to know the solution, this button will end your
 						curiosity!</p>
 					<p>The words you didn’t find will be linked to the respective terms in Google, maybe this will help
 						you next time!</p>
 				</li>
 				<li class="card">
-					<h3>Other features</h3>
-					<div class="lft" id="launcher">
-						<figure class="auto-height">
-							<div class="img-box"> <img alt="Launcher"
-									src="assets/img/launcher-light.png?{{version}}&cache-id={{cacheId}}"> </div>
-							<figcaption> Launcher </figcaption>
-						</figure>
-					</div>
-					<p>You can show or hide the {{title}} directly from the main menu of the game.</p>
-					<br style="clear: left;">
-					<div class="lft">
-						<figure class="auto-height">
-							<div class="img-box"> <img alt="Progress Bar"
-									src="assets/img/progress-bar-light.png?{{version}}&cache-id={{cacheId}}"> </div>
-							<figcaption> Progress bar </figcaption>
-						</figure>
-					</div>
-					<p>The progress bar displays your advancement, based on your points so far.</p>
-					<br style="clear: left;">
-					<div class="lft">
-						<figure class="auto-height">
-							<div class="img-box"> <img alt="Highlight Pangrams"
-									src="assets/img/highlight-pangrams-light.png?{{version}}&cache-id={{cacheId}}">
-							</div>
-							<figcaption> Underline pangrams </figcaption>
-						</figure>
-					</div>
-					<p>Pangrams in the results list are underlined.</p>
-					<br style="clear: left;">
-					<div class="lft">
-						<figure class="auto-height">
-							<div class="img-box"> <img alt="Highlight lines"
-									src="assets/img/highlight-lines-light.png?{{version}}&cache-id={{cacheId}}"> </div>
-							<figcaption> Table line markers </figcaption>
-						</figure>
-					</div>
-					<p>The most important item is in each table is highlighted. Levels or lists that you’ve already
-						cleared are greyed out. You can also choose to hide them altogether.
-					</p>
-				</li>
-				<li class="card">
-					<h3>Set-up</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"> <img alt="Set-up"
-									src="assets/img/set-up-pu-crop-light.png?{{version}}&cache-id={{cacheId}}"> </div>
-							<figcaption> Use only what you like </figcaption>
-						</figure>
-					</div>
-					<p>Obviously, not every feature is right for everybody. If there is anything in {{label}} that
-						doesn’t suit your needs you can simply disable it in this pop-up.</p>
-				</li>
-				<li class="card">
-					<h3>Letter Count</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"> <img alt="Spoilers"
-									src="assets/img/spoilers-light.png?{{version}}&cache-id={{cacheId}}"></div>
-							<figcaption> What you still need to find </figcaption>
-						</figure>
+					<h3>Improved Display on Small Screens</h3>
+					<figure class="screen">
+						<img alt="Small Screens" src="assets/img/mobile.png?{{version}}&cache-id={{cacheId}}">
 
-					</div>
-					<p>Are there more words with four or five letters? Is there another pangram hidden in the hive? Or
-						at least a good long term that moves you to the next level?</p>
-					<p>The <em>Spoiler</em> panel won’t tell you the words, but it will tell you how many of each length
-						still lie ahead of you.</p>
+					</figure>
+					<p>When you’re eventually out of words but are dying to know the solution, this button will end your
+						curiosity!</p>
+					<p>The words you didn’t find will be linked to the respective terms in Google, maybe this will help
+						you next time!</p>
 				</li>
 			</ul>
 			<div class="rgt"><a href="#">Back to top</a></div>
@@ -531,7 +443,8 @@
 						<use xlink:href="#icon-extension"></use>
 					</svg> Browser extension | <svg>
 						<use xlink:href="#icon-bookmark"></use>
-					</svg> Bookmarklet | ¹ Chrome, Edge, Brave, Opera, Kiwi, Vivaldi… | ² Kiwi | ³ based on user report | empty: not tested</figcaption>
+					</svg> Bookmarklet | ¹ Chrome, Edge, Brave, Opera, Kiwi, Vivaldi… | ² Kiwi | ³ based on user report
+					| empty: not tested</figcaption>
 			</figure>
 			<p>Installing bookmarklets on a phone or a tablet is a bit complex but feasible.
 				<a href="https://www.google.com/search?q=Installing+bookmarklets+on+a+moblie+device" rel="noopener"
@@ -542,12 +455,15 @@
 				from here:
 			</p>
 			<textarea class="card">{{bookmarklet.code}}</textarea>
-			<p><em>Note: {{label}} cannot be installed inside the NYT app - I suggest using <a href="https://www.shunn.net/bee/" target="_blank" rel="noopener">W. Shunn’s excellent site</a> instead.</em></p>
+			<p><em>Note: {{label}} cannot be installed inside the NYT app - I suggest using <a
+						href="https://www.shunn.net/bee/" target="_blank" rel="noopener">W. Shunn’s excellent site</a>
+					instead.</em></p>
 			<div class="rgt"><a href="#">Back to top</a></div>
 		</section>
 		<section>
 			<h2>Doesn’t it spoil the game?</h2>
-			<p>There are <a href="https://www.reddit.com/r/NYTSpellingBee/wiki/index#wiki_nyt_spelling_bee_helpers" target="_blank" rel="noopener">numerous websites</a> with a
+			<p>There are <a href="https://www.reddit.com/r/NYTSpellingBee/wiki/index#wiki_nyt_spelling_bee_helpers"
+					target="_blank" rel="noopener">numerous websites</a> with a
 				similar purpose,
 				which - according to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html"
 					rel="noopener" target="_blank">this article</a>
@@ -583,11 +499,14 @@
 		</section>
 		<section id="privacy">
 			<h2>Your privacy</h2>
-			<p>This site doesn’t use any technology to collect personally identifiable information about you. It is, along with the 
-				bookmarklet, hosted on GitHub Pages. Please refer to	
-				<a href="https://docs.github.com/en/github/site-policy/github-privacy-statement#github-pages" rel="noopener" target="_blank">their	statement</a>
+			<p>This site doesn’t use any technology to collect personally identifiable information about you. It is,
+				along with the
+				bookmarklet, hosted on GitHub Pages. Please refer to
+				<a href="https://docs.github.com/en/github/site-policy/github-privacy-statement#github-pages"
+					rel="noopener" target="_blank">their statement</a>
 				regarding the data they collect. I don’t have access to these data.</p>
-			<p>The browser extension is hosted by the different add-on stores. In most shops I have access to the download statistics but not 
+			<p>The browser extension is hosted by the different add-on stores. In most shops I have access to the
+				download statistics but not
 				to any personally identifiable information.</p>
 		</section>
 		<section>
@@ -596,7 +515,8 @@
 				<li><a href="https://github.com/draber/draber.github.io" rel="noopener" target="_blank">Repository</a>
 				</li>
 				<li><a href="https://github.com/draber/draber.github.io/releases" rel="noopener"
-						target="_blank">Releases, currently {{version}}</a>. <br /><small>Note: The latest version on GitHub might be slightly ahead of the extension.</small></li>
+						target="_blank">Releases, currently {{version}}</a>. <br /><small>Note: The latest version on
+						GitHub might be slightly ahead of the extension.</small></li>
 				<li><a href="https://github.com/draber/draber.github.io/issues" rel="noopener"
 						target="_blank">Issues</a></li>
 				<li><a href="https://github.com/draber/draber.github.io/pulls" rel="noopener" target="_blank">Pull
@@ -604,17 +524,12 @@
 			</ul>
 		</section>
 	</main>
-	<map id="header-links" name="header-links">
-		<area shape="rect" coords="86,0,102,20" href="#dark-mode" alt="Dark Mode" title="Dark Mode">
-		<area shape="rect" coords="104,0,119,20" href="#set-up-demo" alt="Set-up" title="Set-up">
-		<area shape="rect" coords="121,0,136,20" href="#inactive" alt="Minimize" title="Minimize">
-	</map>
 	<script>
 		(function (d) {
 			var features = ['queryselector', 'es6array', 'arrow', 'es6collections', 'generators', 'es6number',
-				'es6object', 'es6string', 'fetch', 'sessionstorage', 'scriptasync', 'customevent',
-				'flexbox', 'matchmedia'
-			],
+					'es6object', 'es6string', 'fetch', 'sessionstorage', 'scriptasync', 'customevent',
+					'flexbox', 'matchmedia'
+				],
 				i = features.length,
 				cls = d.documentElement.classList;
 			var browserType = 'modern-browser';

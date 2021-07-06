@@ -306,6 +306,20 @@ section {
     clear: both;
 }
 
+.screen {
+    img {
+
+        display: block;
+        border: {
+            width: .1rem;
+            color: var(--border-color);
+            style: solid;
+            radius: .8rem;
+        }
+        margin-bottom: 1.5rem;
+    }
+}
+
 .img-box {
     margin: 0;
     position: relative;
@@ -458,8 +472,11 @@ tr:nth-child(n+1) td:nth-child(n+2) {
         }
     }
 
-    figure:not(.auto-height) {
-        min-height: 19rem;
+
+    figure {
+        &:not(.auto-height) {
+            min-height: 19rem;
+        }
     }
 
 
