@@ -56,7 +56,7 @@ class Popup {
      */
     create() {
         return el.div({
-            classNames: ['sb-modal-frame', 'left-aligned', prefix('pop-up', 'd')],
+            classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
             attributes: {
                 role: 'button'
             },

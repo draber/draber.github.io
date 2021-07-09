@@ -24,8 +24,8 @@ class Score extends TablePane {
         const keys = ['foundTerms', 'remainders', 'answers'];
         return [
             ['', '✓', '?', '∑'],
-            ['Words'].concat(keys.map(key => data.getCount(key))),
-            ['Points'].concat(keys.map(key => data.getPoints(key)))
+            ['W'].concat(keys.map(key => data.getCount(key))),
+            ['P'].concat(keys.map(key => data.getPoints(key)))
         ];
     }
 

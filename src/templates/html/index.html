@@ -84,7 +84,7 @@
 	<main class="wrapper">
 		<section class="intro">
 			<div class="intro-text">
-				<figure class="hive-box img-box">
+				<figure class="hive-box">
 					<svg viewbox="0 0 190.5 199" xmlns="http://www.w3.org/2000/svg">
 						<g class="cells" fill="#e6e6e6">
 							<path class="center"
@@ -134,11 +134,8 @@
 			</div>
 			<div class="desktop-only">
 				<figure>
-					<div class="start-up-img img-box desktop-only">
-						<span data-footer="{{label}}">
-							<img alt="{{label}}"
-								src="assets/img/start-up-light.png?{{version}}&cache-id={{cacheId}}"></span>
-					</div>
+					<img alt="{{label}}" class="start-up-img desktop-only"
+								src="assets/img/start-up.png?{{version}}&cache-id={{cacheId}}">
 				</figure>
 			</div>
 
@@ -146,9 +143,8 @@
 		<section id="installation">
 			<h2>Installation</h2>
 			<ul class="card-listing">
-				<li class="card">
-					<h3>Browser extension</h3>
-					<div class="lft install-source">
+				<li class="card row">
+					<div class="install-source">
 						<a href="{{extension.chromeStore.url}}" rel="noopener" target="_blank"><img
 								class="store-icon chrome"
 								src="assets/img/chrome-store.svg?{{version}}&cache-id={{cacheId}}"
@@ -163,6 +159,8 @@
 								class="store-icon opera" src="assets/img/opera-store.png"
 								alt="Get {{label}} at Opera Add-ons" /></a>
 					</div>
+					<article>
+					<h3>Browser extension</h3>
 					<p>The browser extension loads the assistant automatically when you open the <a
 							href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener" target="_blank">Spelling
 							Bee</a> web site.</p>
@@ -175,19 +173,22 @@
 					</p>
 					<p><em>Note that the Edge version will be considerably delayed due to Microsoft’s review
 							process.</em></p>
+					</article>
 				</li>
-				<li class="card">
-					<h3>Bookmarklet</h3>
-					<div class="lft install-source">
+				<li class="card row">
+					<div class="install-source">
 						<a class="installer" href="{{bookmarklet.code}}" onclick="return false" rel="nofollow"><img
 								class="bookmarklet store-icon"
 								src="assets/img/bookmarklet.svg?{{version}}&cache-id={{cacheId}}" alt="{{label}}" /></a>
 					</div>
+					<article>
+					<h3>Bookmarklet</h3>
 					<p>Alternatively you can use the <a class="help" href="#bookmarklet">bookmarklet</a>. It will start
 						the assistant with a mouse click.</p>
-					<p>To install, grab the badge above and drag it to your browser’s bookmark menu.</p>
+					<p>To install, grab the yellow badge and drag it to your browser’s bookmark menu.</p>
 					<p>This is a pure hobby project and the bookmarklet doesn’t get the same attention as the extension.
 						Updates happen less regularly.</p>
+					</article>
 				</li>
 			</ul>
 			<p class="legacy">It seems that you’re using a legacy web browser on which {{label}} won’t work.</p>
@@ -211,126 +212,133 @@
 		<section id="features">
 			<h2>Feature Overview</h2>
 			<ul class="card-listing">
-				<li class="card score-so-far">
-					<h3>The {{title}} Panel</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"> <img alt="{{label}}"
-									src="assets/img/assistant-open.png?{{version}}&cache-id={{cacheId}}"></div>
+				<li class="card row">
+					<figure>
+						<img alt="{{label}}" src="assets/img/assistant-open.png?{{version}}&cache-id={{cacheId}}"></div>
 
-						</figure>
-
-					</div>
-					<p><em>Score</em>, <em>Letter count</em> and <em>First letter</em> have been features from the
-						beginning on, albeit under different names. They all use three columns to display your score.
-					</p>
-					<ul class="score-so-far">
-						<li><strong>✓</strong>What you achieved</li>
-						<li><strong>?</strong>What you still can achieve</li>
-						<li><strong>∑</strong>The sum thereof</li>
-					</ul>
-					<p>Completed lines are greyed out and the most important line in each table is highlighted.</p>
-
+					</figure>
+					<article>
+						<h3>The main panel</h3>
+						<p><em>Score</em>, <em>Letter count</em> and <em>First letter</em> have been features from the
+							beginning on, albeit under different names. They all use three columns to display your
+							score.
+						</p>
+						<ul>
+							<li><strong>✓</strong>What you achieved</li>
+							<li><strong>?</strong>What you still can achieve</li>
+							<li><strong>∑</strong>The sum thereof</li>
+						</ul>
+						<p>Completed lines are greyed out and the most important line in each table is highlighted.</p>
+					</article>
 				</li>
-				<li class="card menu">
-					<h3>The {{title}} Menu</h3>
-					<div class="lft">
-						<figure>
-							<div class="img-box"> <img alt="{{title}} Menu"
-									src="assets/img/assistant-menu.png?{{version}}&cache-id={{cacheId}}"></div>
-						</figure>
-
-					</div>
-					<p>{{label}} has a number of features that are too large for the panel. </p>
-					<ul class="score-so-far">
-						<li><strong>✓</strong>What you achieved</li>
-						<li><strong>?</strong>What you still can achieve</li>
-						<li><strong>∑</strong>The sum thereof</li>
-					</ul>
-					<p>Completed lines are greyed out and the most important line in each table is highlighted.</p>
-					<p>Under the <em>Assitant</em> menu is another view called <em>Grid</em> that combines both,
-						<em>Letter count</em> and <em>First letter</em>.</p>
+				<li class="card row">
+					<figure>
+						<img alt="{{title}} Menu" src="assets/img/assistant-menu.png?{{version}}&cache-id={{cacheId}}">
+					</figure>
+					<article>
+						<p>{{label}} has a number of features that are too large for the panel. </p>
+						<ul>
+							<li><strong>✓</strong>What you achieved</li>
+							<li><strong>?</strong>What you still can achieve</li>
+							<li><strong>∑</strong>The sum thereof</li>
+						</ul>
+						<p>Completed lines are greyed out and the most important line in each table is highlighted.</p>
+						<p>Under the <em>Assitant</em> menu is another view called <em>Grid</em> that combines both,
+							<em>Letter count</em> and <em>First letter</em>.</p>
+					</article>
 				</li>
 				<li class="card">
-					<h3>Progress Bar</h3>
-					<figure class="screen">
+					<figure>
 						<img alt="Progress Bar" src="assets/img/progress-bar.png?{{version}}&cache-id={{cacheId}}">
 
 					</figure>
-					<p>The progress bar displays your advancement, based on your points so far.</p>
+					<article>
+						<p>The progress bar displays your advancement, based on your points so far.</p>
+					</article>
 				</li>
 				<li class="card">
-					<h3>Spill the Beans</h3>
-					<figure class="screen">
+					<figure>
 						<img alt="Spill the Beans"
 							src="assets/img/spill-the-beans.png?{{version}}&cache-id={{cacheId}}">
 
 					</figure>
-					<p>This little face might know a thing or
-						two that you don't, so watch it while you type!</p>
-					<ul>
-						<li><span class="emoji">🙂</span> You’re on the right track</li>
-						<li><span class="emoji">🙁</span> You’re barking up the wrong tree</li>
-						<li><span class="emoji">😐</span> You didn’t type anything yet</li>
-					</ul>
+					<article>
+						<p>This little face might know a thing or
+							two that you don't, so watch it while you type!</p>
+						<ul>
+							<li><span class="emoji">🙂</span> You’re on the right track</li>
+							<li><span class="emoji">🙁</span> You’re barking up the wrong tree</li>
+							<li><span class="emoji">😐</span> You didn’t type anything yet</li>
+						</ul>
+					</article>
 				</li>
 				<li class="card">
-					<h3>Dark Mode</h3>
-					<figure class="screen">
-						<img alt="Dark Mode" src="assets/img/dark-mode.png?{{version}}&cache-id={{cacheId}}">
+					<figure>
+						<img alt="Dark Mode" class="full" src="assets/img/dark-mode.png?{{version}}&cache-id={{cacheId}}">
 
 					</figure>
+					<article>
+					</article>
 
 				</li>
 				<li class="card">
-					<h3>Dark Mode Color Scheme</h3>
-					<figure class="screen">
-						<img alt="Dark Mode Color Scheme"
+					<figure>
+						<img alt="Dark Mode Color Scheme" class="full"
 							src="assets/img/color-scheme.png?{{version}}&cache-id={{cacheId}}">
 
 					</figure>
+					<article>
+					</article>
 
 				</li>
 				<li class="card">
-					<h3>Your Progress</h3>
-					<figure class="screen">
+					<figure>
 						<img alt="Your Progress" src="assets/img/your-progress.png?{{version}}&cache-id={{cacheId}}">
 
 					</figure>
-					<p>This panel gives you a nice overview of the different ranks with the added bonus of
-						revealing the road to <em>Queen Bee</em>.</p>
+					<article>
+						<p>This panel gives you a nice overview of the different ranks with the added bonus of
+							revealing the road to <em>Queen Bee</em>.</p>
+					</article>
 				</li>
 				<li class="card">
-					<h3>Grid</h3>
-					<figure class="screen">
+					<figure>
 						<img alt="Grid" src="assets/img/grid.png?{{version}}&cache-id={{cacheId}}">
 
 					</figure>
-					<p>Under the <em>{{title}}</em> menu is another view called <em>Grid</em> that combines both,
-						<em>Letter count</em> and <em>First letter</em>.</p>
+					<article>
+						<p>Under the <em>{{title}}</em> menu is another view called <em>Grid</em> that combines both,
+							<em>Letter count</em> and <em>First letter</em>.</p>
+					</article>
 
 				</li>
 				<li class="card">
-					<h3>Today’s Answers</h3>
 					<figure class="screen">
 						<img alt="Today’s Answers" src="assets/img/todays-answers.png?{{version}}&cache-id={{cacheId}}">
 
 					</figure>
-					<p>When you’re eventually out of words but are dying to know the solution, this button will end your
-						curiosity!</p>
-					<p>The words you didn’t find will be linked to the respective terms in Google, maybe this will help
-						you next time!</p>
+					<article>
+						<p>When you’re eventually out of words but are dying to know the solution, this button will end
+							your
+							curiosity!</p>
+						<p>The words you didn’t find will be linked to the respective terms in Google, maybe this will
+							help
+							you next time!</p>
+					</article>
 				</li>
 				<li class="card">
-					<h3>Improved Display on Small Screens</h3>
 					<figure class="screen">
 						<img alt="Small Screens" src="assets/img/mobile.png?{{version}}&cache-id={{cacheId}}">
 
 					</figure>
-					<p>When you’re eventually out of words but are dying to know the solution, this button will end your
-						curiosity!</p>
-					<p>The words you didn’t find will be linked to the respective terms in Google, maybe this will help
-						you next time!</p>
+					<article>
+						<p>When you’re eventually out of words but are dying to know the solution, this button will end
+							your
+							curiosity!</p>
+						<p>The words you didn’t find will be linked to the respective terms in Google, maybe this will
+							help
+							you next time!</p>
+					</article>
 				</li>
 			</ul>
 			<div class="rgt"><a href="#">Back to top</a></div>
@@ -472,8 +480,8 @@
 		</section>
 		<section>
 			<h2 id="bookmarklet">What is a bookmarklet?</h2>
-			<div class="lft">
-				<figure class="img-box bookmarklet">
+			<div>
+				<figure class="bookmarklet">
 					<img alt="Bookmarklet" src="assets/img/bookmarklet-light.png?{{version}}&cache-id={{cacheId}}">
 				</figure>
 				<figcaption>

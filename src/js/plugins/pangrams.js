@@ -4,47 +4,33 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import {
-    prefix
-} from '../modules/string.js';
-import el from '../modules/element.js';
-import Plugin from '../modules/plugin.js';
 import data from '../modules/data.js';
+import TablePane from './tablePane.js';
+import el from '../modules/element.js';
 
 /**
- * Highlight Pangrams plugin
+ * Pangrams plugin
  *
  * @param {App} app
  * @returns {Plugin} Pangrams
  */
-class Pangrams extends Plugin {
+class Pangrams extends TablePane {
 
     /**
-     * Toggle state
-     * @param state
-     * @returns {Pangrams}
+     * Get the data for the table cells
+     * @returns {Array}
      */
-    toggle(state) {
-        super.toggle(state);
-        return this.run();
-    }
-
-    /**
-     * Add or remove pangram underlines
-     * @param {Event} evt
-     * @returns {Pangrams}
-     */
-    // eslint-disable-next-line no-unused-vars
-    run(evt) {
-        const pangrams = data.getList('pangrams');
-        const container = evt && evt.detail ? evt.detail : this.app.resultList;
-        el.$$('li', container).forEach(node => {
-            const term = node.textContent;
-            if (pangrams.includes(term) || el.$('.pangram', node)) {
-                node.classList.toggle(this.marker, this.getState());
-            }
-        });
-        return this;
+    getData() {
+        const pangramCount = data.getCount('pangrams');
+        const foundPangramCount = data.getCount('foundPangrams');
+        return [
+            ['✓', '?', '∑'],
+            [
+                foundPangramCount,
+                pangramCount - foundPangramCount,
+                pangramCount
+            ]
+        ];
     }
 
     /**
@@ -53,18 +39,23 @@ class Pangrams extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Highlight Pangrams', '', {
-            canChangeState: false,
-            runEvt: prefix('refreshUi')
+        super(app, 'Pangrams', 'The number of pangrams', {
+            cssMarkers: {
+                completed: (rowData, i) => rowData[1] === 0
+            },
+            hasHeadCol: false
         });
 
-        this.marker = prefix('pangram', 'd');
+        this.ui = el.details({
+            content: [
+                el.summary({
+                    content: this.title
+                }),
+                this.getPane()
+            ]
+        });
 
-        this.app.on(prefix('yesterday'), evt => {
-            this.run(evt);
-        })
-
-        this.run();
+        this.toggle(this.getState());
     }
 }
 

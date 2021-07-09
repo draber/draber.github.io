@@ -59,6 +59,7 @@ const removeBom = css => {
 
 const cssUtils = {
     removeBom,
+    escapedRe
 }
 
 module.exports = cssUtils;

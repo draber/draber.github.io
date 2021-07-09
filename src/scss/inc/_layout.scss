@@ -123,18 +123,20 @@ $gameWidth: 1280;
         .sb-hive {
             width: 70%;
         }
+
         &.pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle) {
             font-size: 0.9em;
             margin: 0 4px 8px;
             padding: 23px 0;
         }
-    
+
         .hive-action:not(.hive-action__shuffle) {
             width: 71px;
             min-width: auto;
         }
     }
 }
+
 //end if app
 
 
@@ -142,21 +144,6 @@ $gameWidth: 1280;
     .pz-game-toolbar {
         .pz-row {
             padding: 0;
-        }
-    }
-}
-
-@media (min-width: 400px) {
-    [data-sba-active="true"] {
-        --sba-app-width: 138px;
-        --sba-app-padding: 0 5px 5px;
-
-        .sba {
-            border-color: var(--border-color);
-        }
-
-        [data-ui="header"] {
-            display: block;
         }
     }
 }
@@ -175,6 +162,69 @@ $gameWidth: 1280;
             .sba {
                 left: -175px;
             }
+        }
+    }
+
+    [data-ui="score"] {
+        $wCols: 23;
+        $w1stCol: 100 - ($wCols * 3);
+
+        .sba-data-pane {
+
+            tbody {
+                th {
+                    text-transform: none;
+                    width: $w1stCol * 1%;
+                }
+
+                td {
+                    width: $wCols * 1%;
+                }
+
+                tr {
+                    &:nth-child(1) {
+
+                        th {
+                            &::after {
+                                content: 'ords'
+                            }
+                        }
+                    }
+
+                    &:nth-child(2) {
+
+                        th {
+                            &::after {
+                                content: 'oints'
+                            }
+                        }
+                    }
+                }
+            }
+
+            thead {
+                th {
+                    width: $wCols * 1%;
+
+                    &:first-of-type {
+                        width: $w1stCol * 1%;
+                    }
+                }
+            }
+
+        }
+    }
+
+    [data-sba-active="true"] {
+        --sba-app-width: 138px;
+        --sba-app-padding: 0 5px 5px;
+
+        .sba {
+            border-color: var(--border-color);
+        }
+
+        [data-ui="header"] {
+            display: block;
         }
     }
 }
@@ -196,7 +246,7 @@ $gameWidth: 1280;
 
         --sba-app-width: 160px;
         --sba-app-padding: 0 8px 8px;
-        --sba-app-margin: 65px 0 0 0;
+        --sba-app-margin: 66px 0 0 0;
 
         .sb-content-box {
             padding: 0 var(--sba-game-offset);
@@ -219,7 +269,7 @@ $gameWidth: 1280;
 
         &[data-sba-submenu="true"] {
             .sba {
-                top: -65px;
+                top: -66px;
             }
         }
 
@@ -248,7 +298,7 @@ $gameWidth: 1280;
     [data-sba-theme] {
         &.pz-page {
             .sba-pop-up {
-                &.left-aligned {
+                &.sb-modal-frame {
                     .sb-modal-content {
                         .sb-modal-body {
                             padding-right: 56px;

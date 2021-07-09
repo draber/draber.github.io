@@ -22,8 +22,6 @@ class LetterCount extends TablePane {
      */
     getData() {
         const counts = {};
-        const pangramCount = data.getCount('pangrams');
-        const foundPangramCount = data.getCount('foundPangrams');
         const cellData = [
             ['', '✓', '?', '∑']
         ];
@@ -44,18 +42,12 @@ class LetterCount extends TablePane {
         keys.sort((a, b) => a - b);
         keys.forEach(count => {
             cellData.push([
-                count + ' ' + (count > 1 ? 'letters' : 'letter'),
+                count,
                 counts[count].found,
                 counts[count].missing,
                 counts[count].total
             ]);
         });
-        cellData.push([
-            'Pangrams',
-            foundPangramCount,
-            pangramCount - foundPangramCount,
-            pangramCount
-        ]);
         return cellData;
     }
 
@@ -65,10 +57,9 @@ class LetterCount extends TablePane {
      */
     constructor(app) {
 
-        super(app, 'Letter count', 'The number of words by length, also the number of pangrams', {
+        super(app, 'Letter count', 'The number of words by length', {
             cssMarkers: {
-                completed: (rowData, i) => i > 0 && rowData[2] === 0,
-                preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
+                completed: (rowData, i) => rowData[2] === 0
             }
         });
 

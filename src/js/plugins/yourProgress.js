@@ -118,7 +118,10 @@ class YourProgress extends TablePane {
             cssMarkers: {
                 completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
                 preeminent: rowData => rowData[1] === this.getCurrentTier()
-            }
+            },
+
+            hasHeadRow: false,
+            hasHeadCol: false
         });
 
         this.popup = new Popup(this.app, this.key)

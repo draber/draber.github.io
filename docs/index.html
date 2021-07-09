@@ -1333,6 +1333,16 @@
               
                 
                 <li><a
+                  href='#data'
+                  class="">
+                  data
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#score'
                   class=" toggle-sibling">
                   Score
@@ -1377,6 +1387,12 @@
                         href='#tablepanerun'
                         class='regular pre-open'>
                         #run
+                      </a></li>
+                      
+                      <li><a
+                        href='#tablepanebuildhead'
+                        class='regular pre-open'>
+                        #buildHead
                       </a></li>
                       
                       <li><a
@@ -1485,6 +1501,34 @@
               
                 
                 <li><a
+                  href='#pangrams'
+                  class=" toggle-sibling">
+                  Pangrams
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#pangramsgetdata'
+                        class='regular pre-open'>
+                        #getData
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
                   href='#yourprogress'
                   class=" toggle-sibling">
                   YourProgress
@@ -1559,9 +1603,9 @@
               
                 
                 <li><a
-                  href='#pangrams'
+                  href='#pangramhl'
                   class=" toggle-sibling">
-                  Pangrams
+                  PangramHl
                   <span class='icon'>▸</span>
                 </a>
                 
@@ -1572,13 +1616,13 @@
                       <li class='h5'><span>Instance members</span></li>
                       
                       <li><a
-                        href='#pangramstoggle'
+                        href='#pangramhltoggle'
                         class='regular pre-open'>
                         #toggle
                       </a></li>
                       
                       <li><a
-                        href='#pangramsrun'
+                        href='#pangramhlrun'
                         class='regular pre-open'>
                         #run
                       </a></li>
@@ -10675,6 +10719,58 @@ Create one if it doesn't exist yet</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='data'>
+      data
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle</p>
+<p>Copyright (C) 2020  Dieter Raber
+<a href="https://www.gnu.org/licenses/gpl-3.0.en.html">https://www.gnu.org/licenses/gpl-3.0.en.html</a></p>
+
+    <div class='pre p1 fill-light mt0'>data</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='score'>
       Score
     </h3>
@@ -10921,6 +11017,26 @@ Create one if it doesn't exist yet</p>
 
 
               
+                <tr>
+  <td class='break-word'><span class='code bold'>$3.hasHeadRow</span> <code class='quiet'>any</code>
+  
+    (default <code>true</code>)
+  </td>
+  <td class='break-word'><span></span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>$3.hasHeadCol</span> <code class='quiet'>any</code>
+  
+    (default <code>true</code>)
+  </td>
+  <td class='break-word'><span></span></td>
+</tr>
+
+
+              
             </tbody>
           </table>
           
@@ -10999,6 +11115,75 @@ Create one if it doesn't exist yet</p>
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="#tablepane">TablePane</a></code>:
+        
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='tablepanebuildhead'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>buildHead(rowData)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Build thead</p>
+
+    <div class='pre p1 fill-light mt0'>buildHead(rowData: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>): <a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>rowData</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a></code>:
         
       
     
@@ -11570,6 +11755,146 @@ Create one if it doesn't exist yet</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='pangrams'>
+      Pangrams
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Pangrams plugin</p>
+
+    <div class='pre p1 fill-light mt0'>new Pangrams(app: <a href="#app">App</a>): <a href="#plugin">Plugin</a></div>
+  
+  
+    <p>
+      Extends
+      
+        <a href="#tablepane">TablePane</a>
+      
+    </p>
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>app</span> <code class='quiet'>(<a href="#app">App</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#plugin">Plugin</a></code>:
+        Pangrams
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='pangramsgetdata'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getData()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Get the data for the table cells</p>
+
+    <div class='pre p1 fill-light mt0'>getData(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
+        
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='yourprogress'>
       YourProgress
     </h3>
@@ -12031,17 +12356,17 @@ Create one if it doesn't exist yet</p>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='pangrams'>
-      Pangrams
+    <h3 class='fl m0' id='pangramhl'>
+      PangramHl
     </h3>
     
     
   </div>
   
 
-  <p>Highlight Pangrams plugin</p>
+  <p>Pangram Highlight plugin</p>
 
-    <div class='pre p1 fill-light mt0'>new Pangrams(app: <a href="#app">App</a>): <a href="#plugin">Plugin</a></div>
+    <div class='pre p1 fill-light mt0'>new PangramHl(app: <a href="#app">App</a>): <a href="#plugin">Plugin</a></div>
   
   
     <p>
@@ -12080,7 +12405,7 @@ Create one if it doesn't exist yet</p>
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="#plugin">Plugin</a></code>:
-        Pangrams
+        PangramHl
 
       
     
@@ -12098,7 +12423,7 @@ Create one if it doesn't exist yet</p>
     <div class='py1 quiet mt1 prose-big'>Instance Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='pangramstoggle'>
+    <div class='border-bottom' id='pangramhltoggle'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -12112,7 +12437,7 @@ Create one if it doesn't exist yet</p>
 
   <p>Toggle state</p>
 
-    <div class='pre p1 fill-light mt0'>toggle(state: any): <a href="#pangrams">Pangrams</a></div>
+    <div class='pre p1 fill-light mt0'>toggle(state: any): <a href="#pangramhl">PangramHl</a></div>
   
   
 
@@ -12143,7 +12468,7 @@ Create one if it doesn't exist yet</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="#pangrams">Pangrams</a></code>:
+      <code><a href="#pangramhl">PangramHl</a></code>:
         
       
     
@@ -12167,7 +12492,7 @@ Create one if it doesn't exist yet</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='pangramsrun'>
+    <div class='border-bottom' id='pangramhlrun'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -12181,7 +12506,7 @@ Create one if it doesn't exist yet</p>
 
   <p>Add or remove pangram underlines</p>
 
-    <div class='pre p1 fill-light mt0'>run(evt: <a href="https://developer.mozilla.org/docs/Web/API/Event">Event</a>): <a href="#pangrams">Pangrams</a></div>
+    <div class='pre p1 fill-light mt0'>run(evt: <a href="https://developer.mozilla.org/docs/Web/API/Event">Event</a>): <a href="#pangramhl">PangramHl</a></div>
   
   
 
@@ -12212,7 +12537,7 @@ Create one if it doesn't exist yet</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="#pangrams">Pangrams</a></code>:
+      <code><a href="#pangramhl">PangramHl</a></code>:
         
       
     

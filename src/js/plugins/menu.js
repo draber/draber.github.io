@@ -24,16 +24,7 @@ class Menu extends Plugin {
      * @returns {HTMLElement}
      */
     getTarget() {
-        let target;
-        if (this.app.envIs('mobile')) {
-            target = el.$('#js-mobile-toolbar');
-        } else {
-            target = el.div({
-                content: el.$$('#portal-game-toolbar > span')
-            });
-            el.$('#portal-game-toolbar').append(target);
-        }
-        return target;
+        return this.app.envIs('mobile') ? el.$('#js-mobile-toolbar') : el.$('#portal-game-toolbar > div:last-of-type');
     }
 
     /**

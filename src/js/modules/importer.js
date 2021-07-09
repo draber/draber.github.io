@@ -12,9 +12,10 @@ import Score from '../plugins/score.js';
 import SpillTheBeans from '../plugins/spillTheBeans.js';
 import LetterCount from '../plugins/letterCount.js';
 import FirstLetter from '../plugins/firstLetter.js';
+import Pangrams from '../plugins/pangrams.js';
 import YourProgress from '../plugins/yourProgress.js';
 import TodaysAnswers from '../plugins/todaysAnswers.js';
-import Pangrams from '../plugins/pangrams.js';
+import PangramHl from '../plugins/pangramHl.js';
 import Googlify from '../plugins/googlify.js';
 import Styles from '../plugins/styles.js';
 import Menu from '../plugins/menu.js';
@@ -31,11 +32,12 @@ const getPlugins = () => {
         Score,
         LetterCount,
         FirstLetter,
+        Pangrams,
         ProgressBar,
         SpillTheBeans,
         DarkMode,
         ColorConfig,
-        Pangrams,
+        PangramHl,
         Googlify,
         Styles,
         Menu,

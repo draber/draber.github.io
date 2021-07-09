@@ -181,11 +181,12 @@ body {
     }
 }
 
-.pz-spelling-bee-congrats .sb-modal-wordlist-items li,
+[data-sba-theme] .sb-modal-wordlist-items li,
 .sb-wordlist-items-pag>li,
 .pz-ad-box,
 .pz-game-toolbar,
-.pz-spelling-bee-wordlist .hive-action,
+.pz-spelling-bee-wordlist,
+.hive-action,
 .sb-wordlist-box,
 .sb-message {
     border-color: var(--border-color);

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Spelling Bee Assistant - Public Beta",
-  "description": "Public Beta of the Spelling Bee Assistant, an add-on for Spelling Bee, the New York Times’ popular word puzzle",
+  "name": "Spelling Bee Assistant",
+  "description": "Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle",
   "homepage_url": "https://spelling-bee-assistant.app/",
   "version": "4.0.0",
   "content_scripts": [{

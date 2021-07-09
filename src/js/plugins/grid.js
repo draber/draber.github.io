@@ -40,12 +40,22 @@ class Grid extends TablePane {
 	 */
 	run(evt) {
 		super.run(evt);
-		el.$$('td', this.pane).forEach(cell => {
-			const cellArr = cell.textContent.trim().split('/');
-			if(cellArr.length === 2 && cellArr[0] === cellArr[1]){
-				cell.classList.add(prefix('completed', 'd'));
+		const rows = el.$$('tr', this.pane);
+		const rCnt = rows.length;
+		rows.forEach((row, rInd) => {
+			if(rCnt === rInd - 1) {
+				return false;
 			}
+			const cells = el.$$('td', row);
+			const cCnt = cells.length;
+			cells.forEach((cell, cInd) => {
+				const cellArr = cell.textContent.trim().split('/');
+				if(cInd < cCnt -1 && cellArr.length === 2 && cellArr[0] === cellArr[1]){
+					cell.classList.add(prefix('completed', 'd'));
+				}
+			})
 		})
+		
 		return this;
 	}
 

@@ -72,8 +72,8 @@ class FirstLetter extends TablePane {
 
         super(app, 'First letter', 'The number of words by first letter', {
             cssMarkers: {
-                completed: (rowData, i) => i > 0 && rowData[2] === 0,
-                preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
+                completed: (rowData, i) => rowData[2] === 0,
+                preeminent: (rowData, i) => rowData[0] === data.getCenterLetter()
             }
         });
 

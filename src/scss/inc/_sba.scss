@@ -4,8 +4,11 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
+@use 'sass:math';
+
 .sba {
     background: var(--body-bg-color);
+
     border: {
         radius: 6px;
         style: solid;
@@ -38,16 +41,8 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-    }
-
-    .pane {
         border: 1px solid var(--border-color);
-        border-top: none;
-        width: 100%;
-        font-size: 85%;
-        margin-bottom: 2px;
     }
-
 }
 
 [data-ui] {
@@ -57,16 +52,37 @@
 }
 
 .sba-data-pane {
+    border: 1px solid var(--border-color);
+    width: 100%;
+    font-size: 85%;
+    margin-bottom: 2px;
     border-collapse: collapse;
     table-layout: fixed;
+    border-top: none;
 
+
+    @for $i from 3 through 10 {
+        $width: percentage(math.div(1, $i));
+
+        &[data-cols="#{$i}"] {
+            :is(th, td) {
+                width: $width
+            }
+        }
+    }
+
+    th {
+        text-transform: uppercase;
+        background: var(--head-row-bg-color);
+    }
 
     .sba-preeminent {
         font-weight: bold;
         border-bottom: 2px solid var(--highlight-bg-color) !important;
     }
 
-    .sba-completed {
+    .sba-completed td,
+    td.sba-completed {
         color: var(--invalid-color);
         font-weight: normal;
     }
@@ -75,23 +91,16 @@
         display: none;
     }
 
-    td {
+    :is(th, td) {
         border: 1px solid var(--border-color);
         border-top: none;
         white-space: nowrap;
         text-align: center;
-        padding: 3px 0;
-        width: 26px;
+        padding: 3px 2px;
+    }
 
-        &:first-of-type {
-            text-align: left;
-            width: auto;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            padding: 3px 3px;
-
-        }
+    th {
+        background-color: var(--head-row-bg-color);
     }
 }
 
@@ -103,17 +112,21 @@
     .sba-data-pane {
         margin-left: 5px;
         max-width: 300px;
+        border: none;
 
-        td {
-            border: none;
-        }
 
         tr {
             &.sba-completed {
+                td {                    
                 color: var(--text-color);
+                }
             }
 
             td {
+                border: none;
+                text-align: left;
+                line-height: 1.8;
+
                 &:nth-child(n+2) {
                     text-align: right;
                     width: 80px;
@@ -144,33 +157,6 @@
     text-indent: 1px;
 }
 
-[data-ui="score"],
-[data-ui="letterCount"],
-[data-ui="firstLetter"] {
-    tbody {
-        tr {
-            &:first-child {
-                td {
-                    font-weight: bold;
-                    font-size: 92%;
-                }
-            }
-        }
-    }
-}
-
-[data-ui="firstLetter"] {
-    tbody {
-        tr {
-            td {
-                &:first-child {
-                    text-align: center;
-                    text-transform: uppercase;
-                }
-            }
-        }
-    }
-}
 
 [data-ui="progressBar"] {
     -webkit-appearance: none;
@@ -374,7 +360,7 @@
 }
 
 
-.pz-spelling-bee-congrats {
+[data-sba-theme] {
     .sb-modal-wordlist-items {
         li {
             .check {
@@ -409,6 +395,7 @@
         background: var(--menu-hover-color);
         color: var(--text-color);
     }
+
     &::selection {
         background-color: transparent;
     }
@@ -417,46 +404,22 @@
 [data-ui="grid"] {
     table {
         border-top: 1px solid var(--border-color);
-        table-layout: fixed;
-        width: 100%;
     }
 
     tbody {
         tr {
 
-            &:first-child,
             &:last-child {
                 td {
                     font-weight: bold;
-                    text-transform: uppercase;
                 }
-            }
-
-            &:first-of-type {
-                border-bottom: 2px solid var(--highlight-bg-color) !important;
-            }
-
-            &:last-of-type {
-                border-top: 2px solid var(--highlight-bg-color) !important;
             }
 
             td {
-                width: auto;
-                font-size: 14px;
                 padding: 5px 0 !important;
 
-                &:last-of-type,
-                &:first-of-type {
-                    text-align: center;
-                    font-weight: bold;
-                }
-
-                &:first-of-type {
-                    border-right: 2px solid var(--highlight-bg-color) !important;
-                }
-
                 &:last-of-type {
-                    border-left: 2px solid var(--highlight-bg-color) !important;
+                    font-weight: bold;
                 }
             }
         }
@@ -502,40 +465,35 @@
 }
 
 [data-sba-theme] {
-    &.pz-spelling-bee-congrats {
 
-        .sb-wordlist-items-pag,
-        .sb-modal-wordlist-items {
-            &>li {
-                &.sba-pangram {
-                    font-weight: 700;
-                    border-bottom: 2px var(--highlight-bg-color) solid;
-                }
-            }
-        }
-
-        .sba-pop-up {
-            &.left-aligned {
-                .sb-modal-content {
-
-                    .sba-modal-footer {
-                        text-align: right;
-                        font-size: 13px;
-                        border-top: 1px solid var(--border-color);
-                        padding: 10px 10px 0 10px;
-                    }
-                }
+    :is(.sb-wordlist-items-pag, .sb-modal-wordlist-items) {
+        &>li {
+            &.sba-pangram {
+                font-weight: 700;
+                border-bottom: 2px var(--highlight-bg-color) solid;
             }
         }
     }
 
-    &.pz-spelling-bee-congrats {
-        .left-aligned {
+    .sba-pop-up {
+        &.sb-modal-frame {
             .sb-modal-content {
-                &::after {
-                    background: linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%);
+
+                .sba-modal-footer {
+                    text-align: right;
+                    font-size: 13px;
+                    border-top: 1px solid var(--border-color);
+                    padding: 10px 10px 0 10px;
                 }
             }
+        }
+    }
+}
+
+.sb-modal-frame {
+    .sb-modal-content {
+        &::after {
+            background: linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%);
         }
     }
 }
