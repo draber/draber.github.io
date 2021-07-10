@@ -50,11 +50,20 @@ class ProgressBar extends Plugin {
             attributes: {
                 max: 100
             }
-        }) 
-        
+        })
+
+        app.on(prefix('pluginsReady'), evt => {
+            if (this.app.plugins.has('yourProgress')) {
+                this.ui.style.cursor = 'pointer';
+                this.ui.addEventListener('pointerup', () => {
+                    this.app.plugins.get('yourProgress').display();
+                });
+            }
+        })
+
         this.target = el.$('.sb-wordlist-heading', this.app.gameWrapper);
-        
-		this.toggle(this.getState());
+
+        this.toggle(this.getState());
     }
 }
 
