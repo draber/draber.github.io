@@ -1,4 +1,10 @@
-import Widget from './widget.js';
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+ import Widget from './widget.js';
 
 /**
  * Plugin base class
@@ -7,25 +13,33 @@ class Plugin extends Widget {
 
     /**
      * Attaches plugins to DOM, creates slot in app if needed
-     * @param {String} method
      * @returns {Widget}
      */
-    attach(method = 'append') {
+    attach() {
         if (!this.hasUi()) {
             return this;
         }
         this.ui.dataset.ui = this.key;
-        (this.target || this.app.ui)[method](this.ui);
+        (this.target || this.app.ui)[this.addMethod](this.ui);
         return this;
     }
 
     /**
      * Adds plugin to DOM and registers state in local storage
-     * @param {String} method
      * @returns {Widget}
      */
-    add(method = 'append') {
-        return this.attach(method);
+    add() {
+        return this.attach();
+    }
+
+    /**
+     * Catch-all for run events
+     * @param {Event} evt 
+     * @returns 
+     */
+    // eslint-disable-next-line no-unused-vars
+    run(evt) {
+        return this;
     }
 
     /**
@@ -38,7 +52,10 @@ class Plugin extends Widget {
     constructor(app, title, description, {
         key,
         canChangeState,
-        defaultState
+        defaultState,
+        menuIcon,
+        runEvt,
+        addMethod
     } = {}) {
         super(title, {
             key,
@@ -57,12 +74,26 @@ class Plugin extends Widget {
          * @type {String}
          */
         this.description = description || '';
-    
+
         /**
          * App container object, not the app UI!
          * @type {App}
          */
         this.app = app;
+
+        this.addMethod = addMethod || 'append';
+
+        this.menuIcon = menuIcon || 'checkbox';
+
+        /**
+         * Update plugin data on demand
+         */
+        if (runEvt) {
+            this.app.on(runEvt, evt => {
+                this.run(evt);
+            });
+        }
+
     }
 }
 

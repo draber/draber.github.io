@@ -2,3 +2,6 @@
 /node_modules
 .vscode
 /credentials
+/src/server/cert.pem
+/src/server/key.pem
+/src/dom-compare/storage

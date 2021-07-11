@@ -1,22 +1,42 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
 import el from "../modules/element";
 import {
     prefix
 } from "../modules/string";
-import Plugin from '../modules/plugin.js';
 import settings from "../modules/settings";
 
 
 /**
  * Plugin base class
  */
-class Popup extends Plugin {
+class Popup {
+
+    /**
+     * Enable closing the popup by clicking on the x button
+     * @returns {Popup}
+     */
+    enableKeyClose() {
+        document.addEventListener('keyup', evt => {
+            this.app.popupCloser = this.getCloseButton();
+            if (this.app.popupCloser && evt.code === 'Escape') {
+                this.app.popupCloser.click();
+            }
+            delete(this.app.popupCloser);
+        })
+        return this;
+    }
 
     /**
      * Get a reference to the `<template>` that holds the pop-ups while idle
      * Create one if it doesn't exist yet
      * @returns {*}
      */
-    getContainer() {
+    getTarget() {
         const dataUi = prefix('popup-container', 'd');
         let container = el.$(`[data-ui="${dataUi}"]`);
         if (!container) {
@@ -32,11 +52,11 @@ class Popup extends Plugin {
 
     /**
      * Create a pop-up, this mimics the pop-ups already available in Spelling Bee
-     * @returns {*}
+     * @returns {HTMLElement}
      */
     create() {
-        const frame = el.div({
-            classNames: ['sb-modal-frame', 'left-aligned'],
+        return el.div({
+            classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
             attributes: {
                 role: 'button'
             },
@@ -48,58 +68,64 @@ class Popup extends Plugin {
                     e.stopPropagation();
                 }
             },
-            html: [
+            content: [
                 el.div({
-                    attributes: {
-                        role: 'button'
-                    },
-                    classNames: ['sb-modal-close'],
-                    text: '×',
-                    events: {
-                        click: () => {
-                            this.toggle(false)
+                    classNames: ['sb-modal-top'],
+                    content: el.div({
+                        attributes: {
+                            role: 'button'
+                        },
+                        classNames: ['sb-modal-close'],
+                        content: '×',
+                        events: {
+                            click: () => {
+                                this.toggle(false)
+                            }
                         }
-                    }
+                    })
                 }),
                 el.div({
                     classNames: ['sb-modal-content'],
-                    html: [
+                    content: [
                         el.div({
                             classNames: ['sb-modal-header'],
-                            html: [this.puTitle, this.puSubTitle]
+                            content: [this.parts.title, this.parts.subtitle]
                         }),
-                        this.puBody
+                        this.parts.body,
+                        this.parts.footer
                     ]
                 })
             ]
         });
-        return frame;
     }
 
     /**
-     * 
-     * @param {Element|NodeList|Array|String} body
+     * Set any part of the content the content of the popup
+     * @param {String} part
+     * @param {Element|NodeList|Array|String} content
      */
-    setContent(body) {
-        this.puBody.innerHTML = '';
-        this.puBody.append(el.htmlToNode(body));
-        this.puBody.append(this.puFooter);
+    setContent(part, content) {
+        if (!this.parts[part]) {
+            console.error(`Unknown target ${part}`);
+            return this;
+        }
+        this.parts[part] = el.empty(this.parts[part]);
+        this.parts[part].append(el.toNode(content));
+        return this;
     }
 
     /**
-     * Overwrite the title
-     * @param {String} title
+     * Get the close button of the various pop-up formats
+     * @returns {HTMLElement|Boolean}
      */
-    setTitle(title) {
-        this.puTitle.innerHTML = title;
-    }
-
-    /**
-     * Overwrite the subtitle
-     * @param {String} subTitle
-     */
-    setSubtitle(subTitle) {
-        this.puSubTitle.innerHTML = subTitle;
+    getCloseButton() {
+        for(let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
+            const closer = el.$(selector, this.app.gameWrapper);
+            if(closer) {
+                return closer;
+            }
+        }
+        return false;
     }
 
     /**
@@ -108,86 +134,70 @@ class Popup extends Plugin {
      * @returns {Popup}
      */
     toggle(state) {
-        const closer = el.$('.sb-modal-close', this.modalWrapper);
-        if (!this.getState() && closer) {
+        const closer = this.getCloseButton();
+        if (!state && closer) {
             closer.click();
         }
 
         if (state) {
-            this.modalWrapper.append(this.ui);            
+            this.app.modalWrapper.append(this.ui);
             this.modalSystem.classList.add('sb-modal-open');
         } else {
-            this.getContainer().append(this.ui);
+            this.getTarget().append(this.ui);
             this.modalSystem.classList.remove('sb-modal-open');
         }
-
-        super.toggle(state);
-        
-        this.app.trigger(prefix('popup'), {
-            plugin: this
-        })
 
         return this;
     }
 
+
     /**
-     * Build an instance of a plugin
-     * @param {App} app
-     * @param {String} title
-     * @param {String} description
+     * Build an instance
+     * @param app
      * @param key
      */
-    constructor(app, title, description, {
-        key
-    } = {}) {
+    constructor(app, key) {
 
-        super(app, title, description, {
-            key,
-            canChangeState: true,
-            defaultState: false
-        })
+        this.key = key;
 
-        this.modalSystem = el.$('.sb-modal-system');
-        this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);
+        this.app = app;
 
-        this.puTitle = el.h3({
-            classNames: ['sb-modal-title'],
-            text: title
-        });
+        this.state = false;
 
-        this.puSubTitle = el.p({
-            classNames: ['sb-modal-message'],
-            text: description
-        });
+        this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
 
-        this.puBody = el.div({
-            classNames: ['sb-modal-body']
-        });
+        this.parts = {
+            title: el.h3({
+                classNames: ['sb-modal-title']
+            }),
 
-        this.puFooter = el.div({
-            classNames: ['sb-modal-message', 'sba-modal-footer'],
-            html: [
-                el.a({
-                    text: settings.get('label') + ' v' + settings.get('version'),
-                    attributes: {
-                        href: settings.get('url'),
-                        target: '_blank'
-                    }
-                })
-            ]
+            subtitle: el.p({
+                classNames: ['sb-modal-message']
+            }),
 
-        });
+            body: el.div({
+                classNames: ['sb-modal-body']
+            }),
 
-        if (!this.app.popups) {
-            this.app.popups = new Map();
+            footer: el.div({
+                classNames: ['sb-modal-message', 'sba-modal-footer'],
+                content: [
+                    el.a({
+                        content: settings.get('label'),
+                        attributes: {
+                            href: settings.get('url'),
+                            target: prefix()
+                        }
+                    })
+                ]
+            })
         }
 
-        if (!this.app.popups.has(key)) {
-            this.app.popups.set(key, this.create());
-        }
+        this.ui = this.create();
 
-        this.target = this.getContainer();
-        this.ui = this.app.popups.get(key);
+        this.enableKeyClose();
+
+        this.getTarget().append(this.ui);
     }
 
 }

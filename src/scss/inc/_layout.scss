@@ -1,0 +1,323 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+$gameOffset: 12;
+$gameWidth: 1280;
+
+.sba-container {
+    display: none;
+}
+
+.sba {
+    margin: var(--sba-app-margin);
+    width: var(--sba-app-width);
+    padding: var(--sba-app-padding);
+    box-sizing: border-box;
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+    }
+}
+
+
+[data-ui="menu"] {
+    .pane {
+        position: absolute;
+        top: 0;
+        right: -10000px;
+    }
+}
+
+[data-sba-submenu="true"] {
+    .sba {
+        position: relative;
+        left: -167px;
+        top: -175px;
+    }
+
+    .pz-game-toolbar {
+        position: relative;
+        z-index: 4;
+    }
+
+    [data-ui="menu"] {
+        .pane {
+            right: -16px;
+            top: 49px;
+        }
+    }
+
+    .sba {
+        left: -163px;
+        top: 0;
+    }
+
+    &.pz-desktop {
+
+        .pane {
+            right: -16px;
+            top: 55px;
+        }
+    }
+}
+
+
+[data-sba-active="true"] {
+    --sba-app-width: 100px;
+    --sba-app-padding: 0;
+    --sba-app-margin: 0;
+    --sba-game-offset: #{$gameOffset * 1px};
+    --sba-game-width: #{$gameWidth - (2 * $gameOffset) * 1px};
+    --sba-mobile-threshold: 900px;
+
+    .sba-container {
+        display: block;
+        position: absolute;
+        top: 50%;
+        transform: translate(0, -50%);
+        right: var(--sba-game-offset);
+        z-index: 1;
+    }
+
+    .sba {
+        border-color: transparent;
+    }
+
+    [data-ui="header"] {
+        display: none;
+    }
+
+    &[data-sba-submenu="true"] {
+        .sba-container {
+            top: 0;
+            height: 0;
+        }
+    }
+
+    .sb-expanded {
+        .sba-container {
+            visibility: hidden;
+            pointer-events: none;
+        }
+    }
+
+    .sb-content-box {
+        max-width: var(--sba-game-width);
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .sb-controls-box {
+        max-width: calc(100vw - var(--sba-app-width))
+    }
+}
+
+// if app
+@media (max-width: 370px) {
+    [data-sba-active="true"] {
+        .sb-hive {
+            width: 70%;
+        }
+
+        &.pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle) {
+            font-size: 0.9em;
+            margin: 0 4px 8px;
+            padding: 23px 0;
+        }
+
+        .hive-action:not(.hive-action__shuffle) {
+            width: 71px;
+            min-width: auto;
+        }
+    }
+}
+
+//end if app
+
+
+[data-sba-active] {
+    .pz-game-toolbar {
+        .pz-row {
+            padding: 0;
+        }
+    }
+}
+
+@media (min-width: 516px) {
+    [data-sba-active] {
+
+        // avoid break between yest. and assistant 
+        .pz-game-toolbar {
+            .pz-row {
+                padding: 0 12px;
+            }
+        }
+
+        &.pz-desktop {
+            .sba {
+                left: -175px;
+            }
+        }
+    }
+
+    [data-ui="score"] {
+        $wCols: 23;
+        $w1stCol: 100 - ($wCols * 3);
+
+        .sba-data-pane {
+
+            tbody {
+                th {
+                    text-transform: none;
+                    width: $w1stCol * 1%;
+                }
+
+                td {
+                    width: $wCols * 1%;
+                }
+
+                tr {
+                    &:nth-child(1) {
+
+                        th {
+                            &::after {
+                                content: 'ords'
+                            }
+                        }
+                    }
+
+                    &:nth-child(2) {
+
+                        th {
+                            &::after {
+                                content: 'oints'
+                            }
+                        }
+                    }
+                }
+            }
+
+            thead {
+                th {
+                    width: $wCols * 1%;
+
+                    &:first-of-type {
+                        width: $w1stCol * 1%;
+                    }
+                }
+            }
+
+        }
+    }
+
+    [data-sba-active="true"] {
+        --sba-app-width: 138px;
+        --sba-app-padding: 0 5px 5px;
+
+        .sba {
+            border-color: var(--border-color);
+        }
+
+        [data-ui="header"] {
+            display: block;
+        }
+    }
+}
+
+@media (min-width: 900px) {
+
+    [data-sba-submenu="true"] {
+        &.pz-desktop {
+            [data-ui="menu"] {
+                .pane {
+                    right: 0;
+                    top: 55px;
+                }
+            }
+        }
+    }
+
+    [data-sba-active="true"] {
+
+        --sba-app-width: 160px;
+        --sba-app-padding: 0 8px 8px;
+        --sba-app-margin: 66px 0 0 0;
+
+        .sb-content-box {
+            padding: 0 var(--sba-game-offset);
+        }
+
+        .sb-controls-box {
+            max-width: none;
+        }
+
+        .sba-container {
+            position: static;
+            transform: none;
+        }
+
+        .sb-expanded {
+            .sba-container {
+                z-index: 1;
+            }
+        }
+
+        &[data-sba-submenu="true"] {
+            .sba {
+                top: -66px;
+            }
+        }
+
+        &.pz-desktop {
+            .sba {
+                left: -191px;
+            }
+        }
+    }
+}
+
+@media (min-width: 1298px) {
+    [data-sba-active="true"] {
+        &[data-sba-submenu="true"] {
+            .sba {
+                left: -179px;
+            }
+        }
+    }
+}
+
+
+// result list on the right
+@media (min-width: 768px) {
+
+    [data-sba-theme] {
+        &.pz-page {
+            .sba-pop-up {
+                &.sb-modal-frame {
+                    .sb-modal-content {
+                        .sb-modal-body {
+                            padding-right: 56px;
+                        }
+
+                        .sb-modal-header {
+                            padding-right: 56px;
+                        }
+
+                        .sba-modal-footer {
+                            text-align: right;
+                            border-top: 1px solid var(--border-color);
+                            padding-top: 10px;
+                            width: calc(100% - 112px);
+                            margin: -8px auto 15px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

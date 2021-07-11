@@ -8,51 +8,59 @@
         $$: (expr, container = null) => {
             return [].slice.call((container || document).querySelectorAll(expr));
         },
-        htmlToNode: html => {
-            if (html instanceof Element) {
-                return html;
+        toNode: (content) => {
+            const fragment = document.createDocumentFragment();
+            if (typeof content === 'undefined') {
+                return fragment;
             }
-            if((typeof html === 'string' || html instanceof String)
-                && html.trim().startsWith('<')
-                && html.trim().endsWith('>')) {
-                const wrapper = el.div();
-                wrapper.innerHTML = html;
-                html = wrapper.childNodes;
+            if (content instanceof Element || content instanceof DocumentFragment) {
+                return content;
             }
-            if (html instanceof NodeList || Array.isArray(html)) {
-                const fragment = document.createDocumentFragment();
-                html.forEach(element => {
+            if (typeof content === 'number') {
+                content = content.toString();
+            }
+            if (typeof content === 'string' ||
+                content instanceof String
+            ) {
+                const doc = (new DOMParser()).parseFromString(content, 'text/html');
+                content = doc.body.childNodes;
+            }
+            if(typeof content.forEach === 'function') {
+                Array.from(content).forEach(element => {
                     fragment.append(element);
                 });
                 return fragment;
             }
-            console.error('Expected Element|NodeList|Array|String, got ', html);
+            console.error('Expected Element|DocumentFragment|Iterable|String|HTMLCode, got', content);
+        },
+        empty: element => {
+            while (element.lastChild) {
+                element.lastChild.remove();
+            }
+            element.textContent = '';
+            return element;
         }
     };
     const create = function ({
         tag,
-        text = '',
+        content,
         attributes = {},
         style = {},
         data = {},
         events = {},
         classNames = [],
-        svg,
-        html
+        isSvg
     } = {}) {
-        const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
-        if(tag === 'a' && attributes.href && !text) {
-            text = (new URL(attributes.href)).hostname;
+        const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
+        if (tag === 'a' && attributes.href && !content) {
+            content = (new URL(attributes.href)).hostname;
         }
-        el.textContent = text;
         for (let [key, value] of Object.entries(attributes)) {
-            if (svg) {
+            if (isSvg) {
                 el.setAttributeNS(null, key, value.toString());
-            }
-            else if(key === 'role' || key.startsWith('aria-')){
+            } else if (key === 'role' || key.startsWith('aria-')) {
                 el.setAttribute(key, value);
-            }
-            else if(value !== false) {
+            } else if (value !== false) {
                 el[key] = value.toString();
             }
         }
@@ -67,15 +75,15 @@
         if (classNames.length) {
             el.classList.add(...classNames);
         }
-        if(html) {
-            el.append(fn.htmlToNode(html));
+        if (typeof content !== 'undefined') {
+            el.append(fn.toNode(content));
         }
         return el;
     };
     const el = new Proxy(fn, {
         get(target, prop) {
             return function () {
-                const args = Array.prototype.slice.call(arguments);
+                const args = Array.from(arguments);
                 if (Object.prototype.hasOwnProperty.call(target, prop) && typeof target[prop] === 'function') {
                     target[prop].bind(target);
                     return target[prop].apply(null, args);
@@ -97,7 +105,7 @@
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix$1 = "sba";
 
-    var version = "3.2.0";
+    var version = "4.0.0";
 
     const settings = {
         version: version,
@@ -117,7 +125,7 @@
     }
     settings.options.version = settings.version;
     saveOptions();
-    const get$1 = key => {
+    const get = key => {
         let current = Object.create(settings);
         for (let token of key.split('.')) {
             if (typeof current[token] === 'undefined') {
@@ -145,7 +153,7 @@
         saveOptions();
     };
     var settings$1 = {
-        get: get$1,
+        get,
         set
     };
 
@@ -162,7 +170,7 @@
             .map(word => word.toLowerCase())
             .join('-');
     };
-    const prefix = (term, mode = 'c') => {
+    const prefix = (term = '', mode = 'c') => {
         switch (mode) {
             case 'c':
                 return camel(pf + '_' + term);
@@ -175,16 +183,17 @@
 
     let lists;
     const sbData = window.gameData.today;
-    let app$1;
+    let app;
     const completeLists = () => {
         lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
         lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app$1.trigger(prefix('wordsUpdated'));
+        app.trigger(prefix('refreshUi'));
     };
     const initLists = foundTerms => {
         lists = {
             answers: sbData.answers,
             pangrams: sbData.pangrams,
+            letters: sbData.validLetters,
             foundTerms: foundTerms
         };
         completeLists();
@@ -194,6 +203,9 @@
     };
     const getId = () => {
         return sbData.id;
+    };
+    const getDate = () => {
+        return sbData.displayDate;
     };
     const getCenterLetter = () => {
         return sbData.centerLetter;
@@ -220,9 +232,9 @@
         completeLists();
     };
     const init = (_app, foundTerms) => {
-        app$1 = _app;
+        app = _app;
         initLists(foundTerms);
-        app$1.on(prefix('newWord'), evt => {
+        app.on(prefix('newWord'), evt => {
             updateLists(evt.detail);
         });
     };
@@ -232,50 +244,8 @@
         getCount,
         getPoints,
         getId,
+        getDate,
         getCenterLetter
-    };
-
-    var css = "[data-sba-theme=light]{--sba0:#000;--sba1:#fff;--sba2:rgba(255,255,255,.85);--sba3:#dcdcdc;--sba4:#e6e6e6;--sba5:#a2a2a2;}[data-sba-theme=dark]{--sba0:#e7eae1;--sba1:#111;--sba2:rgba(17,17,17,.85);--sba3:#333;--sba4:#393939;--sba5:#666;}html{--sba6: rgb(248, 205, 5);}.pz-game-field{background:inherit;color:inherit}.sb-wordlist-items-pag>li.sba-pangram{border-bottom:2px var(--sba6) solid}.sb-wordlist-items-pag>li.sb-anagram a{color:var(--sba5)}.sb-modal-scrim{z-index:6}[data-sba-theme=dark]{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-moment__loading{color:#000}[data-sba-theme=dark] .pz-game-wrapper{background:inherit !important;color:inherit}[data-sba-theme=dark] .pz-nav__hamburger-inner,[data-sba-theme=dark] .pz-nav__hamburger-inner::before,[data-sba-theme=dark] .pz-nav__hamburger-inner::after{background-color:var(--sba0)}[data-sba-theme=dark] .pz-nav{width:100%;background:var(--sba1)}[data-sba-theme=dark] .pz-nav__logo{filter:invert(1)}[data-sba-theme=dark] .sb-modal-scrim{background:var(--sba2);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__title,[data-sba-theme=dark] .sb-modal-close{color:var(--sba0)}[data-sba-theme=dark] .sb-modal-frame,[data-sba-theme=dark] .pz-modal__button.white{background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .pz-modal__button.white:hover{background:var(--sba4)}[data-sba-theme=dark] .sb-message{background:var(--sba4)}[data-sba-theme=dark] .sb-input-invalid{color:var(--sba5)}[data-sba-theme=dark] .sb-toggle-expand{box-shadow:none}[data-sba-theme=dark] .sb-progress-marker .sb-progress-value,[data-sba-theme=dark] .hive-cell.center .cell-fill{background:var(--sba6);fill:var(--sba6);color:var(--sba1)}[data-sba-theme=dark] .sb-input-bright{color:var(--sba6)}[data-sba-theme=dark] .hive-cell.outer .cell-fill{fill:var(--sba4)}[data-sba-theme=dark] .cell-fill{stroke:var(--sba1)}[data-sba-theme=dark] .cell-letter{fill:var(--sba0)}[data-sba-theme=dark] .hive-cell.center .cell-letter{fill:var(--sba1)}[data-sba-theme=dark] .pz-toolbar-button:hover{background:var(--sba4);color:var(--sba0)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle){background:var(--sba1);color:var(--sba0)}[data-sba-theme=dark] .hive-action:not(.hive-action__shuffle):hover{background:var(--sba4)}[data-sba-theme=dark] .hive-action__shuffle{filter:invert(100%)}[data-sba-theme=dark] *:not(.hive-action__shuffle):not(.sba-pangram):not(.sba-preeminent){border-color:var(--sba3) !important}[data-ui=setUp] li{position:relative;margin:0 0 5px 22px}[data-ui=setUp] label{cursor:pointer;overflow:hidden}[data-ui=setUp] label:before{content:\"\";border:2px solid var(--sba3);width:14px;height:14px;display:inline-block;border-radius:3px;position:absolute;left:-21px;top:4px}[data-ui=setUp] input{position:absolute;left:-40px;top:-12px;visibility:hidden;cursor:pointer}[data-ui=setUp] input:checked:after{content:\"✔\";color:var(--sba6);position:absolute;top:3px;left:16px;font-size:20px;visibility:visible}[data-ui=setUp] b{font-weight:bold}[data-ui=setUp] i{font-style:italic}[data-ui=setUp] i::before{content:\" - \"}.sbaContainer{width:100%;max-width:1080px;margin:0 auto;height:0;overflow-y:visible;position:relative;z-index:5}[data-sba-has-overlay=true] .sbaContainer{z-index:-1}[data-sba-has-overlay=true] .pz-game-wrapper{background:transparent !important}[data-sba-has-overlay=true] .sb-expanded{background:var(--sba1)}.sba{position:absolute;left:100%;top:121px;z-index:3;width:160px;box-sizing:border-box;padding:0 8px 5px;background:var(--sba1);border-width:1px;border-color:var(--sba3);border-radius:6px;border-style:solid}.sba.inactive{display:none}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.sba *:focus{outline:0}.sba [data-ui=header]{display:flex;gap:8px}.sba [data-ui=header] .toolbar{display:flex;align-items:stretch;gap:1px}.sba [data-ui=header] .toolbar div{padding:10px 3px 2px 3px}.sba [data-ui=header] svg{width:11px;cursor:pointer;fill:currentColor}.sba .header{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}.sba progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0 0 2px 0;height:6px;padding:0;border:1px var(--sba3) solid;background:transparent;display:block}.sba progress.inactive{display:none}.sba progress::-webkit-progress-bar{background-color:transparent}.sba progress::-webkit-progress-value{background-color:var(--sba6);height:4px}.sba progress::-moz-progress-bar{background-color:var(--sba6)}.sba details{font-size:90%;margin-bottom:1px}.sba details.inactive{display:none}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--sba4);color:var(--sba0);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sba .pane{border:1px solid var(--sba3);border-top:none;width:100%;font-size:85%;margin-bottom:2px}.sba table{border-collapse:collapse;table-layout:fixed}.sba tr.sba-preeminent{font-weight:bold;border-bottom:2px solid var(--sba6) !important}.sba tr.sba-completed{color:var(--sba5);font-weight:normal}.sba tr.sba-hidden{display:none}.sba td{border:1px solid var(--sba3);border-top:none;white-space:nowrap;text-align:center;padding:3px 0;width:26px}.sba td:first-of-type{text-align:left;width:auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:3px 3px}.sba [data-ui=scoreSoFar] tbody tr:first-child td,.sba [data-ui=spoilers] tbody tr:first-child td,.sba [data-ui=startingWith…] tbody tr:first-child td{font-weight:bold;font-size:92%}.sba [data-ui=startingWith…] tbody tr td:first-child{text-align:center;text-transform:uppercase}.sba [data-ui=footer]{color:currentColor;opacity:.6;font-size:10px;text-align:right;display:block;padding-top:8px}.sba [data-ui=footer]:hover{opacity:.8;text-decoration:underline}.sba .spill-title{padding:8px 6px 0;text-align:center}.sba .spill{text-align:center;padding:14px 0;font-size:280%}.sba ul.pane{padding:5px}.sba [data-ui=surrender] .pane{padding:10px 5px}.sba [data-ui=surrender] button{margin:0 auto;display:block;font-size:100%;white-space:nowrap;padding:12px 10px}.sba label{cursor:pointer;position:relative;line-height:19px;white-space:nowrap}.sba label input{position:relative;top:2px;margin:0 5px 0 0}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--sba3);padding-top:10px;font-size:13px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;text-align:right;border-top:1px solid var(--sba3);padding-top:10px}[data-sba-theme].pz-spelling-bee-congrats [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer button{padding:6px 10px;margin:0}[data-sba-theme].pz-spelling-bee-congrats .left-aligned .sb-modal-content .sb-modal-body::after{background:linear-gradient(180deg, transparent 0%, var(--sba2) 56.65%, var(--sba1) 100%)}@media(max-width: 1444px){.sbaContainer{max-width:none}.sba{top:15px;left:12px}}@media(min-width: 992px){[data-sba-theme].pz-page [data-ui=setUp] h4{font-size:20px}}@media(min-width: 768px){[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page [data-ui=setUp].left-aligned .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--sba3);padding-top:10px}}@media(max-width: 767.98px){.sba{width:130px;top:158px;left:auto;right:12px;padding:0 5px 3px}.sba [data-ui=spillTheBeans] .spill-title{display:none}.pz-mobile [data-ui=setUp] b{display:block}.pz-mobile [data-ui=setUp] i{margin-bottom:5px}.pz-mobile [data-ui=setUp] i::before{content:normal}}";
-
-    const icons = {
-        options: {
-            children: {
-                path: 'M16 14c0-2.203-1.797-4-4-4s-4 1.797-4 4 1.797 4 4 4 4-1.797 4-4zm8-1.703v3.469c0 .234-.187.516-.438.562l-2.891.438a8.86 8.86 0 01-.609 1.422c.531.766 1.094 1.453 1.672 2.156.094.109.156.25.156.391s-.047.25-.141.359c-.375.5-2.484 2.797-3.016 2.797a.795.795 0 01-.406-.141l-2.156-1.687a9.449 9.449 0 01-1.422.594c-.109.953-.203 1.969-.453 2.906a.573.573 0 01-.562.438h-3.469c-.281 0-.531-.203-.562-.469l-.438-2.875a9.194 9.194 0 01-1.406-.578l-2.203 1.672c-.109.094-.25.141-.391.141s-.281-.063-.391-.172c-.828-.75-1.922-1.719-2.578-2.625a.607.607 0 01.016-.718c.531-.719 1.109-1.406 1.641-2.141a8.324 8.324 0 01-.641-1.547l-2.859-.422A.57.57 0 010 15.705v-3.469c0-.234.187-.516.422-.562l2.906-.438c.156-.5.359-.969.609-1.437a37.64 37.64 0 00-1.672-2.156c-.094-.109-.156-.234-.156-.375s.063-.25.141-.359c.375-.516 2.484-2.797 3.016-2.797.141 0 .281.063.406.156L7.828 5.94a9.449 9.449 0 011.422-.594c.109-.953.203-1.969.453-2.906a.573.573 0 01.562-.438h3.469c.281 0 .531.203.562.469l.438 2.875c.484.156.953.344 1.406.578l2.219-1.672c.094-.094.234-.141.375-.141s.281.063.391.156c.828.766 1.922 1.734 2.578 2.656a.534.534 0 01.109.344c0 .141-.047.25-.125.359-.531.719-1.109 1.406-1.641 2.141.266.5.484 1.016.641 1.531l2.859.438a.57.57 0 01.453.562z'
-            },
-            width: 24,
-            height: 28
-        },
-        darkMode: {
-            children: {
-                path: 'M12.018 1.982A12.018 12.018 0 000 14a12.018 12.018 0 0012.018 12.018A12.018 12.018 0 0024.036 14 12.018 12.018 0 0012.018 1.982zm0 3.293A8.725 8.725 0 0120.743 14a8.725 8.725 0 01-8.725 8.725z'
-            },
-            width: 24,
-            height: 28
-        }
-    };
-    const getIcon = key => {
-        if (!icons[key]) {
-            console.error(`Icon ${key} doesn't exist`);
-            return false;
-        }
-        const icon = icons[key];
-        const svg = el.svg({
-            attributes: {
-                ...{
-                    viewBox: `0 0 ${icon.width} ${icon.height}`
-                }
-            },
-            svg: true
-        });
-        for (const [type, d] of Object.entries(icon.children)) {
-            svg.append(el[type]({
-                attributes: {
-                    d
-                },
-                svg: true
-            }));
-        }
-        return svg;
     };
 
     class Widget {
@@ -299,35 +269,21 @@
             }
             return this;
         }
-        enableTool(iconKey, textToActivate, textToDeactivate) {
-            this.tool = el.div({
-                events: {
-                    click: () => {
-                        this.toggle(!this.getState());
-                        this.tool.title = this.getState() ? textToDeactivate : textToActivate;
-                    }
-                },
-                attributes: {
-                    title: this.getState() ? textToDeactivate : textToActivate
-                },
-                data: {
-                    tool: this.key
-                },
-                html: getIcon(iconKey)
-            });
-            return this;
-        }
         hasUi() {
             return this.ui instanceof HTMLElement;
         }
         on(type, action) {
-            this.ui.addEventListener(type, action);
+            if (this.hasUi()) {
+                this.ui.addEventListener(type, action);
+            }
             return this;
         }
         trigger(type, data) {
-            this.ui.dispatchEvent(data ? new CustomEvent(type, {
-                detail: data
-            }) : new Event(type));
+            if (this.hasUi()) {
+                this.ui.dispatchEvent(data ? new CustomEvent(type, {
+                    detail: data
+                }) : new Event(type));
+            }
             return this;
         }
         constructor(title, {
@@ -343,26 +299,32 @@
             this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
             this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
             this.setState(this.getState());
-            this.ui;
+            this.ui = null;
         }
     }
 
     class Plugin extends Widget {
-        attach(method = 'append') {
+        attach() {
             if (!this.hasUi()) {
                 return this;
             }
             this.ui.dataset.ui = this.key;
-            (this.target || this.app.ui)[method](this.ui);
+            (this.target || this.app.ui)[this.addMethod](this.ui);
             return this;
         }
-        add(method = 'append') {
-            return this.attach(method);
+        add() {
+            return this.attach();
+        }
+        run(evt) {
+            return this;
         }
         constructor(app, title, description, {
             key,
             canChangeState,
-            defaultState
+            defaultState,
+            menuIcon,
+            runEvt,
+            addMethod
         } = {}) {
             super(title, {
                 key,
@@ -372,55 +334,13 @@
             this.target;
             this.description = description || '';
             this.app = app;
-        }
-    }
-
-    class Styles extends Plugin {
-        constructor(app) {
-            super(app, 'Styles');
-            this.target = el.$('head');
-            this.ui = el.style({
-                text: css
-            });
-            app.on(prefix('destroy'), () => this.ui.remove());
-            this.add();
-        }
-    }
-
-    class Launcher extends Plugin {
-        buildUiAndTarget() {
-            let classNames = ['pz-toolbar-button__sba'];
-            if (this.app.envIs('mobile')) {
-                this.target = el.$('#js-mobile-toolbar');
-                classNames.push('pz-nav__toolbar-item');
-            } else {
-                this.target = el.div();
-                el.$$('#portal-game-toolbar > span').forEach(button => {
-                    this.target.append(button);
+            this.addMethod = addMethod || 'append';
+            this.menuIcon = menuIcon || 'checkbox';
+            if (runEvt) {
+                this.app.on(runEvt, evt => {
+                    this.run(evt);
                 });
-                el.$('#portal-game-toolbar').append(this.target);
-                classNames.push('pz-toolbar-button');
             }
-            this.ui = el.span({
-                text: settings$1.get('title'),
-                events: {
-                    click: () => {
-                        const nextState = !this.app.getState();
-                        this.app.toggle(nextState);
-                        this.app.gameWrapper.dataset.sbaActive = nextState;
-                    }
-                },
-                attributes: {
-                    role: 'presentation'
-                },
-                classNames
-            });
-        }
-        constructor(app) {
-            super(app, 'Launcher');
-            this.buildUiAndTarget();
-            app.on(prefix('destroy'), () => this.ui.remove());
-            this.add();
         }
     }
 
@@ -435,39 +355,22 @@
                 canChangeState: true,
                 defaultState: false
             });
-            this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
             this.toggle(this.getState());
-            this.add();
         }
     }
 
-    class Header extends Plugin {
-        constructor(app) {
-            super(app, settings$1.get('title'), '', {
-                key: 'header'
+    class Popup {
+        enableKeyClose() {
+            document.addEventListener('keyup', evt => {
+                this.app.popupCloser = this.getCloseButton();
+                if (this.app.popupCloser && evt.code === 'Escape') {
+                    this.app.popupCloser.click();
+                }
+                delete(this.app.popupCloser);
             });
-            this.ui = el.div();
-            app.dragHandle = el.div({
-                text: this.title,
-                classNames: ['header']
-            });
-            this.ui.append(app.dragHandle);
-            app.on(prefix('toolsReady'), evt => {
-                const toolbar = el.div({
-                    classNames: ['toolbar']
-                });
-                evt.detail.forEach(tool => {
-                    toolbar.append(tool);
-                });
-                this.ui.append(toolbar);
-                return this;
-            });
-            this.add();
+            return this;
         }
-    }
-
-    class Popup extends Plugin {
-        getContainer() {
+        getTarget() {
             const dataUi = prefix('popup-container', 'd');
             let container = el.$(`[data-ui="${dataUi}"]`);
             if (!container) {
@@ -481,8 +384,8 @@
             return container;
         }
         create() {
-            const frame = el.div({
-                classNames: ['sb-modal-frame', 'left-aligned'],
+            return el.div({
+                classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
                 attributes: {
                     role: 'button'
                 },
@@ -494,460 +397,551 @@
                         e.stopPropagation();
                     }
                 },
-                html: [
+                content: [
                     el.div({
-                        attributes: {
-                            role: 'button'
-                        },
-                        classNames: ['sb-modal-close'],
-                        text: '×',
-                        events: {
-                            click: () => {
-                                this.toggle(false);
+                        classNames: ['sb-modal-top'],
+                        content: el.div({
+                            attributes: {
+                                role: 'button'
+                            },
+                            classNames: ['sb-modal-close'],
+                            content: '×',
+                            events: {
+                                click: () => {
+                                    this.toggle(false);
+                                }
                             }
-                        }
+                        })
                     }),
                     el.div({
                         classNames: ['sb-modal-content'],
-                        html: [
+                        content: [
                             el.div({
                                 classNames: ['sb-modal-header'],
-                                html: [this.puTitle, this.puSubTitle]
+                                content: [this.parts.title, this.parts.subtitle]
                             }),
-                            this.puBody
+                            this.parts.body,
+                            this.parts.footer
                         ]
                     })
                 ]
             });
-            return frame;
         }
-        setContent(body) {
-            this.puBody.innerHTML = '';
-            this.puBody.append(el.htmlToNode(body));
-            this.puBody.append(this.puFooter);
+        setContent(part, content) {
+            if (!this.parts[part]) {
+                console.error(`Unknown target ${part}`);
+                return this;
+            }
+            this.parts[part] = el.empty(this.parts[part]);
+            this.parts[part].append(el.toNode(content));
+            return this;
         }
-        setTitle(title) {
-            this.puTitle.innerHTML = title;
-        }
-        setSubtitle(subTitle) {
-            this.puSubTitle.innerHTML = subTitle;
+        getCloseButton() {
+            for(let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
+                const closer = el.$(selector, this.app.gameWrapper);
+                if(closer) {
+                    return closer;
+                }
+            }
+            return false;
         }
         toggle(state) {
-            const closer = el.$('.sb-modal-close', this.modalWrapper);
-            if (!this.getState() && closer) {
+            const closer = this.getCloseButton();
+            if (!state && closer) {
                 closer.click();
             }
             if (state) {
-                this.modalWrapper.append(this.ui);
+                this.app.modalWrapper.append(this.ui);
                 this.modalSystem.classList.add('sb-modal-open');
             } else {
-                this.getContainer().append(this.ui);
+                this.getTarget().append(this.ui);
                 this.modalSystem.classList.remove('sb-modal-open');
             }
-            super.toggle(state);
-            this.app.trigger(prefix('popup'), {
-                plugin: this
-            });
             return this;
         }
-        constructor(app, title, description, {
-            key
-        } = {}) {
-            super(app, title, description, {
-                key,
-                canChangeState: true,
-                defaultState: false
-            });
-            this.modalSystem = el.$('.sb-modal-system');
-            this.modalWrapper = el.$('.sb-modal-wrapper', this.modalSystem);
-            this.puTitle = el.h3({
-                classNames: ['sb-modal-title'],
-                text: title
-            });
-            this.puSubTitle = el.p({
-                classNames: ['sb-modal-message'],
-                text: description
-            });
-            this.puBody = el.div({
-                classNames: ['sb-modal-body']
-            });
-            this.puFooter = el.div({
-                classNames: ['sb-modal-message', 'sba-modal-footer'],
-                html: [
-                    el.a({
-                        text: settings$1.get('label') + ' v' + settings$1.get('version'),
-                        attributes: {
-                            href: settings$1.get('url'),
-                            target: '_blank'
-                        }
-                    })
-                ]
-            });
-            if (!this.app.popups) {
-                this.app.popups = new Map();
-            }
-            if (!this.app.popups.has(key)) {
-                this.app.popups.set(key, this.create());
-            }
-            this.target = this.getContainer();
-            this.ui = this.app.popups.get(key);
+        constructor(app, key) {
+            this.key = key;
+            this.app = app;
+            this.state = false;
+            this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
+            this.parts = {
+                title: el.h3({
+                    classNames: ['sb-modal-title']
+                }),
+                subtitle: el.p({
+                    classNames: ['sb-modal-message']
+                }),
+                body: el.div({
+                    classNames: ['sb-modal-body']
+                }),
+                footer: el.div({
+                    classNames: ['sb-modal-message', 'sba-modal-footer'],
+                    content: [
+                        el.a({
+                            content: settings$1.get('label'),
+                            attributes: {
+                                href: settings$1.get('url'),
+                                target: prefix()
+                            }
+                        })
+                    ]
+                })
+            };
+            this.ui = this.create();
+            this.enableKeyClose();
+            this.getTarget().append(this.ui);
         }
     }
 
-    class SetUp extends Popup {
-    	constructor(app) {
-    		super(app, settings$1.get('label'), 'Configure the assistant the way you want it.', {
-    			canChangeState: true,
-    			defaultState: false,
-    			key: 'setUp'
-    		});
-    		const pane = el.ul({
-    			classNames: ['pane'],
-    			events: {
-    				click: evt => {
-    					if (evt.target.tagName === 'INPUT') {
-    						app.plugins.get(evt.target.name).toggle(evt.target.checked);
-    					}
-    				},
-    				toggle: evt => {
-    					if (!evt.target.open) {
-    						this.toggle(false);
-    					}
-    				}
-    			}
-    		});
-            app.on(prefix('popup'), evt => {
-    			if(evt.detail.plugin === this && this.getState()){
-    				const options = settings$1.get('options');
-    				el.$$('input', pane).forEach(input => {
-    					input.checked = !!options[input.name];
-    				});
-    			}
-    		});
-    		app.on(prefix('pluginsReady'), evt => {
-    			const defaults = new Map();
-    			evt.detail.forEach((plugin, key) => {
-    				if (!plugin.canChangeState || plugin === this) {
-    					return false;
-    				}
-    				const setting = el.input({
-    					attributes: {
-    						type: 'checkbox',
-    						name: key,
-    						checked: !!plugin.getState()
-    					}
-    				});
-    				pane.append(el.li({
-    					html: el.label({
-    						html: [
-    							setting,
-    							el.b({
-    								text: plugin.title
-    							}),
-    							el.i({
-    								text: plugin.description
-    							})
-    						]
-    					})
-    				}));
-    				defaults.set(key, {
-    					setting,
-    					default: !!plugin.defaultState
-    				});
-    			});
-    			this.setContent(pane);
-    			this.puFooter.append(el.div({
-    				classNames: [prefix('factory-reset', 'd')],
-    				html: el.button({
-    					classNames: ['hive-action'],
-    					text: 'Reset to defaults',
-    					attributes: {
-    						type: 'text'
-    					},
-    					events: {
-    						'click': () => {
-    							defaults.forEach(value => {
-    								if (value.setting.checked !== value.default) {
-    									value.setting.click();
-    								}
-    							});
-    						}
-    					}
-    				})
-    			}));
-    		});
-    		this.setState(false);
-    		this.enableTool('options', 'Show set-up', 'Hide set-up');
-    		this.add();
-    	}
+    class ColorConfig extends Plugin {
+        toggle(state) {
+            el.$$('[data-sba-theme]').forEach(element => {
+                element.style.setProperty('--dhue', state.hue);
+                element.style.setProperty('--dsat', state.sat + '%');
+            });
+            return super.toggle(state);
+        }
+        display() {
+            this.popup.toggle(true);
+            el.$('input:checked', this.popup.ui).focus();
+        }
+        constructor(app) {
+            super(app, 'Dark Mode Colors', 'Select your favorite color scheme for the Dark Mode.', {
+                canChangeState: true,
+                defaultState: {
+                    hue: 0,
+                    sat: 0
+                }
+            });
+            this.menuAction = 'popup';
+            this.menuIcon = 'null';
+            const swatches = el.ul({
+                classNames: [prefix('swatches', 'd')]
+            });
+            for (let hue = 0; hue < 360; hue += 30) {
+                const sat = hue === 0 ? 0 : 25;
+                swatches.append(el.li({
+                    content: [
+                        el.input({
+                            attributes: {
+                                name: 'color-picker',
+                                type: 'radio',
+                                value: hue,
+                                checked: hue === this.getState().hue,
+                                id: prefix('h' + hue)
+                            },
+                            events: {
+                                change: () => {
+                                    this.toggle({
+                                        hue,
+                                        sat
+                                    });
+                                }
+                            }
+                        }),
+                        el.label({
+                            attributes: {
+                                htmlFor: prefix('h' + hue)
+                            },
+                            style: {
+                                background: `hsl(${hue}, ${sat}%, 22%)`
+                            }
+                        })
+                    ]
+                }));
+            }
+            this.menuIcon = 'null';
+            this.popup = new Popup(this.app, this.key)
+                .setContent('title', this.title)
+                .setContent('subtitle', this.description)
+                .setContent('body', el.div({
+                    classNames: [prefix('color-selector', 'd')],
+                    content: [
+                        swatches,
+                        el.div({
+                            classNames: ['hive'],
+                            content: [el.svg({
+                                classNames: ['hive-cell', 'outer'],
+                                attributes: {
+                                    viewBox: `0 0 24 21`
+                                },
+                                isSvg: true,
+                                content: [el.path({
+                                    classNames: ['cell-fill'],
+                                    isSvg: true,
+                                    attributes: {
+                                        d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
+                                    }
+                                }),
+                                    el.text({
+                                        classNames: ['cell-letter'],
+                                        attributes: {
+                                            x: '50%',
+                                            y: '50%',
+                                            dy: '0.35em',
+                                        },
+                                        isSvg: true,
+                                        content: 's',
+                                    })
+                                ]
+                            })]
+                        }),
+                    ]
+                }));
+            this.popup.ui.dataset[prefix('theme')] = 'dark';
+            this.toggle(this.getState());
+        }
+    }
+
+    class Header extends Plugin {
+        constructor(app) {
+            super(app, settings$1.get('title'), '', {
+                key: 'header'
+            });
+            this.ui = el.div({
+                content: this.title
+            });
+        }
     }
 
     class ProgressBar extends Plugin {
-        refresh() {
+        run(evt) {
             let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
             progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
             this.ui.value = progress;
             this.ui.textContent = progress + '%';
             this.ui.title = `Progress: ${progress}%`;
+            return this;
         }
         constructor(app) {
             super(app, 'Progress Bar', 'Displays your progress as a yellow bar', {
-                canChangeState: true
+                canChangeState: true,
+                runEvt: prefix('refreshUi'),
+                addMethod: 'before'
             });
             this.ui = el.progress({
                 attributes: {
                     max: 100
                 }
             });
-            app.on(prefix('wordsUpdated'), () => {
-                this.refresh();
+            app.on(prefix('pluginsReady'), evt => {
+                if (this.app.plugins.has('yourProgress')) {
+                    this.ui.style.cursor = 'pointer';
+                    this.ui.addEventListener('pointerup', () => {
+                        this.app.plugins.get('yourProgress').display();
+                    });
+                }
             });
-            this.refresh();
-            this.add();
+            this.target = el.$('.sb-wordlist-heading', this.app.gameWrapper);
+            this.toggle(this.getState());
         }
     }
 
-    const get = (data, table) => {
-        table.innerHTML = '';
-        const tbody = el.tbody();
-        data.forEach(rowData => {
-            const tr = el.tr();
-            rowData.forEach(cellData => {
-                tr.append(el.td({
-                    text: cellData
-                }));
-            });
-            tbody.append(tr);
-        });
-        table.append(tbody);
-        return table;
-    };
-    var tbl = {
-        get
-    };
+    class TablePane extends Plugin {
+    	run(evt) {
+    		this.pane = el.empty(this.pane);
+    		const tbody = el.tbody();
+    		const data = this.getData();
+    		if (this.hasHeadRow) {
+    			this.pane.append(this.buildHead(data.shift()));
+    		}
+    		const l = data.length;
+    		let colCnt = 0;
+    		data.forEach((rowData, i) => {
+    			colCnt = rowData.length;
+    			const classNames = [];
+    			for (const [marker, fn] of Object.entries(this.cssMarkers)) {
+    				if (fn(rowData, i, l)) {
+    					classNames.push(prefix(marker, 'd'));
+    				}
+    			}
+    			const tr = el.tr({
+    				classNames
+    			});
+    			rowData.forEach((cellData, rInd) => {
+    				const tag = rInd === 0 && this.hasHeadCol ? 'th' : 'td';
+    				tr.append(el[tag]({
+    					content: cellData
+    				}));
+    			});
+    			tbody.append(tr);
+    		});
+    		this.pane.dataset.cols = colCnt;
+    		this.pane.append(tbody);
+    		return this;
+    	}
+    	buildHead(rowData) {
+    		return el.thead({
+    			content: el.tr({
+    				content: rowData.map(cellData => el.th({
+    					content: cellData
+    				}))
+    			})
+    		});
+    	}
+    	getPane() {
+    		return this.pane;
+    	}
+    	constructor(app, title, description, {
+    		canChangeState = true,
+    		defaultState = true,
+    		cssMarkers = {},
+    		hasHeadRow = true,
+    		hasHeadCol = true
+    	} = {}) {
+    		super(app, title, description, {
+    			canChangeState,
+    			defaultState
+    		});
+    		app.on(prefix('refreshUi'), () => {
+    			this.run();
+    		});
+    		this.cssMarkers = cssMarkers;
+    		this.hasHeadRow = hasHeadRow;
+    		this.hasHeadCol = hasHeadCol;
+    		this.pane = el.table({
+    			classNames: ['pane', prefix('dataPane', 'd')]
+    		});
+    	}
+    }
 
-    class ScoreSoFar extends Plugin {
+    class Score extends TablePane {
         getData() {
+            const keys = ['foundTerms', 'remainders', 'answers'];
             return [
                 ['', '✓', '?', '∑'],
-                [
-                    'Words',
-                    data.getCount('foundTerms'),
-                    data.getCount('remainders'),
-                    data.getCount('answers')
-                ],
-                [
-                    'Points',
-                    data.getPoints('foundTerms'),
-                    data.getPoints('remainders'),
-                    data.getPoints('answers')
-                ]
+                ['W'].concat(keys.map(key => data.getCount(key))),
+                ['P'].concat(keys.map(key => data.getPoints(key)))
             ];
         }
         constructor(app) {
-            super(app, 'Score so far', 'The number of words and points and how many have been found', {
-                canChangeState: true
-            });
-            const pane = el.table({
-                classNames: ['pane']
-            });
+            super(app, 'Score', 'The number of words and points and how many have been found');
             this.ui = el.details({
                 attributes: {
                     open: true
                 },
-                html: [
+                content: [
                     el.summary({
-                        text: this.title
+                        content: this.title
                     }),
-                    pane
+                    this.getPane()
                 ]
             });
-            app.on(prefix('wordsUpdated'), () => {
-                tbl.get(this.getData(), pane);
-            });
-            this.add();
         }
     }
 
     class SpillTheBeans extends Plugin {
-        react(value) {
-            if (!value) {
-                return '😐';
+        run(evt) {
+            let emoji = '🙂';
+            if (!evt.detail) {
+                emoji = '😐';
             }
-            if (!data.getList('remainders').filter(term => term.startsWith(value)).length) {
-                return '🙁';
+            else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
+                emoji = '🙁';
             }
-            return '🙂';
+            this.ui.textContent = emoji;
+            return this;
         }
         constructor(app) {
             super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
-                canChangeState: true
+                canChangeState: true,
+                runEvt: prefix('newInput'),
+                addMethod: 'prepend'
             });
-            const reaction = el.div({
-                text: '😐',
-                classNames: ['spill']
+            this.ui = el.div({
+                content: '😐'
             });
-            this.ui = el.details({
-                html: [el.summary({
-                    text: this.title
-                }), el.div({
-                    classNames: ['pane'],
-                    html: [
-                        el.div({
-                            text: 'Watch my reaction!',
-                            classNames: ['spill-title']
-                        }),
-                        reaction
-                    ]
-                })]
-            });
-            this.app.on(prefix('newInput'), evt => {
-                reaction.textContent = this.react(evt.detail);
-            });
-            this.add();
+            this.target = el.$('.sb-controls', this.app.gameWrapper);
+    		this.toggle(false);
         }
     }
 
-    class Spoilers extends Plugin {
-    	getData() {
-    		const counts = {};
-    		const pangramCount = data.getCount('pangrams');
-    		const foundPangramCount = data.getCount('foundPangrams');
-    		const cellData = [
-    			['', '✓', '?', '∑']
-    		];
-    		data.getList('answers').forEach(term => {
-    			counts[term.length] = counts[term.length] || {
-    				found: 0,
-    				missing: 0,
-    				total: 0
-    			};
-    			if (data.getList('foundTerms').includes(term)) {
-    				counts[term.length].found++;
-    			} else {
-    				counts[term.length].missing++;
-    			}
-    			counts[term.length].total++;
-    		});
-    		let keys = Object.keys(counts);
-    		keys.sort((a, b) => a - b);
-    		keys.forEach(count => {
-    			cellData.push([
-    				count + ' ' + (count > 1 ? 'letters' : 'letter'),
-    				counts[count].found,
-    				counts[count].missing,
-    				counts[count].total
-    			]);
-    		});
-    		cellData.push([
-    			'Pangrams',
-    			foundPangramCount,
-    			pangramCount - foundPangramCount,
-    			pangramCount
-    		]);
-    		return cellData;
-    	}
-    	constructor(app) {
-    		super(app, 'Spoilers', 'The number of words by length, also the number of pangrams', {
-    			canChangeState: true
-    		});
-    		this.cssMarkers = {
-    			completed: (rowData, i) => i > 0 && rowData[2] === 0,
-    			preeminent: (rowData, i) => i > 0 && rowData[0] === 'Pangrams',
-    		};
-            const pane = el.table({
-                classNames: ['pane']
+    class LetterCount extends TablePane {
+        getData() {
+            const counts = {};
+            const cellData = [
+                ['', '✓', '?', '∑']
+            ];
+            data.getList('answers').forEach(term => {
+                counts[term.length] = counts[term.length] || {
+                    found: 0,
+                    missing: 0,
+                    total: 0
+                };
+                if (data.getList('foundTerms').includes(term)) {
+                    counts[term.length].found++;
+                } else {
+                    counts[term.length].missing++;
+                }
+                counts[term.length].total++;
+            });
+            let keys = Object.keys(counts);
+            keys.sort((a, b) => a - b);
+            keys.forEach(count => {
+                cellData.push([
+                    count,
+                    counts[count].found,
+                    counts[count].missing,
+                    counts[count].total
+                ]);
+            });
+            return cellData;
+        }
+        constructor(app) {
+            super(app, 'Letter count', 'The number of words by length', {
+                cssMarkers: {
+                    completed: (rowData, i) => rowData[2] === 0
+                }
             });
             this.ui = el.details({
-                html: [
+                content: [
                     el.summary({
-                        text: this.title
+                        content: this.title
                     }),
-                    pane
+                    this.getPane()
                 ]
             });
-    		app.on(prefix('wordsUpdated'), () => {
-    			tbl.get(this.getData(), pane);
-    			app.trigger(prefix('paneUpdated'), {
-    				plugin: this
-    			});
-    		});
-    		this.add();
-    	}
+            this.toggle(this.getState());
+        }
     }
 
-    class StartingWith extends Plugin {
-    	getData() {
-    		const letters = {};
-    		const answers = data.getList('answers').sort((a, b) => {
-    			if (a.startsWith(this.centerLetter)) {
-    				return -1;
-    			}
-    			if (b.startsWith(this.centerLetter)) {
-    				return 1;
-    			}
-    			return a < b ? -1 : 1;
-    		});
-    		const remainders = data.getList('remainders');
-    		const tpl = {
-    			foundTerms: 0,
-    			remainders: 0,
-    			total: 0
-    		};
-    		answers.forEach(term => {
-    			const letter = term.charAt(0);
-    			if (typeof letters[letter] === 'undefined') {
-    				letters[letter] = {
-    					...tpl
-    				};
-    			}
-    			if (remainders.includes(term)) {
-    				letters[letter].remainders++;
-    			} else {
-    				letters[letter].foundTerms++;
-    			}
-    			letters[letter].total++;
-    		});
-    		const cellData = [
-    			['', '✓', '?', '∑']
-    		];
-    		for (let [letter, values] of Object.entries(letters)) {
-    			values = Object.values(values);
-    			values.unshift(letter);
-    			cellData.push(values);
-    		}
-    		return cellData;
-    	}
-    	constructor(app) {
-    		super(app, 'Starting with…', 'The number of words by first letter', {
-    			canChangeState: true
-    		});
-    		this.cssMarkers = {
-    			completed: (rowData, i) => i > 0 && rowData[2] === 0,
-    			preeminent: (rowData, i) => i > 0 && rowData[0] === data.getCenterLetter()
-    		};
-            const pane = el.table({
-                classNames: ['pane']
+    class FirstLetter extends TablePane {
+        getData() {
+            const letters = {};
+            const answers = data.getList('answers').sort((a, b) => {
+                if (a.startsWith(this.centerLetter)) {
+                    return -1;
+                }
+                if (b.startsWith(this.centerLetter)) {
+                    return 1;
+                }
+                return a < b ? -1 : 1;
+            });
+            const remainders = data.getList('remainders');
+            const tpl = {
+                foundTerms: 0,
+                remainders: 0,
+                total: 0
+            };
+            answers.forEach(term => {
+                const letter = term.charAt(0);
+                if (typeof letters[letter] === 'undefined') {
+                    letters[letter] = {
+                        ...tpl
+                    };
+                }
+                if (remainders.includes(term)) {
+                    letters[letter].remainders++;
+                } else {
+                    letters[letter].foundTerms++;
+                }
+                letters[letter].total++;
+            });
+            const cellData = [
+                ['', '✓', '?', '∑']
+            ];
+            for (let [letter, values] of Object.entries(letters)) {
+                values = Object.values(values);
+                values.unshift(letter);
+                cellData.push(values);
+            }
+            return cellData;
+        }
+        constructor(app) {
+            super(app, 'First letter', 'The number of words by first letter', {
+                cssMarkers: {
+                    completed: (rowData, i) => rowData[2] === 0,
+                    preeminent: (rowData, i) => rowData[0] === data.getCenterLetter()
+                }
             });
             this.ui = el.details({
-                html: [
+                content: [
                     el.summary({
-                        text: this.title
+                        content: this.title
                     }),
-                    pane
+                    this.getPane()
                 ]
             });
-    		app.on(prefix('wordsUpdated'), () => {
-    			tbl.get(this.getData(), pane);
-    			app.trigger(prefix('paneUpdated'), {
-    				plugin: this
-    			});
-    		});
-    		this.add();
-    	}
+            this.toggle(this.getState());
+        }
     }
 
-    class StepsToSuccess extends Plugin {
+    class Pangrams extends TablePane {
+        getData() {
+            const pangramCount = data.getCount('pangrams');
+            const foundPangramCount = data.getCount('foundPangrams');
+            return [
+                ['✓', '?', '∑'],
+                [
+                    foundPangramCount,
+                    pangramCount - foundPangramCount,
+                    pangramCount
+                ]
+            ];
+        }
+        constructor(app) {
+            super(app, 'Pangrams', 'The number of pangrams', {
+                cssMarkers: {
+                    completed: (rowData, i) => rowData[1] === 0
+                },
+                hasHeadCol: false
+            });
+            this.ui = el.details({
+                content: [
+                    el.summary({
+                        content: this.title
+                    }),
+                    this.getPane()
+                ]
+            });
+            this.toggle(this.getState());
+        }
+    }
+
+    class YourProgress extends TablePane {
+        display() {
+            const points = data.getPoints('foundTerms');
+            const max = data.getPoints('answers');
+            const next = this.getPointsToNextTier();
+            const progress = points * 100 / max;
+            let content;
+            if (next) {
+                content = el.span({
+                    content: [
+                        'You are currently at ',
+                        el.b({
+                            content: points + '/' + max
+                        }),
+                        ' points or ',
+                        el.b({
+                            content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
+                        }),
+                        '. You need ',
+                        el.b({
+                            content: next - points
+                        }),
+                        ' more points to go to the next level.',
+                    ]
+                });
+            } else {
+                content = el.span({
+                    content: [
+                        'Congratulations, you’ve found all ',
+                        el.b({
+                            content: points
+                        }),
+                        ' points!',
+                    ]
+                });
+            }
+            this.popup
+                .setContent('subtitle', el.span({
+                    content
+                }))
+                .setContent('body', this.getPane())
+                .toggle(true);
+            return this;
+        }
         getData() {
             const maxPoints = data.getPoints('answers');
             return [
@@ -962,388 +956,422 @@
                 ['Genius', 70],
                 ['Queen Bee', 100]
             ].map(entry => {
-                return [entry[0], Math.round(entry[1] / 100 * maxPoints)];
+                return [entry[0], Math.round(entry[1] / 100 * maxPoints), entry[1]];
             })
         }
         getCurrentTier() {
             return this.getData().filter(entry => entry[1] <= data.getPoints('foundTerms')).pop()[1];
         }
+        getPointsToNextTier() {
+            const remainders = this.getData().filter(entry => entry[1] > data.getPoints('foundTerms')).shift();
+            return remainders ? remainders[1] : null;
+        }
         constructor(app) {
-            super(app, 'Steps to success', 'The number of points required for each level', {
-                canChangeState: true
+            super(app, 'Your Progress', 'The number of points required for each level', {
+                cssMarkers: {
+                    completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
+                    preeminent: rowData => rowData[1] === this.getCurrentTier()
+                },
+                hasHeadRow: false,
+                hasHeadCol: false
             });
-            this.cssMarkers = {
-                completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
-                preeminent: rowData => rowData[1] === this.getCurrentTier()
-            };
-            const pane = el.table({
-                classNames: ['pane']
-            });
-            this.ui = el.details({
-                html: [
-                    el.summary({
-                        text: this.title
-                    }),
-                    pane
-                ]
-            });
-            app.on(prefix('wordsUpdated'), () => {
-                tbl.get(this.getData(), pane);
-                app.trigger(prefix('paneUpdated'), {
-                    plugin: this
-                });
-            });
-            this.add();
+            this.popup = new Popup(this.app, this.key)
+                .setContent('title', this.title);
+            this.menuAction = 'popup';
+            this.menuIcon = 'null';
         }
     }
 
-    class Surrender extends Plugin {
-    	buildEntry(term) {
-    		return el.li({
-    			classNames: data.getList('pangrams').includes(term) ? ['sb-anagram', prefix('pangram')] : ['sb-anagram'],
-    			html: el.a({
-    				text: term,
-    				attributes: {
-    					href: `https://www.google.com/search?q=${term}`,
-    					target: '_blank'
-    				}
-    			})
+    class TodaysAnswers extends Plugin {
+    	display() {
+    		const foundTerms = data.getList('foundTerms');
+    		const pangrams = data.getList('pangrams');
+    		const pane = el.ul({
+    			classNames: ['sb-modal-wordlist-items']
     		});
-    	}
-    	resolve() {
-    		if (this.usedOnce) {
-    			return false;
-    		}
-    		this.app.observer.disconnect();
-    		data.getList('remainders').forEach(term => this.app.resultList.append(this.buildEntry(term)));
-    		this.usedOnce = true;
-    		this.app.trigger(prefix('wordsUpdated'));
-    		return true;
+    		data.getList('answers').forEach(term => {
+    			pane.append(el.li({
+    				classNames: pangrams.includes(term) ? [prefix('pangram', 'd')] : [],
+    				content: [
+    					el.span({
+    						classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
+    					}), el.span({
+    						classNames: ['sb-anagram'],
+    						content: term
+    					})
+    				]
+    			}));
+    		});
+    		this.popup
+    			.setContent('body', [
+    				el.div({
+    					content: data.getList('letters').join(''),
+    					classNames: ['sb-modal-letters']
+    				}),
+    				pane
+    			])
+    			.toggle(true);
+    		return this;
     	}
     	constructor(app) {
-    		super(app, 'Surrender', 'Reveals the solution of the game', {
-    			canChangeState: true
+    		super(app, 'Today’s Answers', 'Reveals the solution of the game', {
+    			canChangeState: true,
+    			defaultState: false,
+    			key: 'todaysAnswers'
     		});
-    		this.usedOnce = false;
-    		this.ui = el.details({
-    			html: [
-    				el.summary({
-    					text: this.title
-    				}),
-    				el.div({
-    					classNames: ['pane'],
-    					html: el.button({
-    						tag: 'button',
-    						classNames: ['hive-action'],
-    						text: 'Display answers',
-    						attributes: {
-    							type: 'button'
-    						},
-    						events: {
-    							click: () => this.resolve()
-    						}
-    					})
-    				})
-    			]
-    		});
-    		this.add();
+    		this.marker = prefix('resolved', 'd');
+    		this.popup = new Popup(this.app, this.key)
+    			.setContent('title', this.title)
+    			.setContent('subtitle', data.getDate());
+    		this.menuAction = 'popup';
+    		this.menuIcon = 'warning';
     	}
     }
 
-    class HighlightPangrams extends Plugin {
+    class PangramHl extends Plugin {
         toggle(state) {
             super.toggle(state);
-            this.handleDecoration();
-            return this;
+            return this.run();
         }
-        handleDecoration() {
+        run(evt) {
             const pangrams = data.getList('pangrams');
-            el.$$('li', this.app.resultList).forEach(node => {
+            const container = evt && evt.detail ? evt.detail : this.app.resultList;
+            el.$$('li', container).forEach(node => {
                 const term = node.textContent;
-                if (pangrams.includes(term)) {
-                    node.classList.toggle(prefix('pangram', 'd'), this.getState());
+                if (pangrams.includes(term) || el.$('.pangram', node)) {
+                    node.classList.toggle(this.marker, this.getState());
                 }
             });
             return this;
         }
         constructor(app) {
-            super(app, 'Highlight pangrams', 'Highlights pangrams in the result list', {
-                canChangeState: true
+            super(app, 'Highlight PangramHl', '', {
+                canChangeState: false,
+                runEvt: prefix('refreshUi')
             });
-            app.on(prefix('wordsUpdated'), () => {
-                this.handleDecoration();
+            this.marker = prefix('pangram', 'd');
+            this.app.on(prefix('yesterday'), evt => {
+                this.run(evt);
             });
-            this.handleDecoration();
-            this.add();
+            this.run();
         }
     }
 
-    class TrBaseMarker extends Plugin {
-        toggleDecoration(plugin) {
-            el.$$('tr', plugin.ui).forEach((tr, i) => {
-                const rowData = Array.from(el.$$('td', tr)).map(td => /^\d+$/.test(td.textContent)
-                    ? parseInt(td.textContent)
-                    : td.textContent);
-                if (plugin.cssMarkers[this.marker](rowData, i)) {
-                    tr.classList.toggle(prefix(this.className, 'd'), this.getState());
-                }
-            });
-            return this;
-        }
+    class Googlify extends Plugin {
         toggle(state) {
             super.toggle(state);
-            this.plugins.forEach(plugin => {
-                this.toggleDecoration(plugin);
+            return this.run();
+        }
+        listener(evt) {
+            if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
+                return false;
+            }
+            if (evt.button === 0) {
+                window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
+                return true;
+            }
+        }
+        run(evt=null) {
+            const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
+            [this.app.modalWrapper, this.app.resultList].forEach(container => {
+                container[method]('pointerup', this.listener);
+                container.classList.toggle(prefix('googlified', 'd'), this.getState());
             });
             return this;
         }
-        constructor(app, title, description, {
-            canChangeState,
-            defaultState = true,
-            marker,
-            className
-        } = {}) {
-            super(app, title, description, {
-                canChangeState,
-                defaultState
+        constructor(app) {
+            super(app, 'Googlify', 'Link all result terms to Google', {
+                canChangeState: false
             });
-            this.plugins = new Set();
-            this.marker = marker;
-            this.className = className || marker;
-            app.on(prefix('paneUpdated'), evt => {
-                if (!evt.detail ||
-                    !evt.detail.plugin ||
-                    !evt.detail.plugin.cssMarkers ||
-                    !evt.detail.plugin.cssMarkers[this.marker]) {
-                    return false;
-                }
-                if (!this.plugins.has(evt.detail.plugin)) {
-                    this.plugins.add(evt.detail.plugin);
-                }
-                this.toggleDecoration(evt.detail.plugin);
+            this.run();
+        }
+    }
+
+    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--highlight-bg-color:#f7db22;--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dbdbdb;--area-bg-color:#e6e6e6;--invalid-color:#adadad;--menu-hover-color:#f5f5f5;--head-row-bg-color:#f5f5f5;--card-color:rgba(247,219,34,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--success-color:#2ca61c}[data-sba-theme=dark]{--highlight-bg-color:#facd05;--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), 7%);--modal-bg-color:hsl(var(--dhue), var(--dsat), 7%, 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 50%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--head-row-bg-color:hsl(var(--dhue), var(--dsat), 13%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--success-color:#64f651}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-wrapper{background:var(--body-bg-color) !important;color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--highlight-bg-color);fill:var(--highlight-bg-color);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.pz-modal__button.white,.pz-footer,.pz-moment,.sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}.pz-modal__button.white .pz-moment__button.secondary,.pz-footer .pz-moment__button.secondary,.pz-moment .pz-moment__button.secondary,.sb-modal-scrim .pz-moment__button.secondary{color:#fff}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--highlight-bg-color)}.cell-fill{stroke:var(--body-bg-color)}.cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highhlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}[data-sba-theme] .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist,.hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:transparent}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--border-color)}[data-ui].inactive{display:none}.sba-data-pane{border:1px solid var(--border-color);width:100%;font-size:85%;margin-bottom:2px;border-collapse:collapse;table-layout:fixed;border-top:none}.sba-data-pane[data-cols=\"3\"] :is(th,td){width:33.3333333333%}.sba-data-pane[data-cols=\"4\"] :is(th,td){width:25%}.sba-data-pane[data-cols=\"5\"] :is(th,td){width:20%}.sba-data-pane[data-cols=\"6\"] :is(th,td){width:16.6666666667%}.sba-data-pane[data-cols=\"7\"] :is(th,td){width:14.2857142857%}.sba-data-pane[data-cols=\"8\"] :is(th,td){width:12.5%}.sba-data-pane[data-cols=\"9\"] :is(th,td){width:11.1111111111%}.sba-data-pane[data-cols=\"10\"] :is(th,td){width:10%}.sba-data-pane th{text-transform:uppercase;background:var(--head-row-bg-color)}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-bg-color) !important}.sba-data-pane .sba-completed td,.sba-data-pane td.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane :is(th,td){border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 2px}.sba-data-pane th{background-color:var(--head-row-bg-color)}[data-ui=yourProgress] b{font-weight:700}[data-ui=yourProgress] .sba-data-pane{margin-left:5px;max-width:300px;border:none}[data-ui=yourProgress] .sba-data-pane tr.sba-completed td{color:var(--text-color)}[data-ui=yourProgress] .sba-data-pane tr td{border:none;text-align:left;line-height:1.8}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(n+2){text-align:right;width:80px}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(2)::after{content:\" pts.\"}[data-ui=yourProgress] .sba-data-pane tr td:last-child::after{content:\"%\"}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}[data-ui=progressBar]{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;height:6px;padding:0;background:transparent;display:block;border:none;border-bottom:1px var(--border-color) solid}[data-ui=progressBar]::-webkit-progress-bar{background-color:transparent}[data-ui=progressBar]::-webkit-progress-value{background-color:var(--highlight-bg-color);height:4px}[data-ui=progressBar]::-moz-progress-bar{background-color:var(--highlight-bg-color)}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 28px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-bg-color);top:3px;left:7px;font-size:16px}[data-ui=menu] li[data-icon=warning]::before{content:\"\";background:url(data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyLjAwNiAyLjI1NWwxMS4yNTUgMTkuNDlILjc1NXoiIGZpbGw9IiNmOGNkMDUiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48cGF0aCBkPSJNMTMuNDQxIDkuMDAybC0uMzE3IDcuMzA2aC0yLjI0N2wtLjMxNy03LjMwNnptLS4wNDggMTAuMjYyaC0yLjc4NXYtMS44MmgyLjc4NXoiLz48L3N2Zz4=) center center/contain no-repeat;left:3px;top:6px;width:20px;height:20px}[data-ui=menu] li[data-target=darkModeColors],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]::before{content:\"\";background:url(data:image/webp;base64,UklGRkYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSLgAAAABgFpt2/LmVbGJI8u8QgaIZSxqxgEYFTM7VMzMNEBPB2gVcx/xff/7/4UBImIC6F+16CWBxZsmlmH+9a7HROR4BxDmdADArZOOAKCdsyTgOguxkFMokb/oObTDyRBbN/kk+yoitfMAvr/xVevlJa5eoNzKaQN/S6dQC/Eb+PwScCQLQv1crKykJnqiAd5X9y46SrVYJXFQg5CERlSVk2LlF+s1n5iu/geF+14r8Y2x+ompsdqokf4uVlA4IGgBAABwBwCdASoYABgAPpE+m0kloyKhKAqosBIJbAAjwDeRZaSiFfn3Zr1QP9Ud0ADEskPPzxJU2pre8kHbnjqgPRfZb8zq4AD9IaAZD2vQgXhhU4vU6iI9307byI0qRvcdYUVqITfvs+c25tJHp68Tb8QbbjuwTz0j+xXnVHcdq1O53Cem6tFr6zIo8VPHzofJrvlKQnvp1W5bdpH3HE+2rDOikrPkzD5qdR91khmLUr2/65qN81K7n/5Ztjb/URQJxilNBdj/22TMy3S5+24re6Kkfvbzc9n/kNAlBuAaKYxSAgHTAELvJElqGMJ9psshwQ9Hinh1y4MVKzbf8UDf/8aFRjwHnN+c4w1Zb8LpKYQTgVuzyDsB7crn5PhK9sLJaU7CApsBz7CTzw1L6VpU0HoDsNv54wX6rtilmqIwjJzvnBL5H2aH/M7tuhCNyahJ+EDMv/cyE4Kqn918j7n693a1ovztxeo8AAA=) center center/contain no-repeat;left:5px;top:6px;width:20px;height:20px}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}.sba-color-selector{display:flex;justify-content:space-between;gap:10px}.sba-color-selector svg{width:120px;height:120px;display:block}[data-ui=darkModeColors] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkModeColors] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkModeColors] .cell-letter{font-size:8px;font-weight:600}.sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:220px}.sba-swatches li{position:relative;overflow:hidden;margin-bottom:5px}.sba-swatches label{border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer}.sba-swatches input{position:absolute;left:-100px}.sba-swatches input:checked~label{border-color:var(--highlight-bg-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}#portal-game-toolbar [role=presentation]::selection{background:transparent}[data-sba-theme] .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--highlight-bg-color);top:4px;font-size:16px}[data-sba-theme] .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:transparent}[data-ui=grid] table{border-top:1px solid var(--border-color)}[data-ui=grid] tbody tr:last-child td{font-weight:bold}[data-ui=grid] tbody tr td{padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type{font-weight:bold}.pz-desktop .sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.pz-desktop .sba summary{list-style:none;padding:1px 15px 0 21px}.pz-desktop .sba summary::marker{display:none}.pz-desktop .sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li.sba-pangram{font-weight:700;border-bottom:2px var(--highlight-bg-color) solid}[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}.sb-modal-frame .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{position:absolute;top:0;right:-10000px}[data-sba-submenu=true] .sba{position:relative;left:-167px;top:-175px}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{right:-16px;top:49px}[data-sba-submenu=true] .sba{left:-163px;top:0}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:transparent}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true][data-sba-submenu=true] .sba-container{top:0;height:0}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}[data-ui=score] .sba-data-pane tbody th{text-transform:none;width:31%}[data-ui=score] .sba-data-pane tbody td{width:23%}[data-ui=score] .sba-data-pane tbody tr:nth-child(1) th::after{content:\"ords\"}[data-ui=score] .sba-data-pane tbody tr:nth-child(2) th::after{content:\"oints\"}[data-ui=score] .sba-data-pane thead th{width:23%}[data-ui=score] .sba-data-pane thead th:first-of-type{width:31%}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:block}}@media(min-width: 900px){[data-sba-submenu=true].pz-desktop [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 66px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba{top:-66px}[data-sba-active=true].pz-desktop .sba{left:-191px}}@media(min-width: 1298px){[data-sba-active=true][data-sba-submenu=true] .sba{left:-179px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}";
+
+    class Styles extends Plugin {
+        constructor(app) {
+            super(app, 'Styles', '');
+            this.target = el.$('head');
+            this.ui = el.style({
+                content: css
             });
+            app.on(prefix('destroy'), () => this.ui.remove());
             this.add();
         }
     }
 
-    class TrMarkCompleted extends TrBaseMarker {
-        constructor(app) {
-            super(app, 'Grey out completed', 'Greys out lines in which all items have been found', {
-                canChangeState: true,
-                marker: 'completed'
-            });
-            this.add();
+    class Menu extends Plugin {
+        getTarget() {
+            return this.app.envIs('mobile') ? el.$('#js-mobile-toolbar') : el.$('#portal-game-toolbar > div:last-of-type');
         }
-    }
-
-    class TrHideCompleted extends TrBaseMarker {
-        constructor(app) {
-            super(app, 'Hide completed', 'Hide lines in which all items have been found', {
-                canChangeState: true,
-                defaultState: false,
-                marker: 'completed',
-                className: 'hidden'
-            });
-            this.add();
+        getComponent(entry) {
+            if (entry.dataset.component === this.app.key) {
+                return this.app
+            }
+            if (this.app.plugins.has(entry.dataset.component)) {
+                return this.app.plugins.get(entry.dataset.component);
+            }
+            return null;
         }
-    }
-
-    class TrMarkPreeminent extends TrBaseMarker {
         constructor(app) {
-            super(app, 'Highlight preeminent', 'Highlights the most important line in a table', {
-                canChangeState: true,
-                marker: 'preeminent'
+            super(app, 'Menu', '');
+            this.target = this.getTarget();
+            const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
+            this.app.domSet('submenu', false);
+            const pane = el.ul({
+                classNames: ['pane'],
+                data: {
+                    ui: 'submenu'
+                },
+                events: {
+                    pointerup: evt => {
+                        const entry = evt.target.closest('li');
+                        if (!entry || evt.button !== 0) {
+                            return false;
+                        }
+                        const component = this.getComponent(entry);
+                        switch (entry.dataset.action) {
+                            case 'boolean': {
+                                let nextState = !component.getState();
+                                component.toggle(nextState);
+                                entry.classList.toggle('checked', nextState);
+                                if (component === this.app) {
+                                    this.app.toggle(nextState);
+                                }
+                                break;
+                            }
+                            case 'popup':
+                                this.app.domSet('submenu', false);
+                                component.display();
+                                break;
+                            default:
+                                setTimeout(() => {
+                                    this.app.domSet('submenu', false);
+                                }, 60);
+                        }
+                    }
+                },
+                content: el.li({
+                    classNames: this.app.getState() ? ['checked'] : [],
+                    attributes: {
+                        title: this.app.title
+                    },
+                    data: {
+                        component: this.app.key,
+                        icon: 'checkmark',
+                        action: 'boolean'
+                    },
+                    content: `Show ${settings$1.get('title')}`
+                })
             });
-            this.add();
-        }
-    }
-
-    class Footer extends Plugin {
-        constructor(app) {
-            super(app, `${settings$1.get('label')}`, '', {
-                key: 'footer'
-            });
-            this.ui = el.a({
-                text: this.title,
+            this.ui = el.div({
+                events: {
+                    pointerup: evt => {
+                        if (!evt.target.dataset.action) {
+                            this.app.domSet('submenu', !this.app.domGet('submenu'));
+                        }
+                    }
+                },
+                content: [
+                    settings$1.get('title'),
+                    pane
+                ],
                 attributes: {
-                    href: settings$1.get('url'),
-                    target: '_blank'
+                    role: 'presentation'
+                },
+                classNames
+            });
+            document.addEventListener('keyup', evt => {
+                if (this.app.domGet('submenu') === true && /^(Ent|Esc|Key|Dig)/.test(evt.code)) {
+                    this.app.domSet('submenu', false);
                 }
             });
-            this.add();
-        }
-    }
-
-    class Positioning extends Plugin {
-        add() {
-            const stored = this.getState();
-            this.position = stored && Object.prototype.toString.call(stored) === '[object Object]' ? stored : this.getPosition();
-            this.reposition();
-            this.enableDrag();
-            return super.add();
-        }
-        getOffset(offset) {
-            return !isNaN(offset) ? {
-                top: offset,
-                right: offset,
-                bottom: offset,
-                left: offset
-            } : {
-                ...{
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    left: 0
-                },
-                ...offset
-            }
-        }
-        getRectangles() {
-            return {
-                canvas: this.app.dragArea.getBoundingClientRect(),
-                appContainer: this.app.ui.parentNode.getBoundingClientRect(),
-                app: this.app.ui.getBoundingClientRect()
-            }
-        }
-        getBoundaries() {
-            return {
-                top: {
-                    min: this.offset.top,
-                    max: this.rectangles.canvas.height - this.rectangles.app.height - this.offset.bottom
-                },
-                left: {
-                    min: this.offset.left - this.rectangles.appContainer.left,
-                    max: this.rectangles.canvas.width - this.rectangles.appContainer.left - this.rectangles.app.width - this.offset.right
+            el.$('#pz-game-root').addEventListener('pointerdown', () => {
+                if (this.app.domGet('submenu') === true) {
+                    this.app.domSet('submenu', false);
                 }
-            }
-        }
-        validatePosition(position) {
-            if (position) {
-                this.position = position;
-            }
-            const boundaries = this.getBoundaries();
-            this.position.left = Math.min(boundaries.left.max, Math.max(boundaries.left.min, this.position.left));
-            this.position.top = Math.min(boundaries.top.max, Math.max(boundaries.top.min, this.position.top));
-            return this.position;
-        }
-        getMouse(evt) {
-            return {
-                left: evt.screenX,
-                top: evt.screenY
-            }
-        }
-        getPosition(evt) {
-            let coords;
-            if (evt) {
-                const mouse = this.getMouse(evt);
-                coords = {
-                    left: this.position.left + mouse.left - this.mouse.left,
-                    top: this.position.top += mouse.top - this.mouse.top
-                };
-            } else {
-                const style = getComputedStyle(this.app.ui);
-                let left = parseInt(style.left);
-                if (style.left.endsWith('%')) {
-                    left = left * parseInt(getComputedStyle(el.$('.sbaContainer')).width) / 100;
-                }
-                coords = {
-                    top: parseInt(style.top),
-                    left
-                };
-            }
-            return this.validatePosition(coords);
-        }
-        reposition() {
-            this.validatePosition();
-            Object.assign(this.app.ui.style, {
-                left: this.position.left + 'px',
-                top: this.position.top + 'px'
             });
-            this.toggle(this.getState() ? this.position : false);
-            return this;
-        }
-        enableDrag() {
-            this.app.dragHandle.style.cursor = 'move';
-            this.app.on('pointerdown', evt => {
-                    this.isLastTarget = evt.target.isSameNode(this.app.dragHandle);
-                }).on('pointerup', () => {
-                    this.isLastTarget = false;
-                }).on('dragend', evt => {
-                    this.position = this.getPosition(evt);
-                    this.reposition();
-                    evt.target.style.opacity = '1';
-                }).on('dragstart', evt => {
-                    if (!this.isLastTarget) {
-                        evt.preventDefault();
+            app.on(prefix('pluginsReady'), evt => {
+                evt.detail.forEach((plugin, key) => {
+                    if (!plugin.canChangeState || plugin === this) {
                         return false;
                     }
-                    evt.target.style.opacity = '.2';
-                    this.position = this.getPosition();
-                    this.mouse = this.getMouse(evt);
-                })
-                .on('dragover', evt => evt.preventDefault());
-            this.app.dragArea.addEventListener('dragover', evt => evt.preventDefault());
-            return this;
-        }
-        toggle(state) {
-            return super.toggle(state ? this.position : state);
-        }
-        constructor(app) {
-            super(app, 'Memorize position', 'Places the assistant where it had been moved to last time', {
-                key: 'positioning',
-                canChangeState: true,
-                defaultState: false
-            });
-            this.mouse;
-            this.offset = this.getOffset(this.app.dragOffset || 0);
-            this.isLastTarget = false;
-            this.rectangles = this.getRectangles();
-            ['orientationchange', 'resize'].forEach(handler => {
-                window.addEventListener(handler, () => {
-                    this.rectangles = this.getRectangles();
-                    this.reposition();
+                    const action = plugin.menuAction || 'boolean';
+                    pane.append(el.li({
+                        classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
+                        attributes: {
+                            title: plugin.description
+                        },
+                        data: {
+                            component: key,
+                            icon: action === 'boolean' ? 'checkmark' : (plugin.menuIcon || null),
+                            action
+                        },
+                        content: plugin.title
+                    }));
                 });
+                pane.append(el.li({
+                    attributes: {
+                        title: settings$1.get('label') + ' Website'
+                    },
+                    data: {
+                        icon: prefix(),
+                        component: prefix('web'),
+                        action: 'link'
+                    },
+                    content: el.a({
+                        content: settings$1.get('label'),
+                        attributes: {
+                            href: settings$1.get('url'),
+                            target: prefix()
+                        }
+                    })
+                }));
             });
-            this.add();
+            app.on(prefix('destroy'), () => this.ui.remove());
         }
     }
 
-    const plugins = {
-         Styles,
-         Launcher,
-         DarkMode,
-         Header,
-         SetUp,
-         ProgressBar,
-         ScoreSoFar,
-         Spoilers,
-         StartingWith,
-         SpillTheBeans,
-         StepsToSuccess,
-         Surrender,
-         TrMarkCompleted,
-         TrHideCompleted,
-         TrMarkPreeminent,
-         HighlightPangrams,
-         Footer,
-         Positioning
-    };
-    const getPlugins = app => {
-         if(!app.envIs('desktop')){
-              delete plugins.Positioning;
-         }
-         return plugins
+    class Grid extends TablePane {
+    	display() {
+    		this.popup
+    			.setContent('subtitle', this.description)
+    			.setContent('body', this.getPane())
+    			.toggle(true);
+    		return this;
+    	}
+    	run(evt) {
+    		super.run(evt);
+    		const rows = el.$$('tr', this.pane);
+    		const rCnt = rows.length;
+    		rows.forEach((row, rInd) => {
+    			if(rCnt === rInd - 1) {
+    				return false;
+    			}
+    			const cells = el.$$('td', row);
+    			const cCnt = cells.length;
+    			cells.forEach((cell, cInd) => {
+    				const cellArr = cell.textContent.trim().split('/');
+    				if(cInd < cCnt -1 && cellArr.length === 2 && cellArr[0] === cellArr[1]){
+    					cell.classList.add(prefix('completed', 'd'));
+    				}
+    			});
+    		});
+    		return this;
+    	}
+    	getData() {
+    		const foundTerms = data.getList('foundTerms');
+    		const allTerms = data.getList('answers');
+    		const allLetters = Array.from(new Set(allTerms.map(entry => entry.charAt(0)))).concat(['∑']);
+    		const allDigits = Array.from(new Set(allTerms.map(term => term.length))).concat(['∑']);
+    		allDigits.sort((a, b) => a - b);
+    		allLetters.sort();
+    		const cellData = [[''].concat(allLetters)];
+    		let letterTpl = Object.fromEntries(allLetters.map(letter => [letter, {
+    			fnd: 0,
+    			all: 0
+    		}]));
+    		let rows = Object.fromEntries(allDigits.map(digit => [digit, JSON.parse(JSON.stringify(letterTpl))]));
+    		allTerms.forEach(term => {
+    			const letter = term.charAt(0);
+    			const digit = term.length;
+    			rows[digit][letter].all++;
+    			rows[digit]['∑'].all++;
+    			rows['∑'][letter].all++;
+    			rows['∑']['∑'].all++;
+    			if (foundTerms.includes(term)) {
+    				rows[digit][letter].fnd++;
+    				rows[digit]['∑'].fnd++;
+    				rows['∑'][letter].fnd++;
+    				rows['∑']['∑'].fnd++;
+    			}
+    		});
+    		for (let [digit, cols] of Object.entries(rows)) {
+    			const cellVals = [digit];
+    			Object.values(cols).forEach(colVals => {
+    				cellVals.push(colVals.all > 0 ? `${colVals.fnd}/${colVals.all}` : '-');
+    			});
+    			cellData.push(cellVals);
+    		}
+    		return cellData;
+    	}
+    	constructor(app) {
+    		super(app, 'Grid', 'The number of words by length and by first letter.');
+    		this.popup = new Popup(this.app, this.key)
+    			.setContent('title', this.title);
+    		this.menuAction = 'popup';
+    		this.menuIcon = 'null';
+    	}
+    }
+
+    const getPlugins = () => {
+        return {
+            Header,
+            Score,
+            LetterCount,
+            FirstLetter,
+            Pangrams,
+            ProgressBar,
+            SpillTheBeans,
+            DarkMode,
+            ColorConfig,
+            PangramHl,
+            Googlify,
+            Styles,
+            Menu,
+            Grid,
+            YourProgress,
+            TodaysAnswers
+        }
     };
 
     class App extends Widget {
+        domSet(key, value) {
+            document.body.dataset[prefix(key)] = value;
+            return this;
+        }
+        domUnset(key) {
+            delete document.body.dataset[prefix(key)];
+            return this;
+        }
+        domGet(key) {
+            if (typeof document.body.dataset[prefix(key)] === 'undefined') {
+                return false;
+            }
+            return JSON.parse(document.body.dataset[prefix(key)]);
+        }
+        getObserverArgs() {
+            return {
+                target: this.gameWrapper,
+                options: {
+                    childList: true,
+                    subtree: true,
+                    attributes: true
+                }
+            }
+        }
+        getGameState() {
+            const splash = el.$('#js-hook-pz-moment__welcome', this.gameWrapper);
+            const contentBox = el.$('.sb-content-box', this.gameWrapper);
+            if (!splash) {
+                return -1;
+            }
+            if (contentBox && contentBox.classList.contains('sb-game-locked')) {
+                return 0;
+            }
+            if (!contentBox.classList.contains('sb-game-locked')) {
+                return 1;
+            }
+        }
         getSyncData() {
             let sync = localStorage.getItem('sb-today');
             if (!sync) {
-                return false;
+                return null;
             }
             sync = JSON.parse(sync);
             if (!sync.id || sync.id !== data.getId()) {
-                return false;
+                return null;
             }
             return sync.words || [];
         }
@@ -1351,11 +1379,10 @@
             return document.body.classList.contains('pz-' + env);
         }
         async getResults() {
-            let syncResults;
-            let tries = 5;
+            let tries = 20;
             return await new Promise(resolve => {
                 const interval = setInterval(() => {
-                    syncResults = this.getSyncData();
+                    const syncResults = this.getSyncData();
                     if (syncResults || !tries) {
                         resolve(syncResults || []);
                         clearInterval(interval);
@@ -1364,34 +1391,106 @@
                 }, 300);
             });
         }
-        async waitForFadeIn() {
-            let tries = 5;
+        async waitForGameState(threshold) {
+            let tries = 50;
             return await new Promise(resolve => {
                 const interval = setInterval(() => {
-                    const gameHook = el.$('#js-hook-pz-moment__game');
-                    if (!tries || (gameHook && !gameHook.classList.contains('on-stage'))) {
-                        resolve(true);
+                    const state = this.getGameState();
+                    if (!tries || this.getGameState() >= threshold) {
+                        resolve(state);
                         clearInterval(interval);
                     }
                     tries--;
                 }, 300);
             });
         }
+        load() {
+            if (this.isLoaded) {
+                return false;
+            }
+            this.observer = this.buildObserver();
+            this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+            this.resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
+            this.waitForGameState(1)
+                .then(() => {
+                    this.add();
+                    this.domSet('active', true);
+                    this.registerPlugins();
+                    this.trigger(prefix('refreshUi'));
+                    this.isLoaded = true;
+                    if (this.envIs('desktop')) {
+                        window.scrollTo(0, 472);
+                    }
+                });
+        }
+        getState() {
+            return this.domGet('active');
+        }
+        toggle(state) {
+            this.domSet('active', state);
+            return this;
+        }
+        buildObserver() {
+            const observer = new MutationObserver(mutationList => {
+                mutationList.forEach(mutation => {
+                    if (!(mutation.target instanceof HTMLElement)) {
+                        return false;
+                    }
+                    switch (true) {
+                        case mutation.type === 'childList' &&
+                        mutation.target.isSameNode(this.modalWrapper):
+                            if (el.$('.sb-modal-frame.yesterday', mutation.target)) {
+                                this.trigger(prefix('yesterday'), mutation.target);
+                            }
+                            break;
+                        case mutation.type === 'childList' &&
+                        mutation.target.classList.contains('sb-hive-input-content'):
+                            this.trigger(prefix('newInput'), mutation.target.textContent.trim());
+                            break;
+                        case mutation.type === 'childList' &&
+                        mutation.target.isSameNode(this.resultList) &&
+                        !!mutation.addedNodes.length &&
+                        !!mutation.addedNodes[0].textContent.trim() &&
+                        mutation.addedNodes[0] instanceof HTMLElement:
+                            this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
+                            break;
+                    }
+                });
+            });
+            const args = this.getObserverArgs();
+            observer.observe(args.target, args.options);
+            return observer;
+        }
+        buildUi() {
+            const events = {};
+            events[prefix('destroy')] = () => {
+                this.observer.disconnect();
+                this.container.remove();
+                this.domUnset('theme');
+            };
+            const classNames = [settings$1.get('prefix')];
+            return el.div({
+                data: {
+                    id: this.key,
+                    version: settings$1.get('version')
+                },
+                classNames,
+                events
+            });
+        }
         registerPlugins() {
-            Object.values(getPlugins(this)).forEach(plugin => {
+            this.plugins = new Map();
+            Object.values(getPlugins()).forEach(plugin => {
                 const instance = new plugin(this);
+                instance.add();
                 this.plugins.set(instance.key, instance);
             });
             this.trigger(prefix('pluginsReady'), this.plugins);
-            return this.registerTools();
+            return this;
         }
-        registerTools() {
-            this.plugins.forEach(plugin => {
-                if (plugin.tool) {
-                    this.toolButtons.set(plugin.key, plugin.tool);
-                }
-            });
-            return this.trigger(prefix('toolsReady'), this.toolButtons);
+        add() {
+            this.container.append(this.ui);
+            el.$('.sb-content-box', this.gameWrapper).prepend(this.container);
         }
         constructor(gameWrapper) {
             super(settings$1.get('label'), {
@@ -1402,100 +1501,31 @@
             if (oldInstance) {
                 oldInstance.dispatchEvent(new Event(prefix('destroy')));
             }
-            this.plugins = new Map();
-            this.toolButtons = new Map();
             this.gameWrapper = gameWrapper;
-            this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
-            this.resultList = el.$('.sb-wordlist-items-pag', gameWrapper);
+            this.ui = this.buildUi();
             this.container = el.div({
-                classNames: [prefix('container')]
+                classNames: [prefix('container', 'd')]
             });
-            const events = {};
-            events[prefix('destroy')] = () => {
-                this.observer.disconnect();
-                this.container.remove();
-                delete document.body.dataset[prefix('theme')];
-            };
-            const classNames = [settings$1.get('prefix')];
-            if (this.getState() === false) {
-                classNames.push('inactive');
-            }
-            this.ui = el.div({
-                attributes: {
-                    draggable: this.envIs('desktop')
-                },
-                data: {
-                    id: this.key,
-                    version: settings$1.get('version')
-                },
-                classNames,
-                events: events
-            });
-            this.dragHandle = this.ui;
-            this.dragArea = this.gameWrapper;
-            this.dragOffset = {
-                top: 69,
-                right: 12,
-                bottom: 12,
-                left: 12
-            };
-            this.observer = (() => {
-                const observer = new MutationObserver(mutationList => {
-                    mutationList.forEach(mutation => {
-                        if (!(mutation.target instanceof HTMLElement)) {
-                            return false;
-                        }
-                        switch (true) {
-                            case mutation.type === 'attributes' &&
-                            mutation.target.classList.contains('sb-content-box'):
-                                document.body.dataset[prefix('hasOverlay')] = mutation.target.classList.contains('sb-expanded');
-                                break;
-                            case mutation.type === 'childList' &&
-                            mutation.target.isSameNode(this.modalWrapper):
-                                document.body.dataset[prefix('hasOverlay')] = !!mutation.target.hasChildNodes();
-                                break;
-                            case mutation.type === 'childList' &&
-                            mutation.target.classList.contains('sb-hive-input-content'):
-                                this.trigger(prefix('newInput'), mutation.target.textContent.trim());
-                                break;
-                            case mutation.type === 'childList' &&
-                            mutation.target.isSameNode(this.resultList) &&
-                            !!mutation.addedNodes.length &&
-                            !!mutation.addedNodes[0].textContent.trim() &&
-                            mutation.addedNodes[0] instanceof HTMLElement:
-                                this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
-                                break;
-                        }
-                    });
-                });
-                observer.observe(this.gameWrapper, {
-                    childList: true,
-                    subtree: true,
-                    attributes: true
-                });
-                return observer;
-            })();
-            Promise.all([this.getResults(), this.waitForFadeIn()])
-                .then(values => {
-                    data.init(this, values[0]);
-                    this.container.append(this.ui);
-                    this.gameWrapper.before(this.container);
-                    this.gameWrapper.dataset.sbaActive = this.getState();
-                    this.registerPlugins();
-                    this.trigger(prefix('wordsUpdated'));
+            this.isLoaded = false;
+            this.getResults()
+                .then(results => {
+                    data.init(this, results);
+                })
+                .then(() => {
+                    this.waitForGameState(0)
+                        .then(state => {
+                            if (state === 0) {
+                                el.$('.pz-moment__button-wrapper .pz-moment__button.primary', this.gameWrapper).addEventListener('pointerup', () => {
+                                    this.load();
+                                });
+                            } else {
+                                this.load();
+                            }
+                        });
                 });
         }
     }
 
-    const gameWrapper = el.$('#js-hook-game-wrapper');
-    const triggers = el.$$('.pz-moment__button-wrapper .pz-moment__button.primary');
-    let app;
-    triggers.forEach(trigger => {
-        trigger.addEventListener('click', () => {
-            if(!app) {
-                app = new App(gameWrapper);
-            }
-        });
-    });
+    new App(el.$('#js-hook-game-wrapper'));
 
 }());

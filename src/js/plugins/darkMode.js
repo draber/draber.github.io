@@ -1,4 +1,10 @@
-import {
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+ import {
     prefix
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
@@ -22,6 +28,10 @@ class DarkMode extends Plugin {
         return this;
     }
 
+    /**
+     * DarkMode constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, 'Dark Mode', 'Applies a dark theme to this page', {
@@ -29,12 +39,8 @@ class DarkMode extends Plugin {
             defaultState: false
         });
 
-        this.enableTool('darkMode', 'Dark mode on', 'Dark mode off');
-
         // toggle body dataset
         this.toggle(this.getState());
-
-        this.add();
     }
 }
 

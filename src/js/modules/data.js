@@ -1,4 +1,10 @@
-import {
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+ import {
     prefix
 } from './string.js';
 
@@ -21,7 +27,7 @@ let app;
 const completeLists = () => {
     lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-    app.trigger(prefix('wordsUpdated'));
+    app.trigger(prefix('refreshUi'));
 }
 
 /**
@@ -32,6 +38,7 @@ const initLists = foundTerms => {
     lists = {
         answers: sbData.answers,
         pangrams: sbData.pangrams,
+        letters: sbData.validLetters,
         foundTerms: foundTerms
     }
     completeLists();
@@ -53,6 +60,11 @@ const getList = type => {
 const getId = () => {
     return sbData.id;
 }
+
+const getDate = () => {
+    return sbData.displayDate;
+}
+
 
 /**
  * Returns the gameId
@@ -119,5 +131,6 @@ export default {
     getCount,
     getPoints,
     getId,
+    getDate,
     getCenterLetter
 }

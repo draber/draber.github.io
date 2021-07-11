@@ -1,4 +1,10 @@
-import settings from './settings.js';
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+ import settings from './settings.js';
 
 /**
  * Prefix used for event names and such
@@ -22,7 +28,7 @@ export const camel = term => {
  * Convert a string to dash-case
  * @see https://stackoverflow.com/a/52964182 with some modifications
  * @param {String} term
- * @returns {string}
+ * @returns {String}
  */
 export const dash = term => {
     return term.replace(/[\W_]+/g, ' ')
@@ -35,9 +41,9 @@ export const dash = term => {
  * Prefix a key and format the result as either camelCase or dash-case
  * @param {String} term
  * @param {String} mode `c` for camelCase | `d` for dash-case
- * @returns {string}
+ * @returns {String}
  */
-export const prefix = (term, mode = 'c') => {
+export const prefix = (term = '', mode = 'c') => {
     switch (mode) {
         case 'c':
             return camel(pf + '_' + term);

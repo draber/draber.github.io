@@ -4,7 +4,7 @@
   "description": "Compiles whatever there is to compile",
   "main": "index.js",
   "author": "Dieter Raber",
-  "license": "MIT",
+  "license": "GPL-3",
   "dependencies": {
     "minimist": "^1.2.5",
     "terser": "^5.5.1"

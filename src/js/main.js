@@ -1,16 +1,10 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
 import el from './modules/element.js';
 import App from './modules/app.js';
 
-const gameWrapper = el.$('#js-hook-game-wrapper');
-const triggers = el.$$('.pz-moment__button-wrapper .pz-moment__button.primary');
-
-let app;
-
-triggers.forEach(trigger => {
-    trigger.addEventListener('click', () => {
-        if(!app) {
-            app = new App(gameWrapper);
-        }
-    })
-})
-    
+new App(el.$('#js-hook-game-wrapper'));

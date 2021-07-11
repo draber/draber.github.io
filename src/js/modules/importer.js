@@ -1,53 +1,50 @@
-import Styles from '../plugins/styles.js';
-import Launcher from '../plugins/launcher.js';
-import DarkMode from '../plugins/darkMode.js';
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+ import DarkMode from '../plugins/darkMode.js';
+import ColorConfig from '../plugins/colorConfig.js';
 import Header from '../plugins/header.js';
-import SetUp from '../plugins/setUp.js';
 import ProgressBar from '../plugins/ProgressBar.js';
-import ScoreSoFar from '../plugins/scoreSoFar.js';
+import Score from '../plugins/score.js';
 import SpillTheBeans from '../plugins/spillTheBeans.js';
-import Spoilers from '../plugins/spoilers.js';
-import StartingWith from '../plugins/startingWith.js';
-import StepsToSuccess from '../plugins/stepsToSuccess.js';
-import Surrender from '../plugins/surrender.js';
-import HighlightPangrams from '../plugins/highlightPangrams.js';
-import TrMarkCompleted from '../plugins/trMarkCompleted.js';
-import TrHideCompleted from '../plugins/trHideCompleted.js';
-import TrMarkPreeminent from '../plugins/trMarkPreeminent.js';
-import Footer from '../plugins/footer.js';
-import Positioning from '../plugins/positioning.js';
-
-const plugins = {
-     Styles,
-     Launcher,
-     DarkMode,
-     Header,
-     SetUp,
-     ProgressBar,
-     ScoreSoFar,
-     Spoilers,
-     StartingWith,
-     SpillTheBeans,
-     StepsToSuccess,
-     Surrender,
-     TrMarkCompleted,
-     TrHideCompleted,
-     TrMarkPreeminent,
-     HighlightPangrams,
-     Footer,
-     Positioning
-}
+import LetterCount from '../plugins/letterCount.js';
+import FirstLetter from '../plugins/firstLetter.js';
+import Pangrams from '../plugins/pangrams.js';
+import YourProgress from '../plugins/yourProgress.js';
+import TodaysAnswers from '../plugins/todaysAnswers.js';
+import PangramHl from '../plugins/pangramHl.js';
+import Googlify from '../plugins/googlify.js';
+import Styles from '../plugins/styles.js';
+import Menu from '../plugins/menu.js';
+import Grid from '../plugins/grid.js';
 
 /**
- * Plugins (minus Positioning on mobiles)
+ * Plugins
  * @param app
- * @returns {{StartingWith: StartingWith, Positioning: Positioning, DarkMode: DarkMode, ScoreSoFar: ScoreSoFar, Surrender: Surrender, Spoilers: Spoilers, SpillTheBeans: SpillTheBeans, StepsToSuccess: StepsToSuccess, TrHideCompleted: TrHideCompleted, Header: Header, TrMarkPreeminent: TrMarkPreeminent, TrMarkCompleted: TrMarkCompleted, Footer: Footer, Launcher: Launcher, SetUp: SetUp, ProgressBar: ProgressBar, Styles: Styles, HighlightPangrams: HighlightPangrams}}
+ * @returns {Object}
  */
-const getPlugins = app => {
-     if(!app.envIs('desktop')){
-          delete plugins.Positioning;
-     }
-     return plugins
+const getPlugins = () => {
+    return {
+        Header,
+        Score,
+        LetterCount,
+        FirstLetter,
+        Pangrams,
+        ProgressBar,
+        SpillTheBeans,
+        DarkMode,
+        ColorConfig,
+        PangramHl,
+        Googlify,
+        Styles,
+        Menu,
+        Grid,
+        YourProgress,
+        TodaysAnswers
+    }
 }
 
 export default getPlugins;

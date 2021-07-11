@@ -1,9 +1,12 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
 import el from '../modules/element.js';
 import settings from '../modules/settings.js';
 import Plugin from '../modules/plugin.js';
-import {
-    prefix
-} from '../modules/string.js';
 
 /**
  * Header plugin
@@ -12,33 +15,21 @@ import {
  * @returns {Plugin} Header
  */
 class Header extends Plugin {
+
+    /**
+     * Header constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, settings.get('title'), '', {
             key: 'header'
         });
 
-        this.ui = el.div();
-
-        app.dragHandle = el.div({
-            text: this.title,
-            classNames: ['header']
+        this.ui = el.div({
+            content: this.title
         });
 
-        this.ui.append(app.dragHandle);
-
-        app.on(prefix('toolsReady'), evt => {
-            const toolbar = el.div({
-                classNames: ['toolbar']
-            })
-            evt.detail.forEach(tool => {
-                toolbar.append(tool);
-            })
-            this.ui.append(toolbar)
-            return this;
-        })
-
-        this.add();
     }
 }
 

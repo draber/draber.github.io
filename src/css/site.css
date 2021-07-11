@@ -17,7 +17,7 @@
   --invalid-color: #666; }
 
 html {
-  --highlight-color: rgb(248, 205, 5);
+  --highlight-bg-color: rgb(248, 205, 5);
   --shadow-light-color: rgba(248, 205, 5, .35);
   --shadow-dark-color: rgba(248, 205, 5, .7);
   --card-color: rgba(248, 205, 5, .1); }
@@ -82,7 +82,7 @@ img {
   max-width: 100%; }
 
 ::selection {
-  background: var(--highlight-color); }
+  background: var(--highlight-bg-color); }
 
 header {
   position: fixed;
@@ -158,9 +158,9 @@ header {
     height: 24.6rem;
     padding-top: 1.5rem; }
     .intro .installer:hover {
-      box-shadow: 0 0 1.5rem 0.8rem rgba(var(--highlight-color), 0.35); }
+      box-shadow: 0 0 1.5rem 0.8rem rgba(var(--highlight-bg-color), 0.35); }
     .intro .installer:focus {
-      box-shadow: 0 0 1.5rem 0.8rem rgba(var(--highlight-color), 0.7); }
+      box-shadow: 0 0 1.5rem 0.8rem rgba(var(--highlight-bg-color), 0.7); }
   .intro .bookmarklet {
     cursor: move; }
 

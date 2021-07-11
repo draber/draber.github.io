@@ -1,3 +1,12 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+/**
+ * Container object for all functions
+ */
 const fn = {
     /**
      * Returns first element that matches CSS selector {expr}.
@@ -25,64 +34,94 @@ const fn = {
 
     /**
      * Convert whatever form of HTML to a single element or fragment
-     * @param {Element|NodeList|Array|String} html
+     * @param {Element|DocumentFragment|Iterable|String|HTMLCode} content
      * @return {Element|DocumentFragment}
      */
-    htmlToNode: html => { 
-        if (html instanceof Element) {
-            return html;
+    toNode: (content) => {
+        const fragment = document.createDocumentFragment();
+
+        if (typeof content === 'undefined') {
+            return fragment;
         }
-        
-        if((typeof html === 'string' || html instanceof String) 
-            && html.trim().startsWith('<') 
-            && html.trim().endsWith('>')) {        
-            const wrapper = el.div();
-            wrapper.innerHTML = html;
-            html = wrapper.childNodes;
+
+        // HTML or SVG element or DocumentFragment, a single node either way
+        if (content instanceof Element || content instanceof DocumentFragment) {
+            return content;
         }
-        
-        if (html instanceof NodeList || Array.isArray(html)) {       
-            const fragment = document.createDocumentFragment();
-            html.forEach(element => {
+
+        // numeric values are acted to string
+        if (typeof content === 'number') {
+            content = content.toString();
+        }
+
+        // HTML, text or a mix
+        if (typeof content === 'string' ||
+            content instanceof String
+        ) {
+            const doc = (new DOMParser()).parseFromString(content, 'text/html');
+            content = doc.body.childNodes;
+        }
+
+        // anything iterable
+        if(typeof content.forEach === 'function') {
+            // Array.from avoids problems with live collections
+            Array.from(content).forEach(element => {
                 fragment.append(element);
             })
             return fragment;
         }
-        
-        console.error('Expected Element|NodeList|Array|String, got ', html);
+
+        console.error('Expected Element|DocumentFragment|Iterable|String|HTMLCode, got', content);
+    },
+
+    /**
+     * Empty an element whilst avoiding `innerHTML`;
+     * @param {HTMLElement} element 
+     * @returns 
+     */
+    empty: element => {
+        while (element.lastChild) {
+            element.lastChild.remove();
+        }
+        element.textContent = '';
+        return element;
     }
 }
 
 /**
  * Create elements conveniently
- * @param {{tag: String, text: String, attributes: Object, style: Object, data: Object, events: Object, classNames: Array, svg: Boolean, html: Element|NodeList|Array|String}}
+ * @param tag: String
+ * @param content: Element|NodeList|Array|String|HTMLCode
+ * @param attributes: Object
+ * @param style: Object
+ * @param data: Object
+ * @param events: Object
+ * @param classNames: Array
+ * @param isSvg: Boolean
  * @returns {HTMLElement}
+ * @todo Distinguish between attributes and properties
  */
 const create = function ({
     tag,
-    text = '',
+    content,
     attributes = {},
     style = {},
     data = {},
     events = {},
     classNames = [],
-    svg,
-    html
+    isSvg
 } = {}) {
-    const el = svg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
-    if(tag === 'a' && attributes.href && !text) {
-        text = (new URL(attributes.href)).hostname;
+    const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
+    if (tag === 'a' && attributes.href && !content) {
+        content = (new URL(attributes.href)).hostname;
     }
-    el.textContent = text;
     for (let [key, value] of Object.entries(attributes)) {
-        if (svg) {
+        if (isSvg) {
             el.setAttributeNS(null, key, value.toString());
-        } 
-        else if(key === 'role' || key.startsWith('aria-')){
+        } else if (key === 'role' || key.startsWith('aria-')) {
             // won't work for `checked` etc.
             el.setAttribute(key, value);
-        }
-        else if(value !== false) {
+        } else if (value !== false) {
             el[key] = value.toString();
         }
     }
@@ -97,8 +136,8 @@ const create = function ({
     if (classNames.length) {
         el.classList.add(...classNames);
     }
-    if(html) {
-        el.append(fn.htmlToNode(html));
+    if (typeof content !== 'undefined') {
+        el.append(fn.toNode(content));
     }
     return el;
 };
@@ -106,9 +145,10 @@ const create = function ({
 /**
  * Dispatcher for the `create()`, `$` and `$$`
  * Examples (for $, $$ see docs on the functions):
+ * @example
  * el.div() returns a div element, where `div` can be any element
  * el.a({
- *     text: "My link",
+ *     content: HTMLElement|NodeList|Array|String|HTMLCode,
  *     attributes: {
  *         href: 'http://example.com'
  *     },
@@ -124,8 +164,7 @@ const create = function ({
  *     classNames: [
  *         'boom'
  *     ],
- *     svg: true|false (default),
- *     html: HTMLElement|NodeList|Array|String 
+ *     isSvg: true|false (default)
  * })
  * returns the element `<a href="http://example.com" style="color: red" data-foo="bar" class="boom">My link</a>` that issues an alert when clicked
  */
@@ -138,7 +177,7 @@ const el = new Proxy(fn, {
      */
     get(target, prop) {
         return function () {
-            const args = Array.prototype.slice.call(arguments);
+            const args = Array.from(arguments);
             if (Object.prototype.hasOwnProperty.call(target, prop) && typeof target[prop] === 'function') {
                 target[prop].bind(target);
                 return target[prop].apply(null, args);

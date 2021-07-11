@@ -1,9 +1,15 @@
-import * as config from '../../config/config.json';
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+ import * as config from '../../config/config.json';
 import * as pkg from '../../../package.json';
 
 /**
  * Collection of data from `package.json`, `config.json` and `localStorage`
- * @type {{prefix: string, repo: string, options: object, label: string, title: string, targetUrl: string, url: string}}
+ * @type {{prefix: string, repo: string, options: object, label: string, title: string, version: string, targetUrl: string, url: string}}
  */
 const settings = {
     version: pkg.version,
@@ -25,6 +31,7 @@ const saveOptions = () => {
 
 /**
  * Store the version in case something needs to be reset in a new release
+ * @todo actually use this
  */
 if(settings.options.version && settings.options.version !== settings.version){
     settings.options.oldVersion = settings.options.version;

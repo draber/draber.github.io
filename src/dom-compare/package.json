@@ -1,0 +1,13 @@
+{
+  "name": "compiler",
+  "version": "1.0.0",
+  "description": "Compares two versions of NYT SB Dom",
+  "main": "index.js",
+  "author": "Dieter Raber",
+  "license": "GPL-3",
+  "devDependencies": {
+    "puppeteer": "^10.1.0",
+    "date-and-time": "^1.0.1",
+    "xmldom": "^0.6.0"
+  }
+}

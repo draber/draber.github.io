@@ -1,9 +1,15 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
 import el from '../modules/element.js';
 import data from '../modules/data.js';
-import Plugin from '../modules/plugin.js';
 import {
     prefix
 } from '../modules/string.js';
+import Plugin from '../modules/plugin.js';
 
 /**
  * Spill the beans plugin
@@ -15,53 +21,43 @@ class SpillTheBeans extends Plugin {
 
     /**
      * Check if the input matches a term in the remainder list
-     * @param {String} value
-     * @returns {string}
+     * @param evt
      */
-    react(value) {
-        if (!value) {
-            return '😐';
+    run(evt) {
+        let emoji = '🙂';
+        if (!evt.detail) {
+            emoji = '😐';
         }
-        if (!data.getList('remainders').filter(term => term.startsWith(value)).length) {
-            return '🙁';
+        else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
+            emoji = '🙁';
         }
-        return '🙂';
+        this.ui.textContent = emoji;
+        return this;
     }
 
+    /**
+     * SpillTheBeans constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
-            canChangeState: true
+            canChangeState: true,
+            runEvt: prefix('newInput'),
+            addMethod: 'prepend'
         });
 
         /**
          * Emoji area
          */
-        const reaction = el.div({
-            text: '😐',
-            classNames: ['spill']
+        this.ui = el.div({
+            content: '😐'
         });
 
-        this.ui = el.details({
-            html: [el.summary({
-                text: this.title
-            }), el.div({
-                classNames: ['pane'],
-                html: [
-                    el.div({
-                        text: 'Watch my reaction!',
-                        classNames: ['spill-title']
-                    }),
-                    reaction
-                ]
-            })]
-        });
+        this.target = el.$('.sb-controls', this.app.gameWrapper);
 
-        this.app.on(prefix('newInput'), evt => {
-            reaction.textContent = this.react(evt.detail);
-        })
+		this.toggle(false);
 
-        this.add();
     }
 }
 
