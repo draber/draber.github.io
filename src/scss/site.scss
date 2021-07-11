@@ -7,7 +7,7 @@ html {
     line-height: 1.15;
     text-size-adjust: 100%;
     font-size: 62.5%;
-    box-sizing: border-box;    
+    box-sizing: border-box;
     --card-gap: 1.8rem;
 }
 
@@ -80,12 +80,14 @@ a {
     display: none;
 }
 
+
 main {
     &.wrapper {
         padding: 10rem 0 3rem 0;
     }
 
     img {
+        max-width: 100%;
         display: block;
         background-color: var(--body-bg-color);
         border: .1rem solid var(--border-color);
@@ -99,6 +101,10 @@ main {
             &.bookmarklet {
                 cursor: move;
             }
+        }
+
+        &.start-up-img {
+            max-width: none;
         }
 
 
@@ -148,6 +154,15 @@ main {
 
     &.row {
         flex-direction: row;
+
+        img {
+            max-width: none;
+        }
+    }
+
+
+    img {
+        margin-bottom: var(--card-gap)
     }
 
     article {
@@ -229,8 +244,8 @@ header {
 
 .wrapper {
     margin: 0 auto;
-    width: 102.4rem;
-    max-width: calc(100vw - 5rem);
+    width: 103.4rem;
+    max-width: calc(100vw - 2.5rem);
     padding: 0;
     position: relative;
 }
@@ -275,10 +290,11 @@ figcaption {
 }
 
 .comment {
-    font-size: 1.5rem;
+    font-size: 93%;
 }
 
-textarea {
+pre {
+    white-space: pre-wrap;
     padding: 1rem;
     display: block;
     width: 100%;
@@ -299,7 +315,6 @@ textarea.card {
 
 
 #requirement-chart {
-    overflow: auto;
 
     svg {
         display: inline-block;
@@ -327,17 +342,29 @@ table {
         collapse: collapse;
         spacing: 0;
     }
+
+    max-width: 100%;
+    table-layout: fixed;
 }
 
 th {
     font-weight: bold;
+
+    &:not(:first-of-type) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &:first-of-type {
+        width: 8rem;
+    }
 }
 
 th,
 td {
     border: 1px solid var(--border-color);
     text-align: left;
-    padding: .2rem 1rem;
+    padding: .2rem .4rem;
     font-size: 1.3rem;
     white-space: nowrap;
 }
@@ -355,12 +382,6 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 }
 
 
-@media screen and (max-width: 830px) {
-    .card-listing {
-        display: block
-    }
-}
-
 
 @media screen and (max-width: 990px) {
     .intro {
@@ -371,6 +392,23 @@ tr:nth-child(n+1) td:nth-child(n+2) {
         }
     }
 }
+
+@media screen and (max-width: 860px) {
+    .card {
+        display: block;
+
+        &.row {
+            flex-direction: column;
+            padding-top: var(--card-gap);
+
+            img {
+                max-width: 100%;
+            }
+        }
+    }
+
+}
+
 
 @media screen and (max-width: 768px) {
 
@@ -383,7 +421,25 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     }
 }
 
-@media screen and (max-width: 540px) {
+
+@media screen and (max-width: 668px) {
+
+    html {
+        --card-gap: 1rem;
+    }
+
+    body {
+        font-size: 1.4rem;
+    }
+
+    .card-listing {
+        display: block;
+
+        .row {
+            padding-top: calc(2 * var(--card-gap));
+        }
+    }
+
     h1 {
         font-size: 2.2rem;
     }
@@ -391,6 +447,15 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     .card {
         min-height: auto;
         padding-bottom: 1.1rem;
+        &.panel {
+
+            display: flex;
+            flex-direction: row;
+
+            img {
+                max-width: none;
+            }
+        }
 
         figure {
             min-height: auto;
@@ -409,38 +474,16 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 
 @media screen and (max-width: 468px) {
 
-    .card {
-        padding: 0;
-        margin-bottom: var(--card-gap);
-        background: none;
-        border: none;
-        display: block;
-
-        &.row {
-            flex-direction: column;
-        }
-
-        img {
-            max-width: 100%;
-        }
-
-
-        article {
-            padding: 2rem;
-            background: var(--card-color);
-            margin: 1rem 0 2rem 0;
-
-            border: {
-                width: .1rem;
-                color: var(--border-color);
-                style: solid;
-                radius: .9rem
-            }
-        }
-
+    table {
+        width: 100%;
     }
 
+
     header {
+        h1 {
+            font-size: 1.8rem;
+        }
+
         .wrapper {
 
             display: flex;
@@ -456,6 +499,18 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 
             .github {
                 display: none;
+            }
+        }
+    }
+    
+
+    .card {
+        &.panel {
+
+            display: block;
+
+            img {
+                max-width: 100%;
             }
         }
     }
