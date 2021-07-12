@@ -5,3 +5,4 @@
 /src/server/cert.pem
 /src/server/key.pem
 /src/dom-compare/storage
+/src/tools/storage

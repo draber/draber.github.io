@@ -1,9 +1,11 @@
-const puppeteer = require('puppeteer');
-const {
+import puppeteer from 'puppeteer';
+import {
     write
-} = require('../compiler/modules/file.js');
+} from '../modules/file.js';
+import log from '../modules/logger.js';
 
-exports.load = async (url, target) => {
+
+const load = async (url, target) => {
     const browser = await puppeteer.launch({
         args: [
             '--shm-size=1gb',
@@ -64,10 +66,11 @@ exports.load = async (url, target) => {
 
         await page.waitForSelector(sel.launch);
         await page.click(sel.launch);
-        await page.waitForSelector(sel.hive).then(async () => {
+        const result = await page.waitForSelector(sel.hive).then(async () => {
             let html = await page.evaluate(() => document.documentElement.outerHTML);
             write(target, html);
         });
+        return result;
 
 
 
@@ -78,3 +81,7 @@ exports.load = async (url, target) => {
     await browser.close();
     return msg;
 };
+
+export {
+    load
+}

@@ -16,6 +16,6 @@ https.createServer(options, function (req, res) {
         'Content-Type': 'application/javascript'
     });
     // serve bookmarklet from dist/spelling-bee-assistant.js
-    res.end(fs.readFileSync(__dirname + '/../../dist/spelling-bee-assistant.js'));
+    res.end(fs.readFileSync(__dirname + '/../../../dist/spelling-bee-assistant.js'));
 }).listen(3000);
 
