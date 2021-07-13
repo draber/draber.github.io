@@ -11,7 +11,8 @@
     "node-html-parser": "^4.0.0",
     "dom-compare": "^0.6.0",
     "beautify": "^0.0.8",
-    "xmldom": "^0.1.19"
+    "xmldom": "^0.1.19",
+    "z-schema": "^5.0.1"
   },
   "type": "module"
 }

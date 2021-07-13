@@ -1,41 +1,32 @@
+import beautify from 'beautify';
 import {
     load
 } from './browser.js';
-import fs from 'fs';
-import settings from '../modules/settings.js';
-import HTMLParser from 'node-html-parser';
 import date from 'date-and-time';
 import {
-    append,
     read,
     write
 } from '../modules/file.js';
+import format from './format.js';
+import fs from 'fs';
+import HTMLParser from 'node-html-parser';
 import log from '../modules/logger.js';
-import beautify from 'beautify';
-import * as cmp from 'dom-compare';
-//     compare,
-//     GroupingReporter as reporter
-// } from 
+import path from 'path';
+import settings from '../modules/settings.js';
+import url from 'url';
+import validate from '../modules/validators/validate.js';
 
-import {
-    DOMParser
-} from 'xmldom';
-
-
-
-// tmp
-const compare = cmp.default.compare;
-const reporter = cmp.default.GroupingReporter;
-
-const path = process.cwd() + '/src/tools/storage';
+const here = path.dirname(url.fileURLToPath(
+    import.meta.url));
+const storage = path.dirname(here) + '/storage';
+const today = date.format(new Date(), 'YYYY-MM-DD');
 
 const issues = {
-    current: date.format(new Date(), 'YYYY-MM-DD-HH') + '-00',
+    current: today,
     ref: 'reference'
 }
 
 const types = {
-    full: 'full-site.html',
     clean: 'clean-site.html',
     tokens: 'tokens.json',
     data: 'data.json',
@@ -43,16 +34,14 @@ const types = {
 }
 
 const getAssetPath = (type, issue) => {
-    return `${path}/${issues[issue]}/${types[type]}`;
+    return `${storage}/${issues[issue]}/${types[type]}`;
 }
 
+
+
 const evaluate = () => {
-    let msg = '';
-    const reportFile = getAssetPath('report', 'current');
-    Object.keys(types).forEach(type => {
-        if (type === 'report') {
-            return;
-        }
+    let msg = format.heading('Report ' + today, 1);
+    ['clean', 'tokens', 'data'].forEach(type => {
         let current = read(getAssetPath(type, 'current'));
         let ref = read(getAssetPath(type, 'ref'));
         if (current === ref) {
@@ -60,47 +49,27 @@ const evaluate = () => {
         } else {
             switch (type) {
                 case 'data':
+                    const schema = read(`${here}/schema.json`);
+                    msg += format.heading('Data Schema Comparison', 2) +
+                        format.fromValidation(validate.jsonSchema(JSON.parse(current), JSON.parse(schema)));
                     break;
-                case 'clean':
-                    try {
-
-                        current = new DOMParser({
-                            locator: {},
-                            errorHandler: {
-                                warning: function (w) {},
-                                error: function (e) {},
-                                fatalError: function (e) {
-                                    console.error(e)
-                                }
-                            }
-                        }).parseFromString(current);
-                        ref = new DOMParser({
-                            locator: {},
-                            errorHandler: {
-                                warning: function (w) {},
-                                error: function (e) {},
-                                fatalError: function (e) {
-                                    console.error(e)
-                                }
-                            }
-                        }).parseFromString(ref);
-                    } catch (e) {
-                        msg += 'HTML Errors\n\n'
-                    }
-                    const result = compare(ref, current);
-                    msg += JSON.stringify(reporter.getDifferences(result)) + '\n\n';
+                case 'tokens':
+                    msg += format.heading('Tokens', 2) +
+                    format.fromValidation(validate.objectEquality(JSON.parse(ref), JSON.parse(current)));
+                    break;
+                    //     msg += tokenValidator(ref, current);
+                    // case 'clean':
+                    //     msg += htmlValidator(ref, current);
+                    //     break;
             }
         }
     });
-    if (!msg) {
-        msg = 'All data are equal';
-    }
-    write(reportFile, msg);
+    write(getAssetPath('report', 'current'), msg);
 }
 
 const processHtml = path => {
     const tokens = {};
-    const doc = HTMLParser.parse(read(path));
+    const doc = HTMLParser.parse(read(path).replace(/&nbsp;/g, ' '));
     let selector;
 
     // tokens
@@ -117,7 +86,9 @@ const processHtml = path => {
 
     // game data
     const gameData = doc.querySelector('#pz-game-root ~ script').textContent.trim().replace('window.gameData = ', '');
-    write(getAssetPath('data', 'current'), JSON.stringify(gameData));
+    write(getAssetPath('data', 'current'), beautify(gameData, {
+        format: 'json'
+    }));
 
     // cleaner version: neutralize text
     doc.querySelectorAll('text').forEach(elem => {

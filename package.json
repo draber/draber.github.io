@@ -7,6 +7,7 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
     "@rollup/stream": "^2.0.0",
+    "ajv": "^6.12.6",
     "beautify": "^0.0.8",
     "compiler": "file:src/tools/compiler",
     "date-and-time": "^1.0.1",
@@ -21,7 +22,7 @@
   "scripts": {
     "app:build": "npm run ext:build & npm run site:build & documentation build ./src/tools/js/main.js -f html -o ./docs",
     "app:dev": "npm run sass:build & rollup -c ./src/config/rollup.js",
-    "dom:compare": "node ./src/tools/detectChanges",
+    "dom:compare": "node --experimental-json-modules ./src/tools/detectChanges",
     "ext:build": "npm run app:dev & node ./src/tools/compiler/ -t extension",
     "ext:dev": "node ./src/tools/compiler/ -t appcss -d true & rollup -c ./src/config/rollup.js & node ./src/tools/compiler/ -t extension -d true",
     "ext:watch": "node ./src/tools/compiler/ -t extension -w",
