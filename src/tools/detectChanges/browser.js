@@ -1,16 +1,11 @@
+import beautify from 'beautify';
 import puppeteer from 'puppeteer';
-import {
-    write
-} from '../modules/file.js';
-import log from '../modules/logger.js';
+import fs from 'fs';
+import path from 'path';
 
 
-const load = async (url, target) => {
-    const browser = await puppeteer.launch({
-        args: [
-            '--shm-size=1gb',
-        ],
-    });
+const load = async (url, paths) => {
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
     let msg = {
         status: 200,
@@ -27,6 +22,7 @@ const load = async (url, target) => {
                 contents: `${error} on ${msg.url}`
             }
         }
+        // console.log(msg);
         browser.close()
     });
 
@@ -39,6 +35,7 @@ const load = async (url, target) => {
                 contents: `No results from ${msg.url}`
             }
         }
+        //console.log(msg);
         browser.close()
     });
 
@@ -53,6 +50,7 @@ const load = async (url, target) => {
                 }
             }
         }
+        // console.log(msg);
     });
 
     try {
@@ -61,16 +59,59 @@ const load = async (url, target) => {
         const sel = {
             launch: '.on-stage .pz-moment__button-wrapper .pz-moment__button.primary',
             hive: '.pz-game-wrapper .sb-hive',
-            resources: '[src*="games-assets/v2/spelling-bee"], [href*="games-assets/v2/spelling-bee"]'
+            text: 'text',
+            sbCss: 'https://www.nytimes.com/games-assets/v2/spelling-bee',
+            obsolete: '.pz-ad-box, #pz-gdpr, #adBlockCheck, .pz-moment__info-date, .pz-game-title-bar, link, script, meta, style, iframe, body > header, body > footer'
         }
 
+        // wait for main page
         await page.waitForSelector(sel.launch);
         await page.click(sel.launch);
-        const result = await page.waitForSelector(sel.hive).then(async () => {
-            let html = await page.evaluate(() => document.documentElement.outerHTML);
-            write(target, html);
+        await page.waitForSelector(sel.hive);
+
+        // fetch and save game data
+        let gameData = await page.evaluate('gameData');
+        gameData = beautify(JSON.stringify(gameData), {
+            format: 'json'
         });
-        return result;
+        fs.writeFileSync(paths.data, gameData);
+
+        const cssRules = await page.evaluate(sel => {
+            const sheet = Array.from(document.styleSheets).filter(entry => entry.href && entry.href.startsWith(sel.sbCss)).pop();
+            const cssArr = [];
+            sheet.cssRules.forEach(rule => {
+                cssArr.push(rule.cssText.replace(/\\n/g, '').replace(/\s+/g, ' '));
+            })
+            return cssArr.join('\n');
+        }, sel)
+        fs.writeFileSync(paths.styles, cssRules);
+
+        // remove obsolete elements
+        await page.evaluate(sel => {
+            document.querySelectorAll(sel.obsolete).forEach(element => element.remove());
+        }, sel);
+
+        // normalize <text> elements
+        await page.evaluate(sel => {
+            document.querySelectorAll(sel.text).forEach(element => element.textContent = 'x');
+        }, sel);
+
+        // add new stylesheet
+        await page.evaluate(href => {
+            const link = document.createElement('link');
+            link.href = href;
+            link.rel = 'stylesheet';
+            document.querySelector('head').append(link);
+        }, './' + path.basename(paths.styles));
+
+        // store minimal HTML
+        let html = await page.evaluate(() => document.documentElement.outerHTML);
+        html = beautify(html.replace(/&nbsp;/g, ' '), {
+            format: 'html'
+        });
+        fs.writeFileSync(paths.clean, html);
+
+        return true;
 
 
 

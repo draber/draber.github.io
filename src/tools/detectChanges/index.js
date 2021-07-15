@@ -9,12 +9,19 @@ import {
 } from '../modules/file.js';
 import format from './format.js';
 import fs from 'fs';
-import HTMLParser from 'node-html-parser';
 import log from '../modules/logger.js';
 import path from 'path';
 import settings from '../modules/settings.js';
 import url from 'url';
 import validate from '../modules/validators/validate.js';
+import {
+    DOMParser
+} from 'xmldom';
+import minimist from 'minimist';
+
+
+const args = minimist(process.argv.slice(2));
+const debug = !!args.d;
 
 const here = path.dirname(url.fileURLToPath(
     import.meta.url));
@@ -28,9 +35,24 @@ const issues = {
 
 const types = {
     clean: 'clean-site.html',
-    tokens: 'tokens.json',
     data: 'data.json',
-    report: 'report.md'
+    report: 'report.md',
+    styles: 'styles.css'
+}
+
+const domParseConf = {
+    locator: {},
+    errorHandler: {
+        warning: w => {},
+        error: e => {},
+        fatalError: e => {
+            log(e, 'error')
+        }
+    }
+}
+
+const domParse = string => {
+    return new DOMParser(domParseConf).parseFromString(string);
 }
 
 const getAssetPath = (type, issue) => {
@@ -41,86 +63,63 @@ const getAssetPath = (type, issue) => {
 
 const evaluate = () => {
     let msg = format.heading('Report ' + today, 1);
-    ['clean', 'tokens', 'data'].forEach(type => {
+    ['clean', 'styles', 'data'].forEach(type => {
         let current = read(getAssetPath(type, 'current'));
         let ref = read(getAssetPath(type, 'ref'));
-        if (current === ref) {
-            return;
-        } else {
-            switch (type) {
-                case 'data':
-                    const schema = read(`${here}/schema.json`);
-                    msg += format.heading('Data Schema Comparison', 2) +
-                        format.fromValidation(validate.jsonSchema(JSON.parse(current), JSON.parse(schema)));
-                    break;
-                case 'tokens':
-                    msg += format.heading('Tokens', 2) +
-                    format.fromValidation(validate.objectEquality(JSON.parse(ref), JSON.parse(current)));
-                    break;
-                    //     msg += tokenValidator(ref, current);
-                    // case 'clean':
-                    //     msg += htmlValidator(ref, current);
-                    //     break;
-            }
+        switch (type) {
+            case 'data':
+                const schema = read(`${here}/schema.json`);
+                msg += format.heading('Data Schema Comparison', 2) +
+                    format.fromValidation(validate.jsonSchema(JSON.parse(current), JSON.parse(schema)));
+                break;
+            case 'styles':
+                msg += format.heading('Styles', 2) +
+                    format.fromValidation(validate.cssEquality(beautify(ref, {
+                        format: 'css'
+                    }), beautify(current, {
+                        format: 'css'
+                    })));
+                break;
+            case 'clean':
+                msg += format.heading('Dom Comparison', 2) +
+                    format.fromValidation(validate.domEquality(domParse(ref), domParse(current)));
+                break;
         }
     });
     write(getAssetPath('report', 'current'), msg);
 }
 
-const processHtml = path => {
-    const tokens = {};
-    const doc = HTMLParser.parse(read(path).replace(/&nbsp;/g, ' '));
-    let selector;
-
-    // tokens
-    selector = '[src*="games-assets/v2/spelling-bee"],[href*="games-assets/v2/spelling-bee"]';
-    doc.querySelectorAll(selector).forEach(elem => {
-        const matches = (elem.getAttribute('src') || elem.getAttribute('href')).match(/spelling-bee\.([^.]+)\.(.*)/);
-        if (matches.length !== 3) {
-            log(`Unexpected format for "${elem}"`, 'error');
-        }
-        tokens[matches[2]] = matches[1];
-    })
-
-    write(getAssetPath('tokens', 'current'), JSON.stringify(tokens));
-
-    // game data
-    const gameData = doc.querySelector('#pz-game-root ~ script').textContent.trim().replace('window.gameData = ', '');
-    write(getAssetPath('data', 'current'), beautify(gameData, {
-        format: 'json'
-    }));
-
-    // cleaner version: neutralize text
-    doc.querySelectorAll('text').forEach(elem => {
-        elem.textContent = 'x';
-    })
-
-    // cleaner version: remove elements that are irrelevant for comparison
-    selector = '.pz-ad-box, #pz-gdpr, #adBlockCheck, .pz-moment__info-date, .pz-game-title-bar, link, script, meta, style, iframe, body > header, body > footer';
-    doc.querySelectorAll(selector).forEach(elem => {
-        elem.remove();
-    })
-    write(getAssetPath('clean', 'current'), beautify(doc.toString(), {
-        format: 'html'
-    }));
-
-    evaluate();
-}
-
 
 const detectChanges = (async () => {
 
-    const path = getAssetPath('full', 'current');
+    const paths = {
+        clean: getAssetPath('clean', 'current'),
+        data: getAssetPath('data', 'current'),
+        styles: getAssetPath('styles', 'current')
+    }
 
-    if (!fs.existsSync(path)) {
-        await load(settings.get('targetUrl'), path)
+    let dumpExists = true;  
+    Object.values(paths).forEach(path => {
+        if(!fs.existsSync(path)){
+            dumpExists = false;
+        }
+    })
+
+
+    if (debug || !dumpExists) {
+        const dir = path.dirname(paths.clean);
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
+        await load(settings.get('targetUrl'), paths)
             .then(() => {
-                processHtml(path);
+                evaluate();
+                process.exit();
             })
     } else {
-        processHtml(path);
+        evaluate();
+        process.exit();
     }
-    process.exit();
 
 })();
 

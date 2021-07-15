@@ -5,7 +5,7 @@
 	"title": "Root", 
 	"type": "object",
 	"required": [
-		"today-mock",
+		"today",
 		"yesterday"
 	],
 	"properties": {
