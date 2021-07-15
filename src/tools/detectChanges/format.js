@@ -10,7 +10,8 @@ const isJsonParsable = string => {
 }
 
 const heading = (text, level) => {
-    return `${'#'.repeat(level)} ${text}\n\n`;
+    const breaks = level === 1 ? '\n\n' : '\n';
+    return `${'#'.repeat(level)} ${text}${breaks}`;
 }
 
 const json = input => {

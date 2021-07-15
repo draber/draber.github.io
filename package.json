@@ -17,8 +17,7 @@
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-string": "^3.0.0",
     "sass": "^1.35.2",
-    "terser": "^5.7.1",
-    "text-diff": "^1.0.1"
+    "terser": "^5.7.1"
   },
   "scripts": {
     "app:build": "npm run ext:build & npm run site:build & documentation build ./src/tools/js/main.js -f html -o ./docs",

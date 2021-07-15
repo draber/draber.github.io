@@ -59,8 +59,6 @@ const getAssetPath = (type, issue) => {
     return `${storage}/${issues[issue]}/${types[type]}`;
 }
 
-
-
 const evaluate = () => {
     let msg = format.heading('Report ' + today, 1);
     ['clean', 'styles', 'data'].forEach(type => {
@@ -74,11 +72,7 @@ const evaluate = () => {
                 break;
             case 'styles':
                 msg += format.heading('Styles', 2) +
-                    format.fromValidation(validate.cssEquality(beautify(ref, {
-                        format: 'css'
-                    }), beautify(current, {
-                        format: 'css'
-                    })));
+                    format.fromValidation(validate.cssEquality(ref.split('\n'), current.split('\n')));
                 break;
             case 'clean':
                 msg += format.heading('Dom Comparison', 2) +
