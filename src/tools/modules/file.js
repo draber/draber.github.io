@@ -30,5 +30,19 @@ const write = (filePath, data, message) => {
     }
 }
 
+const append = (filePath, data, message) => {
+    
+    if (!fs.existsSync(filePath)) {
+        write(filePath, data, message);
+    }
+    else {
+        fs.appendFileSync(filePath, data);
+        if(message){
+            log(message, 'success')
+        }
+    }
+}
+
+module.exports.append = append;
 module.exports.read = read;
 module.exports.write = write;

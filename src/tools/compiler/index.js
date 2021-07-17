@@ -3,20 +3,20 @@
 const fs = require('fs');
 const path = require('path');
 const minimist = require('minimist');
-const settings = require('./modules/settings.js');
-const substituteVars = require('./modules/substituteVars.js');
-const bookmarklify = require('./modules/bookmarklify.js');
-const log = require('./modules/logger.js');
-const errorHandler = require('./modules/errorHandler.js');
+const settings = require('../modules/settings.js');
+const substituteVars = require('../modules/substituteVars.js');
+const bookmarklify = require('../modules/bookmarklify.js');
+const log = require('../modules/logger.js');
+const errorHandler = require('../modules/errorHandler.js');
 const {
     minify
 } = require('terser');
 const {
     read,
     write
-} = require('./modules/file.js');
+} = require('../modules/file.js');
 const sass = require('sass');
-const cssUtils = require('./modules/cssUtils.js');
+const cssUtils = require('../modules/cssUtils.js');
 
 const args = minimist(process.argv.slice(2));
 
