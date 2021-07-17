@@ -25,7 +25,7 @@ const json = input => {
 }
 
 const code = input => {
-    return '```\n' + input + '\n```\n\n';
+    return '```json\n' + input + '\n```\n\n';
 } 
 
 const paragraph = input => {

@@ -1,4 +1,3 @@
-import beautify from 'beautify';
 import {
     load
 } from './browser.js';
@@ -18,6 +17,8 @@ import {
     DOMParser
 } from 'xmldom';
 import minimist from 'minimist';
+import _ from 'lodash';
+import notifier from 'node-notifier';
 
 
 const args = minimist(process.argv.slice(2));
@@ -29,7 +30,7 @@ const storage = path.dirname(here) + '/storage';
 const today = date.format(new Date(), 'YYYY-MM-DD');
 
 const issues = {
-    current: today,
+    current: 'daily/' + today,
     ref: 'reference'
 }
 
@@ -61,24 +62,36 @@ const getAssetPath = (type, issue) => {
 
 const evaluate = () => {
     let msg = format.heading('Report ' + today, 1);
+    let result;
+
     ['clean', 'styles', 'data'].forEach(type => {
         let current = read(getAssetPath(type, 'current'));
         let ref = read(getAssetPath(type, 'ref'));
         switch (type) {
             case 'data':
                 const schema = read(`${here}/schema.json`);
-                msg += format.heading('Data Schema Comparison', 2) +
-                    format.fromValidation(validate.jsonSchema(JSON.parse(current), JSON.parse(schema)));
+                result = validate.jsonSchema(JSON.parse(current), JSON.parse(schema));
+                msg += format.heading('Data Schema Comparison', 2);
                 break;
             case 'styles':
-                msg += format.heading('Styles', 2) +
-                    format.fromValidation(validate.cssEquality(ref.split('\n'), current.split('\n')));
+                result = validate.cssEquality(ref.split('\n'), current.split('\n'));
+                msg += format.heading('Styles', 2);
                 break;
             case 'clean':
-                msg += format.heading('Dom Comparison', 2) +
-                    format.fromValidation(validate.domEquality(domParse(ref), domParse(current)));
+                result = validate.domEquality(domParse(ref), domParse(current));
+                msg += format.heading('Dom Comparison', 2);
                 break;
         }
+
+        if (!_.isEmpty(result)) {            
+            notifier.notify(
+                {
+                  title: 'Spelling Bee Comparison',
+                  message: 'The site has been changed'
+                }
+              );
+        }
+        msg += format.fromValidation(result);
     });
     write(getAssetPath('report', 'current'), msg);
 }
@@ -92,17 +105,16 @@ const detectChanges = (async () => {
         styles: getAssetPath('styles', 'current')
     }
 
-    let dumpExists = true;  
+    let dumpExists = true;
     Object.values(paths).forEach(path => {
-        if(!fs.existsSync(path)){
+        if (!fs.existsSync(path)) {
             dumpExists = false;
         }
     })
 
-
     if (debug || !dumpExists) {
         const dir = path.dirname(paths.clean);
-        if (!fs.existsSync(dir)){
+        if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
         await load(settings.get('targetUrl'), paths)

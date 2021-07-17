@@ -1,15 +1,15 @@
 import assert from 'assert';
 
-const objectEquality = (expected, actual) => {
-    let result = {};
+const objectEquality = (ref, cur) => {
+    let result = false;
     try {
-        assert.deepStrictEqual(actual, expected);
+        assert.deepStrictEqual(cur, ref);
     } catch (e) {
         result = {
             comment: 'The two objects aren’t equal',
             msg: {
-                actual,
-                expected
+                ref,
+                current: cur
             }
         };
     }

@@ -13,6 +13,8 @@
     "date-and-time": "^1.0.1",
     "detect-changes": "file:src/tools/detectChanges",
     "eslint": "^7.30.0",
+    "lodash": "^4.17.21",
+    "node-notifier": "^10.0.0",
     "rollup": "^2.52.8",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-string": "^3.0.0",

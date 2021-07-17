@@ -1,22 +1,15 @@
 import * as cmp from 'dom-compare';
+import _ from 'lodash';
 
 // tmp
 const compare = cmp.default.compare;
 const reporter = cmp.default.GroupingReporter;
 
-const isEmpty = obj => {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
-            return false;
-    }
-    return true;
-}
-
 const domEquality = (ref, current) => {
     const result = reporter.getDifferences(compare(ref, current));
-    return {
-        msg: isEmpty(result) ? false : result
-    };
+    return !_.isEmpty(result) ? {
+        msg: result
+    } : false;
 }
 
 export default domEquality;

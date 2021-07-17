@@ -4,4 +4,4 @@
 /credentials
 /src/tools/server/cert.pem
 /src/tools/server/key.pem
-/src/tools/storage
+/src/tools/storage/daily
