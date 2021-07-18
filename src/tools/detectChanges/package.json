@@ -1,5 +1,5 @@
 {
-  "name": "compiler",
+  "name": "detect-changes",
   "version": "1.0.0",
   "description": "Compares two versions of NYT SB Dom",
   "main": "index.js",
@@ -8,6 +8,9 @@
   "devDependencies": {
     "puppeteer": "^10.1.0",
     "date-and-time": "^1.0.1",
-    "xmldom": "^0.6.0"
-  }
+    "dom-compare": "^0.6.0",
+    "beautify": "^0.0.8",
+    "xmldom": "^0.1.19"
+  },
+  "type": "module"
 }

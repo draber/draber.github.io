@@ -15,7 +15,7 @@ git clone draber/spelling-bee-extension
 npm i
 
 // compile the extension
-npm run compile-ext
+npm run ext:build
 ```
 
 This creates two different IIFE bundles, a compressed and an uncompressed version of the same code base. The extension is set up to use the compressed version, the uncompressed one is just there for readability.

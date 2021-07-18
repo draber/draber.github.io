@@ -1,0 +1,34 @@
+{
+   "name": "dom-compare",
+   "description": "Library to compare two DOM trees",
+   "version": "0.6.0",
+   "author": "Oleg Elifantiev <oleg@elifantiev.ru>",
+   "contributors": [],
+   "keywords": [
+      "dom",
+      "comparison"
+   ],
+   "bin": {
+      "domcompare": "bin/domcompare"
+   },
+   "dependencies": {
+      "argparse": "^1.0.10",
+      "colors": "0.6.2",
+      "xmldom": "0.1.19"
+   },
+   "devDependencies": {
+      "coveralls": "^3.0.2",
+      "istanbul": "^0.4.5",
+      "mocha": "^5.2.0",
+      "mocha-istanbul": "0.2.0"
+   },
+   "scripts": {
+      "instrument": "istanbul instrument --output lib-cov --no-compact --variable global.__coverage__ lib",
+      "test-cov": "npm run-script instrument && COVER=1 ISTANBUL_REPORTERS=lcovonly mocha -R mocha-istanbul",
+      "test": "mocha -R spec"
+   },
+   "repository": "git@github.com:Olegas/dom-compare.git",
+   "engines": {
+      "node": "*"
+   }
+}
