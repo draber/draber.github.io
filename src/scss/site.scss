@@ -41,6 +41,7 @@ h3 {
     font-size: 1.7rem;
 }
 
+
 p,
 ul,
 ol {
@@ -53,6 +54,7 @@ ol {
 
 :target {
     scroll-margin-top: 12rem;
+    background: var(--highlight-bg-color)
 }
 
 a {
@@ -313,6 +315,12 @@ textarea.card {
     padding-bottom: 1.1rem;
 }
 
+.text-part {   
+
+    h3 {
+        margin: 2rem 0 .8rem;
+    }
+}
 
 #requirement-chart {
 
@@ -381,7 +389,46 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     }
 }
 
+#copy-bm {
 
+    display: inline-block;
+    border: none;
+    padding: 1rem 2rem;
+    background: var(--link-color);
+    color: #ffffff;
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 250ms ease-in-out, transform 150ms ease;
+    border-radius: .2rem;
+    position: relative;
+
+    &.success {
+        &::after {
+            position: absolute;
+            content: "✔";
+            color: var(--success-color);
+            top: .4rem;
+            right: -3rem;
+            font-size: 2.5rem;
+        }
+    }
+
+
+    &:hover,
+    &:focus {
+        background: var(--link-hover-color);
+    }
+
+    &:focus {
+        outline: 1px solid #fff;
+        outline-offset: -4px;
+    }
+
+    &:active {
+        transform: scale(0.99);
+    }
+}
 
 @media screen and (max-width: 990px) {
     .intro {
@@ -447,6 +494,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     .card {
         min-height: auto;
         padding-bottom: 1.1rem;
+
         &.panel {
 
             display: flex;
@@ -502,7 +550,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
             }
         }
     }
-    
+
 
     .card {
         &.panel {

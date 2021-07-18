@@ -1,0 +1,349 @@
+{
+	"definitions": {},
+	"$schema": "http://json-schema.org/draft-07/schema#", 
+	"$id": "https://example.com/object1626109695.json", 
+	"title": "Root", 
+	"type": "object",
+	"required": [
+		"today",
+		"yesterday"
+	],
+	"properties": {
+		"today": {
+			"$id": "#root/today", 
+			"title": "Today", 
+			"type": "object",
+			"required": [
+				"expiration",
+				"displayWeekday",
+				"displayDate",
+				"printDate",
+				"centerLetter",
+				"outerLetters",
+				"validLetters",
+				"pangrams",
+				"answers",
+				"id",
+				"freeExpiration",
+				"editor"
+			],
+			"properties": {
+				"expiration": {
+					"$id": "#root/today/expiration", 
+					"title": "Expiration", 
+					"type": "integer",
+					"examples": [
+						1626073200
+					],
+					"default": 0
+				},
+				"displayWeekday": {
+					"$id": "#root/today/displayWeekday", 
+					"title": "Display weekday", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"Sunday"
+					],
+					"pattern": "^[A-Z][a-z]+$"
+				},
+				"displayDate": {
+					"$id": "#root/today/displayDate", 
+					"title": "Display date", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"July 11, 2021"
+					],
+					"pattern": "^[A-Z][a-z]+ [0-9]{1,2}, [0-9]{4}$"
+				},
+				"printDate": {
+					"$id": "#root/today/printDate", 
+					"title": "Print date", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"2021-07-11"
+					],
+					"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+				},
+				"centerLetter": {
+					"$id": "#root/today/centerLetter", 
+					"title": "Center letter", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"c"
+					],
+					"pattern": "^[a-z]$"
+				},
+				"outerLetters": {
+					"$id": "#root/today/outerLetters", 
+					"title": "Outer letters", 
+					"type": "array",
+					"default": [],
+                    "minItems": 6,
+                    "maxItems": 6,
+                    "uniqueItems": true,
+					"items":{
+						"$id": "#root/today/outerLetters/items", 
+						"title": "Items", 
+						"type": "string",
+						"default": "",
+						"examples": [
+							"u"
+						],
+                        "pattern": "^[a-z]$"
+					}
+				},
+				"validLetters": {
+					"$id": "#root/today/validLetters", 
+					"title": "Valid letters", 
+					"type": "array",
+					"default": [],
+                    "minItems": 7,
+                    "maxItems": 7,
+                    "uniqueItems": true,
+					"items":{
+						"$id": "#root/today/validLetters/items", 
+						"title": "Items", 
+						"type": "string",
+						"default": "",
+						"examples": [
+							"c"
+						],
+                        "pattern": "^[a-z]$"
+					}
+				},
+				"pangrams": {
+					"$id": "#root/today/pangrams", 
+					"title": "Pangrams", 
+					"type": "array",
+					"default": [],
+                    "minItems": 1,
+                    "uniqueItems": true,
+					"items":{
+						"$id": "#root/today/pangrams/items", 
+						"title": "Items", 
+						"type": "string",
+						"default": "",
+						"examples": [
+							"example"
+						],
+                        "pattern": "^[a-z]+$"
+					}
+				},
+				"answers": {
+					"$id": "#root/today/answers", 
+					"title": "Answers", 
+					"type": "array",
+					"default": [],
+                    "minItems": 20,
+                    "uniqueItems": true,
+					"items":{
+						"$id": "#root/today/answers/items", 
+						"title": "Items", 
+						"type": "string",
+						"default": "",
+						"examples": [
+							"array"
+						],
+                        "pattern": "^[a-z]+$"
+					}
+				},
+				"id": {
+					"$id": "#root/today/id", 
+					"title": "Id", 
+					"type": "integer",
+					"examples": [
+						13258
+					],
+					"default": 0
+				},
+				"freeExpiration": {
+					"$id": "#root/today/freeExpiration", 
+					"title": "Free expiration", 
+					"type": "integer",
+					"examples": [
+						0
+					],
+					"default": 0
+				},
+				"editor": {
+					"$id": "#root/today/editor", 
+					"title": "Editor", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"Sam Ezersky"
+					],
+					"pattern": "^.*$"
+				}
+			}
+		}
+,
+		"yesterday": {
+			"$id": "#root/yesterday", 
+			"title": "Yesterday", 
+			"type": "object",
+			"required": [
+				"displayWeekday",
+				"displayDate",
+				"printDate",
+				"centerLetter",
+				"outerLetters",
+				"validLetters",
+				"pangrams",
+				"answers",
+				"id",
+				"freeExpiration",
+				"editor"
+			],
+			"properties": {
+				"displayWeekday": {
+					"$id": "#root/yesterday/displayWeekday", 
+					"title": "Displayweekday", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"Saturday"
+					],
+					"pattern": "^[A-Z][a-z]+$"
+				},
+				"displayDate": {
+					"$id": "#root/yesterday/displayDate", 
+					"title": "Display date", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"July 10, 2021"
+					],
+					"pattern": "^[A-Z][a-z]+ [0-9]{1,2}, [0-9]{4}$"
+				},
+				"printDate": {
+					"$id": "#root/yesterday/printDate", 
+					"title": "Print date", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"2021-07-10"
+					],
+					"pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+				},
+				"centerLetter": {
+					"$id": "#root/yesterday/centerLetter", 
+					"title": "Center letter", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"c"
+					],
+					"pattern": "^[a-z]$"
+				},
+				"outerLetters": {
+					"$id": "#root/yesterday/outerLetters", 
+					"title": "Outer letters", 
+					"type": "array",
+					"default": [],
+                    "minItems": 6,
+                    "maxItems": 6,
+                    "uniqueItems": true,
+					"items":{
+						"$id": "#root/yesterday/outerLetters/items", 
+						"title": "Items", 
+						"type": "string",
+						"default": "",
+						"examples": [
+							"u"
+						],
+                        "pattern": "^[a-z]$"
+					}
+				},
+				"validLetters": {
+					"$id": "#root/yesterday/validLetters", 
+					"title": "Valid letters", 
+					"type": "array",
+					"default": [],
+                    "minItems": 7,
+                    "maxItems": 7,
+                    "uniqueItems": true,
+					"items":{
+						"$id": "#root/yesterday/validLetters/items", 
+						"title": "Items", 
+						"type": "string",
+						"default": "",
+						"examples": [
+							"c"
+						],
+                        "pattern": "^[a-z]$"
+					}
+				},
+				"pangrams": {
+					"$id": "#root/yesterday/pangrams", 
+					"title": "Pangrams", 
+					"type": "array",
+					"default": [],
+                    "minItems": 1,
+                    "uniqueItems": true,
+					"items":{
+						"$id": "#root/yesterday/pangrams/items", 
+						"title": "Items", 
+						"type": "string",
+						"default": "",
+						"examples": [
+							"example"
+						],
+                        "pattern": "^[a-z]+$"
+					}
+				},
+				"answers": {
+					"$id": "#root/yesterday/answers", 
+					"title": "Answers", 
+					"type": "array",
+					"default": [],
+                    "minItems": 20,
+                    "uniqueItems": true,
+					"items":{
+						"$id": "#root/yesterday/answers/items", 
+						"title": "Items", 
+						"type": "string",
+						"default": "",
+						"examples": [
+							"array"
+						],
+                        "pattern": "^[a-z]+$"
+					}
+				},
+				"id": {
+					"$id": "#root/yesterday/id", 
+					"title": "Id", 
+					"type": "integer",
+					"examples": [
+						10265
+					],
+					"default": 0
+				},
+				"freeExpiration": {
+					"$id": "#root/yesterday/freeExpiration", 
+					"title": "Free expiration", 
+					"type": "integer",
+					"examples": [
+						0
+					],
+					"default": 0
+				},
+				"editor": {
+					"$id": "#root/yesterday/editor", 
+					"title": "Editor", 
+					"type": "string",
+					"default": "",
+					"examples": [
+						"Sam Ezersky"
+					],
+					"pattern": "^.*$"
+				}
+			}
+		}
+
+	}
+}

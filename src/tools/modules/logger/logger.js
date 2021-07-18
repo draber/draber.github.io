@@ -1,4 +1,5 @@
 import util from 'util';
+import _ from 'lodash';
 
 const logger = {
     color: {
@@ -42,18 +43,21 @@ const logger = {
         return emit(color, msg);
     },
     log: function (...msg) {
-        return emit(null, msg);
+        return emit(false, msg);
     }
 }
 
 const emit = (color, msg) => {
     color = color ? `${color}%s${logger.color.reset}` : false;
     msg.forEach(part => {
-        if(color) {
-            console.log(color, util.inspect(part, false, null, false));
+        if(_.isObject(part)) {
+            console.log(util.inspect(part, false, null, true))
+        }
+        else if(color) {
+            console.log(color, part);
         }
         else {
-            console.log(util.inspect(part, false, null, true));
+            console.log(part);
         }
     })
 }
