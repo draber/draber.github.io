@@ -2,6 +2,7 @@ import beautify from 'beautify';
 import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
+import logger from '../modules/logger/logger.js'
 
 
 const load = async (url, paths) => {
@@ -22,7 +23,7 @@ const load = async (url, paths) => {
                 contents: `${error} on ${msg.url}`
             }
         }
-        // console.log(msg);
+        logger.error(msg);
         browser.close()
     });
 
@@ -35,7 +36,7 @@ const load = async (url, paths) => {
                 contents: `No results from ${msg.url}`
             }
         }
-        //console.log(msg);
+        logger.error(msg);
         browser.close()
     });
 
@@ -50,7 +51,6 @@ const load = async (url, paths) => {
                 }
             }
         }
-        // console.log(msg);
     });
 
     try {
@@ -117,7 +117,8 @@ const load = async (url, paths) => {
 
     } catch (e) {
         msg.status = 500;
-        msg.contents = `Error: ${e.message}`;
+        msg.contents = `Error: ${e.message}`;        
+        logger.error(msg);
     }
     await browser.close();
     return msg;

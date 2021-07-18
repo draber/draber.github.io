@@ -8,7 +8,7 @@ import {
 } from '../modules/file.js';
 import format from './format.js';
 import fs from 'fs';
-import log from '../modules/logger.js';
+import logger from '../modules/logger/logger.js';
 import path from 'path';
 import settings from '../modules/settings.js';
 import url from 'url';
@@ -18,7 +18,7 @@ import {
 } from 'xmldom';
 import minimist from 'minimist';
 import _ from 'lodash';
-import notifier from 'node-notifier';
+
 
 
 const args = minimist(process.argv.slice(2));
@@ -47,7 +47,7 @@ const domParseConf = {
         warning: w => {},
         error: e => {},
         fatalError: e => {
-            log(e, 'error')
+            logger.error(e)
         }
     }
 }
@@ -63,6 +63,7 @@ const getAssetPath = (type, issue) => {
 const evaluate = () => {
     let msg = format.heading('Report ' + today, 1);
     let result;
+    let hasResult = false;
 
     ['clean', 'styles', 'data'].forEach(type => {
         let current = read(getAssetPath(type, 'current'));
@@ -82,17 +83,19 @@ const evaluate = () => {
                 msg += format.heading('Dom Comparison', 2);
                 break;
         }
-
-        if (!_.isEmpty(result)) {            
-            notifier.notify(
-                {
-                  title: 'Spelling Bee Comparison',
-                  message: 'The site has been changed'
-                }
-              );
+        if(!_.isEmpty(result)) {
+            hasResult = true;
         }
         msg += format.fromValidation(result);
-    });
+    });   
+
+
+    if (hasResult) {  
+        logger.warning(`Spelling Bee from ${today} is different from the reference version`);
+    }
+    else {
+        logger.success(`Spelling Bee from ${today} is equal to the reference version`);
+    }
     write(getAssetPath('report', 'current'), msg);
 }
 

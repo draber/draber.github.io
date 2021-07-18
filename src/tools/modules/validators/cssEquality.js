@@ -27,38 +27,38 @@ const normalizeRules = rules => {
 
 /**
  *
- * @param rule
+ * @param line
  * @param type
  * @returns {{}}
  */
-const parse = (rule, type) => {
-    const contextData = normalizeRules(rule).match(/^(?<context>@[^{]+){(?<rules>.*)}$/);
+const parse = (line, type) => {
+    const contextData = normalizeRules(line).match(/^(?<context>@[^{]+){(?<rules>.*)}$/);
     const context = contextData.groups.context.trim();
     result[context] = result[context] || {};
     const rules = contextData.groups.rules.trim();
     const ruleMatches = rules.matchAll(/(?<selector>[^{]+){(?<values>[^}]+)}/g);
     for (let match of ruleMatches) {
         const selector = match.groups.selector.trim();
-        const values = match.groups.values.trim().split(';').map(entry => entry.trim()).filter(entry => !!entry);
+        const declarationBlock = match.groups.values.trim().split(';').map(entry => entry.trim()).filter(entry => !!entry);
         result[context][selector] = result[context][selector] || {};
-        values.forEach(value => {
-            value = value.split(':').map(entry => entry.trim());
-            const key = _.camelCase(value[0]);
-            result[context][selector][key] = result[context][selector][key] || {
-                ref: '_none_',
-                cur: '_none_'
+        declarationBlock.forEach(declaration => {
+            let [property, value] = declaration.split(':').map(entry => entry.trim());
+            property = _.camelCase(property);
+            value = value.replace(/;$/, '');
+            result[context][selector][property] = result[context][selector][property] || {
+                ref: '__empty__',
+                cur: '__empty__'
             };
-            result[context][selector][key][type] = value[1].replace(/;$/, '').trim();
+            result[context][selector][property][type] = value;
             if (type === 'cur') {
-                if (result[context][selector][key].ref === result[context][selector][key].cur) {
-                    delete result[context][selector][key];
+                if (result[context][selector][property].ref === result[context][selector][property].cur) {
+                    delete result[context][selector][property];
                 }
             }
         })
         if (_.isEmpty(result[context][selector])) {
             delete result[context][selector];
         } else {
-
             result[context][selector] = sortObjByKey(result[context][selector]);
         }
     }
@@ -81,14 +81,14 @@ const diff = (ref, cur) => {
 
 /**
  * Test two stylesheets for equality
- * @param {Array} ref (CSS)
- * @param {Array} cur
+ * @param {Array} ref (CSS, one selector|@rule per line)
+ * @param {Array} cur (CSS, one selector|@rule per line)
  * @returns {{msg: {}}|boolean}
  */
 const cssEquality = (ref, cur) => {
 
     diff(ref, cur).forEach((rules, type) => {
-        rules.map(entry => parse(entry, type));
+        rules.map(line => parse(line, type));
     });
 
     return !_.isEmpty(result) ? {
