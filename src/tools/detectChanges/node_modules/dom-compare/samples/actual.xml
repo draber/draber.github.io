@@ -1,8 +1,0 @@
-<document>
-    <element attribute="100">
-        <text>text content</text>
-        <inner />
-        <inner2 />
-    </element>
-    <![CDATA[cdata node  ]]>
-</document>
