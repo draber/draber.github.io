@@ -2,8 +2,6 @@
     
     <head>
         <title>Spelling Bee - The New York Times</title>
-        <link rel="stylesheet" type="text/css" href="https://www.nytimes.com/games-assets/v2/foundation.79023c005a441eb39ee74056aeaf6501.css">
-        <link rel="stylesheet" type="text/css" href="https://www.nytimes.com/games-assets/v2/foundation-game.850229e5eb4eeafbbe9835cf720cef81.css">
         <link href="./styles.css" rel="stylesheet">
     </head>
     
@@ -12,7 +10,64 @@
         <div class="pz-content">
             <div class="pz-section" id="spelling-bee-container">
                 <div class="pz-game-wrapper" id="js-hook-game-wrapper" style="background-color: rgb(247, 218, 33); position: relative; overflow: hidden; min-height: 545px;">
-
+                    <div id="portal-game-moments">
+                        <section class="pz-moment__loading pz-moment__frame on-stage fly-out"
+                        id="js-hook-pz-moment__loading" style="background-color: rgb(247, 218, 33); position: absolute; top: 0px;">
+                            <div class="pz-moment__icon large spelling-bee"></div>
+                            <h1 class="pz-moment__title large">Spelling Bee</h1>
+                            <h1 class="pz-moment__description default">How many words can you make with 7 letters?</h1>
+                        </section>
+                        <section class="pz-moment__frame pz-moment__welcome on-stage" id="js-hook-pz-moment__welcome"
+                        style="visibility: hidden; position: absolute; top: 0px;">
+                            <div class="pz-moment" style="background-color: rgb(247, 218, 33);">
+                                <div class="pz-moment__container alternate">
+                                    <div class="pz-moment__content sequence-animation">
+                                        <div class="pz-moment__icon large spelling-bee"></div>
+                                        <h1 class="pz-moment__title large">Spelling Bee</h1>
+                                        <h1 class="pz-moment__description default">How many words can you make with 7 letters?</h1>
+                                        <div class="pz-moment__button-wrapper">
+                                            <button type="button" class="pz-moment__button primary">Play</button>
+                                            <button type="button" class="pz-moment__button secondary">Subscribe</button>
+                                        </div>
+                                        <p class="pz-moment__info"><span class="pz-moment__info-editor">Edited by Sam Ezersky</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="pz-moment__frame pz-moment__congrats" id="js-hook-pz-moment__congrats">
+                            <div class="pz-moment" style="background-color: rgb(255, 255, 255);">
+                                <div class="pz-moment__container alternate">
+                                    <button type="button" class="pz-moment__close" aria-label="Close">×</button>
+                                    <div class="pz-moment__content sequence-animation">
+                                        <div class="pz-moment__icon large spelling-bee-smarty"></div>
+                                        <h1 class="pz-moment__title large">Genius</h1>
+                                        <h1 class="pz-moment__description default">You reached the highest rank, with <em>0 words</em> and <em>0 points</em>.</h1>
+                                        <div class="pz-moment__button-wrapper">
+                                            <button type="button" class="pz-moment__button primary">Keep playing</button>
+                                            <button type="button" class="pz-moment__button secondary">More puzzles</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="pz-moment__frame pz-moment__cutoff" id="js-hook-pz-moment__cutoff">
+                            <div class="pz-moment" style="background-color: rgb(255, 255, 255);">
+                                <div class="pz-moment__container alternate">
+                                    <div class="pz-moment__content sequence-animation">
+                                        <div class="pz-moment__icon large spelling-bee-loved"></div>
+                                        <h1 class="pz-moment__title large">You’re good at this!</h1>
+                                        <h1 class="pz-moment__description subscribe">Know more words? Subscribe to reach our Genius ranking.</h1>
+                                        <div class="pz-moment__button-wrapper">
+                                            <button type="button" class="pz-moment__button primary">Subscribe</button>
+                                            <button type="button" class="pz-moment__button secondary">More puzzles</button>
+                                        </div>
+                                        <div class="pz-moment__body">Have a Games subscription? <a href="https://myaccount.nytimes.com/auth/enter-email?redirect_uri=https%3A%2F%2Fwww.nytimes.com%2Fpuzzles%2Fspelling-bee&amp;response_type=cookie&amp;client_id=games&amp;application=crosswords">Log in</a>.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                     <div class="pz-game-screen pz-moment__frame" id="js-hook-pz-moment__game">
                         <div class="pz-game-toolbar">
                             <div class="pz-row">

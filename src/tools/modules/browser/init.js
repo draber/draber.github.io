@@ -2,7 +2,7 @@
 import logger from '../logger/logger.js'
 import puppeteer from 'puppeteer';
 
-const init = async () => {
+const init = async url => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     let msg = {

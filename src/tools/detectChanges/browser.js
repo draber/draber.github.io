@@ -7,7 +7,7 @@ import init from '../modules/browser/init.js';
 
 const load = async (url, paths) => {
 
-    const navi = await init();
+    const navi = await init(url);
     const browser = navi.browser;
     const page = navi.page;
     let msg = navi.msg;
