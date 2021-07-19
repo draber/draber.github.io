@@ -8,20 +8,20 @@
 	<meta content="width=device-width, initial-scale=1" name="viewport">
 	<meta content="{{label}}" property="og:title">
 	<meta content="{{description}}" property="og:description">
-	<meta content="{{url}}assets/img/social.png?{{version}}&cache-id={{cacheId}}" property="og:image">
+	<meta content="{{url}}assets/img/social.png?{{version}}-{{cacheId}}" property="og:image">
 	<meta content="{{url}}" property="og:url">
 	<meta content="{{label}}" property="og:site_name">
 	<meta content="summary_large_image" name="twitter:card">
 	<meta content="{{twitter}}" name="twitter:site">
-	<meta content="{{url}}assets/img/social.png?{{version}}&cache-id={{cacheId}}" name="twitter:image">
+	<meta content="{{url}}assets/img/social.png?{{version}}-{{cacheId}}" name="twitter:image">
 	<meta content="{{label}}" name="twitter:image:alt">
 	<meta content="{{gsc.drg}}" name="google-site-verification">
 	<meta content="{{gsc.sba}}" name="google-site-verification">
-	<link rel="apple-touch-icon" href="assets/img/icon72.png?{{version}}&cache-id={{cacheId}}" type="image/png">
-	<link rel="icon" href="assets/img/icon72.png?{{version}}&cache-id={{cacheId}}" type="image/png">
+	<link rel="apple-touch-icon" href="assets/img/icon72.png?{{version}}-{{cacheId}}" type="image/png">
+	<link rel="icon" href="assets/img/icon72.png?{{version}}-{{cacheId}}" type="image/png">
 	<link href="https://fonts.gstatic.com" rel="preconnect">
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-	<link href="assets/css/site.css?{{version}}&cache-id={{cacheId}}" rel="stylesheet">
+	<link href="assets/css/site.css?{{version}}-{{cacheId}}" rel="stylesheet">
 	<script src="assets/js/modernizr-custom.js"></script>
 </head>
 
@@ -50,17 +50,18 @@
 	</svg>
 	<header>
 		<div class="wrapper">
-			<img src="assets/img/logo.png?{{version}}&cache-id={{cacheId}}" alt="{{label}}" id="logo" />
+			<img src="assets/img/icon72.png?{{version}}-{{cacheId}}" alt="{{label}}" id="logo" />
 			<h1> {{label}}</h1>
 			<ul class="social">
 				<li class="github"> <a href="https://github.com/draber/draber.github.io" rel="noopener" target="_blank">
 						<svg class="github">
 							<use xlink:href="#icon-github"></use>
-						</svg>
+						</svg><span>Link to GitHub</span>
 					</a> </li>
-				<li class="twitter"> <svg>
+				<li class="twitter action-button"> <svg>
 						<use xlink:href="#icon-twitter"></use>
-					</svg><a class="twitter-share-button"
+					</svg><a
+					    target="_blank"
 						href="https://twitter.com/intent/tweet?original_referer=https%3A%2F%2Fspelling-bee-assistant.app%2F&ref_src=twsrc%5Etfw&text=Spelling%20Bee%20Assistant&tw_p=tweetbutton&url=https%3A%2F%2Fspelling-bee-assistant.app%2F"
 						rel="noopener">Tweet</a>
 
@@ -122,7 +123,7 @@
 			<div class="desktop-only">
 				<figure>
 					<img alt="{{label}}" class="start-up-img desktop-only"
-						src="assets/img/start-up.png?{{version}}&cache-id={{cacheId}}">
+						src="assets/img/start-up.png?{{version}}-{{cacheId}}">
 				</figure>
 			</div>
 
@@ -134,18 +135,18 @@
 					<ul class="install-source">
 						<li><a href="{{extension.chromeStore.url}}" rel="noopener" target="_blank"><img
 									class="store-icon chrome"
-									src="assets/img/chrome-store.svg?{{version}}&cache-id={{cacheId}}"
-									alt="{{label}} in the Chrome Web Store" /></a></li>
+									src="assets/img/chrome-store.svg?{{version}}-{{cacheId}}"
+									alt="{{label}} from the Chrome Web Store" /></a></li>
 						<li><a href="{{extension.firefoxStore.url}}" rel="noopener" target="_blank"><img
 									class="store-icon firefox"
-									src="assets/img/firefox-store.svg?{{version}}&cache-id={{cacheId}}"
-									alt="{{label}} at Firefox Add-ons" /></a></li>
+									src="assets/img/firefox-store.svg?{{version}}-{{cacheId}}"
+									alt="{{label}} from Firefox Add-ons" /></a></li>
 						<li><a href="{{extension.msStore.url}}" rel="noopener" target="_blank"><img
-									class="store-icon edge" src="assets/img/edge-store.svg"
-									alt="Get {{label}} at Edge Add-ons" /></a></li>
+									class="store-icon edge" src="assets/img/edge-store.svg?{{version}}-{{cacheId}}"
+									alt="Get {{label}} from Edge Add-ons" /></a></li>
 						<li><a href="{{extension.operaStore.url}}" rel="noopener" target="_blank"><img
-									class="store-icon opera" src="assets/img/opera-store.png"
-									alt="Get {{label}} at Opera Add-ons" /></a></li>
+									class="store-icon opera" src="assets/img/opera-store.png?{{version}}-{{cacheId}}"
+									alt="Get {{label}} from Opera Add-ons" /></a></li>
 					</ul>
 					<article>
 						<h3>Browser extension</h3>
@@ -167,8 +168,9 @@
 					<ul class="install-source">
 						<li><a class="installer" href="{{bookmarklet.code}}" onclick="return false" rel="nofollow"><img
 									class="bookmarklet store-icon"
-									src="assets/img/bookmarklet.svg?{{version}}&cache-id={{cacheId}}"
-									alt="{{label}}" /></a></li>
+									src="assets/img/bookmarklet.svg?{{version}}-{{cacheId}}"
+									alt="{{label}}" /></a>
+								</li>
 					</ul>
 					<article>
 						<h3>Bookmarklet</h3>
@@ -204,7 +206,7 @@
 			<ul class="card-listing">
 				<li class="card row panel">
 					<figure>
-						<img alt="{{label}}" src="assets/img/assistant-open.png?{{version}}&cache-id={{cacheId}}"></div>
+						<img alt="{{label}}" src="assets/img/assistant-open.png?{{version}}-{{cacheId}}"></div>
 
 					</figure>
 					<article class="main-panel">
@@ -225,7 +227,7 @@
 				</li>
 				<li class="card row panel">
 					<figure>
-						<img alt="{{title}} Menu" src="assets/img/assistant-menu.png?{{version}}&cache-id={{cacheId}}">
+						<img alt="{{title}} Menu" src="assets/img/assistant-menu.png?{{version}}-{{cacheId}}">
 					</figure>
 					<article>
 						<h3>The {{title}} menu</h3>
@@ -245,7 +247,7 @@
 				</li>
 				<li class="card">
 					<figure>
-						<img alt="Progress Bar" src="assets/img/progress-bar.png?{{version}}&cache-id={{cacheId}}">
+						<img alt="Progress Bar" src="assets/img/progress-bar.png?{{version}}-{{cacheId}}">
 
 					</figure>
 					<article>
@@ -256,7 +258,7 @@
 				<li class="card">
 					<figure>
 						<img alt="Spill the Beans"
-							src="assets/img/spill-the-beans.png?{{version}}&cache-id={{cacheId}}">
+							src="assets/img/spill-the-beans.png?{{version}}-{{cacheId}}">
 
 					</figure>
 					<article>
@@ -267,7 +269,7 @@
 				<li class="card">
 					<figure>
 						<img alt="Dark Mode" class="full"
-							src="assets/img/dark-mode.png?{{version}}&cache-id={{cacheId}}">
+							src="assets/img/dark-mode.png?{{version}}-{{cacheId}}">
 
 					</figure>
 					<article>
@@ -279,7 +281,7 @@
 				<li class="card">
 					<figure>
 						<img alt="Dark Mode Color Scheme" class="full"
-							src="assets/img/color-scheme.png?{{version}}&cache-id={{cacheId}}">
+							src="assets/img/color-scheme.png?{{version}}-{{cacheId}}">
 
 					</figure>
 					<article>
@@ -291,7 +293,7 @@
 				</li>
 				<li class="card">
 					<figure>
-						<img alt="Your Progress" src="assets/img/your-progress.png?{{version}}&cache-id={{cacheId}}">
+						<img alt="Your Progress" src="assets/img/your-progress.png?{{version}}-{{cacheId}}">
 
 					</figure>
 					<article>
@@ -301,7 +303,7 @@
 				</li>
 				<li class="card">
 					<figure>
-						<img alt="Grid" src="assets/img/grid.png?{{version}}&cache-id={{cacheId}}">
+						<img alt="Grid" src="assets/img/grid.png?{{version}}-{{cacheId}}">
 
 					</figure>
 					<article>
@@ -309,12 +311,10 @@
 							of the words that you’ve found and those that remain. The <em>Grid</em> screen combines
 							these two views into a handy matrix.</p>
 					</article>
-
 				</li>
 				<li class="card">
 					<figure class="screen">
-						<img alt="Today’s Answers" src="assets/img/todays-answers.png?{{version}}&cache-id={{cacheId}}">
-
+						<img alt="Today’s Answers" src="assets/img/todays-answers.png?{{version}}-{{cacheId}}">
 					</figure>
 					<article>
 						<p>When you’re eventually out of words but are dying to know the solution, the <em>Today’s
@@ -326,7 +326,7 @@
 				</li>
 				<li class="card">
 					<figure class="screen">
-						<img alt="Small Screens" src="assets/img/mobile.png?{{version}}&cache-id={{cacheId}}">
+						<img alt="Small Screens" src="assets/img/mobile.png?{{version}}-{{cacheId}}">
 
 					</figure>
 					<article>
@@ -474,7 +474,7 @@
 					Android and they worked just fine. These tutorials commonly involve copying the code of the
 					bookmarklet:</p>
 				<p>
-					<button type="text" id="copy-bm">Copy bookmarklet code</button>
+					<button type="text" id="copy-bm" class="action-button">Copy bookmarklet code</button>
 					<pre class="card" id="content-bm"><code contenteditable>{{bookmarklet.code}}</code></pre>
 				</p>
 				<h3>The above options aren’t working for me</h3>
@@ -499,7 +499,7 @@
 				<h2 id="bookmarklet">What is a bookmarklet?</h2>
 				<div>
 					<figure class="bookmarklet">
-						<img alt="Bookmarklet" src="assets/img/bookmarklet-light.png?{{version}}&cache-id={{cacheId}}">
+						<img alt="Bookmarklet" src="assets/img/bookmarklet-light.png?{{version}}-{{cacheId}}">
 					</figure>
 					<figcaption>
 						Regular bookmarks along with the Spelling Bee Assistant
@@ -515,10 +515,10 @@
 			<section id="contact">
 				<h2>I discovered a bug | I’d like to give feedback</h2>
 				<p>You can report bugs or request features <a
-						href="https://github.com/draber/draber.github.io/issues">here</a>. Keep in mind that this is a
+						href="https://github.com/draber/draber.github.io/issues">at GitHub</a>. Keep in mind that this is a
 					fun weekend project and I don’t want it to be a burden. I might work on issues from time to time,
 					but I can’t make any promises.</p>
-				<p>You can also find me at <a href="https://www.reddit.com/r/NYTSpellingBee"
+				<p>You can also find me at <a href="https://www.reddit.com/r/NYTSpellingBee" rel="noopener"
 						target="_blank">r/NYTSpellingBee</a> where I regularly post the latest updates under the handle
 					<a href="https://www.reddit.com/user/spellingBeeAssistant" target="_blank"
 						rel="noopener">spellingBeeAssistant</a>.</p>

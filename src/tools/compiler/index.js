@@ -17,6 +17,7 @@ const {
 } = require('../modules/file.js');
 const sass = require('sass');
 const cssUtils = require('../modules/cssUtils.js');
+const sizeOf = require('image-size');
 
 const args = minimist(process.argv.slice(2));
 
@@ -39,7 +40,14 @@ const getExtTemplate = template => {
  * @returns {Promise<String>}
  */
 const getHtml = async (path, jsPath) => {
-    const template = read(path);
+    let template = read(path);
+    const images = template.matchAll(/(?<src>src="(?<img>assets\/img\/[^?]+)\?{{version}}-{{cacheId}}")/g);
+    for (const match of images) {
+        const dimensions = sizeOf(match.groups.img);
+        const sizeAttr = `width="${dimensions.width}" height="${dimensions.height}"`;
+        const replacement = `${match.groups.src} ${sizeAttr}`;
+        template = template.replace(match.groups.src, replacement);
+    }
     const bookmarklet = await getBookmarklet(jsPath);
     settings.set('bookmarklet.code', bookmarklet);
     return substituteVars(template, settings);

@@ -57,6 +57,10 @@ ol {
     background: var(--highlight-bg-color)
 }
 
+img {
+    height: auto;
+}
+
 a {
     background-color: transparent;
     color: var(--link-color);
@@ -227,20 +231,21 @@ header {
         list-style: none;
         display: flex;
 
+        .github {
+            position: relative;
+            overflow: hidden;
+            span {
+                position: absolute;
+                left: 300px;
+            }
+        }
+
         .twitter {            
             display: flex;
-            border: none;
             padding: 0 1rem;
-            background: #1DA1F2;
-            color: #ffffff;
-            font: inherit;
             line-height: 1;
             font-size: 1.4rem;
-            cursor: pointer;
-            border-radius: .5rem;
-            position: relative;
             align-items: center;
-            position: relative;
             top: -.4rem;
 
             svg {
@@ -413,31 +418,21 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     }
 }
 
-#copy-bm {
+.action-button {
 
     display: inline-block;
     border: none;
-    padding: 1rem 2rem;
     background: var(--link-color);
-    color: #ffffff;
+    color: var(--head-row-bg-color);
     font: inherit;
-    line-height: 1;
     cursor: pointer;
     transition: background 250ms ease-in-out, transform 150ms ease;
-    border-radius: .2rem;
+    border-radius: .5rem;
     position: relative;
 
-    &.success {
-        &::after {
-            position: absolute;
-            content: "✔";
-            color: var(--success-color);
-            top: .4rem;
-            right: -3rem;
-            font-size: 2.5rem;
-        }
+    a {
+        color: currentColor;
     }
-
 
     &:hover,
     &:focus {
@@ -451,6 +446,23 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 
     &:active {
         transform: scale(0.99);
+    }
+}
+
+#copy-bm {
+
+    padding: 1rem 2rem;
+    line-height: 1;
+
+    &.success {
+        &::after {
+            position: absolute;
+            content: "✔";
+            color: var(--success-color);
+            top: .4rem;
+            right: -3rem;
+            font-size: 2.5rem;
+        }
     }
 }
 
@@ -540,7 +552,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 
     #logo {
         margin-right: 1rem;
-        width: 3.5rem;
+        width: 3.6rem;
     }
 }
 

@@ -83,17 +83,16 @@ const evaluate = () => {
                 msg += format.heading('Dom Comparison', 2);
                 break;
         }
-        if(!_.isEmpty(result)) {
+        if (!_.isEmpty(result)) {
             hasResult = true;
         }
         msg += format.fromValidation(result);
-    });   
+    });
 
 
-    if (hasResult) {  
+    if (hasResult) {
         logger.warning(`Spelling Bee from ${today} is different from the reference version`);
-    }
-    else {
+    } else {
         logger.success(`Spelling Bee from ${today} is equal to the reference version`);
     }
     write(getAssetPath('report', 'current'), msg);
@@ -117,10 +116,15 @@ const detectChanges = (async () => {
 
     if (debug || !dumpExists) {
         const dir = path.dirname(paths.clean);
+        const context = {
+            gameData: read(process.cwd() + '/src/tools/mock/data.json'),
+            paths
+        }
+       // console.log(context)
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
-        await load(settings.get('targetUrl'), paths)
+        await load(settings.get('targetUrl'), context)
             .then(() => {
                 evaluate();
                 process.exit();
