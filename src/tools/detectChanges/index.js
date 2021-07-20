@@ -35,8 +35,9 @@ const issues = {
 }
 
 const types = {
-    clean: 'clean-site.html',
-    data: 'data.json',
+    html: 'site.html',
+    gameData: 'game-data.json',
+    resources: 'resources.json',
     report: 'report.md',
     styles: 'styles.css'
 }
@@ -65,11 +66,11 @@ const evaluate = () => {
     let result;
     let hasResult = false;
 
-    ['clean', 'styles', 'data'].forEach(type => {
+    ['html', 'styles', 'gameData'].forEach(type => {
         let current = read(getAssetPath(type, 'current'));
         let ref = read(getAssetPath(type, 'ref'));
         switch (type) {
-            case 'data':
+            case 'gameData':
                 const schema = read(`${here}/schema.json`);
                 result = validate.jsonSchema(JSON.parse(current), JSON.parse(schema));
                 msg += format.heading('Data Schema Comparison', 2);
@@ -78,7 +79,7 @@ const evaluate = () => {
                 result = validate.cssEquality(ref.split('\n'), current.split('\n'));
                 msg += format.heading('Styles', 2);
                 break;
-            case 'clean':
+            case 'html':
                 result = validate.domEquality(domParse(ref), domParse(current));
                 msg += format.heading('Dom Comparison', 2);
                 break;
@@ -102,9 +103,10 @@ const evaluate = () => {
 const detectChanges = (async () => {
 
     const paths = {
-        clean: getAssetPath('clean', 'current'),
-        data: getAssetPath('data', 'current'),
-        styles: getAssetPath('styles', 'current')
+        html: getAssetPath('html', 'current'),
+        gameData: getAssetPath('gameData', 'current'),
+        styles: getAssetPath('styles', 'current'),
+        resources: getAssetPath('resources', 'current')
     }
 
     let dumpExists = true;
@@ -115,9 +117,9 @@ const detectChanges = (async () => {
     })
 
     if (debug || !dumpExists) {
-        const dir = path.dirname(paths.clean);
+        const dir = path.dirname(paths.html);
         const context = {
-            gameData: read(process.cwd() + '/src/tools/mock/data.json'),
+            gameData: read(process.cwd() + '/src/tools/mock/mockGameData.json'),
             paths
         }
        // console.log(context)

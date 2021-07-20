@@ -1,7 +1,5 @@
 import beautify from 'beautify';
-import fs, {
-    read
-} from 'fs';
+import fs from 'fs';
 import logger from '../modules/logger/logger.js';
 import init from '../modules/browser/init.js';
 
@@ -12,6 +10,8 @@ const load = async (url, context) => {
     const browser = navi.browser;
     const page = navi.page;
     let msg = navi.msg;
+
+    let resources = {};
 
     try {
         await page.goto(url);
@@ -34,7 +34,7 @@ const load = async (url, context) => {
         oldGameData = beautify(JSON.stringify(oldGameData), {
             format: 'json'
         });
-        fs.writeFileSync(context.paths.data, oldGameData);
+        fs.writeFileSync(context.paths.gameData, oldGameData);
 
         const cssRules = await page.evaluate(context => {
             const sheet = Array.from(document.styleSheets).filter(entry => entry.href && entry.href.startsWith(context.sel.sbCss)).pop();
@@ -47,11 +47,18 @@ const load = async (url, context) => {
         fs.writeFileSync(context.paths.styles, cssRules);
 
         // remove obsolete elements
-        const downloads = await page.evaluate(context => {
-            const _downloads = [];
-            const toLocal = url => {
+        resources = await page.evaluate(context => {
+
+            const _resources = [];
+
+            const parseUrl = url => {
                 const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)(?<ext>\..*)$/);
-                return match.groups.path + match.groups.file + match.groups.ext;
+                return {
+                    remote: url,
+                    local: match.groups.path + match.groups.file + match.groups.ext,
+                    hash: match.groups.hash,
+                    key: match.groups.file + match.groups.ext
+                }
             }
 
             document.title = 'SBA Integration Mock';
@@ -72,16 +79,20 @@ const load = async (url, context) => {
             document.querySelectorAll('#portal-game-modals, #pz-game-root, #portal-game-toolbar, #js-nav-drawer, #js-mobile-toolbar, #portal-game-moments').forEach(element => {
                 element.innerHTML = '';
             })
+
+            let urlData;
             document.querySelectorAll(context.sel.obsolete).forEach(element => {
                 if (element.nodeName === 'SCRIPT') {
                     if (element.src && element.src.includes('games-assets/v2/')) {
                         element.removeAttribute('type');
-                        _downloads.push(element.src);
-                        element.src = toLocal(element.src);
+                        urlData = parseUrl(element.src);
+                        _resources.push(urlData);
+                        element.src = urlData.local;
                         return false;
                     }
                     if (element.textContent.includes('window.userType')) {
                         element.removeAttribute('type');
+                        element.textContent = 'window.userType = {"isLoggedIn":true,"hasXwd":true,"hasDigi":true,"hasHd":false,"isErsatzShortz":false,"inShortzMode":false,"entitlement":"sub,cr"}';
                         return false;
                     }
                     if (element.textContent.includes('window.gameData')) {
@@ -89,51 +100,53 @@ const load = async (url, context) => {
                         element.textContent = 'window.gameData = ' + context.gameData;
                         return false;
                     }
-                }
-                if (element.nodeName === 'LINK' && element.href && element.rel && element.rel === 'stylesheet') {
-                    if (element.href.includes('games-assets/v2/')) {
-                        _downloads.push(element.href);
-                        element.href = toLocal(element.href);
+                    if (element.id &&
+                        (
+                            ['responsive.js', 'native-bridge.js'].includes(element.id)
+                        )
+                    ) {
                         element.removeAttribute('type');
                         return false;
                     }
                 }
+                if (element.nodeName === 'LINK' && element.href && element.rel && element.rel === 'stylesheet') {
+                    if (element.href.includes('games-assets/v2/')) {
+                        element.removeAttribute('type');
+                        urlData = parseUrl(element.href);
+                        _resources.push(urlData);
+                        element.href = urlData.local;
+                        return false;
+                    }
+                }
                 if (element.nodeName === 'META') {
-
                     if (element.httpEquiv && element.httpEquiv === 'Content-Type' ||
                         element.name && element.name === 'version') {
                         return false;
                     }
                 }
-                if (element.id &&
-                    (
-                        ['responsive.js', 'native-bridge.js'].includes(element.id)
-                    )
-                ) {
-                    return false;
-                }
                 element.remove()
             });
-            return _downloads;
+            return _resources;
         }, context);
-       // console.log(downloads)
+        
+        fs.writeFileSync(context.paths.resources, beautify(JSON.stringify(resources), {
+            format: 'json'
+        }));
 
         // store minimal HTML
         let html = await page.evaluate(() => document.documentElement.outerHTML);
-        html = beautify(html.replace(/&nbsp;/g, ' '), {
+        html = beautify('<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' '), {
             format: 'html'
         });
-        fs.writeFileSync(context.paths.clean, html);
+        fs.writeFileSync(context.paths.html, html);
 
         return true;
 
     } catch (e) {
-        msg.status = 500;
-        msg.contents = `Error: ${e.message}`;
         logger.error(msg);
     }
     await browser.close();
-    return msg;
+    return { msg, resources };
 };
 
 export {

@@ -1,0 +1,41 @@
+[{
+    "remote": "https://www.nytimes.com/games-assets/v2/foundation.79023c005a441eb39ee74056aeaf6501.css",
+    "local": "games-assets/v2/foundation.css",
+    "hash": "79023c005a441eb39ee74056aeaf6501",
+    "key": "foundation.css"
+}, {
+    "remote": "https://www.nytimes.com/games-assets/v2/foundation-game.850229e5eb4eeafbbe9835cf720cef81.css",
+    "local": "games-assets/v2/foundation-game.css",
+    "hash": "850229e5eb4eeafbbe9835cf720cef81",
+    "key": "foundation-game.css"
+}, {
+    "remote": "https://www.nytimes.com/games-assets/v2/spelling-bee.48c6d56c72f42ce349724a764549507d.css",
+    "local": "games-assets/v2/spelling-bee.css",
+    "hash": "48c6d56c72f42ce349724a764549507d",
+    "key": "spelling-bee.css"
+}, {
+    "remote": "https://www.nytimes.com/games-assets/v2/polyfills.cf1a343c9aa7a0116d199c3358ceb1bc.js",
+    "local": "games-assets/v2/polyfills.js",
+    "hash": "cf1a343c9aa7a0116d199c3358ceb1bc",
+    "key": "polyfills.js"
+}, {
+    "remote": "https://www.nytimes.com/games-assets/v2/foundation.ed1073941d7b48aebe8b5a6c3d2b9c09.js",
+    "local": "games-assets/v2/foundation.js",
+    "hash": "ed1073941d7b48aebe8b5a6c3d2b9c09",
+    "key": "foundation.js"
+}, {
+    "remote": "https://www.nytimes.com/games-assets/v2/react-bundle.bd8065a4e60166814eabe44f4e6c88e9.js",
+    "local": "games-assets/v2/react-bundle.js",
+    "hash": "bd8065a4e60166814eabe44f4e6c88e9",
+    "key": "react-bundle.js"
+}, {
+    "remote": "https://www.nytimes.com/games-assets/v2/spelling-bee.86198af26639e85c61d79bb7d8b62d5e.js",
+    "local": "games-assets/v2/spelling-bee.js",
+    "hash": "86198af26639e85c61d79bb7d8b62d5e",
+    "key": "spelling-bee.js"
+}, {
+    "remote": "https://www.nytimes.com/games-assets/v2/foundation-game.7be727495a92a75e961a050046f6a126.js",
+    "local": "games-assets/v2/foundation-game.js",
+    "hash": "7be727495a92a75e961a050046f6a126",
+    "key": "foundation-game.js"
+}]
