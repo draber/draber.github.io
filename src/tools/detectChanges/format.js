@@ -33,7 +33,7 @@ const paragraph = input => {
 }
 
 const fromValidation = result => {
-    if(!result.msg) {
+    if(!result || !result.msg) {
         return paragraph('No differences found');
     }
     let text = result.comment ? '// ' + result.comment + '\n' : ''

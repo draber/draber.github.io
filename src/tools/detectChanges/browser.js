@@ -1,5 +1,5 @@
 import beautify from 'beautify';
-import fs from 'fs';
+import fs from 'fs-extra';
 import logger from '../modules/logger/logger.js';
 import init from '../modules/browser/init.js';
 
@@ -34,7 +34,7 @@ const load = async (url, context) => {
         oldGameData = beautify(JSON.stringify(oldGameData), {
             format: 'json'
         });
-        fs.writeFileSync(context.paths.gameData, oldGameData);
+        fs.outputFileSync(context.paths.gameData, oldGameData);
 
         const cssRules = await page.evaluate(context => {
             const sheet = Array.from(document.styleSheets).filter(entry => entry.href && entry.href.startsWith(context.sel.sbCss)).pop();
@@ -44,7 +44,7 @@ const load = async (url, context) => {
             })
             return cssArr.join('\n');
         }, context)
-        fs.writeFileSync(context.paths.styles, cssRules);
+        fs.outputFileSync(context.paths.styles, cssRules);
 
         // remove obsolete elements
         resources = await page.evaluate(context => {
@@ -57,11 +57,12 @@ const load = async (url, context) => {
                     remote: url,
                     local: match.groups.path + match.groups.file + match.groups.ext,
                     hash: match.groups.hash,
-                    key: match.groups.file + match.groups.ext
+                    file: match.groups.file + match.groups.ext,
+                    ext: match.groups.ext.substr(1),
                 }
             }
 
-            document.title = 'SBA Integration Mock';
+            document.title = context.title;
 
             document.documentElement.removeAttribute('style');
             document.documentElement.removeAttribute('class');
@@ -69,7 +70,7 @@ const load = async (url, context) => {
             ['label', 'hidden', 'expanded', 'haspopup'].forEach(aria => {
                 document.querySelectorAll(`[aria-${aria}]`).forEach(element => {
                     element.removeAttribute(`aria-${aria}`)
-                });                
+                });
             })
 
             document.querySelector('#js-hook-game-wrapper').removeAttribute('style');
@@ -87,17 +88,6 @@ const load = async (url, context) => {
                         element.removeAttribute('type');
                         urlData = parseUrl(element.src);
                         _resources.push(urlData);
-                        element.src = urlData.local;
-                        return false;
-                    }
-                    if (element.textContent.includes('window.userType')) {
-                        element.removeAttribute('type');
-                        element.textContent = 'window.userType = {"isLoggedIn":true,"hasXwd":true,"hasDigi":true,"hasHd":false,"isErsatzShortz":false,"inShortzMode":false,"entitlement":"sub,cr"}';
-                        return false;
-                    }
-                    if (element.textContent.includes('window.gameData')) {
-                        element.removeAttribute('type');
-                        element.textContent = 'window.gameData = ' + context.gameData;
                         return false;
                     }
                     if (element.id &&
@@ -114,7 +104,6 @@ const load = async (url, context) => {
                         element.removeAttribute('type');
                         urlData = parseUrl(element.href);
                         _resources.push(urlData);
-                        element.href = urlData.local;
                         return false;
                     }
                 }
@@ -126,27 +115,47 @@ const load = async (url, context) => {
                 }
                 element.remove()
             });
+            const mockScript = document.createElement('script');
+            for (let [key, entry] of Object.entries(context.mockData)) {
+                mockScript.textContent += `window.${key} = ${JSON.stringify(entry)};\n`;
+            }
+            document.querySelector('head').append(mockScript);
             return _resources;
         }, context);
-        
-        fs.writeFileSync(context.paths.resources, beautify(JSON.stringify(resources), {
+
+        fs.outputFileSync(context.paths.resources, beautify(JSON.stringify(resources), {
             format: 'json'
         }));
 
+        // resources.forEach(async resource => {
+        //     const navi = await page.goto(resource.remote);
+        //     await page.waitForNavigation({ waitUntil: 'networkidle2' });
+        //     const buffer = await navi.buffer();
+        //     const txt = buffer.toString('utf8');
+        //     resource.body = txt;
+        // })
+
         // store minimal HTML
         let html = await page.evaluate(() => document.documentElement.outerHTML);
-        html = beautify('<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' '), {
+        resources.forEach(resource => {
+            html = html.replace(resource.remote, resource.local);
+        })
+        html = beautify('<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ').replace(/ style=""/g, ''), {
             format: 'html'
         });
-        fs.writeFileSync(context.paths.html, html);
 
-        return true;
+        fs.outputFileSync(context.paths.html, html);
+
+        return {
+            resources,
+            html,
+            oldGameData
+        };
 
     } catch (e) {
         logger.error(msg);
     }
     await browser.close();
-    return { msg, resources };
 };
 
 export {

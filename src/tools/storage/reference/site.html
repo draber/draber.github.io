@@ -2,13 +2,17 @@
 <html lang="en-US">
     
     <head>
-        <title>SBA Integration Mock</title>
-        <meta http-equiv="Content-Type" content="text/html"
-        charset="utf-8">
+        <title>Spelling Bee Assistant QA - Mock</title>
+        <meta http-equiv="Content-Type"
+        content="text/html" charset="utf-8">
         <meta name="version" content="v7.22.2">
         <link rel="stylesheet" href="games-assets/v2/foundation.css">
         <link rel="stylesheet" href="games-assets/v2/foundation-game.css">
         <link rel="stylesheet" href="games-assets/v2/spelling-bee.css">
+        <script>
+            window.gameData = {"today":{"centerLetter":"a","answers":["airway","airy","aria","arid","array","award","away","awry","daddy","dairy","diary","draw","dray","dryad","dyad","radar","radii","raid","razz","ward","wary","wayward","wizard","wizardry","yard"],"displayWeekday":"Sunday","displayDate":"September 1, 2030","printDate":"2030-09-01","expiration":1914468000,"id":1,"validLetters":["a","i","r","w","y","d","z"],"outerLetters":["i","r","w","y","d","z"],"pangrams":["wizardry"],"freeExpiration":0,"editor":"Spelling Bee Assistant QA"},"yesterday":{"centerLetter":"o","answers":["clog","college","cologne","eggnog","gecko","geek","gelee","gene","glee","glen","goggle","gone","gong","google","googol","goon","loge","logo","long","longneck","ogee","ogle","oolong"],"displayWeekday":"Monday","displayDate":"September 2, 2030","printDate":"2030-09-02","expiration":1914554400,"id":2,"validLetters":["c","l","o","g","e","n","k"],"outerLetters":["c","l","g","e","n","k"],"pangrams":["longneck"],"freeExpiration":0,"editor":"Spelling Bee Assistant QA"}};
+            window.userType = {"isLoggedIn":true,"hasXwd":true,"hasDigi":true,"hasHd":false,"isErsatzShortz":false,"inShortzMode":false,"entitlement":"sub,cr"};
+        </script>
     </head>
     
     <body class="pz-page pz-desktop pz-use-intercept">
@@ -25,7 +29,7 @@
         <div class="pz-intercept"></div>
         <div class="pz-content">
             <div class="pz-section" id="spelling-bee-container">
-                <div class="pz-game-wrapper" id="js-hook-game-wrapper" style="">
+                <div class="pz-game-wrapper" id="js-hook-game-wrapper">
                     <div id="portal-game-moments"></div>
                     <div class="pz-game-screen" id="js-hook-pz-moment__game">
                         <div class="pz-game-toolbar">
@@ -35,45 +39,10 @@
                         </div>
                         <div id="portal-game-modals"></div>
                         <div class="pz-game-field" id="pz-game-root"></div>
-                        <script>
-                            window.gameData = {
-                                "today": {
-                                    "displayWeekday": "Monday",
-                                    "displayDate": "September 2, 2030",
-                                    "printDate": "2030-09-02",
-                                    "centerLetter": "a",
-                                    "outerLetters": ["d", "i", "r", "w", "y", "z"],
-                                    "validLetters": ["a", "d", "i", "r", "w", "y", "z"],
-                                    "pangrams": ["wizardry"],
-                                    "answers": ["airway", "airy", "aria", "arid", "array", "award", "away", "awry", "daddy", "dairy", "diary", "draw", "dray", "dryad", "dyad", "radar", "radii", "raid", "razz", "ward", "wary", "wayward", "wizard", "wizardry", "yard"],
-                                    "id": "1914530400",
-                                    "freeExpiration": 0,
-                                    "expiration": "1914530400",
-                                    "editor": "SBA"
-                                },
-                                "yesterday": {
-                                    "displayWeekday": "Sunday",
-                                    "displayDate": "September 1, 2030",
-                                    "printDate": "2030-09-01",
-                                    "centerLetter": "d",
-                                    "outerLetters": ["a", "i", "l", "p", "r", "y"],
-                                    "validLetters": ["d", "a", "i", "l", "p", "r", "y"],
-                                    "pangrams": ["longneck"],
-                                    "answers": ["clog", "college", "cologne", "eggnog", "gecko", "geek", "gelee", "gene", "glee", "glen", "goggle", "gone", "gong", "google", "googol", "goon", "loge", "logo", "long", "longneck", "ogee", "ogle", "oolong"],
-                                    "id": "1914444000",
-                                    "freeExpiration": 0,
-                                    "expiration": "1914444000",
-                                    "editor": "SBA"
-                                }
-                            }
-                        </script>
                     </div>
                 </div>
             </div>
         </div>
-        <script>
-            window.userType = {"isLoggedIn":true,"hasXwd":true,"hasDigi":true,"hasHd":false,"isErsatzShortz":false,"inShortzMode":false,"entitlement":"sub,cr"}
-        </script>
         <div id="ratio-hook"></div>
         <div id="width-hook"></div>
         <script defer="" src="games-assets/v2/polyfills.js"></script>
