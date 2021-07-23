@@ -1,0 +1,29 @@
+{
+    "today": {
+        "expiration": 1627110000,
+        "displayWeekday": "Friday",
+        "displayDate": "July 23, 2021",
+        "printDate": "2021-07-23",
+        "centerLetter": "d",
+        "outerLetters": ["c", "e", "i", "t", "u", "v"],
+        "validLetters": ["d", "c", "e", "i", "t", "u", "v"],
+        "pangrams": ["deductive"],
+        "answers": ["deductive", "cede", "ceded", "cited", "cued", "deceit", "deceive", "deceived", "decide", "decided", "deduce", "deduced", "deduct", "deducted", "deed", "deeded", "deice", "deiced", "deicide", "detect", "detected", "detective", "deuce", "device", "dice", "diced", "died", "diet", "dieted", "dietetic", "dive", "dived", "divide", "divided", "divvied", "duct", "ducted", "dude", "duded", "duet", "duetted", "duvet", "eddied", "edict", "edit", "edited", "educe", "educed", "eidetic", "etude", "evicted", "iced", "ivied", "teed", "tide", "tided", "tidied", "tied", "tutted", "vetted", "vied", "vivid"],
+        "id": 11252,
+        "freeExpiration": 0,
+        "editor": "Sam Ezersky"
+    },
+    "yesterday": {
+        "displayWeekday": "Thursday",
+        "displayDate": "July 22, 2021",
+        "printDate": "2021-07-22",
+        "centerLetter": "l",
+        "outerLetters": ["a", "c", "i", "n", "p", "t"],
+        "validLetters": ["l", "a", "c", "i", "n", "p", "t"],
+        "pangrams": ["applicant"],
+        "answers": ["applicant", "alit", "alpaca", "anal", "annal", "appall", "atilt", "call", "calla", "canal", "capital", "catalpa", "catcall", "cattail", "cilia", "clan", "clap", "clinic", "clinical", "clinician", "clip", "iliac", "illicit", "initial", "italic", "lactic", "laic", "laical", "lain", "lanai", "lantana", "licit", "lilac", "lilt", "lint", "nail", "natal", "pail", "palapa", "palatal", "palatial", "pall", "palp", "papal", "papilla", "pill", "pintail", "plain", "plaint", "plait", "plan", "plant", "plantain", "plat", "pliant", "tactical", "tail", "talc", "tali", "tall", "tilapia", "till", "tilt"],
+        "id": 13354,
+        "freeExpiration": 0,
+        "editor": "Sam Ezersky"
+    }
+}

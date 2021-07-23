@@ -1,5 +1,5 @@
 
-import logger from '../logger/logger.js'
+import logger from '../logger/index.js'
 import puppeteer from 'puppeteer';
 
 const init = async url => {

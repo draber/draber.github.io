@@ -1,7 +1,6 @@
-import beautify from 'beautify';
-import fs from 'fs-extra';
-import logger from '../modules/logger/logger.js';
-import init from '../modules/browser/init.js';
+import logger from '../logger/index.js';
+import init from '../browser/init.js';
+import fetch from 'node-fetch';
 
 
 const load = async (url, context) => {
@@ -11,51 +10,31 @@ const load = async (url, context) => {
     const page = navi.page;
     let msg = navi.msg;
 
-    let resources = {};
-
     try {
-        await page.goto(url);
-
-        context.sel = {
-            launch: '.on-stage .pz-moment__button-wrapper .pz-moment__button.primary',
-            hive: '.pz-game-wrapper .sb-hive',
-            text: 'text',
-            sbCss: 'https://www.nytimes.com/games-assets/v2/spelling-bee',
-            obsolete: '.pz-ad-box, #pz-gdpr, #adBlockCheck, .pz-moment__info-date, .pz-game-title-bar, link, script, meta, style, iframe, svg, body > footer'
-        }
+        await page.goto(url, {
+            waitUntil: 'networkidle0'
+        });
 
         // wait for main page
-        await page.waitForSelector(context.sel.launch);
-        await page.click(context.sel.launch);
-        await page.waitForSelector(context.sel.hive);
+        await page.waitForSelector('.on-stage .pz-moment__button-wrapper .pz-moment__button.primary');
+        await page.click('.on-stage .pz-moment__button-wrapper .pz-moment__button.primary');
+        await page.waitForSelector('.pz-game-wrapper .sb-hive');
 
-        // fetch and save game data
-        let oldGameData = await page.evaluate('gameData');
-        oldGameData = beautify(JSON.stringify(oldGameData), {
-            format: 'json'
-        });
-        fs.outputFileSync(context.paths.gameData, oldGameData);
+        // fetch original game data
+        const oldGameData = await page.evaluate('gameData');
 
-        const cssRules = await page.evaluate(context => {
-            const sheet = Array.from(document.styleSheets).filter(entry => entry.href && entry.href.startsWith(context.sel.sbCss)).pop();
-            const cssArr = [];
-            sheet.cssRules.forEach(rule => {
-                cssArr.push(rule.cssText.replace(/\\n/g, '').replace(/\s+/g, ' '));
-            })
-            return cssArr.join('\n');
-        }, context)
-        fs.outputFileSync(context.paths.styles, cssRules);
 
         // remove obsolete elements
-        resources = await page.evaluate(context => {
+        const data = await page.evaluate(context => {
 
-            const _resources = [];
+            const css = [];
+            const js = [];
 
             const parseUrl = url => {
                 const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)(?<ext>\..*)$/);
                 return {
                     remote: url,
-                    local: match.groups.path + match.groups.file + match.groups.ext,
+                    rel: match.groups.path + match.groups.file + match.groups.ext,
                     hash: match.groups.hash,
                     file: match.groups.file + match.groups.ext,
                     ext: match.groups.ext.substr(1),
@@ -82,12 +61,18 @@ const load = async (url, context) => {
             })
 
             let urlData;
-            document.querySelectorAll(context.sel.obsolete).forEach(element => {
+            const obsoletes = '.pz-ad-box, #pz-gdpr, #adBlockCheck, .pz-moment__info-date, .pz-game-title-bar, link, script, meta, style, iframe, svg, body > footer';
+            document.querySelectorAll(obsoletes).forEach(element => {
                 if (element.nodeName === 'SCRIPT') {
                     if (element.src && element.src.includes('games-assets/v2/')) {
                         element.removeAttribute('type');
                         urlData = parseUrl(element.src);
-                        _resources.push(urlData);
+                        js.push({
+                            ...urlData,
+                            ...{
+                                format: 'expand'
+                            }
+                        });
                         return false;
                     }
                     if (element.id &&
@@ -103,7 +88,12 @@ const load = async (url, context) => {
                     if (element.href.includes('games-assets/v2/')) {
                         element.removeAttribute('type');
                         urlData = parseUrl(element.href);
-                        _resources.push(urlData);
+                        css.push({
+                            ...urlData,
+                            ...{
+                                format: 'compact'
+                            }
+                        });
                         return false;
                     }
                 }
@@ -120,37 +110,57 @@ const load = async (url, context) => {
                 mockScript.textContent += `window.${key} = ${JSON.stringify(entry)};\n`;
             }
             document.querySelector('head').append(mockScript);
-            return _resources;
+
+            return {
+                css,
+                js
+            };
         }, context);
 
-        fs.outputFileSync(context.paths.resources, beautify(JSON.stringify(resources), {
-            format: 'json'
-        }));
+        const download = async type => {
+            await Promise.all((data => {
+                const promises = [];
+                data[type].forEach(resource => {
+                    promises.push(fetch(resource.remote))
+                })
+                return promises
+            })(data))
+            .then(responses => {
+                return responses;
+            })
+            .then(responses => Promise.all(responses.map(response => response.text())))
+            .then(body => {
+                for (let i = 0; i < body.length; i++) {
+                    data[type][i].body = body[i];
+                }
+            });
+        }
 
-        // resources.forEach(async resource => {
-        //     const navi = await page.goto(resource.remote);
-        //     await page.waitForNavigation({ waitUntil: 'networkidle2' });
-        //     const buffer = await navi.buffer();
-        //     const txt = buffer.toString('utf8');
-        //     resource.body = txt;
-        // })
+        await download('js');
+        await download('css');
 
-        // store minimal HTML
+        // retrieve minimal HTML
         let html = await page.evaluate(() => document.documentElement.outerHTML);
-        resources.forEach(resource => {
-            html = html.replace(resource.remote, resource.local);
+
+        ['js', 'css'].forEach(type => {
+            data[type].forEach(resource => {
+                html = html.replace(resource.remote, resource.rel);
+            })
         })
-        html = beautify('<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ').replace(/ style=""/g, ''), {
-            format: 'html'
-        });
+        html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ').replace(/ style=""/g, '');
 
-        fs.outputFileSync(context.paths.html, html);
+        data.html = [{
+            body: html,
+            rel: 'index.html',
+            format: 'expand'
+        }];
+        data.json = [{
+            body: JSON.stringify(oldGameData),
+            rel: 'game-data.json',
+            format: 'expand'
+        }];
 
-        return {
-            resources,
-            html,
-            oldGameData
-        };
+        return data;
 
     } catch (e) {
         logger.error(msg);

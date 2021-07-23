@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import format from '../formatters/format.js';
 
 const result = {}
 
@@ -86,6 +87,9 @@ const diff = (ref, cur) => {
  * @returns {{msg: {}}|boolean}
  */
 const cssEquality = (ref, cur) => {
+
+    ref = format('css', ref, 'compact').split('\n');
+    cur = format('css', cur, 'compact').split('\n');
 
     diff(ref, cur).forEach((rules, type) => {
         rules.map(line => parse(line, type));

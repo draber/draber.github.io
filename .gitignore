@@ -1,8 +1,6 @@
 .idea
 /node_modules
 .vscode
-/credentials
-/src/tools/server/cert.pem
-/src/tools/server/key.pem
-/src/tools/storage/current
-/src/tools/mock/games-assets
+/src/storage
+/src/tools/modules/mock/server/*.pem
+*.woff2

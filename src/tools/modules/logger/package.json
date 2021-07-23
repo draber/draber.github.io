@@ -1,6 +1,7 @@
 {
     "name": "logger-util",
     "version": "1.0.0",
+    "main": "index.js",
     "devDependencies": {
       "lodash": "^4.17.21"
     },

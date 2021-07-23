@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    
+    <head>
+        <title>Spelling Bee Assistant QA - Mock</title>
+        <meta http-equiv="Content-Type"
+        content="text/html" charset="utf-8">
+        <meta name="version" content="v7.23.0">
+        <link rel="stylesheet" href="games-assets/v2/foundation.css">
+        <link rel="stylesheet" href="games-assets/v2/foundation-game.css">
+        <link rel="stylesheet" href="games-assets/v2/spelling-bee.css">
+        <script>
+            window.gameData = {"today":{"centerLetter":"a","answers":["airway","airy","aria","arid","array","award","away","awry","daddy","dairy","diary","draw","dray","dryad","dyad","radar","radii","raid","razz","ward","wary","wayward","wizard","wizardry","yard"],"displayWeekday":"Monday","displayDate":"September 2, 2030","printDate":"2030-09-02","expiration":1914554400,"id":2,"validLetters":["a","i","r","w","y","d","z"],"outerLetters":["i","r","w","y","d","z"],"pangrams":["wizardry"],"freeExpiration":0,"editor":"Spelling Bee Assistant QA"},"yesterday":{"centerLetter":"o","answers":["clog","college","cologne","eggnog","gecko","geek","gelee","gene","glee","glen","goggle","gone","gong","google","googol","goon","loge","logo","long","longneck","ogee","ogle","oolong"],"displayWeekday":"Sunday","displayDate":"September 1, 2030","printDate":"2030-09-01","expiration":1914468000,"id":1,"validLetters":["c","l","o","g","e","n","k"],"outerLetters":["c","l","g","e","n","k"],"pangrams":["longneck"],"freeExpiration":0,"editor":"Spelling Bee Assistant QA"}};
+            window.userType = {"isLoggedIn":true,"hasXwd":true,"hasDigi":true,"hasHd":false,"isErsatzShortz":false,"inShortzMode":false,"entitlement":"sub,cr"};
+        </script>
+    </head>
+    
+    <body class="pz-page pz-desktop pz-use-intercept">
+        <header class="pz-header pz-game-header">
+            <div class="pz-nav" id="js-global-nav">
+                <button type="button" class="pz-nav__hamburger-helper pz-nav__hamburger pz-nav__hamburger-squeeze"
+                id="js-nav-burger"><span class="pz-nav__hamburger-box"><span class="pz-nav__hamburger-inner"></span></span>
+                </button><a id="js-logo-nav" class="pz-nav__title pz-h1" href="/crosswords"></a>
+                <div
+                class="pz-nav__toolbar" id="js-mobile-toolbar"></div>
+            </div>
+            <div role="menu" class="pz-nav-drawer" id="js-nav-drawer"></div>
+        </header>
+        <div class="pz-intercept"></div>
+        <div class="pz-content">
+            <div class="pz-section" id="spelling-bee-container">
+                <div class="pz-game-wrapper" id="js-hook-game-wrapper">
+                    <div id="portal-game-moments"></div>
+                    <div class="pz-game-screen" id="js-hook-pz-moment__game">
+                        <div class="pz-game-toolbar">
+                            <div class="pz-row">
+                                <div class="pz-module pz-flex-row pz-game-toolbar-content" id="portal-game-toolbar"></div>
+                            </div>
+                        </div>
+                        <div id="portal-game-modals"></div>
+                        <div class="pz-game-field" id="pz-game-root"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="ratio-hook"></div>
+        <div id="width-hook"></div>
+        <script defer="" src="games-assets/v2/polyfills.js"></script>
+        <script id="responsive.js" defer="">
+            !function(n,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):(n=n||self).Responsive=e()}(this,function(){"use strict";var e=["transitionend","webkitTransitionEnd","oTransitionEnd","msTransitionEnd"],s=Object.keys(e).find(function(n){return"on".concat(e[n].toLowerCase())in window});function n(n){var t=[],i=document.getElementById(n),o={value:i.offsetWidth,subscribe:function(n){return t.push(n),function(){t.splice(t.indexOf(n),1)}}};return i.addEventListener(s,function(){var n=i.offsetWidth;if(o.value=n,t.length)for(var e=t.length;0<e;)t[--e](n)},!1),o}return{isMobile:document.body.classList.contains("pz-mobile"),ratio:n("ratio-hook"),width:n("width-hook")}});
+            //# sourceMappingURL=responsive.bf8c1d62d9ba40904593ed53e5d97530e987af80.js.map
+        </script>
+        <script id="native-bridge.js" defer="">
+            var InitNativeBridge=function(e){var n={};function t(r){if(n[r])return n[r].exports;var i=n[r]={i:r,l:!1,exports:{}};return e[r].call(i.exports,i,i.exports,t),i.l=!0,i.exports}return t.m=e,t.c=n,t.d=function(e,n,r){t.o(e,n)||Object.defineProperty(e,n,{enumerable:!0,get:r})},t.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},t.t=function(e,n){if(1&n&&(e=t(e)),8&n)return e;if(4&n&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(t.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&n&&"string"!=typeof e)for(var i in e)t.d(r,i,function(n){return e[n]}.bind(null,i));return r},t.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(n,"a",n),n},t.o=function(e,n){return Object.prototype.hasOwnProperty.call(e,n)},t.p="",t(t.s=0)}([function(e,n,t){"use strict";t.r(n),t.d(n,"initNativeBridge",(function(){return a}));const r="undefined"!=typeof CustomEvent?CustomEvent:class{constructor(){throw new Error("This class is only intended for use on the client")}};class i extends r{constructor(e,n){super(e,n),this.respondWithPromise=null,this.alreadyResolved=!1}respondWith(e){if(null!==this.respondWithPromise)throw new Error("respondWith has already been called on this event.");if(!0===this.alreadyResolved)throw new Error("You must respond to this event synchronously (you can respond with a Promise)");const n=Promise.resolve(e);this.respondWithPromise=n}}const o=(e,n,t)=>(r,o,s)=>{const a=new i(n+o,{detail:s});t.dispatchEvent(a);const c=async function(e){return e.alreadyResolved=!0,e.respondWithPromise?e.respondWithPromise:Promise.resolve(null)}(a);if(!("onWebCommandResult"in e.NYTG))return c;c.then(n=>{e.NYTG.onWebCommandResult(JSON.stringify({id:r,success:!0,values:n}))}).catch(n=>{e.NYTG.onWebCommandResult(JSON.stringify({id:r,success:!1,error:n.name,errorDetails:n.message}))})},s=(e,n,t)=>{var r,i;const s=null==e||null===(r=e.navigator)||void 0===r||null===(i=r.native)||void 0===i?void 0:i.bridgeCommands,a=((e,n,t,r)=>(i,o)=>{const s=e.NYTG.currentAsyncID;return e.NYTG.currentAsyncID+=1,new Promise((a,c)=>{if(t&&!n.isBridgeCommandAvailable(i,r))throw new Error("[NativeBridge] command ".concat(i," not supported"));try{if(e.NYTG.storedCallbacks[s])throw new Error("Callback already stored in position ".concat(s));e.NYTG.storedCallbacks[s]=e=>{if(!e.success){const n=new Error(e.error);return n.details=e.error.details,c(n)}return a(e)}}catch(e){const n=new Error("Something went wrong creating the callback with ID ".concat(s,". Error: ").concat(JSON.stringify(e)));c(n)}try{var d;e.NYTG.enqueue(JSON.stringify({id:s,type:i,options:o,senderURI:(null===(d=e.asset)||void 0===d?void 0:d.uri)||""}))}catch(e){console.log("[NativeBridge]: Caught error while enqueing: ".concat(e))}})})(e,n,t,s),c=(e=>n=>new Promise((t,r)=>{try{var i,o;const s=null==e||null===(i=e.navigator)||void 0===i||null===(o=i.native)||void 0===o?void 0:o.activeABTestVariants;return void 0===s?r(new Error("root.navigator.native.activeABTestVariants is undefined")):Array.isArray(s)?t(s.indexOf(n)>-1):r(new Error("Variant Array is not an array"))}catch(e){return r(new Error("Something went wrong checking if user is in variant. Error: ".concat(JSON.stringify(e))))}}))(e);(e=>{e.NYTG.onCommandResult||(e.NYTG.onCommandResult=n=>{const t=e.NYTG.storedCallbacks[n.id];t?(t(n),delete e.NYTG.storedCallbacks[n.id]):console.log("Callback with ID ".concat(n.id," not found."))})})(e),n.isBridgeCommandAvailable=e=>((e,n)=>{try{if("__initialize"===e)return!0;const t=n[e];return!1!=!!t&&!!t.enabled}catch(e){return!1}})(e,s),((e,n,t)=>{let r,i="";try{r=new e.EventTarget}catch(n){r=e,i="__nyt_native_bridge:"}e.initializeCommandComplete=!1,n.addEventListener=(n,t,o)=>{e.initializeCommandComplete&&console.warn("You should set NativeBridge listeners immediately on page load to avoid missing events the native side dispatches immediately"),r.addEventListener(i+n,t,o)},n.removeEventListener=(e,n,t)=>r.removeEventListener(i+e,n,t);const s=o(e,i,r);e.NYTG.enqueueWebCommand=({id:e,type:n,options:t})=>s(e,n,t),t("__initialize").then(()=>{e.initializeCommandComplete=!0}).catch(()=>{console.warn("This environment does not support native->web events")})})(e,n,a);const d=(e=>()=>new Promise((n,t)=>{document.addEventListener("DOMContentLoaded",()=>{if(void 0!==e.config)n(e.config);else{const e=new Error("No root config found.");t(e)}})}))(e);return n.hybridConfig=()=>d(),{NativeBridge:n,dispatchNativeBridgeCommandAsync:a,checkIsInVariantAsync:c}},a=(e,n=!0)=>{if(e&&e.NativeBridge)return e.NativeBridge;let t=e&&e.NativeBridge||{};if(void 0===e)return t;e.NYTG=e.NYTG||{},e.NYTG.currentAsyncID=0,e.NYTG.storedCallbacks={};const r=s(e,t,n),{dispatchNativeBridgeCommandAsync:i,checkIsInVariantAsync:o}=r;return t=r.NativeBridge,t.callNativeBridgeCommand=i,t.checkIsInVariant=o,e.NativeBridge=t,t}}]);
+        </script>
+        <script defer="" src="games-assets/v2/foundation.js"></script>
+        <script defer="" src="games-assets/v2/react-bundle.js"></script>
+        <script defer="" src="games-assets/v2/spelling-bee.js"></script>
+        <script defer="" src="games-assets/v2/foundation-game.js"></script>
+        <div>
+            <div class="reset--2yoVe"></div>
+        </div>
+    </body>
+
+</html>

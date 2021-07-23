@@ -22,7 +22,7 @@ const userType = {
 }
 
 const completeGameData = () => {
-    let i = 1;
+    let i = 2;
     for (let entries of Object.values(gameData)) {
         let now = new Date(2030, 8, i);
         entries.displayWeekday = date.format(now, 'dddd');
@@ -35,7 +35,7 @@ const completeGameData = () => {
         entries.pangrams = entries.answers.filter(term => !entries.validLetters.filter(letter => !term.split('').includes(letter)).length);
         entries.freeExpiration = 0;
         entries.editor = 'Spelling Bee Assistant QA';
-        i++;
+        i--;
     }
 
     return gameData;

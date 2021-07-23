@@ -66,5 +66,11 @@
     "gsc": {
         "drg": "xmUT-cNYKa8IEPI8wCAf7q55PLPknSIEfN5g6puT7HU",
         "sba": "7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8"
+    },
+    "mock": {
+        "current": "storage/current",
+        "reference": "storage/reference",
+        "schema": "src/tools/modules/mock/schema.json",
+        "resources": "src/tools/modules/mock/resources"
     }
 }
