@@ -4,3 +4,4 @@
 /src/storage
 /src/tools/modules/mock/server/*.pem
 *.woff2
+/storage
