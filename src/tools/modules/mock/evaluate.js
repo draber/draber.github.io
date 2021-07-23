@@ -23,7 +23,7 @@ const listFiles = async () => {
         })) {
         files[type] = files[type] || {};
         listing.forEach(file => {
-            const matches = path.basename(file).match(/(?<name>[^\.]+)\.(?<ext>[a-z]+)$/);
+            const matches = path.basename(file).match(/(?<name>[^\.]+)\.(?<ext>[\w]+)$/);
             files[type][matches.groups.ext] = files[type][matches.groups.ext] || {};
             files[type][matches.groups.ext][matches.groups.name] = file;
         })
@@ -37,43 +37,57 @@ const evaluate = async () => {
     let hasResult = false;
 
     const files = await listFiles();
-    for (let [type, listing] of Object.entries(files.current)) {
+    const ignoreKeys = ['polyfills', 'react-bundle', 'foundation', 'foundation-game'];
+    const ignoreExt = ['md', 'svg', 'woff2', 'js']
+    for (let [ext, listing] of Object.entries(files.current)) {
+        if (ignoreExt.includes(ext)) {
+            continue;
+        }
         for (let [key, file] of Object.entries(listing)) {
+            const title = path.basename(files.current[ext][key]);
+            if (ignoreKeys.includes(key)) {
+                continue;
+            }
             const pair = {
                 current: file,
-                reference: files.reference[type][key]
+                reference: files.reference[ext] ? files.reference[ext][key] : undefined
             }
-            if(!pair.current || !pair.reference) {
+            if (!pair.current || !pair.reference) {
                 logger.error(`Incomplete pair`);
                 continue;
             }
-            switch (type) {
-                // case 'js':
-                //     break;
-                // case 'json':
-                //     if (key === 'game-data') {
-                //         const schema = fs.readJsonSync(settings.get('mock.schema'));
-                //         result = validate.jsonSchema(pair.current, schema);
-                //         msg += msgFormat.heading(key, 2);
-                //     }
-                //     break;
-                // case 'html':
-                //     result = validate.domEquality(pair.reference, pair.current);
-                //     msg += msgFormat.heading(key, 2);
-                //     break;
+            switch (ext) {
+                case 'json':
+                    if (key === 'game-data') {
+                        result = validate.jsonSchema(
+                            fs.readJsonSync(pair.current, 'utf8'),
+                            fs.readJsonSync(settings.get('mock.schema'))
+                        );
+                        msg += msgFormat.heading(title, 2);
+                    }
+                    break;
+                case 'html':
+                    result = validate.domEquality(
+                        fs.readFileSync(pair.reference, 'utf8'),
+                        fs.readFileSync(pair.current, 'utf8')
+                    );
+                    msg += msgFormat.heading(title, 2);
+                    break;
                 case 'css':
-                    result = validate.cssEquality(pair.reference, pair.current);
-                    msg += msgFormat.heading(key, 2);
-                    msg += msgFormat.fromValidation(result);
+                    result = validate.cssEquality(
+                        fs.readFileSync(pair.reference, 'utf8'),
+                        fs.readFileSync(pair.current, 'utf8')
+                    );
+                    msg += msgFormat.heading(title, 2);
                     break;
                 default:
                     continue;
             }
+            msg += msgFormat.fromValidation(result);
+            if (!_.isEmpty(result)) {
+                hasResult = true;
+            }
 
-        }
-        
-        if (!_.isEmpty(result)) {
-            hasResult = true;
         }
     }
 
@@ -86,4 +100,4 @@ const evaluate = async () => {
     fs.outputFileSync(paths.current.report, msg);
 }
 
-export default evaluate();
+export default evaluate;

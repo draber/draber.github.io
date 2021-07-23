@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import format from '../formatters/format.js';
+import logger from '../logger/index.js';
 
 const result = {}
 
@@ -23,7 +24,7 @@ const sortObjByKey = unordered => {
  * @returns {string|*}
  */
 const normalizeRules = rules => {
-    return !rules.startsWith('@') ? `@unscoped { ${rules} }` : rules;
+    return !rules.startsWith('@') ? `@unscoped{${rules}}` : rules;
 }
 
 /**
@@ -34,18 +35,34 @@ const normalizeRules = rules => {
  */
 const parse = (line, type) => {
     const contextData = normalizeRules(line).match(/^(?<context>@[^{]+){(?<rules>.*)}$/);
+
     const context = contextData.groups.context.trim();
     result[context] = result[context] || {};
     const rules = contextData.groups.rules.trim();
     const ruleMatches = rules.matchAll(/(?<selector>[^{]+){(?<values>[^}]+)}/g);
     for (let match of ruleMatches) {
+
         const selector = match.groups.selector.trim();
-        const declarationBlock = match.groups.values.trim().split(';').map(entry => entry.trim()).filter(entry => !!entry);
+        let declarationBlock = match.groups.values.trim();
+        const dataUriMatches = declarationBlock.match(/url\((data\:[^\)]+)\)/g) || [];
+        dataUriMatches.forEach((match, index) => {
+            declarationBlock = declarationBlock.replace(match, '_urlDataUri_' + index)
+        });
+        declarationBlock = declarationBlock.split(';')
+            .map(entry => {
+                const placeholderMatches = entry.matchAll(/(?<all>(?:_urlDataUri_)(?<cnt>\d+))/g)
+                for (let placeholder of placeholderMatches) {
+                    entry = entry.replace(
+                        placeholder.groups.all,
+                        dataUriMatches[parseInt(placeholder.groups.cnt)].replace(/:/, '_urlDataUriColon_')
+                    )
+                }
+                return entry;
+            }).filter(entry => entry);
         result[context][selector] = result[context][selector] || {};
         declarationBlock.forEach(declaration => {
-            let [property, value] = declaration.split(':').map(entry => entry.trim());
+            let [property, value] = declaration.split(':').map(entry => entry.replace(/_urlDataUriColon_/, ':'));
             property = _.camelCase(property);
-            value = value.replace(/;$/, '');
             result[context][selector][property] = result[context][selector][property] || {
                 ref: '__empty__',
                 cur: '__empty__'
@@ -88,8 +105,8 @@ const diff = (ref, cur) => {
  */
 const cssEquality = (ref, cur) => {
 
-    ref = format('css', ref, 'compact').split('\n');
-    cur = format('css', cur, 'compact').split('\n');
+    ref = format('css', ref, 'compact').split('\n').filter(entry => entry);
+    cur = format('css', cur, 'compact').split('\n').filter(entry => entry);
 
     diff(ref, cur).forEach((rules, type) => {
         rules.map(line => parse(line, type));

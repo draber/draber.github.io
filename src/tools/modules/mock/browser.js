@@ -168,6 +168,4 @@ const load = async (url, context) => {
     await browser.close();
 };
 
-export {
-    load
-}
+export default load;

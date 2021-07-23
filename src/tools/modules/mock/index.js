@@ -1,5 +1,5 @@
 import create from './create.js'
-// import evaluate from './evaluate.js'
+import evaluate from './evaluate.js'
 import minimist from 'minimist';
 import logger from '../logger/index.js';
 import {
@@ -8,13 +8,9 @@ import {
 
 const args = minimist(process.argv.slice(2));
 
-const evaluate = target => {
-    logger.info(target)
-}
 const serve = target => {
     logger.info(target)
 }
-
 
 const run = (() => {
     const fn = {

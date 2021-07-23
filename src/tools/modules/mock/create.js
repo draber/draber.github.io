@@ -1,6 +1,4 @@
-import {
-    load
-} from './browser.js';
+import load from './browser.js';
 import {
     paths
 } from './common.js';
