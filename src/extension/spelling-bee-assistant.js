@@ -1418,6 +1418,7 @@
                     this.registerPlugins();
                     this.trigger(prefix('refreshUi'));
                     this.isLoaded = true;
+                    document.dispatchEvent(new Event(prefix('ready')));
                     if (this.envIs('desktop')) {
                         window.scrollTo(0, 472);
                     }

@@ -1,9 +1,0 @@
-{
-  "name": "detect-changes",
-  "version": "1.0.0",
-  "description": "Compares two versions of NYT SB Dom",
-  "main": "index.js",
-  "author": "Dieter Raber",
-  "license": "GPL-3",
-  "type": "module"
-}

@@ -175,7 +175,7 @@
 					"type": "string",
 					"default": "",
 					"examples": [
-						"Sam Ezersky"
+						"John Doe"
 					],
 					"pattern": "^.*$"
 				}
@@ -338,7 +338,7 @@
 					"type": "string",
 					"default": "",
 					"examples": [
-						"Sam Ezersky"
+						"John Doe"
 					],
 					"pattern": "^.*$"
 				}

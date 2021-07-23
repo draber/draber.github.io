@@ -1,5 +1,5 @@
 
-import logger from '../logger/logger.js'
+import logger from '../logger/index.js'
 import puppeteer from 'puppeteer';
 
 const init = async url => {
@@ -21,7 +21,6 @@ const init = async url => {
             }
         }
         logger.error(msg);
-        browser.close()
     });
     
     // Emitted when a request, which is produced by the page, fails
@@ -29,12 +28,11 @@ const init = async url => {
         msg = {
             ...msg,
             ...{
-                status: 500,
+                status: 404,
                 contents: `No results from ${msg.url}`
             }
         }
         logger.error(msg);
-        browser.close()
     });
     
     // Emitted when a response is received
