@@ -1,1 +1,0 @@
-!function(e){"function"==typeof define&&define.amd?define(e):e()}(function(){"use strict";"android"!==window.newsreaderAppPlatform&&!window.isHybridWebView||window.NativeBridge.setPullToRefreshEnabled(!1)});
