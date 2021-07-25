@@ -1,0 +1,29 @@
+{
+    "today": {
+        "expiration": 1627196400,
+        "displayWeekday": "Saturday",
+        "displayDate": "July 24, 2021",
+        "printDate": "2021-07-24",
+        "centerLetter": "i",
+        "outerLetters": ["c", "m", "n", "o", "t", "u"],
+        "validLetters": ["i", "c", "m", "n", "o", "t", "u"],
+        "pangrams": ["continuum"],
+        "answers": ["continuum", "cocci", "coin", "comic", "commit", "commotion", "communion", "concoction", "conic", "cumin", "icon", "iconic", "into", "intuit", "intuition", "ionic", "mimic", "mini", "minim", "minimum", "minion", "mint", "mitt", "monotonic", "motion", "munition", "notion", "omit", "onion", "tinct", "tint", "tomtit", "tonic", "tuition", "tunic", "tutti", "unction", "union", "unit"],
+        "id": 13366,
+        "freeExpiration": 0,
+        "editor": "Sam Ezersky"
+    },
+    "yesterday": {
+        "displayWeekday": "Friday",
+        "displayDate": "July 23, 2021",
+        "printDate": "2021-07-23",
+        "centerLetter": "d",
+        "outerLetters": ["c", "e", "i", "t", "u", "v"],
+        "validLetters": ["d", "c", "e", "i", "t", "u", "v"],
+        "pangrams": ["deductive"],
+        "answers": ["deductive", "cede", "ceded", "cited", "cued", "deceit", "deceive", "deceived", "decide", "decided", "deduce", "deduced", "deduct", "deducted", "deed", "deeded", "deice", "deiced", "deicide", "detect", "detected", "detective", "deuce", "device", "dice", "diced", "died", "diet", "dieted", "dietetic", "dive", "dived", "divide", "divided", "divvied", "duct", "ducted", "dude", "duded", "duet", "duetted", "duvet", "eddied", "edict", "edit", "edited", "educe", "educed", "eidetic", "etude", "evicted", "iced", "ivied", "teed", "tide", "tided", "tidied", "tied", "tutted", "vetted", "vied", "vivid"],
+        "id": 11252,
+        "freeExpiration": 0,
+        "editor": "Sam Ezersky"
+    }
+}

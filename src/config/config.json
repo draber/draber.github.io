@@ -71,6 +71,7 @@
         "current": "storage/current",
         "reference": "storage/reference",
         "schema": "src/tools/modules/mock/schema.json",
-        "resources": "src/tools/modules/mock/resources"
+        "resources": "src/tools/modules/mock/resources",
+        "server": "src/tools/modules/mock/server"
     }
 }

@@ -10,6 +10,8 @@ const load = async (url, context) => {
     const page = navi.page;
     let msg = navi.msg;
 
+
+
     try {
         await page.goto(url, {
             waitUntil: 'networkidle0'
@@ -29,15 +31,16 @@ const load = async (url, context) => {
 
             const css = [];
             const js = [];
+            const _meta = {};
 
             const parseUrl = url => {
-                const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)(?<ext>\..*)$/);
+                const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)\.(?<ext>.*)$/);
                 return {
                     remote: url,
-                    rel: match.groups.path + match.groups.file + match.groups.ext,
+                    rel: `${match.groups.path}${match.groups.file}.${match.groups.hash}.${match.groups.ext}`,
                     hash: match.groups.hash,
-                    file: match.groups.file + match.groups.ext,
-                    ext: match.groups.ext.substr(1),
+                    file: `${match.groups.file}.${match.groups.hash}.${match.groups.ext}`,
+                    ext: match.groups.ext,
                 }
             }
 
@@ -70,9 +73,11 @@ const load = async (url, context) => {
                         js.push({
                             ...urlData,
                             ...{
-                                format: 'expand'
+                                format: 'keep'
                             }
                         });
+                        // they are all the same, overwriting is OK
+                        _meta.release = urlData.hash;
                         return false;
                     }
                     if (element.id &&
@@ -98,42 +103,47 @@ const load = async (url, context) => {
                     }
                 }
                 if (element.nodeName === 'META') {
-                    if (element.httpEquiv && element.httpEquiv === 'Content-Type' ||
-                        element.name && element.name === 'version') {
+                    if (element.httpEquiv && element.httpEquiv === 'Content-Type') {
+                        return false;
+                    }
+                    if (element.name && element.name === 'version') {
+                        _meta.version = element.content;
                         return false;
                     }
                 }
                 element.remove()
             });
             const mockScript = document.createElement('script');
-            for (let [key, entry] of Object.entries(context.mockData)) {
-                mockScript.textContent += `window.${key} = ${JSON.stringify(entry)};\n`;
-            }
+            mockScript.id = 'mock-data';
+            mockScript.setAttribute('mocksrc', '/mock/globals.js');
             document.querySelector('head').append(mockScript);
 
             return {
+                _meta,
                 css,
                 js
             };
         }, context);
 
+        const mapRe = /\/\/#\ssourceMappingURL=[\w-]+\.[\w]+\.[^\.]+\.map/;
+
         const download = async type => {
             await Promise.all((data => {
-                const promises = [];
-                data[type].forEach(resource => {
-                    promises.push(fetch(resource.remote))
+                    const promises = [];
+                    data[type].forEach(resource => {
+                        promises.push(fetch(resource.remote))
+                    })
+                    return promises
+                })(data))
+                .then(responses => {
+                    return responses;
                 })
-                return promises
-            })(data))
-            .then(responses => {
-                return responses;
-            })
-            .then(responses => Promise.all(responses.map(response => response.text())))
-            .then(body => {
-                for (let i = 0; i < body.length; i++) {
-                    data[type][i].body = body[i];
-                }
-            });
+                .then(responses => Promise.all(responses.map(response => response.text())))
+                .then(body => {
+                    for (let i = 0; i < body.length; i++) {
+                        data[type][i].body = body[i].replace(mapRe, '');
+                    }
+                });
         }
 
         await download('js');
@@ -145,9 +155,19 @@ const load = async (url, context) => {
         ['js', 'css'].forEach(type => {
             data[type].forEach(resource => {
                 html = html.replace(resource.remote, resource.rel);
+                if (resource.rel.includes('v2/foundation.')) {
+                    resource.body = resource.body.replace(/https:\/\/purr[^"]+/g, '/mock')
+                        .replace(/\/v1\/purr-cache/g, '/purr')
+                        // what appears to be a regex is a string on intention
+                        .replace('/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.-]+)(?::(\d+))?\/(.+)/', '/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.:-]+)(?::(\d+))?\/(.+)/')
+                        .replace(/\/puzzles\//g, '/mock/');
+                }
             })
         })
-        html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ').replace(/ style=""/g, '');
+        html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ')
+            .replace('mocksrc=', 'src=')
+            .replace(mapRe, '')
+            .replace(/ style=""/g, '');
 
         data.html = [{
             body: html,
@@ -158,12 +178,17 @@ const load = async (url, context) => {
             body: JSON.stringify(oldGameData),
             rel: 'game-data.json',
             format: 'expand'
+        }, {
+            body: JSON.stringify(data._meta),
+            rel: 'meta-data.json',
+            format: 'expand'
         }];
+        delete data._meta;
 
         return data;
 
     } catch (e) {
-        logger.error(msg);
+        logger.error(e, msg);
     }
     await browser.close();
 };

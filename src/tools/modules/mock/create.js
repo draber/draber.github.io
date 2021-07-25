@@ -4,15 +4,13 @@ import {
 } from './common.js';
 import settings from '../settings.js';
 import finalize from '../finalize/index.js'
-import mockData from './data.js';
 import logger from '../logger/index.js';
 import fs from 'fs-extra';
 
 const create = async type => {
 
     return await load(settings.get('targetUrl'), {
-            title: settings.get('label') + ' QA - Mock',
-            mockData
+            title: settings.get('label') + ' QA - Mock'
         })
         .then(data => {
             for (let [key, entries] of Object.entries(data)) {

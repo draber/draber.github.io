@@ -1,7 +1,8 @@
 import date from 'date-and-time';
 
-const gameData = {
+const rawData = {
     today: {
+        printDate: '2020-04-22',
         centerLetter: 'a',
         answers: ['airway', 'airy', 'aria', 'arid', 'array', 'award', 'away', 'awry', 'daddy', 'dairy', 'diary', 'draw', 'dray', 'dryad', 'dyad', 'radar', 'radii', 'raid', 'razz', 'ward', 'wary', 'wayward', 'wizard', 'wizardry', 'yard'],
     },
@@ -11,19 +12,9 @@ const gameData = {
     }
 }
 
-const userType = {
-    isLoggedIn: true,
-    hasXwd: true,
-    hasDigi: true,
-    hasHd: false,
-    isErsatzShortz: false,
-    inShortzMode: false,
-    entitlement: 'sub,cr'
-}
-
-const completeGameData = () => {
+const gameData = () => {
     let i = 2;
-    for (let entries of Object.values(gameData)) {
+    for (let entries of Object.values(rawData)) {
         let now = new Date(2030, 8, i);
         entries.displayWeekday = date.format(now, 'dddd');
         entries.displayDate = date.format(now, 'MMMM D, YYYY');
@@ -38,10 +29,7 @@ const completeGameData = () => {
         i--;
     }
 
-    return gameData;
+    return rawData;
 }
 
-export default {
-    gameData: completeGameData(),
-    userType
-};
+export default gameData;
