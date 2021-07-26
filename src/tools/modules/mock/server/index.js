@@ -1,5 +1,5 @@
 /**
- * Bookmarklet test server
+ * Integration test server
  */
 import fs from 'fs-extra';
 import https from 'https';
@@ -26,17 +26,16 @@ const options = {
     cert: fs.readFileSync(__dirname + '/cert.pem')
 };
 
-const server = https.createServer(options, app)
-    .listen(port, hostname, function () {
-        `Server running at https://${hostname}:${port}/`
+https.createServer(options, app)
+    .listen(port, hostname, () => {
+        console.log(`Server running at https://${hostname}:${port}/`)
     });
-
 
 app.get('/mock/:type', (req, res) => {
     const type = req.params.type;
     metaData.ua = req.headers['user-agent'];
     metaData.req = req;
-    metaData.req.port = server.address().port;
+    metaData.req.port = port;
     if (reqMock[type]) {
         res.writeHead(200);
         res.end(JSON.stringify(reqMock[type](metaData)));
@@ -54,8 +53,9 @@ app.get('/mock/:type', (req, res) => {
     res.writeHead(404);
     res.end('Not found');
 })
-app.get(/^\/mock\/([\w-]+)\/svc\/spelling-bee\/v1\/game\/(\d+)\.json$/, (req, res) => {
-    if(req.params[0] === 'game' && req.params[1]) {
+
+app.get(/^\/mock\/([\w-]+)\/svc\/spelling-bee\/v1\/game\/([\w-]+)\.json$/, (req, res) => {
+    if (req.params[0] === 'game' && req.params[1]) {
         metaData.gameId = req.params[1];
         res.writeHead(200);
         res.end(JSON.stringify(reqMock.game(metaData)));

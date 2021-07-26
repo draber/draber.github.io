@@ -53,7 +53,7 @@ const evaluate = async () => {
                 reference: files.reference[ext] ? files.reference[ext][key] : undefined
             }
             if (!pair.current || !pair.reference) {
-                logger.error(`Incomplete pair`);
+                logger.error(`Incomplete pair`, pair);
                 continue;
             }
             switch (ext) {
@@ -67,7 +67,7 @@ const evaluate = async () => {
                     }
                     break;
                 case 'html':
-                    result = validate.domEquality(
+                    result = await validate.htmlEquality(
                         fs.readFileSync(pair.reference, 'utf8'),
                         fs.readFileSync(pair.current, 'utf8')
                     );

@@ -1,10 +1,12 @@
 import expand from './expand.js';
 import compress from './compress.js';
+import compact from './compact.js';
 import logger from '../../logger/index.js';
 
 const formatters = {
     expand,
-    compress
+    compress,
+    compact
 }
 
 const js = (js, format) => {
