@@ -50,12 +50,17 @@ app.get('/mock/:type', (req, res) => {
         res.end(globalData);
         return;
     }
+    if (type === 'sba.js') {
+        res.writeHead(200);
+        res.end(fs.readFileSync(settings.get('bookmarklet.cdn.local')));
+        return;
+    }
     res.writeHead(404);
     res.end('Not found');
 })
 
 app.get(/^\/mock\/([\w-]+)\/svc\/spelling-bee\/v1\/game\/([\w-]+)\.json$/, (req, res) => {
-    if (req.params[0] === 'game' && req.params[1]) {
+    if (req.params[0] === 'game-data' && req.params[1]) {
         metaData.gameId = req.params[1];
         res.writeHead(200);
         res.end(JSON.stringify(reqMock.game(metaData)));
@@ -68,4 +73,13 @@ app.get(/^\/mock\/data-layer\/svc\/nyt\/data-layer$/, (req, res) => {
     res.end(JSON.stringify(reqMock.dataLayer(metaData)));
     return;
 })
+
+
+app.post(/^\/api\/([\w-]+)\/*/, (req, res) => {
+    metaData.gameId = req.params[1];
+    res.writeHead(200);
+    res.end(JSON.stringify(reqMock.sentry(metaData)));
+    return;
+})
+
 app.use(express.static('storage/current'));

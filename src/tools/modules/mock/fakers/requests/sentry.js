@@ -1,5 +1,5 @@
 const sentry = options => {
-    return {}
+    return {x:2}
 }
 
 export default sentry;

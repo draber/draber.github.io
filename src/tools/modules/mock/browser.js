@@ -63,6 +63,8 @@ const load = async (url, context) => {
                 element.innerHTML = '';
             })
 
+            document.querySelector('header.pz-header').style.display = 'none';
+
             let urlData;
             const obsoletes = '.pz-ad-box, #pz-gdpr, #adBlockCheck, .pz-moment__info-date, .pz-game-title-bar, link, script, meta, style, iframe, svg, body > footer';
             document.querySelectorAll(obsoletes).forEach(element => {
@@ -113,10 +115,21 @@ const load = async (url, context) => {
                 }
                 element.remove()
             });
-            const mockScript = document.createElement('script');
-            mockScript.id = 'mock-data';
-            mockScript.setAttribute('mocksrc', '/mock/globals.js');
-            document.querySelector('head').append(mockScript);
+
+            [
+                {
+                    resource: '/mock/sba.js',
+                    target: 'body'
+                },
+                {
+                    resource: '/mock/globals.js',
+                    target: 'head'
+                }
+            ].forEach(script => {
+                const mockScript = document.createElement('script');
+                mockScript.setAttribute('mocksrc', script.resource);
+                document.querySelector(script.target).append(mockScript);
+            })
 
             return {
                 _meta,
@@ -165,7 +178,7 @@ const load = async (url, context) => {
             })
         })
         html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ')
-            .replace('mocksrc=', 'src=')
+            .replace(/mocksrc=/g, 'src=')
             .replace(mapRe, '')
             .replace(/ style=""/g, '');
 

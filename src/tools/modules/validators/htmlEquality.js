@@ -9,6 +9,7 @@ const htmlEquality = async (ref, cur) => {
 
     const diff = await htmlDiffer.diffHtml(ref, cur);
     let result = htmlDiffLogger.getDiffText(diff);
+  console.log(result)
     result = result.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
     result = result.split('...').map(entry => entry.trim()).filter(entry => entry);
 
