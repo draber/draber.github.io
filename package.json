@@ -11,6 +11,7 @@
     "ajv": "^6.12.6",
     "beautify": "^0.0.8",
     "compiler": "file:src/tools/compiler",
+    "cypress": "^8.0.0",
     "date-and-time": "^1.0.1",
     "eslint": "^7.30.0",
     "express": "^4.17.1",

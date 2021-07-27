@@ -19,7 +19,7 @@ const gameData = () => {
         entries.displayWeekday = date.format(now, 'dddd');
         entries.displayDate = date.format(now, 'MMMM D, YYYY');
         entries.printDate = date.format(now, 'YYYY-MM-DD');
-        entries.expiration = (now.getTime() / 1000) + 24000;
+        entries.expiration = (now.getTime() / 1000) + 86400;
         entries.id = i;
         entries.validLetters = Array.from(new Set(entries.answers.join('').split('')));
         entries.outerLetters = entries.validLetters.filter(letter => letter !== entries.centerLetter);

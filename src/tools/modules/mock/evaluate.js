@@ -65,6 +65,13 @@ const evaluate = async () => {
                         );
                         msg += msgFormat.heading(title, 2);
                     }
+                    else {
+                        result = validate.cssEquality(
+                            JSON.parse(fs.readFileSync(pair.reference, 'utf8')),
+                            JSON.parse(fs.readFileSync(pair.current, 'utf8'))
+                        );
+                        msg += msgFormat.heading(title, 2);
+                    }
                     break;
                 case 'html':
                     result = await validate.htmlEquality(
