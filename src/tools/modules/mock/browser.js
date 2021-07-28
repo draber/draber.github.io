@@ -172,7 +172,9 @@ const load = async (url, context) => {
                     resource.body = resource.body.replace(/https:\/\/purr[^"]+/g, '/mock')
                         .replace(/\/v1\/purr-cache/g, '/purr')
                         // what appears to be a regex is a string on intention
-                        .replace('/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.-]+)(?::(\d+))?\/(.+)/', '/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.:-]+)(?::(\d+))?\/(.+)/')
+                        .replace(
+                            '/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.-]+)(?::(\d+))?\/(.+)/', 
+                            '/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.:-]+)(?::(\d+))?\/(.+)/')
                         .replace(/\/puzzles\//g, '/mock/');
                 }
             })

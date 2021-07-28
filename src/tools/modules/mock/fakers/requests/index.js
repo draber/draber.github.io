@@ -1,5 +1,5 @@
 import dataLayer from './dataLayer.js';
-import game from './game.js';
+import gameData from './gameData.js';
 import device from './device.js';
 import sentry from './sentry.js';
 import user from './user.js';
@@ -8,7 +8,7 @@ import gtm from './gtm.js';
 
 export default {
     dataLayer,
-    game,
+    gameData,
     device,
     sentry,
     user,

@@ -54,50 +54,6 @@ class App extends Widget {
     }
 
     /**
-     * Retrieve observer arguments, can be used in cases where the observer needs to be interrupted
-     * @returns {{options: {subtree: boolean, childList: boolean, attributes: boolean}, target: HTMLElement}}
-     */
-    getObserverArgs() {
-        return {
-            target: this.gameWrapper,
-            options: {
-                childList: true,
-                subtree: true,
-                attributes: true
-            }
-        }
-    }
-
-    /**
-     * Whether the splash screen has gone and the content box isn't set to `sb-game-locked`
-     * @example
-     * Overview of possible states
-     * 
-     * splash    | .sb-game-locked | state      | action
-     * ===========================================================	
-     * absent    | absent          | loading    | wait for promise
-     * visible   | present         | locked     | launch on click
-     * hidden    | absent          | unlocked   | launch
-     * 
-     * @returns {Number}
-     */
-    getGameState() {
-        const splash = el.$('#js-hook-pz-moment__welcome', this.gameWrapper);
-        const contentBox = el.$('.sb-content-box', this.gameWrapper);
-        if (!splash) {
-            return -1; // loading
-        }
-
-        if (contentBox && contentBox.classList.contains('sb-game-locked')) {
-            return 0; // locked
-        }
-
-        if (!contentBox.classList.contains('sb-game-locked')) {
-            return 1; // unlocked
-        }
-    }
-
-    /**
      * Retrieve sync data
      * @example 
      * On a fresh game `localStorage::sb-today` can have the following states
@@ -112,12 +68,9 @@ class App extends Widget {
     getSyncData() {
         let sync = localStorage.getItem('sb-today');
         if (!sync) {
-            return null;
+            return [];
         }
         sync = JSON.parse(sync);
-        if (!sync.id || sync.id !== data.getId()) {
-            return null;
-        }
         return sync.words || [];
     }
 
@@ -130,63 +83,40 @@ class App extends Widget {
         return document.body.classList.contains('pz-' + env);
     }
 
-    /**
-     * Retrieve existing results from other devices
-     * @returns {Promise<Array>}
-     */
-    async getResults() {
-        let tries = 20;
-        return await new Promise(resolve => {
-            const interval = setInterval(() => {
-                const syncResults = this.getSyncData();
-                if (syncResults || !tries) {
-                    resolve(syncResults || []);
-                    clearInterval(interval);
+    waitForResultList() {
+        return new Promise(resolve => {
+            const getElement = () => {
+                const resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
+                if (resultList) {
+                    resolve(resultList);
+                } else {
+                    requestAnimationFrame(getElement);
                 }
-                tries--;
-            }, 300);
-        });
-    }
-
-    /**
-     * Wait for the game to be fully displayed
-     * @returns {Promise<Boolean>}
-     */
-    async waitForGameState(threshold) {
-        let tries = 50;
-        return await new Promise(resolve => {
-            const interval = setInterval(() => {
-                const state = this.getGameState();
-                if (!tries || this.getGameState() >= threshold) {
-                    resolve(state);
-                    clearInterval(interval);
-                }
-                tries--;
-            }, 300);
-        });
-    }
+            };
+            getElement();
+        })
+    };
 
     load() {
-        if (this.isLoaded) {
-            return false;
-        }
-        // Observe game for various changes
-        this.observer = this.buildObserver();
 
-        this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
-        this.resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
-        this.waitForGameState(1)
-            .then(() => {
+        this.waitForResultList()
+            .then(resultList => {
+                // Observe game for various changes
+                this.observer = this.buildObserver();
+                data.init(this, this.getSyncData());
+                this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+                this.resultList = resultList;
+
                 this.add();
                 this.domSet('active', true);
                 this.registerPlugins();
                 this.trigger(prefix('refreshUi'));
-                this.isLoaded = true;
                 document.dispatchEvent(new Event(prefix('ready')));
                 if (this.envIs('desktop')) {
                     window.scrollTo(0, 472);
                 }
             })
+
     }
 
     /**
@@ -228,13 +158,13 @@ class App extends Widget {
                         }
                         break;
 
-                    // text input
+                        // text input
                     case mutation.type === 'childList' &&
                     mutation.target.classList.contains('sb-hive-input-content'):
                         this.trigger(prefix('newInput'), mutation.target.textContent.trim());
                         break;
 
-                    // term added to word list
+                        // term added to word list
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.resultList) &&
                     !!mutation.addedNodes.length &&
@@ -245,7 +175,14 @@ class App extends Widget {
                 }
             });
         });
-        const args = this.getObserverArgs();
+        const args = {
+            target: this.gameWrapper,
+            options: {
+                childList: true,
+                subtree: true,
+                attributes: true
+            }
+        };
         observer.observe(args.target, args.options);
         return observer;
     }
@@ -327,26 +264,7 @@ class App extends Widget {
             classNames: [prefix('container', 'd')]
         });
 
-        this.isLoaded = false;
-
-        this.getResults()
-            .then(results => {
-                data.init(this, results);
-            })
-            .then(() => {
-                this.waitForGameState(0)
-                    .then(state => {
-                        // start on button launch or automatically if the splash has already been closed (bookmarklet)
-                        if (state === 0) {
-                            el.$('.pz-moment__button-wrapper .pz-moment__button.primary', this.gameWrapper).addEventListener('pointerup', () => {
-                                this.load();
-                            })
-                        } else {
-                            this.load();
-                        }
-                    })
-            })
-
+        this.load();
     }
 }
 

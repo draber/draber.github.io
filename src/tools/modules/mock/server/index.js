@@ -7,6 +7,10 @@ import settings from '../../settings.js';
 import express from 'express';
 import reqMock from '../fakers/requests/index.js';
 import winMock from '../fakers/window/index.js';
+import minimist from 'minimist';
+import _ from 'lodash';
+
+const args = minimist(process.argv.slice(2));
 
 const __dirname = settings.get('mock.server');
 
@@ -31,8 +35,18 @@ https.createServer(options, app)
         console.log(`Server running at https://${hostname}:${port}/`)
     });
 
-app.get('/mock/:type', (req, res) => {
-    const type = req.params.type;
+['get', 'put'].forEach(method => {
+    app[method](/^\/mock\/game-data\/svc\/spelling-bee\/v1\/game(?:\/([\w-]+))?\.json$/, (req, res) => {
+        metaData.req = req;
+        metaData.gameId = req.params[0] || '';
+        res.writeHead(200);
+        res.end(JSON.stringify(reqMock.gameData(metaData)));
+        return;
+    })
+})
+
+app.get(/^\/mock\/([^\/]+)(.*)/, (req, res) => {
+    const type = _.camelCase(req.params[0]);
     metaData.ua = req.headers['user-agent'];
     metaData.req = req;
     metaData.req.port = port;
@@ -41,7 +55,7 @@ app.get('/mock/:type', (req, res) => {
         res.end(JSON.stringify(reqMock[type](metaData)));
         return;
     }
-    if (type === 'globals.js') {
+    if (type === 'globalsJs') {
         res.writeHead(200);
         let globalData = '';
         for (let [key, value] of Object.entries(winMock.getData(metaData))) {
@@ -50,29 +64,16 @@ app.get('/mock/:type', (req, res) => {
         res.end(globalData);
         return;
     }
-    if (type === 'sba.js') {
+    if (type === 'sbaJs') {
         res.writeHead(200);
-        res.end(fs.readFileSync(settings.get('bookmarklet.cdn.local')));
+        const sba = args.d ? 'js.plain' : 'bookmarklet.cdn.local';
+        res.end(fs.readFileSync(settings.get(sba)));
         return;
     }
     res.writeHead(404);
     res.end('Not found');
 })
 
-app.get(/^\/mock\/([\w-]+)\/svc\/spelling-bee\/v1\/game\/([\w-]+)\.json$/, (req, res) => {
-    if (req.params[0] === 'game-data' && req.params[1]) {
-        metaData.gameId = req.params[1];
-        res.writeHead(200);
-        res.end(JSON.stringify(reqMock.game(metaData)));
-        return;
-    }
-})
-
-app.get(/^\/mock\/data-layer\/svc\/nyt\/data-layer$/, (req, res) => {
-    res.writeHead(200);
-    res.end(JSON.stringify(reqMock.dataLayer(metaData)));
-    return;
-})
 
 
 app.post(/^\/api\/([\w-]+)\/*/, (req, res) => {

@@ -7,6 +7,7 @@ const resources = {
     html: 'site.html',
     gameData: 'game-data.json',
     report: 'report.md',
+    meta: 'meta-data.json',
     assets: 'games-assets/v2/'
 }
 
