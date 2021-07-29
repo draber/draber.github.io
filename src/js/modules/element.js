@@ -9,27 +9,41 @@
  */
 const fn = {
     /**
-     * Returns first element that matches CSS selector {expr}.
+     * Returns first element that matches CSS selector {selector}.
      * Querying can optionally be restricted to {container}’s descendants
-     * @param {String} expr
+     * @param {String} selector
      * @param {HTMLElement} container
      * @return {HTMLElement || null}
      * @see https://lea.verou.me/2015/04/jquery-considered-harmful/
      */
-    $: (expr, container = null) => {
-        return typeof expr === 'string' ? (container || document).querySelector(expr) : expr || null;
+    $: (selector, container = null) => {
+        return typeof selector === 'string' ? (container || document).querySelector(selector) : selector || null;
     },
 
     /**
-     * Returns all elements that match CSS selector {expr} as an array.
+     * Returns all elements that match CSS selector {selector} as an array.
      * Querying can optionally be restricted to {container}’s descendants
-     * @param {String} expr
+     * @param {String} selector
      * @param {HTMLElement} container
      * @return {Array}
      * @see https://lea.verou.me/2015/04/jquery-considered-harmful/
      */
-    $$: (expr, container = null) => {
-        return [].slice.call((container || document).querySelectorAll(expr));
+    $$: (selector, container = null) => {
+        return [].slice.call((container || document).querySelectorAll(selector));
+    },
+
+    when: function (selector, container = null) {
+        return new Promise(resolve => {
+            const getElement = () => {
+                const resultList = fn.$(selector, container);
+                if (resultList) {
+                    resolve(resultList);
+                } else {
+                    requestAnimationFrame(getElement);
+                }
+            };
+            getElement();
+        })
     },
 
     /**
@@ -63,7 +77,7 @@ const fn = {
         }
 
         // anything iterable
-        if(typeof content.forEach === 'function') {
+        if (typeof content.forEach === 'function') {
             // Array.from avoids problems with live collections
             Array.from(content).forEach(element => {
                 fragment.append(element);

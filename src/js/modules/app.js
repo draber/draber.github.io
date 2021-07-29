@@ -53,18 +53,6 @@ class App extends Widget {
         return JSON.parse(document.body.dataset[prefix(key)]);
     }
 
-    /**
-     * Retrieve sync data
-     * @example 
-     * On a fresh game `localStorage::sb-today` can have the following states
-     * 
-     * pristine:                    absent
-     * at least one word locally:   loads along with splash (with tiny delay)
-     * on remote entry:             no change
-     * at least one word remotely:  loads along with splash (with delay)
-     * 
-     * @returns {Null|Array}
-     */
     getSyncData() {
         let sync = localStorage.getItem('sb-today');
         if (!sync) {
@@ -83,23 +71,8 @@ class App extends Widget {
         return document.body.classList.contains('pz-' + env);
     }
 
-    waitForResultList() {
-        return new Promise(resolve => {
-            const getElement = () => {
-                const resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
-                if (resultList) {
-                    resolve(resultList);
-                } else {
-                    requestAnimationFrame(getElement);
-                }
-            };
-            getElement();
-        })
-    };
-
     load() {
-
-        this.waitForResultList()
+        el.when('.sb-wordlist-items-pag', this.gameWrapper)
             .then(resultList => {
                 // Observe game for various changes
                 this.observer = this.buildObserver();

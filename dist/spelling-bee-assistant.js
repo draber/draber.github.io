@@ -2,11 +2,24 @@
     'use strict';
 
     const fn = {
-        $: (expr, container = null) => {
-            return typeof expr === 'string' ? (container || document).querySelector(expr) : expr || null;
+        $: (selector, container = null) => {
+            return typeof selector === 'string' ? (container || document).querySelector(selector) : selector || null;
         },
-        $$: (expr, container = null) => {
-            return [].slice.call((container || document).querySelectorAll(expr));
+        $$: (selector, container = null) => {
+            return [].slice.call((container || document).querySelectorAll(selector));
+        },
+        when: function (selector, container = null) {
+            return new Promise(resolve => {
+                const getElement = () => {
+                    const resultList = fn.$(selector, container);
+                    if (resultList) {
+                        resolve(resultList);
+                    } else {
+                        requestAnimationFrame(getElement);
+                    }
+                };
+                getElement();
+            })
         },
         toNode: (content) => {
             const fragment = document.createDocumentFragment();
@@ -25,7 +38,7 @@
                 const doc = (new DOMParser()).parseFromString(content, 'text/html');
                 content = doc.body.childNodes;
             }
-            if(typeof content.forEach === 'function') {
+            if (typeof content.forEach === 'function') {
                 Array.from(content).forEach(element => {
                     fragment.append(element);
                 });
@@ -1352,21 +1365,8 @@
         envIs(env) {
             return document.body.classList.contains('pz-' + env);
         }
-        waitForResultList() {
-            return new Promise(resolve => {
-                const getElement = () => {
-                    const resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
-                    if (resultList) {
-                        resolve(resultList);
-                    } else {
-                        requestAnimationFrame(getElement);
-                    }
-                };
-                getElement();
-            })
-        };
         load() {
-            this.waitForResultList()
+            el.when('.sb-wordlist-items-pag', this.gameWrapper)
                 .then(resultList => {
                     this.observer = this.buildObserver();
                     data.init(this, this.getSyncData());
