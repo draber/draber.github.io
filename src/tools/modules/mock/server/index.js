@@ -74,8 +74,6 @@ app.get(/^\/mock\/([^\/]+)(.*)/, (req, res) => {
     res.end('Not found');
 })
 
-
-
 app.post(/^\/api\/([\w-]+)\/*/, (req, res) => {
     metaData.gameId = req.params[1];
     res.writeHead(200);
@@ -83,4 +81,8 @@ app.post(/^\/api\/([\w-]+)\/*/, (req, res) => {
     return;
 })
 
-app.use(express.static('storage/current'));
+if (args.b) {
+    console.log('placeholder for bookmarklet delivery')
+} else {
+    app.use(express.static('storage/current'));
+}

@@ -6,10 +6,9 @@ const objectEquality = (ref, cur) => {
         assert.deepStrictEqual(cur, ref);
     } catch (e) {
         result = {
-            comment: 'The two objects aren’t equal',
             msg: {
                 ref,
-                current: cur
+                cur
             }
         };
     }

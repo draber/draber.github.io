@@ -72,7 +72,7 @@ class App extends Widget {
     }
 
     load() {
-        el.when('.sb-wordlist-items-pag', this.gameWrapper)
+        el.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
             .then(resultList => {
                 // Observe game for various changes
                 this.observer = this.buildObserver();

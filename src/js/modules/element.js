@@ -32,7 +32,7 @@ const fn = {
         return [].slice.call((container || document).querySelectorAll(selector));
     },
 
-    when: function (selector, container = null) {
+    waitFor: function (selector, container = null) {
         return new Promise(resolve => {
             const getElement = () => {
                 const resultList = fn.$(selector, container);

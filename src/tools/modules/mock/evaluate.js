@@ -66,7 +66,7 @@ const evaluate = async () => {
                         msg += msgFormat.heading(title, 2);
                     }
                     else {
-                        result = validate.cssEquality(
+                        result = validate.objectEquality(
                             JSON.parse(fs.readFileSync(pair.reference, 'utf8')),
                             JSON.parse(fs.readFileSync(pair.current, 'utf8'))
                         );

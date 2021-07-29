@@ -37,9 +37,9 @@ const load = async (url, context) => {
                 const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)\.(?<ext>.*)$/);
                 return {
                     remote: url,
-                    rel: `${match.groups.path}${match.groups.file}.${match.groups.hash}.${match.groups.ext}`,
+                    rel: `${match.groups.path}${match.groups.file}.${match.groups.ext}`,
                     hash: match.groups.hash,
-                    file: `${match.groups.file}.${match.groups.hash}.${match.groups.ext}`,
+                    file: `${match.groups.file}.${match.groups.ext}`,
                     ext: match.groups.ext,
                 }
             }

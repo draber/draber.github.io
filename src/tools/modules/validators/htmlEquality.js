@@ -5,14 +5,14 @@ import {
 import format from '../formatters/format.js';
 
 const was = (part = '') => {
-    return ' __WAS:[' + part + '] ';
+    return ' __WAS[' + part + '] ';
 }
 const is = (part = '') => {
-    return ' __IS:[' + part + '] ';
+    return ' ___IS[' + part + '] ';
 }
 
 const toFilteredArray = html => {
-    return format('html', html, 'compact').split('\n').filter(line => line && /__[A-Z]+\:/.test(line));
+    return format('html', html, 'compact').split('\n').filter(line => line && /_{2,3}[A-Z]+/.test(line));
 }
 
 
