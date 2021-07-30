@@ -81,8 +81,4 @@ app.post(/^\/api\/([\w-]+)\/*/, (req, res) => {
     return;
 })
 
-if (args.b) {
-    console.log('placeholder for bookmarklet delivery')
-} else {
-    app.use(express.static('storage/current'));
-}
+app.use(express.static('storage/current'));

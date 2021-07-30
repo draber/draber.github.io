@@ -8,7 +8,7 @@
         $$: (selector, container = null) => {
             return [].slice.call((container || document).querySelectorAll(selector));
         },
-        when: function (selector, container = null) {
+        waitFor: function (selector, container = null) {
             return new Promise(resolve => {
                 const getElement = () => {
                     const resultList = fn.$(selector, container);
@@ -368,6 +368,10 @@
                 canChangeState: true,
                 defaultState: false
             });
+    		this.shortcut = {
+                letter: 'd',
+                action: () => this.toggle(this.getState())
+            };
             this.toggle(this.getState());
         }
     }
@@ -466,9 +470,11 @@
             if (state) {
                 this.app.modalWrapper.append(this.ui);
                 this.modalSystem.classList.add('sb-modal-open');
+                this.isOpen = true;
             } else {
                 this.getTarget().append(this.ui);
                 this.modalSystem.classList.remove('sb-modal-open');
+                this.isOpen = false;
             }
             return this;
         }
@@ -476,6 +482,7 @@
             this.key = key;
             this.app = app;
             this.state = false;
+            this.isOpen = false;
             this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
             this.parts = {
                 title: el.h3({
@@ -814,6 +821,10 @@
                     this.getPane()
                 ]
             });
+            this.shortcut = {
+                letter: 'c',
+                action: () => this.ui.open !== this.ui.open
+            };
             this.toggle(this.getState());
         }
     }
@@ -875,6 +886,10 @@
                     this.getPane()
                 ]
             });
+            this.shortcut = {
+                letter: 'f',
+                action: () => this.ui.open !== this.ui.open
+            };
             this.toggle(this.getState());
         }
     }
@@ -992,6 +1007,10 @@
                 .setContent('title', this.title);
             this.menuAction = 'popup';
             this.menuIcon = 'null';
+            this.shortcut = {
+                letter: 'p',
+                action: () => this.popup.isOpen ? this.popup.toggle(false) : this.display()
+            };
         }
     }
 
@@ -1246,6 +1265,29 @@
         }
     }
 
+    class ShortCuts extends Plugin {
+        constructor(app) {
+            super(app, 'ShortCuts', '');
+            this.keyMap = new Map();
+            app.on(prefix('pluginsReady'), evt => {
+                evt.detail.forEach((plugin, key) => {
+                    if (!plugin.shortcut || plugin === this) {
+                        return false;
+                    }
+                    this.keyMap.set('Key' + plugin.shortcut.letter.toUpperCase(), plugin.shortcut.action);
+                });
+            });
+            window.addEventListener('keyup', evt => {
+                if (this.keyMap.has(evt.code) && evt.getModifierState('Control') && evt.getModifierState('Alt')) {
+                    evt.preventDefault();
+                    evt.stopImmediatePropagation();
+                    console.log(evt.code);
+                    this.keyMap.get(evt.code)();
+                }
+            });
+        }
+    }
+
     class Grid extends TablePane {
     	display() {
     		this.popup
@@ -1315,6 +1357,14 @@
     			.setContent('title', this.title);
     		this.menuAction = 'popup';
     		this.menuIcon = 'null';
+            this.shortcut = {
+                letter: 'g',
+                action: () => {
+    				if(!this.popup.isOpen) {
+    					return this.display()
+    				}
+    			}
+            };
     	}
     }
 
@@ -1335,7 +1385,8 @@
             Menu,
             Grid,
             YourProgress,
-            TodaysAnswers
+            TodaysAnswers,
+            ShortCuts
         }
     };
 
@@ -1366,7 +1417,7 @@
             return document.body.classList.contains('pz-' + env);
         }
         load() {
-            el.when('.sb-wordlist-items-pag', this.gameWrapper)
+            el.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
                 .then(resultList => {
                     this.observer = this.buildObserver();
                     data.init(this, this.getSyncData());

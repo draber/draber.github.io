@@ -118,17 +118,33 @@ const load = async (url, context) => {
 
             [
                 {
-                    resource: '/mock/sba.js',
-                    target: 'body'
+                    target: 'head',
+                    elem: 'link',
+                    attrs: {
+                        rel: 'icon',
+                        mockhref: '/games-assets/v2/assets/expansion-games/spelling-bee-card-icon.svg'
+                    }
                 },
                 {
-                    resource: '/mock/globals.js',
-                    target: 'head'
+                    target: 'body',
+                    elem: 'script',
+                    attrs: { 
+                        mocksrc: '/mock/sba.js'
+                    }
+                },
+                {
+                    target: 'head',
+                    elem: 'script',
+                    attrs: { 
+                        mocksrc: '/mock/globals.js'
+                    }
                 }
-            ].forEach(script => {
-                const mockScript = document.createElement('script');
-                mockScript.setAttribute('mocksrc', script.resource);
-                document.querySelector(script.target).append(mockScript);
+            ].forEach(resource => {
+                const mockElem = document.createElement(resource.elem);
+                for(let attr in resource.attrs) {
+                    mockElem.setAttribute(attr, resource.attrs[attr]);
+                }
+                document.querySelector(resource.target).append(mockElem);
             })
 
             return {
@@ -167,7 +183,7 @@ const load = async (url, context) => {
 
         ['js', 'css'].forEach(type => {
             data[type].forEach(resource => {
-                html = html.replace(resource.remote, resource.rel);
+                html = html.replace(resource.remote, '/' + resource.rel);
                 if (resource.rel.includes('v2/foundation.')) {
                     resource.body = resource.body.replace(/https:\/\/purr[^"]+/g, '/mock')
                         .replace(/\/v1\/purr-cache/g, '/purr')
@@ -180,7 +196,7 @@ const load = async (url, context) => {
             })
         })
         html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ')
-            .replace(/mocksrc=/g, 'src=')
+            .replace(/mock([a-z]+)=/g, '$1=')
             .replace(mapRe, '')
             .replace(/ style=""/g, '');
 
