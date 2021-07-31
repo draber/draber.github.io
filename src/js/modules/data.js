@@ -62,7 +62,10 @@ const getId = () => {
 }
 
 const getDate = () => {
-    return sbData.displayDate;
+    return {
+        display: sbData.displayDate,
+        print: sbData.printDate,
+    }
 }
 
 

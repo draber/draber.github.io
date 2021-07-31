@@ -13,10 +13,14 @@ body {
         color: var(--text-color);
     }
 
-    .pz-game-wrapper {
-       // background: var(--body-bg-color) !important;
-        color: var(--text-color);
+    &[data-sba-theme="dark"] {
+        .pz-game-wrapper {
+            background: var(--body-bg-color) !important;
+            color: var(--text-color);
+        }
+    }
 
+    .pz-game-wrapper {
         .sb-modal-message {
             a {
                 color: var(--link-color);
@@ -138,7 +142,9 @@ body {
 }
 
 .pz-moment__close {
-    &::before, &::after {
+
+    &::before,
+    &::after {
         background: var(--text-color);
     }
 }

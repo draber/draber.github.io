@@ -9,6 +9,7 @@ import reqMock from '../fakers/requests/index.js';
 import winMock from '../fakers/window/index.js';
 import minimist from 'minimist';
 import _ from 'lodash';
+import logger from '../../logger/index.js';
 
 const args = minimist(process.argv.slice(2));
 
@@ -58,7 +59,9 @@ app.get(/^\/mock\/([^\/]+)(.*)/, (req, res) => {
     if (type === 'globalsJs') {
         res.writeHead(200);
         let globalData = '';
-        for (let [key, value] of Object.entries(winMock.getData(metaData))) {
+        let rawData = winMock.getData(metaData);
+       // logger.log(rawData.gameData.today.id, rawData.gameData.today.expiration)
+        for (let [key, value] of Object.entries(rawData)) {
             globalData += `window.${key} = ${JSON.stringify(value)};\n`;
         }
         res.end(globalData);

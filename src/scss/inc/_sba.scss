@@ -51,6 +51,7 @@
     }
 }
 
+
 .sba-data-pane {
     border: 1px solid var(--border-color);
     width: 100%;
@@ -104,6 +105,49 @@
     }
 }
 
+[data-ui="community"] {
+    h4 {
+        font-weight: 700;
+        font-family: nyt-franklin;
+        font-size: 18px;
+        margin: 0 0 1px 0;
+    }
+
+    p {
+        margin: 0 0 2px 0;
+        font-size: 16px;
+    }
+
+    em {
+        display: block;
+        font-weight: normal;
+        font-weight: 500;
+        font-size: 14px;
+        font-family: nyt-franklin;
+    }
+
+    li {
+        margin: 0 0 12px 0;
+
+        ul {
+            padding-left: 20px;
+            list-style: disc;
+
+            li {
+                margin: 0;
+
+                a {
+                    color: var(--link-color);
+
+                    &:hover {
+                        color: var(--link-hover-color)
+                    }
+                }
+            }
+        }
+    }
+}
+
 [data-ui="yourProgress"] {
     b {
         font-weight: 700;
@@ -117,8 +161,8 @@
 
         tr {
             &.sba-completed {
-                td {                    
-                color: var(--text-color);
+                td {
+                    color: var(--text-color);
                 }
             }
 

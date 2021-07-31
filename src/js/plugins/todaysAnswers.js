@@ -75,7 +75,7 @@ class TodaysAnswers extends Plugin {
 		this.marker = prefix('resolved', 'd');
 		this.popup = new Popup(this.app, this.key)
 			.setContent('title', this.title)
-			.setContent('subtitle', data.getDate());
+			.setContent('subtitle', data.getDate().display);
 
 		this.menuAction = 'popup';
 		this.menuIcon = 'warning';
