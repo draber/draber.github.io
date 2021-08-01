@@ -1023,6 +1023,22 @@
                 }
             })
         }
+        twitter() {
+            const hashtags = ['hivemind', ', ', 'nytspellingbee', ', ', 'nytbee', ', ', 'nytsb']
+                .map(tag => {
+                    if (/\w+/.test(tag)) {
+                        el.a({
+                            content: `#${tag}`,
+                            attributes: {
+                                href: `https://twitter.com/hashtag/${tag}`,
+                                target: prefix()
+                            }
+                        });
+                    }
+                });
+            hashtags.push(' on Twitter');
+            return hashtags;
+        }
         nytSpotlight() {
             data.getDate().print;
             const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
@@ -1116,6 +1132,9 @@
                                     }),
                                     el.li({
                                         content: this.redditCommunity()
+                                    }),
+                                    el.li({
+                                        content: this.twitter()
                                     })
                                 ]
                             })

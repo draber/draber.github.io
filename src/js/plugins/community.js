@@ -38,7 +38,7 @@ class Community extends Plugin {
         const date = data.getDate().print;
         const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-${date}.html#commentsContainer`;
         return el.a({
-            content: 'Offcial NYT Spelling Bee Forum (URL changes daily!)',
+            content: 'NYT Spelling Bee Forum for today’s game',
             attributes: {
                 href,
                 target: prefix()
@@ -46,11 +46,28 @@ class Community extends Plugin {
         })
     }
 
+    twitter() {
+        const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => el.a({
+            content: `#${tag}`,
+            attributes: {
+                href: `https://twitter.com/hashtag/${tag}`,
+                target: prefix()
+            }
+        }));
+        const result = [];
+        hashtags.forEach(entry => {
+            result.push(entry, ', ');
+        })
+        result.pop();
+        result.push(' on Twitter');
+        return result;
+    }
+
     nytSpotlight() {
         const date = data.getDate().print;
         const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
         return el.a({
-            content: 'List of all NYT Spelling Bee Forums so far',
+            content: 'Portal to all NYT Spelling Bee Forums',
             attributes: {
                 href,
                 target: prefix()
@@ -84,7 +101,7 @@ class Community extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Community', 'Offical and not so offical Spelling Bee resources.', {
+        super(app, 'Community', 'Spelling Bee resources suggested by the community', {
             canChangeState: true
         });
 
@@ -96,21 +113,23 @@ class Community extends Plugin {
                 el.li({
                     content: [
                         el.h4({
-                            content: 'Does this game feature Perfect Pangrams?'
-                        }), 
+                            content: 'Does today’s game have a Perfect Pangram?'
+                        }),
                         el.p({
                             content: (() => {
                                 const pp = this.getPerfectPangramCount();
-                                switch (true) {
-                                    case pp === 0:
-                                        return `There is no Perfect Pangram in today’s game`;
-                                    case pp === 1:
-                                        return `There is ${pp} Perfect Pangram in today’s game`;
+                                switch (pp) {
+                                    case 0:
+                                        return `No, today it hasn’t`;
+                                    case 1:
+                                        return `Yes, today there’s one Perfect Pangram`;
                                     default:
-                                        return `There are ${pp} Perfect Pangrams in today’s game`;
+                                        // there have never been more then three pangrams, so this should be good enough
+                                        const words = ['two','three','four', 'five','six','seven','eight','nine','ten'];
+                                        return `Yes, today there are ${words[pp - 2]} Perfect Pangrams`;
                                 }
                             })()
-                        }), 
+                        }),
                         el.em({
                             content: 'Pangrams that use each letter only once are called "perfect" by the community.'
                         })
@@ -122,7 +141,7 @@ class Community extends Plugin {
                             content: 'Does it classify as "Bingo"?'
                         }),
                         el.p({
-                            content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'Sorry, it doesn’t today'
+                            content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'No, today it doesn’t'
                         }),
                         el.em({
                             content: '"Bingo" means that all seven letters in the puzzle are used to start at least one word in the word list.'
@@ -132,17 +151,17 @@ class Community extends Plugin {
                 el.li({
                     content: [
                         el.h4({
-                            content: 'Is it possible to reach Genius without using 4-letter words today?'
+                            content: 'Is it possible to reach Genius without using 4-letter words?'
                         }),
                         el.p({
-                            content: this.hasGeniusNo4Letters() ? 'Yes, it is!' : 'Sorry, it isn’t'
+                            content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t'
                         })
                     ]
                 }),
                 el.li({
                     content: [
                         el.h4({
-                            content: 'Forums'
+                            content: 'Forums and Hashtags'
                         }),
                         el.ul({
                             content: [
@@ -154,6 +173,9 @@ class Community extends Plugin {
                                 }),
                                 el.li({
                                     content: this.redditCommunity()
+                                }),
+                                el.li({
+                                    content: this.twitter()
                                 })
                             ]
                         })
@@ -164,7 +186,7 @@ class Community extends Plugin {
 
         this.popup = new Popup(this.app, this.key)
             .setContent('title', this.title)
-            .setContent('subtitle', this.description)            
+            .setContent('subtitle', this.description)
             .setContent('body', features);
 
     }
