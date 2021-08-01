@@ -1,0 +1,12 @@
+{
+  "name": "bundler",
+  "version": "1.0.0",
+  "description": "Compiles whatever there is to compile",
+  "author": "Dieter Raber",
+  "license": "GPL-3",
+  "dependencies": {
+    "minimist": "^1.2.5",
+    "terser": "^5.5.1"
+  },
+  "type": "module"
+}

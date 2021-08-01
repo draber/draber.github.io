@@ -1,0 +1,8 @@
+{
+  "name": "sass",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "sass": "^1.35.2"
+  }
+}

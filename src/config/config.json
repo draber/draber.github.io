@@ -8,27 +8,70 @@
     "twitter": "@d_raber",
     "prefix": "sba",
     "extension": {
-        "manifest": {
-            "template": "src/templates/extension/manifest.json",
-            "output": "src/extension/manifest.json"
+        "templates": {
+            "manifest": "src/templates/extension/manifest.json",
+            "content": "src/templates/extension/content.js",
+            "readme": "src/templates/extension/readme.md"
         },
-        "content": {
-            "template": "src/templates/extension/content.js",
-            "output": "src/extension/content.js"
-        },
-        "sba": "src/extension/spelling-bee-assistant.js",
-        "sba-min": "src/extension/spelling-bee-assistant.min.js",
-        "chromeStore": {
-            "url": "https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg"
-        },
-        "firefoxStore": {
-            "url": "https://addons.mozilla.org/en-US/firefox/addon/spelling-bee-assistant/"
-        },
-        "msStore": {
-            "url": "https://microsoftedge.microsoft.com/addons/detail/spelling-bee-assistant/doeniefjeejkkdfnakoflmjlmfipejin"
-        },
-        "operaStore": {
-            "url": "https://addons.opera.com/en/extensions/details/spelling-bee-assistant/"
+        "assets": "src/templates/extension/assets",
+        "output": "src/extensions",
+        "sba": "spelling-bee-assistant.js",
+        "sba-min": "spelling-bee-assistant.min.js",
+        "stores": {
+            "chrome": {
+                "url": "https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg",
+                "manifest": {
+                    "version": 3,
+                    "host_permissions": [
+                        "https://www.nytimes.com/*"
+                    ],
+                    "web_accessible_resources": [{
+                        "resources": [
+                            "{{sbaFileName}}"
+                        ]
+                    }]
+                }
+            },
+            "firefox": {
+                "url": "https://addons.mozilla.org/en-US/firefox/addon/spelling-bee-assistant/",
+                "manifest": {
+                    "version": 2,
+                    "permissions": [
+                        "https://www.nytimes.com/*"
+                    ],
+                    "web_accessible_resources": [
+                        "{{sbaFileName}}"
+                    ]
+                }
+            },
+            "microsoft": {
+                "url": "https://microsoftedge.microsoft.com/addons/detail/spelling-bee-assistant/doeniefjeejkkdfnakoflmjlmfipejin",
+                "manifest": {
+                    "version": 2,
+                    "permissions": [
+                        "https://www.nytimes.com/*"
+                    ],
+                    "web_accessible_resources": [
+                        "{{sbaFileName}}"
+                    ]
+                }
+            },
+            "opera": {
+                "url": "https://addons.opera.com/en/extensions/details/spelling-bee-assistant/",
+                "manifest": {
+                    "version": 2,
+                    "permissions": [
+                        "http://www.w3.org/2000/svg",
+                        "https://www.nytimes.com/*",
+                        "https://www.reddit.com/*",
+                        "https://twitter.com/*",
+                        "https://spelling-bee-assistant.app/"
+                    ],
+                    "web_accessible_resources": [
+                        "{{sbaFileName}}"
+                    ]
+                }
+            }
         }
     },
     "html": {
@@ -36,7 +79,7 @@
         "output": "index.html"
     },
     "js": {
-        "input": "src/js/main.js",
+        "input": "src/app/main.js",
         "plain": "dist/spelling-bee-assistant.js",
         "format": "iife"
     },
@@ -46,18 +89,9 @@
         "colors": "src/scss/inc/_colors.scss"
     },
     "bookmarklet": {
-        "cdn": {
-            "url": "https://spelling-bee-assistant.app/assets/js/spelling-bee-assistant.min.js",
-            "local": "assets/js/spelling-bee-assistant.min.js"
-        },
-        "html": {
-            "template": "src/templates/bookmarklet/installer.html",
-            "output": "dist/bookmarklet/installer.html"
-        },
-        "js": {
-            "template": "src/templates/bookmarklet/tpl.js",
-            "plain": "src/templates/bookmarklet/main.js"
-        }
+        "remote": "https://spelling-bee-assistant.app/assets/js/spelling-bee-assistant.min.js",
+        "local": "assets/js/spelling-bee-assistant.min.js",
+        "template": "src/templates/bookmarklet/template.js"
     },
     "css": {
         "widget": "src/css/widget.css",
@@ -70,7 +104,9 @@
     "mock": {
         "current": "storage/current",
         "reference": "storage/reference",
-        "schema": "src/tools/modules/mock/schema.json",
-        "resources": "src/tools/modules/mock/resources"
+        "schema": "src/tools/mock/schema.json",
+        "resources": "src/tools/mock/resources",
+        "server": "src/tools/mock/server",
+        "data": "src/tools/mock/data"
     }
 }

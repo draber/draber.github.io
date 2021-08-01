@@ -1,0 +1,8 @@
+{
+  "name": "sass",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "terser": "^5.5.1"
+  }
+}

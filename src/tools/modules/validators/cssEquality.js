@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import format from '../formatters/format.js';
-import logger from '../logger/index.js';
+import logger from '../modules/logger/logger.js';
 
 const result = {}
 
