@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+import settings from '../settings/settings.js';
 
 /**
  * Replaces vars in the style {{my.var}} by their counterpart from settings
@@ -6,8 +6,8 @@
  * @param {Object} settings
  * @returns {String}
  */
-const substituteVars = (input, settings) => {
+ const substituteVars = input => {
     return input.replace(/(?:{{([^}]+)}})/g, (full, second) => settings.get(second));
 }
 
-module.exports = substituteVars;
+export default substituteVars;

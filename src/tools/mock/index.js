@@ -1,7 +1,7 @@
 import create from './create.js'
 import evaluate from './evaluate.js'
 import minimist from 'minimist';
-import logger from '../logger/index.js';
+import logger from '../modules/logger/logger.js';
 import {
     types
 } from './common.js';

@@ -1,15 +1,15 @@
 import date from 'date-and-time';
 import msgFormat from './msgFormatter.js';
 import fs from 'fs-extra';
-import logger from '../logger/index.js';
+import logger from '../modules/logger/logger.js';
 import path from 'path';
-import validate from '../validators/validate.js';
+import validate from '../modules/validators/validate.js';
 import _ from 'lodash';
 import {
     paths
 } from './common.js';
 import recursive from 'recursive-readdir';
-import settings from '../settings.js';
+import settings from '../modules/settings/settings.js';
 
 const today = date.format(new Date(), 'YYYY-MM-DD');
 
@@ -53,28 +53,21 @@ const evaluate = async () => {
                 reference: files.reference[ext] ? files.reference[ext][key] : undefined
             }
             if (!pair.current || !pair.reference) {
-                logger.error(`Incomplete pair`, pair);
+                logger.error(`Incomplete pair`);
                 continue;
             }
             switch (ext) {
                 case 'json':
                     if (key === 'game-data') {
                         result = validate.jsonSchema(
-                            fs.readJsonSync(pair.current, 'utf8'),
+                            fs.readJsonSync(pair.current),
                             fs.readJsonSync(settings.get('mock.schema'))
-                        );
-                        msg += msgFormat.heading(title, 2);
-                    }
-                    else {
-                        result = validate.objectEquality(
-                            JSON.parse(fs.readFileSync(pair.reference, 'utf8')),
-                            JSON.parse(fs.readFileSync(pair.current, 'utf8'))
                         );
                         msg += msgFormat.heading(title, 2);
                     }
                     break;
                 case 'html':
-                    result = await validate.htmlEquality(
+                    result = validate.domEquality(
                         fs.readFileSync(pair.reference, 'utf8'),
                         fs.readFileSync(pair.current, 'utf8')
                     );

@@ -1,4 +1,4 @@
-import logger from '../logger/index.js';
+import logger from '../logger/logger.js';
 import json from './json/index.js';
 import html from './html/index.js';
 import js from './js/index.js';
@@ -12,11 +12,8 @@ const formatters = {
 }
 
 const format = (type, data, format) => {
-    if(format === 'keep') {
-        return data;
-    }
     if (!formatters[type] || !(formatters[type] instanceof Function)) {
-        logger.error(`finalize: Unknown type ${type}`);
+        logger.error(`format: Unknown type ${type}`);
         return false;
     }
     return formatters[type](data, format);

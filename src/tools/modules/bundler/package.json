@@ -1,0 +1,7 @@
+{
+  "name": "bundler",
+  "version": "1.0.0",
+  "main": "bundler.js",
+  "type": "module"
+}
+

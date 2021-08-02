@@ -22,13 +22,3 @@ export const dashCase = string => {
         .map(part => part.toLowerCase())
         .join('-');
 };
-
-/**
- * (Dart) Sass adds a BOM to CSS with Unicode characters 
- * but this obiously also works in other contexts
- * @param {String} string
- * @returns {String}
- */
- export const removeBom = string => {
-    return string.replace(/\uFEFF)/gu, '');
-}

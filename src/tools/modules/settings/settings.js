@@ -1,7 +1,5 @@
-#!/usr/bin/env node
-
-const pkg = require('../../../package.json');
-const config = require('../../config/config.json');
+import pkg from '../../../../package.json';
+import config from '../../../config/config.json'
 
 /**
  * Collection of data from `package.json`, `config.json`
@@ -52,8 +50,7 @@ const set = (key, value) => {
     current[last] = value;
 };
 
-
-module.exports = {
+export default {
     get,
     set
 };

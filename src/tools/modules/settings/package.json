@@ -1,5 +1,6 @@
 {
-    "name": "settings",
-    "version": "1.0.0",
-    "type": "module"
+  "name": "settings",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "settings.js"
 }

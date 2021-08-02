@@ -1,4 +1,4 @@
-import settings from '../settings.js';
+import settings from '../modules/settings/settings.js';
 
 const paths = {};
 const types = ['current', 'reference'];
@@ -7,7 +7,6 @@ const resources = {
     html: 'site.html',
     gameData: 'game-data.json',
     report: 'report.md',
-    meta: 'meta-data.json',
     assets: 'games-assets/v2/'
 }
 

@@ -1,7 +1,7 @@
 import expand from './expand.js';
 import compress from './compress.js';
 import compact from './compact.js';
-import logger from '../../logger/index.js';
+import logger from '../../logger/logger.js';
 
 const formatters = {
     expand,

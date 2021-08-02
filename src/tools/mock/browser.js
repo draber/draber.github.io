@@ -1,4 +1,4 @@
-import logger from '../logger/index.js';
+import logger from '../modules/logger/logger.js';
 import init from '../browser/init.js';
 import fetch from 'node-fetch';
 
@@ -9,8 +9,6 @@ const load = async (url, context) => {
     const browser = navi.browser;
     const page = navi.page;
     let msg = navi.msg;
-
-
 
     try {
         await page.goto(url, {
@@ -31,16 +29,15 @@ const load = async (url, context) => {
 
             const css = [];
             const js = [];
-            const _meta = {};
 
             const parseUrl = url => {
-                const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)\.(?<ext>.*)$/);
+                const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)(?<ext>\..*)$/);
                 return {
                     remote: url,
-                    rel: `${match.groups.path}${match.groups.file}.${match.groups.ext}`,
+                    rel: match.groups.path + match.groups.file + match.groups.ext,
                     hash: match.groups.hash,
-                    file: `${match.groups.file}.${match.groups.ext}`,
-                    ext: match.groups.ext,
+                    file: match.groups.file + match.groups.ext,
+                    ext: match.groups.ext.substr(1),
                 }
             }
 
@@ -63,8 +60,6 @@ const load = async (url, context) => {
                 element.innerHTML = '';
             })
 
-            document.querySelector('header.pz-header').style.display = 'none';
-
             let urlData;
             const obsoletes = '.pz-ad-box, #pz-gdpr, #adBlockCheck, .pz-moment__info-date, .pz-game-title-bar, link, script, meta, style, iframe, svg, body > footer';
             document.querySelectorAll(obsoletes).forEach(element => {
@@ -75,11 +70,9 @@ const load = async (url, context) => {
                         js.push({
                             ...urlData,
                             ...{
-                                format: 'keep'
+                                format: 'expand'
                             }
                         });
-                        // they are all the same, overwriting is OK
-                        _meta.release = urlData.hash;
                         return false;
                     }
                     if (element.id &&
@@ -105,74 +98,42 @@ const load = async (url, context) => {
                     }
                 }
                 if (element.nodeName === 'META') {
-                    if (element.httpEquiv && element.httpEquiv === 'Content-Type') {
-                        return false;
-                    }
-                    if (element.name && element.name === 'version') {
-                        _meta.version = element.content;
+                    if (element.httpEquiv && element.httpEquiv === 'Content-Type' ||
+                        element.name && element.name === 'version') {
                         return false;
                     }
                 }
                 element.remove()
             });
-
-            [
-                {
-                    target: 'head',
-                    elem: 'link',
-                    attrs: {
-                        rel: 'icon',
-                        mockhref: '/games-assets/v2/assets/expansion-games/spelling-bee-card-icon.svg'
-                    }
-                },
-                {
-                    target: 'body',
-                    elem: 'script',
-                    attrs: { 
-                        mocksrc: '/mock/sba.js'
-                    }
-                },
-                {
-                    target: 'head',
-                    elem: 'script',
-                    attrs: { 
-                        mocksrc: '/mock/globals.js'
-                    }
-                }
-            ].forEach(resource => {
-                const mockElem = document.createElement(resource.elem);
-                for(let attr in resource.attrs) {
-                    mockElem.setAttribute(attr, resource.attrs[attr]);
-                }
-                document.querySelector(resource.target).append(mockElem);
-            })
+            const mockScript = document.createElement('script');
+            for (let [key, entry] of Object.entries(context.mockData)) {
+                mockScript.textContent += `window.${key} = ${JSON.stringify(entry)};\n`;
+            }
+            document.querySelector('head').append(mockScript);
 
             return {
-                _meta,
                 css,
                 js
             };
         }, context);
 
-        const mapRe = /\/\/#\ssourceMappingURL=[\w-]+\.[\w]+\.[^\.]+\.map/;
-
         const download = async type => {
             await Promise.all((data => {
-                    const promises = [];
-                    data[type].forEach(resource => {
-                        promises.push(fetch(resource.remote))
-                    })
-                    return promises
-                })(data))
-                .then(responses => {
-                    return responses;
+                const promises = [];
+                data[type].forEach(resource => {
+                    promises.push(fetch(resource.remote))
                 })
-                .then(responses => Promise.all(responses.map(response => response.text())))
-                .then(body => {
-                    for (let i = 0; i < body.length; i++) {
-                        data[type][i].body = body[i].replace(mapRe, '');
-                    }
-                });
+                return promises
+            })(data))
+            .then(responses => {
+                return responses;
+            })
+            .then(responses => Promise.all(responses.map(response => response.text())))
+            .then(body => {
+                for (let i = 0; i < body.length; i++) {
+                    data[type][i].body = body[i];
+                }
+            });
         }
 
         await download('js');
@@ -183,22 +144,10 @@ const load = async (url, context) => {
 
         ['js', 'css'].forEach(type => {
             data[type].forEach(resource => {
-                html = html.replace(resource.remote, '/' + resource.rel);
-                if (resource.rel.includes('v2/foundation.')) {
-                    resource.body = resource.body.replace(/https:\/\/purr[^"]+/g, '/mock')
-                        .replace(/\/v1\/purr-cache/g, '/purr')
-                        // what appears to be a regex is a string on intention
-                        .replace(
-                            '/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.-]+)(?::(\d+))?\/(.+)/', 
-                            '/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.:-]+)(?::(\d+))?\/(.+)/')
-                        .replace(/\/puzzles\//g, '/mock/');
-                }
+                html = html.replace(resource.remote, resource.rel);
             })
         })
-        html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ')
-            .replace(/mock([a-z]+)=/g, '$1=')
-            .replace(mapRe, '')
-            .replace(/ style=""/g, '');
+        html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ').replace(/ style=""/g, '');
 
         data.html = [{
             body: html,
@@ -209,17 +158,12 @@ const load = async (url, context) => {
             body: JSON.stringify(oldGameData),
             rel: 'game-data.json',
             format: 'expand'
-        }, {
-            body: JSON.stringify(data._meta),
-            rel: 'meta-data.json',
-            format: 'expand'
         }];
-        delete data._meta;
 
         return data;
 
     } catch (e) {
-        logger.error(e, msg);
+        logger.error(msg);
     }
     await browser.close();
 };

@@ -36,7 +36,9 @@ const fromValidation = result => {
     if(!result || !result.msg) {
         return paragraph('No differences found');
     }
-    return code(json(result.msg));
+    let text = result.comment ? '// ' + result.comment + '\n' : ''
+    text += json(result.msg);
+    return code(text);
 }
 
 

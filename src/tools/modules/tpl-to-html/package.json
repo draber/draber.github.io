@@ -1,6 +1,6 @@
 {
-  "name": "browser",
+  "name": "sass",
   "version": "1.0.0",
   "type": "module",
-  "main": "init.js"
+  "main": "tpl-to-html.js"
 }

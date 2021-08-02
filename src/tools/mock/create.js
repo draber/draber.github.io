@@ -2,15 +2,16 @@ import load from './browser.js';
 import {
     paths
 } from './common.js';
-import settings from '../settings.js';
-import finalize from '../finalize/index.js'
-import logger from '../logger/index.js';
+import settings from '../modules/settings/settings.js';
+import finalize from '../modules/finalize/index.js'
+import logger from '../modules/logger/logger.js';
 import fs from 'fs-extra';
 
 const create = async type => {
 
     return await load(settings.get('targetUrl'), {
-            title: settings.get('label') + ' QA - Mock'
+            title: settings.get('label') + ' QA - Mock',
+            mockData
         })
         .then(data => {
             for (let [key, entries] of Object.entries(data)) {

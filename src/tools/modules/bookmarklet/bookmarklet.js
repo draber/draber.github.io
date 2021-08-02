@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Converts javascript to a bookmarklet
  * @param js
@@ -10,4 +8,4 @@ const bookmarklify = js => {
     return `javascript:${encodeURIComponent(js)}`;
 }
 
-module.exports = bookmarklify;
+export default bookmarklify;
