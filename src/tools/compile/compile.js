@@ -10,14 +10,17 @@ import convertScss from '../modules/convert-scss/convert-scss.js';
 import path from 'path';
 import substituteVars from '../modules/substitute-vars/substitute-vars.js';
 import expand from '../modules/formatters/json/expand.js';
+import getWatchDirs from './watch-list.js';
 
 const args = minimist(process.argv.slice(2));
 
 let debug = !!args.d;
 
-const appCode = await bundler.build();
-const minAppCode = await minifyJs(appCode);
-
+/**
+ * Save a file
+ * @param {String} path 
+ * @param {String} data 
+ */
 const save = (path, data) => {
     fs.outputFile(path, data)
         .then(() => {
@@ -28,20 +31,12 @@ const save = (path, data) => {
         })
 }
 
-const buildBookmarklet = () => {
-    save(settings.get('bookmarklet.local'), minAppCode);
-}
-
-const buildWebsite = () => {
-    const template = fs.readFileSync(settings.get('html.template'), 'utf8');
-    settings.set('bookmarklet.code', bookmarklify(fs.readFileSync(settings.get('bookmarklet.template'))));
-    save(settings.get('html.output'), buildHtml(template));
-    save(settings.get('css.site'), convertScss({
-        file: settings.get('scss.site')
-    }));
-}
-
-const buildExtensions = () => {
+/**
+ * Build extension in all flavors
+ * @param {String} appCode 
+ * @param {String} minAppCode 
+ */
+const buildExtensions = (appCode, minAppCode) => {
     const files = {
         manifest: settings.get('extension.templates.manifest'),
         content: settings.get('extension.templates.content'),
@@ -68,5 +63,66 @@ const buildExtensions = () => {
     }
 }
 
+const targets = {
+    site: () => {
+        const template = fs.readFileSync(settings.get('html.template'), 'utf8');
+        settings.set('bookmarklet.code', bookmarklify(fs.readFileSync(settings.get('bookmarklet.template'))));
+        save(settings.get('html.output'), buildHtml(template));
+        save(settings.get('css.site'), convertScss({
+            file: settings.get('scss.site')
+        }));
+    },
+    app: async () => {
+        save(settings.get('css.app'), convertScss({
+            file: settings.get('scss.app')
+        }));
+        const appCode = await bundler.build();
+        const minAppCode = await minifyJs(appCode);
 
-export default buildExtensions();
+        // bookmarklet
+        save(settings.get('bookmarklet.local'), minAppCode);
+
+        // extensions
+        buildExtensions(appCode, minAppCode);
+    }
+}
+
+
+/**
+ * Watch for file changes
+ * @param {String} type
+ */
+const watch = () => {
+    const dirs = getWatchDirs(args.t);
+    targets[args.t]();
+    dirs.forEach(dir => {
+        fs.watch(dir, 'utf8', (eventType, fileName) => {
+            logger.log(`Change detected on ${fileName}`);
+            targets[args.t]();
+        })
+    })
+    logger.info(`Watching changes on \n - ${dirs.join('\n - ')}`)
+}
+
+/**
+ * Watch (-w) or build (default)
+ */
+ const compile = () => {
+    if (!args.t) {
+        logger.error('Missing parameter -t');
+        process.exit(-1);
+    }
+    else if (!Object.keys(targets).includes(args.t)) {
+        logger.error(`compile: unknown type "${args.t}"`);
+        process.exit(-1);
+    }
+
+    if (args.w) {
+        watch();
+    } else {
+        targets[args.t]();
+    }
+
+};
+
+export default compile();

@@ -12,6 +12,9 @@ const formatters = {
 }
 
 const format = (type, data, format) => {
+    if(format === 'keep') {
+        return data;
+    }
     if (!formatters[type] || !(formatters[type] instanceof Function)) {
         logger.error(`format: Unknown type ${type}`);
         return false;

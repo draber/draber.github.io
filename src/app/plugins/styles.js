@@ -8,7 +8,7 @@ import el from '../modules/element.js';
 import {
     prefix
 } from '../modules/string.js';
-import css from '../../css/widget.css';
+import css from '../../css/app.css';
 import Plugin from '../modules/plugin.js';
 
 /**

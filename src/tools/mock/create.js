@@ -10,8 +10,7 @@ import fs from 'fs-extra';
 const create = async type => {
 
     return await load(settings.get('targetUrl'), {
-            title: settings.get('label') + ' QA - Mock',
-            mockData
+            title: settings.get('label') + ' QA - Mock'
         })
         .then(data => {
             for (let [key, entries] of Object.entries(data)) {

@@ -1,5 +1,5 @@
 import logger from '../modules/logger/logger.js';
-import init from '../browser/init.js';
+import init from '../modules/browser/init.js';
 import fetch from 'node-fetch';
 
 
@@ -22,43 +22,40 @@ const load = async (url, context) => {
 
         // fetch original game data
         const oldGameData = await page.evaluate('gameData');
-
-
         // remove obsolete elements
         const data = await page.evaluate(context => {
 
             const css = [];
             const js = [];
+            const _meta = {};
 
             const parseUrl = url => {
-                const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)(?<ext>\..*)$/);
+                const match = url.match(/(?<path>games-assets\/v2\/)(?<file>[^\.]+)\.(?<hash>[^\.]+)\.(?<ext>.*)$/);
                 return {
                     remote: url,
-                    rel: match.groups.path + match.groups.file + match.groups.ext,
+                    rel: `${match.groups.path}${match.groups.file}.${match.groups.ext}`,
                     hash: match.groups.hash,
-                    file: match.groups.file + match.groups.ext,
-                    ext: match.groups.ext.substr(1),
+                    file: `${match.groups.file}.${match.groups.ext}`,
+                    ext: match.groups.ext,
                 }
             }
 
             document.title = context.title;
-
             document.documentElement.removeAttribute('style');
             document.documentElement.removeAttribute('class');
-
             ['label', 'hidden', 'expanded', 'haspopup'].forEach(aria => {
                 document.querySelectorAll(`[aria-${aria}]`).forEach(element => {
                     element.removeAttribute(`aria-${aria}`)
                 });
             })
-
             document.querySelector('#js-hook-game-wrapper').removeAttribute('style');
             document.querySelector('#js-mobile-toolbar ~ .pz-nav__actions').remove();
             document.querySelector('#js-hook-pz-moment__game').classList.remove('pz-moment__frame');
-
             document.querySelectorAll('#portal-game-modals, #pz-game-root, #portal-game-toolbar, #js-nav-drawer, #js-mobile-toolbar, #portal-game-moments').forEach(element => {
                 element.innerHTML = '';
             })
+
+            document.querySelector('header.pz-header').style.display = 'none';
 
             let urlData;
             const obsoletes = '.pz-ad-box, #pz-gdpr, #adBlockCheck, .pz-moment__info-date, .pz-game-title-bar, link, script, meta, style, iframe, svg, body > footer';
@@ -70,9 +67,11 @@ const load = async (url, context) => {
                         js.push({
                             ...urlData,
                             ...{
-                                format: 'expand'
+                                format: 'keep'
                             }
                         });
+                        // they are all the same, overwriting is OK
+                        _meta.release = urlData.hash;
                         return false;
                     }
                     if (element.id &&
@@ -98,24 +97,56 @@ const load = async (url, context) => {
                     }
                 }
                 if (element.nodeName === 'META') {
-                    if (element.httpEquiv && element.httpEquiv === 'Content-Type' ||
-                        element.name && element.name === 'version') {
+                    if (element.httpEquiv && element.httpEquiv === 'Content-Type') {
+                        return false;
+                    }
+                    if (element.name && element.name === 'version') {
+                        _meta.version = element.content;
                         return false;
                     }
                 }
                 element.remove()
             });
-            const mockScript = document.createElement('script');
-            for (let [key, entry] of Object.entries(context.mockData)) {
-                mockScript.textContent += `window.${key} = ${JSON.stringify(entry)};\n`;
+
+            [
+                {
+                    target: 'head',
+                    elem: 'link',
+                    attrs: {
+                        rel: 'icon',
+                        mockhref: '/games-assets/v2/assets/expansion-games/spelling-bee-card-icon.svg'
+                    }
+                },
+                {
+                    target: 'body',
+                    elem: 'script',
+                    attrs: { 
+                        mocksrc: '/mock/sba.js'
+                    }
+                },
+                {
+                    target: 'head',
+                    elem: 'script',
+                    attrs: { 
+                        mocksrc: '/mock/globals.js'
             }
-            document.querySelector('head').append(mockScript);
+                }
+            ].forEach(resource => {
+                const mockElem = document.createElement(resource.elem);
+                for(let attr in resource.attrs) {
+                    mockElem.setAttribute(attr, resource.attrs[attr]);
+                }
+                document.querySelector(resource.target).append(mockElem);
+            })
 
             return {
+                _meta,
                 css,
                 js
             };
         }, context);
+
+        const mapRe = /\/\/#\ssourceMappingURL=[\w-]+\.[\w]+\.[^\.]+\.map/;
 
         const download = async type => {
             await Promise.all((data => {
@@ -131,23 +162,34 @@ const load = async (url, context) => {
             .then(responses => Promise.all(responses.map(response => response.text())))
             .then(body => {
                 for (let i = 0; i < body.length; i++) {
-                    data[type][i].body = body[i];
+                        data[type][i].body = body[i].replace(mapRe, '');
                 }
             });
         }
 
         await download('js');
         await download('css');
-
         // retrieve minimal HTML
         let html = await page.evaluate(() => document.documentElement.outerHTML);
 
         ['js', 'css'].forEach(type => {
             data[type].forEach(resource => {
-                html = html.replace(resource.remote, resource.rel);
+                html = html.replace(resource.remote, '/' + resource.rel);
+                if (resource.rel.includes('v2/foundation.')) {
+                    resource.body = resource.body.replace(/https:\/\/purr[^"]+/g, '/mock')
+                        .replace(/\/v1\/purr-cache/g, '/purr')
+                        // what appears to be a regex is a string on intention
+                        .replace(
+                            '/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.-]+)(?::(\d+))?\/(.+)/', 
+                            '/^(?:(\w+):)\/\/(?:(\w+)(?::(\w+))?@)([\w.:-]+)(?::(\d+))?\/(.+)/')
+                        .replace(/\/puzzles\//g, '/mock/');
+                }
             })
         })
-        html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ').replace(/ style=""/g, '');
+        html = '<!DOCTYPE html>' + html.replace(/&nbsp;/g, ' ')
+            .replace(/mock([a-z]+)=/g, '$1=')
+            .replace(mapRe, '')
+            .replace(/ style=""/g, '');
 
         data.html = [{
             body: html,
@@ -158,12 +200,17 @@ const load = async (url, context) => {
             body: JSON.stringify(oldGameData),
             rel: 'game-data.json',
             format: 'expand'
+        }, {
+            body: JSON.stringify(data._meta),
+            rel: 'meta-data.json',
+            format: 'expand'
         }];
+        delete data._meta;
 
         return data;
 
     } catch (e) {
-        logger.error(msg);
+        logger.error(e, msg);
     }
     await browser.close();
 };

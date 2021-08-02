@@ -84,9 +84,8 @@
         "format": "iife"
     },
     "scss": {
-        "widget": "src/scss/widget.scss",
-        "site": "src/scss/site.scss",
-        "colors": "src/scss/inc/_colors.scss"
+        "app": "src/scss/app.scss",
+        "site": "src/scss/site.scss"
     },
     "bookmarklet": {
         "remote": "https://spelling-bee-assistant.app/assets/js/spelling-bee-assistant.min.js",
@@ -94,7 +93,7 @@
         "template": "src/templates/bookmarklet/template.js"
     },
     "css": {
-        "widget": "src/css/widget.css",
+        "app": "src/css/app.css",
         "site": "assets/css/site.css"
     },
     "gsc": {
