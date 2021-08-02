@@ -53,71 +53,12 @@ class App extends Widget {
         return JSON.parse(document.body.dataset[prefix(key)]);
     }
 
-    /**
-     * Retrieve observer arguments, can be used in cases where the observer needs to be interrupted
-     * @returns {{options: {subtree: boolean, childList: boolean, attributes: boolean}, target: HTMLElement}}
-     */
-    getObserverArgs() {
-        return {
-            target: this.gameWrapper,
-            options: {
-                childList: true,
-                subtree: true,
-                attributes: true
-            }
-        }
-    }
-
-    /**
-     * Whether the splash screen has gone and the content box isn't set to `sb-game-locked`
-     * @example
-     * Overview of possible states
-     * 
-     * splash    | .sb-game-locked | state      | action
-     * ===========================================================	
-     * absent    | absent          | loading    | wait for promise
-     * visible   | present         | locked     | launch on click
-     * hidden    | absent          | unlocked   | launch
-     * 
-     * @returns {Number}
-     */
-    getGameState() {
-        const splash = el.$('#js-hook-pz-moment__welcome', this.gameWrapper);
-        const contentBox = el.$('.sb-content-box', this.gameWrapper);
-        if (!splash) {
-            return -1; // loading
-        }
-
-        if (contentBox && contentBox.classList.contains('sb-game-locked')) {
-            return 0; // locked
-        }
-
-        if (!contentBox.classList.contains('sb-game-locked')) {
-            return 1; // unlocked
-        }
-    }
-
-    /**
-     * Retrieve sync data
-     * @example 
-     * On a fresh game `localStorage::sb-today` can have the following states
-     * 
-     * pristine:                    absent
-     * at least one word locally:   loads along with splash (with tiny delay)
-     * on remote entry:             no change
-     * at least one word remotely:  loads along with splash (with delay)
-     * 
-     * @returns {Null|Array}
-     */
     getSyncData() {
         let sync = localStorage.getItem('sb-today');
         if (!sync) {
-            return null;
+            return [];
         }
         sync = JSON.parse(sync);
-        if (!sync.id || sync.id !== data.getId()) {
-            return null;
-        }
         return sync.words || [];
     }
 
@@ -130,63 +71,25 @@ class App extends Widget {
         return document.body.classList.contains('pz-' + env);
     }
 
-    /**
-     * Retrieve existing results from other devices
-     * @returns {Promise<Array>}
-     */
-    async getResults() {
-        let tries = 20;
-        return await new Promise(resolve => {
-            const interval = setInterval(() => {
-                const syncResults = this.getSyncData();
-                if (syncResults || !tries) {
-                    resolve(syncResults || []);
-                    clearInterval(interval);
-                }
-                tries--;
-            }, 300);
-        });
-    }
-
-    /**
-     * Wait for the game to be fully displayed
-     * @returns {Promise<Boolean>}
-     */
-    async waitForGameState(threshold) {
-        let tries = 50;
-        return await new Promise(resolve => {
-            const interval = setInterval(() => {
-                const state = this.getGameState();
-                if (!tries || this.getGameState() >= threshold) {
-                    resolve(state);
-                    clearInterval(interval);
-                }
-                tries--;
-            }, 300);
-        });
-    }
-
     load() {
-        if (this.isLoaded) {
-            return false;
-        }
-        // Observe game for various changes
-        this.observer = this.buildObserver();
+        el.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
+            .then(resultList => {
+                // Observe game for various changes
+                this.observer = this.buildObserver();
+                data.init(this, this.getSyncData());
+                this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+                this.resultList = resultList;
 
-        this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
-        this.resultList = el.$('.sb-wordlist-items-pag', this.gameWrapper);
-        this.waitForGameState(1)
-            .then(() => {
                 this.add();
                 this.domSet('active', true);
                 this.registerPlugins();
                 this.trigger(prefix('refreshUi'));
-                this.isLoaded = true;
                 document.dispatchEvent(new Event(prefix('ready')));
                 if (this.envIs('desktop')) {
                     window.scrollTo(0, 472);
                 }
             })
+
     }
 
     /**
@@ -245,7 +148,14 @@ class App extends Widget {
                 }
             });
         });
-        const args = this.getObserverArgs();
+        const args = {
+            target: this.gameWrapper,
+            options: {
+                childList: true,
+                subtree: true,
+                attributes: true
+            }
+        };
         observer.observe(args.target, args.options);
         return observer;
     }
@@ -327,26 +237,7 @@ class App extends Widget {
             classNames: [prefix('container', 'd')]
         });
 
-        this.isLoaded = false;
-
-        this.getResults()
-            .then(results => {
-                data.init(this, results);
-            })
-            .then(() => {
-                this.waitForGameState(0)
-                    .then(state => {
-                        // start on button launch or automatically if the splash has already been closed (bookmarklet)
-                        if (state === 0) {
-                            el.$('.pz-moment__button-wrapper .pz-moment__button.primary', this.gameWrapper).addEventListener('pointerup', () => {
-                                this.load();
-                            })
-                        } else {
-                            this.load();
-                        }
-                    })
-            })
-
+        this.load();
     }
 }
 

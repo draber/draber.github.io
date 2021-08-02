@@ -142,9 +142,11 @@ class Popup {
         if (state) {
             this.app.modalWrapper.append(this.ui);
             this.modalSystem.classList.add('sb-modal-open');
+            this.isOpen = true;
         } else {
             this.getTarget().append(this.ui);
             this.modalSystem.classList.remove('sb-modal-open');
+            this.isOpen = false;
         }
 
         return this;
@@ -163,6 +165,8 @@ class Popup {
         this.app = app;
 
         this.state = false;
+
+        this.isOpen = false;
 
         this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
 

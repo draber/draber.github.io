@@ -32,7 +32,7 @@ class ColorConfig extends Plugin {
     }
 
     /**
-     * Toggle dark mode
+     * Toggle dark mode color scheme
      * @param state
      * @returns {ColorConfig}
      */
@@ -97,7 +97,6 @@ class ColorConfig extends Plugin {
             }))
         }
 
-        this.menuIcon = 'null';
 
         this.popup = new Popup(this.app, this.key)
             .setContent('title', this.title)

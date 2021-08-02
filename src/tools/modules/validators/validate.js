@@ -1,11 +1,11 @@
 import jsonSchema from './jsonSchema.js';
 import objectEquality from './objectEquality.js';
 import cssEquality from './cssEquality.js'
-import domEquality from './domEquality.js';
+import htmlEquality from './htmlEquality.js';
 
 export default {
     jsonSchema,
     objectEquality,
-    domEquality,
+    htmlEquality,
     cssEquality
 }

@@ -4,7 +4,7 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
- import DarkMode from '../plugins/darkMode.js';
+import DarkMode from '../plugins/darkMode.js';
 import ColorConfig from '../plugins/colorConfig.js';
 import Header from '../plugins/header.js';
 import ProgressBar from '../plugins/ProgressBar.js';
@@ -14,6 +14,7 @@ import LetterCount from '../plugins/letterCount.js';
 import FirstLetter from '../plugins/firstLetter.js';
 import Pangrams from '../plugins/pangrams.js';
 import YourProgress from '../plugins/yourProgress.js';
+import Community from '../plugins/community.js';
 import TodaysAnswers from '../plugins/todaysAnswers.js';
 import PangramHl from '../plugins/pangramHl.js';
 import Googlify from '../plugins/googlify.js';
@@ -43,6 +44,7 @@ const getPlugins = () => {
         Menu,
         Grid,
         YourProgress,
+        Community,
         TodaysAnswers
     }
 }

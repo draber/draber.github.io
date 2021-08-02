@@ -1,6 +1,6 @@
 
-import logger from '../modules/logger/logger.js'
 import puppeteer from 'puppeteer';
+import logger from '../logger/logger.js'
 
 const init = async url => {
     const browser = await puppeteer.launch();

@@ -3,7 +3,7 @@ import {
     paths
 } from './common.js';
 import settings from '../modules/settings/settings.js';
-import finalize from '../modules/finalize/index.js'
+import finalize from '../modules/finalize/finalize.js'
 import logger from '../modules/logger/logger.js';
 import fs from 'fs-extra';
 
