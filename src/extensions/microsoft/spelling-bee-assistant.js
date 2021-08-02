@@ -1052,7 +1052,7 @@
         }
         redditCommunity() {
             return el.a({
-                content: 'NY Times Spelling Bee Puzzle at Reddit',
+                content: 'NY Times Spelling Bee Puzzle on Reddit',
                 attributes: {
                     href: 'https://www.reddit.com/r/NYTSpellingBee/',
                     target: prefix()

@@ -20,20 +20,36 @@ import Popup from './popup.js';
  */
 class Community extends Plugin {
 
+    /**
+     *
+     * @returns {boolean}
+     */
     hasGeniusNo4Letters() {
         const maxPoints = data.getPoints('answers');
         const no4LetterPoints = maxPoints - data.getList('answers').filter(term => term.length === 4).length;
         return no4LetterPoints >= Math.round(70 / 100 * maxPoints);
     }
 
+    /**
+     *
+     * @returns {number}
+     */
     getPerfectPangramCount() {
         return data.getList('pangrams').filter(term => term.length === 7).length;
     }
 
+    /**
+     *
+     * @returns {boolean}
+     */
     hasBingo() {
         return Array.from(new Set(data.getList('answers').map(term => term.charAt[0]))).length === 7;
     }
 
+    /**
+     *
+     * @returns {*}
+     */
     nytCommunity() {
         const date = data.getDate().print;
         const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-${date}.html#commentsContainer`;
@@ -46,6 +62,10 @@ class Community extends Plugin {
         })
     }
 
+    /**
+     *
+     * @returns {*[]}
+     */
     twitter() {
         const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => el.a({
             content: `#${tag}`,
@@ -63,6 +83,10 @@ class Community extends Plugin {
         return result;
     }
 
+    /**
+     *
+     * @returns {*}
+     */
     nytSpotlight() {
         const date = data.getDate().print;
         const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
@@ -75,9 +99,13 @@ class Community extends Plugin {
         })
     }
 
+    /**
+     *
+     * @returns {*}
+     */
     redditCommunity() {
         return el.a({
-            content: 'NY Times Spelling Bee Puzzle at Reddit',
+            content: 'NY Times Spelling Bee Puzzle on Reddit',
             attributes: {
                 href: 'https://www.reddit.com/r/NYTSpellingBee/',
                 target: prefix()
@@ -107,6 +135,7 @@ class Community extends Plugin {
 
         this.menuAction = 'popup';
         this.menuIcon = 'null';
+        const words = ['two','three','four', 'five','six','seven','eight','nine','ten'];
 
         const features = el.ul({
             content: [
@@ -120,12 +149,11 @@ class Community extends Plugin {
                                 const pp = this.getPerfectPangramCount();
                                 switch (pp) {
                                     case 0:
-                                        return `No, today it hasn’t`;
+                                        return `No, today it doesn’t`;
                                     case 1:
                                         return `Yes, today there’s one Perfect Pangram`;
                                     default:
                                         // there have never been more then three pangrams, so this should be good enough
-                                        const words = ['two','three','four', 'five','six','seven','eight','nine','ten'];
                                         return `Yes, today there are ${words[pp - 2]} Perfect Pangrams`;
                                 }
                             })()

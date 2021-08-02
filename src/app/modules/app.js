@@ -131,13 +131,13 @@ class App extends Widget {
                         }
                         break;
 
-                        // text input
+                    // text input
                     case mutation.type === 'childList' &&
                     mutation.target.classList.contains('sb-hive-input-content'):
                         this.trigger(prefix('newInput'), mutation.target.textContent.trim());
                         break;
 
-                        // term added to word list
+                    // term added to word list
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.resultList) &&
                     !!mutation.addedNodes.length &&

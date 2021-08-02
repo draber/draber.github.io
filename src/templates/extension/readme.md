@@ -1,9 +1,9 @@
-# Spelling Bee Assistant
+# {{label}} {{version}}
 
-Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle.
+{{description}}
 
 ## What does the extension do?
-Visit the [project's homepage](https://spelling-bee-assistant.app/) for a full feature list.
+Visit the [project's homepage]({{url}}) for a full feature list.
 
 ## Build the extension
 
@@ -23,5 +23,5 @@ This creates two different IIFE bundles, a compressed and an uncompressed versio
 ## Source code
 The source code of this extension is available on [GitHub](https://github.com/draber/draber.github.io]). 
 
-- [Source code](https://github.com/draber/draber.github.io/tree/main/src/js)
+- [Source code](https://github.com/draber/draber.github.io/tree/main/src/app)
 - [License](https://github.com/draber/draber.github.io/blob/main/LICENSE.md)
