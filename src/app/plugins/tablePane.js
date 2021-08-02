@@ -80,6 +80,18 @@ class TablePane extends Plugin {
 		return this.pane;
 	}
 
+	/**
+	 *
+	 * @param app
+	 * @param title
+	 * @param description
+	 * @param canChangeState
+	 * @param defaultState
+	 * @param cssMarkers
+	 * @param hasHeadRow
+	 * @param hasHeadCol
+     * @param {App} app
+	 */
 	constructor(app, title, description, {
 		canChangeState = true,
 		defaultState = true,

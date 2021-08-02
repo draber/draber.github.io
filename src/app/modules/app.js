@@ -53,6 +53,10 @@ class App extends Widget {
         return JSON.parse(document.body.dataset[prefix(key)]);
     }
 
+    /**
+     * Retrieve sync data from local storage
+     * @returns {Array}
+     */
     getSyncData() {
         let sync = localStorage.getItem('sb-today');
         if (!sync) {
@@ -71,6 +75,10 @@ class App extends Widget {
         return document.body.classList.contains('pz-' + env);
     }
 
+    /**
+     * Start the application once the result list has been generated.
+     * The result list depends on sync data from the server and it can therefore be assumed that everything is ready
+     */
     load() {
         el.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
             .then(resultList => {

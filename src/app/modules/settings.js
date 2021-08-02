@@ -31,7 +31,6 @@ const saveOptions = () => {
 
 /**
  * Store the version in case something needs to be reset in a new release
- * @todo actually use this
  */
 if(settings.options.version && settings.options.version !== settings.version){
     settings.options.oldVersion = settings.options.version;

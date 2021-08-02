@@ -32,6 +32,12 @@ const fn = {
         return [].slice.call((container || document).querySelectorAll(selector));
     },
 
+    /**
+     * Wait for an element to be present in the DOM
+     * @param selector
+     * @param container
+     * @returns {Promise<unknown>}
+     */
     waitFor: function (selector, container = null) {
         return new Promise(resolve => {
             const getElement = () => {

@@ -24,6 +24,9 @@ const sbData = window.gameData.today;
  */
 let app;
 
+/**
+ * Build array of terms subdivided into pangrams, found words and such
+ */
 const completeLists = () => {
     lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
     lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
@@ -61,6 +64,10 @@ const getId = () => {
     return sbData.id;
 }
 
+/**
+ * Retrieve the date in different formats
+ * @returns {{print, display}}
+ */
 const getDate = () => {
     return {
         display: sbData.displayDate,

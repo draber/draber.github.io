@@ -42,14 +42,15 @@ class Menu extends Plugin {
         return null;
     }
 
+    /**
+     * Menu constructor
+     * @param {App} app
+     */
     constructor(app) {
 
         super(app, 'Menu', '');
-
         this.target = this.getTarget();
-
         const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
-
         this.app.domSet('submenu', false);
 
         /**

@@ -21,8 +21,8 @@ import Popup from './popup.js';
 class Community extends Plugin {
 
     /**
-     *
-     * @returns {boolean}
+     * Can Genius be achieved without using 4-letter words?
+     * @returns {Boolean}
      */
     hasGeniusNo4Letters() {
         const maxPoints = data.getPoints('answers');
@@ -31,23 +31,23 @@ class Community extends Plugin {
     }
 
     /**
-     *
-     * @returns {number}
+     * How many pangrams are there, if any
+     * @returns {Integer}
      */
     getPerfectPangramCount() {
         return data.getList('pangrams').filter(term => term.length === 7).length;
     }
 
     /**
-     *
-     * @returns {boolean}
+     * Will each letter serve as a starting letter at least once?
+     * @returns {Boolean}
      */
     hasBingo() {
         return Array.from(new Set(data.getList('answers').map(term => term.charAt[0]))).length === 7;
     }
 
     /**
-     *
+     * Link to the daily forum at NYT
      * @returns {*}
      */
     nytCommunity() {
@@ -63,7 +63,7 @@ class Community extends Plugin {
     }
 
     /**
-     *
+     * Links to popular Twitter hashtags
      * @returns {*[]}
      */
     twitter() {
@@ -84,11 +84,10 @@ class Community extends Plugin {
     }
 
     /**
-     *
+     * Link to NYT's SB forum portal
      * @returns {*}
      */
     nytSpotlight() {
-        const date = data.getDate().print;
         const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
         return el.a({
             content: 'Portal to all NYT Spelling Bee Forums',
@@ -100,7 +99,7 @@ class Community extends Plugin {
     }
 
     /**
-     *
+     * Link to the Reddit forum
      * @returns {*}
      */
     redditCommunity() {
