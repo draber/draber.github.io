@@ -1,4 +1,4 @@
-const script = document.createElement('script');
-script.async = true;
-script.src = '{{bookmarklet.cdn.url}}';
-document.body.append(script);
+const s = document.createElement('script');
+s.async = true;
+s.src = '{{bookmarklet.remote}}';
+document.body.append(s);

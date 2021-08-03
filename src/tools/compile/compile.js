@@ -67,7 +67,7 @@ const targets = {
     site: () => {
         const template = fs.readFileSync(settings.get('html.template'), 'utf8');
         const bookmarklet = fs.readFileSync(settings.get('bookmarklet.template'), 'utf8');    
-        settings.set('bookmarklet.code', bookmarklify(format('js', bookmarklet, 'compress')));
+        settings.set('bookmarklet.code', bookmarklify(format('js', substituteVars(bookmarklet), 'compress')));
         save(settings.get('html.output'), buildHtml(template));
         save(settings.get('css.site'), convertScss({
             file: settings.get('scss.site')
