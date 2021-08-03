@@ -1,4 +1,4 @@
-# Spelling Bee Assistant 4.0.1
+# Spelling Bee Assistant 4.1.0
 
 Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
 
