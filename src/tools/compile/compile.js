@@ -9,7 +9,7 @@ import bookmarklify from '../modules/bookmarklet/bookmarklet.js';
 import convertScss from '../modules/convert-scss/convert-scss.js';
 import path from 'path';
 import substituteVars from '../modules/substitute-vars/substitute-vars.js';
-import expand from '../modules/formatters/json/expand.js';
+import format from '../modules/formatters/format.js';
 import getWatchDirs from './watch-list.js';
 
 const args = minimist(process.argv.slice(2));
@@ -50,11 +50,11 @@ const buildExtensions = (appCode, minAppCode) => {
     for (const [store, options] of Object.entries(settings.get('extension.stores'))) {
         const dir = `${settings.get('extension.output')}/${store}`;
         settings.set('sbaFileName', settings.get(debug ? 'extension.sba' : 'extension.sba-min'));
-        const manifest = {
+        const manifest = substituteVars(JSON.stringify({
             ...data.manifest,
             ...options.manifest
-        };
-        save(`${dir}/${path.basename(files.manifest)}`, expand(substituteVars(JSON.stringify(manifest))));
+        }));
+        save(`${dir}/${path.basename(files.manifest)}`, format('json', manifest, 'expand'));
         save(`${dir}/${path.basename(files.content)}`, substituteVars(data.content));
         save(`${dir}/${path.basename(files.readme)}`, substituteVars(data.readme));
         save(`${dir}/${settings.get('extension.sba')}`, appCode);
@@ -66,7 +66,8 @@ const buildExtensions = (appCode, minAppCode) => {
 const targets = {
     site: () => {
         const template = fs.readFileSync(settings.get('html.template'), 'utf8');
-        settings.set('bookmarklet.code', bookmarklify(fs.readFileSync(settings.get('bookmarklet.template'))));
+        const bookmarklet = fs.readFileSync(settings.get('bookmarklet.template'), 'utf8');    
+        settings.set('bookmarklet.code', bookmarklify(format('js', bookmarklet, 'compress')));
         save(settings.get('html.output'), buildHtml(template));
         save(settings.get('css.site'), convertScss({
             file: settings.get('scss.site')
