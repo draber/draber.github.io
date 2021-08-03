@@ -80,7 +80,8 @@ const targets = {
         const appCode = await bundler.build();
         const minAppCode = await minifyJs(appCode);
 
-        // bookmarklet
+        // bookmarklet and plain
+        save(settings.get('js.plain'), appCode);
         save(settings.get('bookmarklet.local'), minAppCode);
 
         // extensions

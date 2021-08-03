@@ -37,7 +37,7 @@
     "mock:create:reference": "node --experimental-json-modules src/tools/mock -c reference",
     "mock:evaluate": "node --experimental-json-modules src/tools/mock -e current",
     "mock:diff": "npm run mock:create:current & npm run mock:evaluate",
-    "mock:serve": "node src/tools/mock/server/index.js",
+    "mock:serve": "node --experimental-json-modules src/tools/mock/server/index.js",
     "mock:serve:debug": "node src/tools/mock/server/index.js -d"
   },
   

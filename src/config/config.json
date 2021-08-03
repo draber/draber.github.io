@@ -80,7 +80,7 @@
     },
     "js": {
         "input": "src/app/main.js",
-        "plain": "dist/spelling-bee-assistant.js",
+        "plain": "assets/js/spelling-bee-assistant.js",
         "format": "iife"
     },
     "scss": {

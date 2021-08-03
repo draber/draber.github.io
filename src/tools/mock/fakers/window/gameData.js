@@ -1,6 +1,6 @@
 import date from 'date-and-time';
 import fs from 'fs-extra';
-import settings from '../../../../modules/settings.js';
+import settings from '../../../modules/settings/settings.js';
 
 const dataDir = process.cwd() + '/' + settings.get('mock.data');
 const games = dataDir + '/data.json';
