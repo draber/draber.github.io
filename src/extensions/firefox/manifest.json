@@ -1,8 +1,9 @@
 {
+    "manifest_version": 2,
     "name": "Spelling Bee Assistant",
     "description": "Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle",
     "homepage_url": "https://spelling-bee-assistant.app/",
-    "version": 2,
+    "version": "4.2.0",
     "content_scripts": [{
         "matches": ["https://www.nytimes.com/puzzles/spelling-bee*"],
         "js": ["content.js"],
@@ -15,6 +16,12 @@
         "64": "assets/icon64.png",
         "128": "assets/icon128.png"
     },
+    "web_accessible_resources": ["spelling-bee-assistant.js"],
     "permissions": ["https://www.nytimes.com/*"],
-    "web_accessible_resources": ["spelling-bee-assistant.min.js"]
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{4474f7b5-4da5-4332-8847-074f35456496}",
+            "strict_min_version": "89.0"
+        }
+    }
 }

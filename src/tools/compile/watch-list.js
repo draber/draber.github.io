@@ -11,7 +11,7 @@ const getWatchDirs = type => {
         'bookmarklet.template',
         'scss.' + type
     ];
-    return dirs.map(entry => path.dirname(settings.get(entry)));
+    return dirs.map(entry => path.dirname(settings.get(entry))).concat(['src/config']);
 }
 
 export default getWatchDirs;

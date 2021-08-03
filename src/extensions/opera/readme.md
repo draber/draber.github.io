@@ -1,4 +1,4 @@
-# Spelling Bee Assistant 4.1.0
+# Spelling Bee Assistant 4.2.0
 
 Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
 
@@ -15,10 +15,10 @@ git clone draber/spelling-bee-extension
 npm i
 
 // compile the extension
-npm run ext:build
+npm run app:build
 ```
 
-This creates two different IIFE bundles, a compressed and an uncompressed version of the same code base. The extension is set up to use the compressed version, the uncompressed one is just there for readability.
+This creates two different IIFE bundles, a compressed and an uncompressed version of the same code base. It depends on the store which version is used in the extension.
 
 ## Source code
 The source code of this extension is available on [GitHub](https://github.com/draber/draber.github.io]). 

@@ -11,6 +11,7 @@ import path from 'path';
 import substituteVars from '../modules/substitute-vars/substitute-vars.js';
 import format from '../modules/formatters/format.js';
 import getWatchDirs from './watch-list.js';
+import _ from 'lodash';
 
 const args = minimist(process.argv.slice(2));
 
@@ -49,7 +50,7 @@ const buildExtensions = (appCode, minAppCode) => {
     }
     for (const [store, options] of Object.entries(settings.get('extension.stores'))) {
         const dir = `${settings.get('extension.output')}/${store}`;
-        settings.set('sbaFileName', settings.get(debug ? 'extension.sba' : 'extension.sba-min'));
+        settings.set('sbaFileName', settings.get(debug || options.enforce_unminified ? 'extension.sba' : 'extension.sba-min'));
         const manifest = substituteVars(JSON.stringify({
             ...data.manifest,
             ...options.manifest
@@ -66,7 +67,7 @@ const buildExtensions = (appCode, minAppCode) => {
 const targets = {
     site: () => {
         const template = fs.readFileSync(settings.get('html.template'), 'utf8');
-        const bookmarklet = fs.readFileSync(settings.get('bookmarklet.template'), 'utf8');    
+        const bookmarklet = fs.readFileSync(settings.get('bookmarklet.template'), 'utf8');
         settings.set('bookmarklet.code', bookmarklify(format('js', substituteVars(bookmarklet), 'compress')));
         save(settings.get('html.output'), buildHtml(template));
         save(settings.get('css.site'), convertScss({
@@ -99,9 +100,11 @@ const watch = () => {
     targets[args.t]();
     dirs.forEach(dir => {
         fs.watch(dir, 'utf8', (eventType, fileName) => {
-            logger.log(`Change detected on ${fileName}`);
-            targets[args.t]();
-        })
+            //_.debounce(() => {
+                logger.log(`Change detected on ${fileName}`);
+                targets[args.t]();
+           // }, 200)
+        });
     })
     logger.info(`Watching changes on \n - ${dirs.join('\n - ')}`)
 }
@@ -109,12 +112,11 @@ const watch = () => {
 /**
  * Watch (-w) or build (default)
  */
- const compile = () => {
+const compile = () => {
     if (!args.t) {
         logger.error('Missing parameter -t');
         process.exit(-1);
-    }
-    else if (!Object.keys(targets).includes(args.t)) {
+    } else if (!Object.keys(targets).includes(args.t)) {
         logger.error(`compile: unknown type "${args.t}"`);
         process.exit(-1);
     }

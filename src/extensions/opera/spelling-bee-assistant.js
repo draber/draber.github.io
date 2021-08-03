@@ -118,7 +118,7 @@
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix$1 = "sba";
 
-    var version = "4.1.0";
+    var version = "4.2.0";
 
     const settings = {
         version: version,

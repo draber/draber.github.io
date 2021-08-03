@@ -21,54 +21,53 @@
             "chrome": {
                 "url": "https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg",
                 "manifest": {
-                    "version": 3,
+                    "manifest_version": 3,
                     "host_permissions": [
                         "https://www.nytimes.com/*"
                     ],
                     "web_accessible_resources": [{
                         "resources": [
                             "{{sbaFileName}}"
+                        ],
+                        "matches": [
+                            "https://www.nytimes.com/*" 
                         ]
                     }]
                 }
             },
             "firefox": {
                 "url": "https://addons.mozilla.org/en-US/firefox/addon/spelling-bee-assistant/",
+                "enforce_unminified": "true",
                 "manifest": {
-                    "version": 2,
                     "permissions": [
                         "https://www.nytimes.com/*"
                     ],
-                    "web_accessible_resources": [
-                        "{{sbaFileName}}"
-                    ]
+                    "browser_specific_settings": {
+                        "gecko": {
+                          "id": "{4474f7b5-4da5-4332-8847-074f35456496}",
+                          "strict_min_version": "89.0"
+                        }
+                    }
                 }
             },
             "microsoft": {
                 "url": "https://microsoftedge.microsoft.com/addons/detail/spelling-bee-assistant/doeniefjeejkkdfnakoflmjlmfipejin",
                 "manifest": {
-                    "version": 2,
                     "permissions": [
                         "https://www.nytimes.com/*"
-                    ],
-                    "web_accessible_resources": [
-                        "{{sbaFileName}}"
                     ]
                 }
             },
             "opera": {
                 "url": "https://addons.opera.com/en/extensions/details/spelling-bee-assistant/",
                 "manifest": {
-                    "version": 2,
                     "permissions": [
+                        "activeTab",
                         "http://www.w3.org/2000/svg",
                         "https://www.nytimes.com/*",
                         "https://www.reddit.com/*",
                         "https://twitter.com/*",
                         "https://spelling-bee-assistant.app/"
-                    ],
-                    "web_accessible_resources": [
-                        "{{sbaFileName}}"
                     ]
                 }
             }

@@ -1,6 +1,6 @@
 {
   "name": "spelling-bee-assistant",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle",
   "devDependencies": {
     "@markedjs/html-differ": "^3.0.4",
@@ -40,7 +40,6 @@
     "mock:serve": "node --experimental-json-modules src/tools/mock/server/index.js",
     "mock:serve:debug": "node src/tools/mock/server/index.js -d"
   },
-  
   "homepage": "https://github.com/draber/draber.github.io.git#readme",
   "repository": {
     "type": "git",
