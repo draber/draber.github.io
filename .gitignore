@@ -2,7 +2,6 @@
 /node_modules
 .vscode
 /src/storage
-/src/tools/modules/mock/server/*.pem
 *.woff2
 /storage
 /src/tools/modules/mock/data/data.json
