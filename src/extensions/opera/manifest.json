@@ -17,5 +17,5 @@
         "128": "assets/icon128.png"
     },
     "web_accessible_resources": ["spelling-bee-assistant.min.js"],
-    "permissions": ["activeTab", "http://www.w3.org/2000/svg", "https://www.nytimes.com/*", "https://www.reddit.com/*", "https://twitter.com/*", "https://spelling-bee-assistant.app/"]
+    "permissions": ["https://www.nytimes.com/*"]
 }
