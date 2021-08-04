@@ -1,6 +1,6 @@
 {
   "name": "finalize",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "finalize.js",
   "type": "module"
 }

@@ -14,19 +14,13 @@
     "run_at": "document_start"
   }],
   "icons": {
-    "16": "icon16.png",
-    "32": "icon32.png",
-    "48": "icon48.png",
-    "64": "icon64.png",
-    "128": "icon128.png"
+    "16": "assets/icon16.png",
+    "32": "assets/icon32.png",
+    "48": "assets/icon48.png",
+    "64": "assets/icon64.png",
+    "128": "assets/icon128.png"
   },
   "web_accessible_resources": [
     "{{sbaFileName}}"
-  ],
-  "permissions": [
-    "activeTab",
-    "http://www.w3.org/2000/svg",
-    "https://www.nytimes.com/puzzles/spelling-bee",
-    "https://spelling-bee-assistant.app/"
   ]
 }
