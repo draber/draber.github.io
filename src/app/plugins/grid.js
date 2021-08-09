@@ -6,7 +6,7 @@
  */
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
-import Popup from './popup.js';
+import Panel from './panel.js';
 import el from '../modules/element.js';
 import {
 	prefix
@@ -24,12 +24,11 @@ class Grid extends TablePane {
 	 * Display pop-up
 	 * @returns {Grid}
 	 */
-	display() {
-		this.popup
+	display(target) {
+		this.panel
 			.setContent('subtitle', this.description)
-			.setContent('body', this.getPane())
-			.toggle(true);
-
+			.setContent('body', this.getPane());
+		target.display(this.panel);
 		return this;
 	}
 
@@ -111,10 +110,10 @@ class Grid extends TablePane {
 
 		super(app, 'Grid', 'The number of words by length and by first letter.');
 
-		this.popup = new Popup(this.app, this.key)
+		this.panel = new Panel(this.app, this.key)
 			.setContent('title', this.title);
 
-		this.menuAction = 'popup';
+		this.menuAction = 'panel';
 		this.menuIcon = 'null';
 	}
 }

@@ -4,18 +4,50 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-$gameOffset: 12;
-$gameWidth: 1280;
+
+[data-sba-active="true"] {
+    --sba-game-offset: 12px;
+    --sba-app-width: 100px;
+    --sba-app-padding: 0;
+    --sba-app-margin: 0;
+    --sba-mobile-threshold: 900px;
+    --sba-game-base-width: 1280px;
+    --sba-game-width: calc(var(--sba-game-base-width) - (2 * var(--sba-game-offset)));
+
+    &[data-sba-sidebar="true"] {
+        --sba-game-base-width: 1450px;
+    }
+}
 
 .sba-container {
     display: none;
 }
 
+[data-ui="sidebar"] {
+    .sb-modal-title,
+    .sba-modal-footer {
+        display:none;
+    }
+
+    .sb-modal-header,
+    .sb-modal-body {
+        padding: 0 var(--sba-game-offset) !important;
+    }
+}
+
 .sba {
-    margin: var(--sba-app-margin);
-    width: var(--sba-app-width);
-    padding: var(--sba-app-padding);
     box-sizing: border-box;
+
+    &[data-ui="sbaApp"] {
+        width: var(--sba-app-width);
+        margin: var(--sba-app-margin);
+        padding: var(--sba-app-padding);
+    }
+
+    &[data-ui="sidebar"] {
+        margin: var(--sba-game-offset);
+        width: 400px;
+    }
 
     *,
     *:before,
@@ -23,6 +55,7 @@ $gameWidth: 1280;
         box-sizing: border-box;
     }
 }
+
 
 
 [data-ui="menu"] {
@@ -34,7 +67,7 @@ $gameWidth: 1280;
 }
 
 [data-sba-submenu="true"] {
-    .sba {
+    [data-ui="sbaApp"] {
         position: relative;
         left: -167px;
         top: -175px;
@@ -52,7 +85,7 @@ $gameWidth: 1280;
         }
     }
 
-    .sba {
+    [data-ui="sbaApp"] {
         left: -163px;
         top: 0;
     }
@@ -68,12 +101,6 @@ $gameWidth: 1280;
 
 
 [data-sba-active="true"] {
-    --sba-app-width: 100px;
-    --sba-app-padding: 0;
-    --sba-app-margin: 0;
-    --sba-game-offset: #{$gameOffset * 1px};
-    --sba-game-width: #{$gameWidth - (2 * $gameOffset) * 1px};
-    --sba-mobile-threshold: 900px;
 
     .sba-container {
         display: block;
@@ -159,7 +186,7 @@ $gameWidth: 1280;
         }
 
         &.pz-desktop {
-            .sba {
+            [data-ui="sbaApp"] {
                 left: -175px;
             }
         }
@@ -268,13 +295,13 @@ $gameWidth: 1280;
         }
 
         &[data-sba-submenu="true"] {
-            .sba {
+            [data-ui="sbaApp"] {
                 top: -66px;
             }
         }
 
         &.pz-desktop {
-            .sba {
+            [data-ui="sbaApp"] {
                 left: -191px;
             }
         }
@@ -284,7 +311,7 @@ $gameWidth: 1280;
 @media (min-width: 1298px) {
     [data-sba-active="true"] {
         &[data-sba-submenu="true"] {
-            .sba {
+            [data-ui="sbaApp"] {
                 left: -179px;
             }
         }

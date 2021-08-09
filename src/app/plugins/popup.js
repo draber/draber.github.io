@@ -8,13 +8,13 @@ import el from "../modules/element";
 import {
     prefix
 } from "../modules/string";
-import settings from "../modules/settings";
+import Plugin from '../modules/plugin.js';
 
 
 /**
- * Plugin base class
+ * Popup base class
  */
-class Popup {
+class Popup extends Plugin {
 
     /**
      * Enable closing the popup by clicking on the x button
@@ -32,36 +32,17 @@ class Popup {
     }
 
     /**
-     * Get a reference to the `<template>` that holds the pop-ups while idle
-     * Create one if it doesn't exist yet
-     * @returns {*}
-     */
-    getTarget() {
-        const dataUi = prefix('popup-container', 'd');
-        let container = el.$(`[data-ui="${dataUi}"]`);
-        if (!container) {
-            container = el.template({
-                data: {
-                    ui: dataUi
-                }
-            });
-            el.$('body').append(container);
-        }
-        return container;
-    }
-
-    /**
      * Create a pop-up, this mimics the pop-ups already available in Spelling Bee
      * @returns {HTMLElement}
      */
-    create() {
+    buildUi() {
+        this.panelHolder = el.div({
+            classNames: [prefix('panel-holder', 'd')],
+        })
         return el.div({
             classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
             attributes: {
                 role: 'button'
-            },
-            data: {
-                ui: this.key
             },
             events: {
                 click: e => {
@@ -82,19 +63,9 @@ class Popup {
                                 this.toggle(false)
                             }
                         }
-                    })
+                    }),
                 }),
-                el.div({
-                    classNames: ['sb-modal-content'],
-                    content: [
-                        el.div({
-                            classNames: ['sb-modal-header'],
-                            content: [this.parts.title, this.parts.subtitle]
-                        }),
-                        this.parts.body,
-                        this.parts.footer
-                    ]
-                })
+                this.panelHolder
             ]
         });
     }
@@ -104,13 +75,10 @@ class Popup {
      * @param {String} part
      * @param {Element|NodeList|Array|String} content
      */
-    setContent(part, content) {
-        if (!this.parts[part]) {
-            console.error(`Unknown target ${part}`);
-            return this;
-        }
-        this.parts[part] = el.empty(this.parts[part]);
-        this.parts[part].append(el.toNode(content));
+    display(panel) {
+        this.panel = panel;
+        this.panelHolder.append(panel.ui);
+        this.toggle(true);
         return this;
     }
 
@@ -119,9 +87,9 @@ class Popup {
      * @returns {HTMLElement|Boolean}
      */
     getCloseButton() {
-        for(let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
+        for (let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
             const closer = el.$(selector, this.app.gameWrapper);
-            if(closer) {
+            if (closer) {
                 return closer;
             }
         }
@@ -142,66 +110,30 @@ class Popup {
         if (state) {
             this.app.modalWrapper.append(this.ui);
             this.modalSystem.classList.add('sb-modal-open');
-            this.isOpen = true;
         } else {
-            this.getTarget().append(this.ui);
+            this.target.append(this.ui);
+            this.panel.reset();
             this.modalSystem.classList.remove('sb-modal-open');
-            this.isOpen = false;
         }
 
         return this;
     }
-
 
     /**
      * Build an instance
      * @param app
      * @param key
      */
-    constructor(app, key) {
+    constructor(app) {        
 
-        this.key = key;
-
-        this.app = app;
+        super(app, 'popup');
 
         this.state = false;
 
-        this.isOpen = false;
-
         this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
-
-        this.parts = {
-            title: el.h3({
-                classNames: ['sb-modal-title']
-            }),
-
-            subtitle: el.p({
-                classNames: ['sb-modal-message']
-            }),
-
-            body: el.div({
-                classNames: ['sb-modal-body']
-            }),
-
-            footer: el.div({
-                classNames: ['sb-modal-message', 'sba-modal-footer'],
-                content: [
-                    el.a({
-                        content: settings.get('label'),
-                        attributes: {
-                            href: settings.get('url'),
-                            target: prefix()
-                        }
-                    })
-                ]
-            })
-        }
-
-        this.ui = this.create();
-
+        this.target = this.app.componentContainer;
+        this.ui = this.buildUi();
         this.enableKeyClose();
-
-        this.getTarget().append(this.ui);
     }
 
 }

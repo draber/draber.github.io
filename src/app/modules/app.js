@@ -76,6 +76,20 @@ class App extends Widget {
     }
 
     /**
+     * Get a reference to the `<template>` that holds the pop-ups while idle
+     * Create one if it doesn't exist yet
+     * @returns {*}
+     */
+    buildComponentContainer() {
+        this.componentContainer = el.template({
+            data: {
+                ui: prefix('component-container', 'd')
+            }
+        });
+        document.body.append(this.componentContainer);
+    }
+
+    /**
      * Start the application once the result list has been generated.
      * The result list depends on sync data from the server and it can therefore be assumed that everything is ready
      */
@@ -87,7 +101,8 @@ class App extends Widget {
                 data.init(this, this.getSyncData());
                 this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
                 this.resultList = resultList;
-
+                this.target = el.$('.sb-content-box', this.gameWrapper);
+                this.buildComponentContainer();
                 this.add();
                 this.domSet('active', true);
                 this.registerPlugins();
@@ -139,13 +154,13 @@ class App extends Widget {
                         }
                         break;
 
-                    // text input
+                        // text input
                     case mutation.type === 'childList' &&
                     mutation.target.classList.contains('sb-hive-input-content'):
                         this.trigger(prefix('newInput'), mutation.target.textContent.trim());
                         break;
 
-                    // term added to word list
+                        // term added to word list
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.resultList) &&
                     !!mutation.addedNodes.length &&
@@ -184,7 +199,7 @@ class App extends Widget {
 
         return el.div({
             data: {
-                id: this.key,
+                ui: this.key,
                 version: settings.get('version')
             },
             classNames,
@@ -212,8 +227,7 @@ class App extends Widget {
      * Add app to the DOM
      */
     add() {
-        this.container.append(this.ui);
-        el.$('.sb-content-box', this.gameWrapper).prepend(this.container);
+        this.target.prepend(this.container);
     }
 
     /**
@@ -229,7 +243,7 @@ class App extends Widget {
 
         // Kill existing instance - this could happen on a conflict between bookmarklet and extension
         // or while debugging
-        const oldInstance = el.$(`[data-id="${this.key}"]`);
+        const oldInstance = el.$(`[data-ui="${this.key}"]`);
         if (oldInstance) {
             oldInstance.dispatchEvent(new Event(prefix('destroy')));
         }
@@ -237,13 +251,14 @@ class App extends Widget {
         // Outer container
         this.gameWrapper = gameWrapper;
 
-        // App UI
-        this.ui = this.buildUi();
-
         // init dom elements for external access
         this.container = el.div({
             classNames: [prefix('container', 'd')]
         });
+
+        // App UI
+        this.ui = this.buildUi();
+        this.container.append(this.ui);
 
         this.load();
     }

@@ -10,7 +10,7 @@ import {
 	prefix
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
-import Popup from './popup.js';
+import Panel from './panel.js';
 
 /**
  * TodaysAnswers plugin
@@ -25,7 +25,7 @@ class TodaysAnswers extends Plugin {
 	 * @param {Event} evt
 	 * @returns {TodaysAnswers}
 	 */
-	display() {
+	display(target) {
 		const foundTerms = data.getList('foundTerms');
 		const pangrams = data.getList('pangrams');
 
@@ -47,18 +47,19 @@ class TodaysAnswers extends Plugin {
 			}));
 		});
 
-		this.popup
+		this.panel
 			.setContent('body', [
 				el.div({
 					content: data.getList('letters').join(''),
 					classNames: ['sb-modal-letters']
 				}),
 				pane
-			])
-			.toggle(true);
+			]);
+		target.display(this.panel);
 
 		return this;
 	}
+
 
 	/**
 	 * TodaysAnswers constructor
@@ -73,11 +74,11 @@ class TodaysAnswers extends Plugin {
 		});
 
 		this.marker = prefix('resolved', 'd');
-		this.popup = new Popup(this.app, this.key)
+		this.panel = new Panel(this.app, this.key)
 			.setContent('title', this.title)
 			.setContent('subtitle', data.getDate().display);
 
-		this.menuAction = 'popup';
+		this.menuAction = 'panel';
 		this.menuIcon = 'warning';
 	}
 }

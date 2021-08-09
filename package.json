@@ -35,10 +35,10 @@
     "site:watch": "node --experimental-json-modules ./src/tools/compile/compile.js -t site -w",
     "mock:create:current": "node --experimental-json-modules src/tools/mock -c current",
     "mock:create:reference": "node --experimental-json-modules src/tools/mock -c reference",
-    "mock:evaluate": "node --experimental-json-modules src/tools/mock -e current",
+    "mock:evaluate": "node --experimental-json-modules ./src/tools/mock -e current",
     "mock:diff": "npm run mock:create:current & npm run mock:evaluate",
-    "mock:serve": "node --experimental-json-modules src/tools/mock/server/index.js",
-    "mock:serve:debug": "node src/tools/mock/server/index.js -d"
+    "mock:serve": "node --experimental-json-modules ./src/tools/mock/server/index.js",
+    "mock:serve:debug": "node --experimental-json-modules ./src/tools/mock/server/index.js -d"
   },
   "homepage": "https://github.com/draber/draber.github.io.git#readme",
   "repository": {

@@ -78,9 +78,10 @@ class Menu extends Plugin {
                             }
                             break;
                         }
-                        case 'popup':
+                        case 'panel':
                             this.app.domSet('submenu', false);
-                            component.display();
+                            const stage = this.app.domGet('sidebar') ? 'sidebar' : 'popup';
+                            component.display(this.app.plugins.get(stage));
                             break;
                         default:
                             setTimeout(() => {

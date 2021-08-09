@@ -10,7 +10,7 @@ import {
 import Plugin from '../modules/plugin.js';
 import data from '../modules/data.js';
 import el from '../modules/element.js';
-import Popup from './popup.js';
+import Panel from './panel.js';
 
 /**
  * Community plugin
@@ -117,10 +117,12 @@ class Community extends Plugin {
      * @param {Event} evt
      * @returns {Community}
      */
-    display() {
-        this.popup.toggle(true);
+    display(target) {
+		target.display(this.panel);
         return this;
     }
+
+    
 
     /**
      * Community constructor
@@ -132,7 +134,7 @@ class Community extends Plugin {
             canChangeState: true
         });
 
-        this.menuAction = 'popup';
+        this.menuAction = 'panel';
         this.menuIcon = 'null';
         const words = ['two','three','four', 'five','six','seven','eight','nine','ten'];
 
@@ -211,7 +213,7 @@ class Community extends Plugin {
             ]
         });
 
-        this.popup = new Popup(this.app, this.key)
+        this.panel = new Panel(this.app, this.key)
             .setContent('title', this.title)
             .setContent('subtitle', this.description)
             .setContent('body', features);

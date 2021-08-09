@@ -4,7 +4,7 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
- import Popup from './popup.js';
+import Panel from './panel.js';
 import Plugin from '../modules/plugin.js';
 import el from '../modules/element.js';
 import {
@@ -36,9 +36,9 @@ class ColorConfig extends Plugin {
      * @param state
      * @returns {ColorConfig}
      */
-    display() {
-        this.popup.toggle(true);
-        el.$('input:checked', this.popup.ui).focus();
+    display(target) {
+        target.display(this.panel);
+        el.$('input:checked', this.panel.ui).focus();
     }
 
 
@@ -57,8 +57,9 @@ class ColorConfig extends Plugin {
         });
 
 
-        this.menuAction = 'popup';
+        this.menuAction = 'panel';
         this.menuIcon = 'null';
+        this.panelTheme = 'dark'
 
         const swatches = el.ul({
             classNames: [prefix('swatches', 'd')]
@@ -98,7 +99,7 @@ class ColorConfig extends Plugin {
         }
 
 
-        this.popup = new Popup(this.app, this.key)
+        this.panel = new Panel(this.app, this.key)
             .setContent('title', this.title)
             .setContent('subtitle', this.description)
             .setContent('body', el.div({
@@ -114,12 +115,12 @@ class ColorConfig extends Plugin {
                             },
                             isSvg: true,
                             content: [el.path({
-                                classNames: ['cell-fill'],
-                                isSvg: true,
-                                attributes: {
-                                    d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
-                                }
-                            }),
+                                    classNames: ['cell-fill'],
+                                    isSvg: true,
+                                    attributes: {
+                                        d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
+                                    }
+                                }),
                                 el.text({
                                     classNames: ['cell-letter'],
                                     attributes: {
@@ -136,7 +137,6 @@ class ColorConfig extends Plugin {
 
                 ]
             }));
-        this.popup.ui.dataset[prefix('theme')] = 'dark';
 
         this.toggle(this.getState());
     }

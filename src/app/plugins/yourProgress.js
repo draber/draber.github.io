@@ -6,7 +6,7 @@
  */
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
-import Popup from './popup.js';
+import Panel from './panel.js';
 import el from '../modules/element.js';
 
 /**
@@ -21,7 +21,7 @@ class YourProgress extends TablePane {
      * Display pop-up
      * @returns {YourProgress}
      */
-    display() {
+    display(target) {
         const points = data.getPoints('foundTerms');
         const max = data.getPoints('answers');
         const next = this.getPointsToNextTier();
@@ -59,15 +59,16 @@ class YourProgress extends TablePane {
             })
         }
 
-        this.popup
+        this.panel
             .setContent('subtitle', el.span({
                 content
             }))
-            .setContent('body', this.getPane())
-            .toggle(true);
+            .setContent('body', this.getPane());
+            target.display(this.panel);
 
         return this;
     }
+
 
     /**
      * Get the data for the table cells
@@ -124,10 +125,10 @@ class YourProgress extends TablePane {
             hasHeadCol: false
         });
 
-        this.popup = new Popup(this.app, this.key)
+        this.panel = new Panel(this.app, this.key)
             .setContent('title', this.title);
 
-        this.menuAction = 'popup';
+        this.menuAction = 'panel';
         this.menuIcon = 'null';
 
     }
