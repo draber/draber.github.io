@@ -70,7 +70,7 @@ body .pz-game-field {
   background: var(--body-bg-color);
   color: var(--text-color);
 }
-body[data-sba-theme=dark] .pz-game-wrapper {
+body[data-sba-theme=dark] .pz-game-wrapper, body[data-sba-theme=dark] #js-hook-pz-moment__loading {
   background: var(--body-bg-color) !important;
   color: var(--text-color);
 }
@@ -602,30 +602,32 @@ body[data-sba-theme=dark] .hive-action__shuffle:after {
 
 [data-ui=grid] table {
   border-top: 1px solid var(--border-color);
+  margin-left: -20px;
+  width: calc(100% + 40px);
 }
 [data-ui=grid] tbody tr:last-child td {
-  font-weight: bold;
+  background-color: var(--head-row-bg-color);
 }
 [data-ui=grid] tbody tr td {
   padding: 5px 0 !important;
 }
 [data-ui=grid] tbody tr td:last-of-type {
-  font-weight: bold;
+  background-color: var(--head-row-bg-color);
 }
 
-.pz-desktop .sba details[open] summary:before {
+.sba details[open] summary:before {
   transform: rotate(-90deg);
   left: 10px;
   top: 1px;
 }
-.pz-desktop .sba summary {
+.sba summary {
   list-style: none;
   padding: 1px 15px 0 21px;
 }
-.pz-desktop .sba summary::marker {
+.sba summary::marker {
   display: none;
 }
-.pz-desktop .sba summary:before {
+.sba summary:before {
   content: "❯";
   font-size: 9px;
   position: absolute;
@@ -726,6 +728,7 @@ body[data-sba-theme=dark] .hive-action__shuffle:after {
 [data-sba-active=true][data-sba-submenu=true] .sba-container {
   top: 0;
   height: 0;
+  z-index: 4;
 }
 [data-sba-active=true] .sb-expanded .sba-container {
   visibility: hidden;
@@ -752,6 +755,21 @@ body[data-sba-theme=dark] .hive-action__shuffle:after {
   [data-sba-active=true] .hive-action:not(.hive-action__shuffle) {
     width: 71px;
     min-width: auto;
+  }
+}
+@media (max-width: 450px) {
+  [data-ui=grid] table {
+    table-layout: auto;
+  }
+  [data-ui=grid] table.sba-data-pane tbody th {
+    width: 28px !important;
+  }
+  [data-ui=grid] table.sba-data-pane thead th:first-of-type {
+    width: 28px !important;
+  }
+  [data-ui=grid] table.sba-data-pane :is(thead, tbody) tr :is(th, td) {
+    width: auto;
+    font-size: 90%;
   }
 }
 [data-sba-active] .pz-game-toolbar .pz-row {

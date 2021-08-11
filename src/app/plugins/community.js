@@ -43,7 +43,7 @@ class Community extends Plugin {
      * @returns {Boolean}
      */
     hasBingo() {
-        return Array.from(new Set(data.getList('answers').map(term => term.charAt[0]))).length === 7;
+        return Array.from(new Set(data.getList('answers').map(term => term.charAt(0)))).length === 7;
     }
 
     /**
@@ -168,7 +168,7 @@ class Community extends Plugin {
                             content: 'Does it classify as "Bingo"?'
                         }),
                         el.p({
-                            content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'No, today it doesn’t'
+                            content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'No, today it doesn’t.'
                         }),
                         el.em({
                             content: '"Bingo" means that all seven letters in the puzzle are used to start at least one word in the word list.'

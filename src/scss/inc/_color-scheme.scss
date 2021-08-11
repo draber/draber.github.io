@@ -14,7 +14,7 @@ body {
     }
 
     &[data-sba-theme="dark"] {
-        .pz-game-wrapper {
+        .pz-game-wrapper, #js-hook-pz-moment__loading {
             background: var(--body-bg-color) !important;
             color: var(--text-color);
         }

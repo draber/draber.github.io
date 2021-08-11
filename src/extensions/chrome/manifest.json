@@ -17,7 +17,7 @@
         "128": "assets/icon128.png"
     },
     "web_accessible_resources": [{
-        "resources": ["spelling-bee-assistant.min.js"],
+        "resources": ["spelling-bee-assistant.js"],
         "matches": ["https://www.nytimes.com/*"]
     }],
     "host_permissions": ["https://www.nytimes.com/*"]

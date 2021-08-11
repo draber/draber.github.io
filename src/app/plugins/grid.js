@@ -43,7 +43,7 @@ class Grid extends TablePane {
 		const rows = el.$$('tr', this.pane);
 		const rCnt = rows.length;
 		rows.forEach((row, rInd) => {
-			if(rCnt === rInd - 1) {
+			if(rCnt === rInd + 1) {
 				return false;
 			}
 			const cells = el.$$('td', row);

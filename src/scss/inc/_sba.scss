@@ -145,6 +145,7 @@
             }
         }
     }
+
     .sb-modal-body {
         margin-top: 0;
         padding-bottom: 10px;
@@ -451,6 +452,8 @@
 [data-ui="grid"] {
     table {
         border-top: 1px solid var(--border-color);
+        margin-left: -20px;
+        width: calc(100% + 40px);
     }
 
     tbody {
@@ -458,7 +461,7 @@
 
             &:last-child {
                 td {
-                    font-weight: bold;
+                    background-color: var(--head-row-bg-color);
                 }
             }
 
@@ -466,47 +469,45 @@
                 padding: 5px 0 !important;
 
                 &:last-of-type {
-                    font-weight: bold;
+                    background-color: var(--head-row-bg-color);
                 }
             }
         }
     }
 }
 
-.pz-desktop {
-    .sba {
+.sba {
 
-        details {
+    details {
 
-            &[open] {
-                summary {
-                    &:before {
-                        transform: rotate(-90deg);
-                        left: 10px;
-                        top: 1px;
-                    }
+        &[open] {
+            summary {
+                &:before {
+                    transform: rotate(-90deg);
+                    left: 10px;
+                    top: 1px;
                 }
             }
         }
+    }
 
-        summary {
-            list-style: none;
-            padding: 1px 15px 0 21px;
+    summary {
+        list-style: none;
+        padding: 1px 15px 0 21px;
 
-            &::marker {
-                display: none
-            }
+        &::marker {
+            display: none
+        }
 
-            &:before {
-                content: "❯";
-                font-size: 9px;
-                position: absolute;
-                display: inline-block;
-                transform: rotate(90deg);
-                transform-origin: center;
-                left: 7px;
-                top: 0
-            }
+        &:before {
+            content: "❯";
+            font-size: 9px;
+            position: absolute;
+            display: inline-block;
+            transform: rotate(90deg);
+            transform-origin: center;
+            left: 7px;
+            top: 0
         }
     }
 }
