@@ -57,6 +57,9 @@ const load = async (url, context) => {
 
             document.querySelector('header.pz-header').style.display = 'none';
 
+            document.body.classList.remove('pz-mobile', 'pz-desktop');
+            document.body.classList.add('PZ-DEVICE-TYPE');
+
             let urlData;
             const obsoletes = '.pz-ad-box, #pz-gdpr, #adBlockCheck, .pz-moment__info-date, .pz-game-title-bar, link, script, meta, style, iframe, svg, body > footer';
             document.querySelectorAll(obsoletes).forEach(element => {
