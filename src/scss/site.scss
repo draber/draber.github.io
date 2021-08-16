@@ -231,30 +231,31 @@ header {
         margin: 0;
         list-style: none;
         display: flex;
+        gap: .5rem;
 
-        .github {
-            position: relative;
-            overflow: hidden;
-            span {
-                position: absolute;
-                left: 300px;
-            }
-        }
-
-        .twitter {            
+        .twitter,
+        .kofi {
             display: flex;
-            padding: 0 1rem;
+            padding: .3rem .8rem;
             line-height: 1;
             font-size: 1.4rem;
             align-items: center;
             top: -.4rem;
+            background: var(--link-color);
+            color: #fff;
+
+            span {
+                display: inline-block;
+            }
 
             svg {
                 fill: #fff;
+                margin-right: .5rem;
                 width: 1.5rem
             }
+
             a {
-                color: #fff;
+                color: currentColor;
                 text-decoration: none;
             }
         }
@@ -345,7 +346,7 @@ textarea.card {
     padding-bottom: 1.1rem;
 }
 
-.text-part {   
+.text-part {
 
     h3 {
         margin: 2rem 0 .8rem;
@@ -423,8 +424,6 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 
     display: inline-block;
     border: none;
-    background: var(--link-color);
-    color: var(--head-row-bg-color);
     font: inherit;
     cursor: pointer;
     transition: background 250ms ease-in-out, transform 150ms ease;
@@ -454,6 +453,8 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 
     padding: 1rem 2rem;
     line-height: 1;
+    background: var(--link-color);
+    color: var(--head-row-bg-color);
 
     &.success {
         &::after {
@@ -494,6 +495,26 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 }
 
 
+@media screen and (max-width: 550px) {
+
+    header {
+        h1 {
+            font-size: 1.8rem;
+        }   
+        ul {    
+            .twitter,
+            .kofi {    
+                span {
+                    overflow: hidden;
+                    white-space: nowrap;
+                    max-width: 60px;
+                    text-overflow: ellipsis
+                }
+            }
+        }
+    }
+}
+
 @media screen and (max-width: 768px) {
 
     .desktop-only {
@@ -506,7 +527,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 }
 
 
-@media screen and (max-width: 668px) {
+@media screen and (max-width: 700px) {
 
     html {
         --card-gap: 1rem;
@@ -559,31 +580,25 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 
 @media screen and (max-width: 468px) {
 
+    
     table {
         width: 100%;
     }
 
 
     header {
-        h1 {
-            font-size: 1.8rem;
-        }
-
-        .wrapper {
-
-            display: flex;
-            justify-content: flex-start;
-            align-items: start;
-            min-height: 5rem;
-        }
 
         ul {
-            position: absolute;
-            right: 0;
-            top: 2.5rem;
 
-            .github {
-                display: none;
+            .twitter,
+            .kofi {   
+                border-radius: 50%; 
+                span {
+                    display: none
+                }
+                svg {
+                    margin: 0
+                }
             }
         }
     }
@@ -597,6 +612,27 @@ tr:nth-child(n+1) td:nth-child(n+2) {
             img {
                 max-width: 100%;
             }
+        }
+    }
+}
+
+@media screen and (max-width: 4px) {
+
+    header {
+
+        .wrapper {
+
+            display: flex;
+            justify-content: flex-start;
+            align-items: start;
+            min-height: 5rem;
+        } 
+
+
+        ul {
+            position: absolute;
+            right: 0;
+            top: 2.5rem;
         }
     }
 }

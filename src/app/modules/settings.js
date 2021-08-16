@@ -18,6 +18,7 @@ const settings = {
     url: config.url,
     prefix: config.prefix,
     repo: config.repo,
+    support: config.support.kofi,
     targetUrl: config.targetUrl,
     options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 };

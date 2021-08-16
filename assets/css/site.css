@@ -244,29 +244,32 @@ header ul {
   margin: 0;
   list-style: none;
   display: flex;
+  gap: 0.5rem;
 }
-header ul .github {
-  position: relative;
-  overflow: hidden;
-}
-header ul .github span {
-  position: absolute;
-  left: 300px;
-}
-header ul .twitter {
+header ul .twitter,
+header ul .kofi {
   display: flex;
-  padding: 0 1rem;
+  padding: 0.3rem 0.8rem;
   line-height: 1;
   font-size: 1.4rem;
   align-items: center;
   top: -0.4rem;
+  background: var(--link-color);
+  color: #fff;
 }
-header ul .twitter svg {
+header ul .twitter span,
+header ul .kofi span {
+  display: inline-block;
+}
+header ul .twitter svg,
+header ul .kofi svg {
   fill: #fff;
+  margin-right: 0.5rem;
   width: 1.5rem;
 }
-header ul .twitter a {
-  color: #fff;
+header ul .twitter a,
+header ul .kofi a {
+  color: currentColor;
   text-decoration: none;
 }
 header ul svg {
@@ -411,8 +414,6 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 .action-button {
   display: inline-block;
   border: none;
-  background: var(--link-color);
-  color: var(--head-row-bg-color);
   font: inherit;
   cursor: pointer;
   transition: background 250ms ease-in-out, transform 150ms ease;
@@ -436,6 +437,8 @@ tr:nth-child(n+1) td:nth-child(n+2) {
 #copy-bm {
   padding: 1rem 2rem;
   line-height: 1;
+  background: var(--link-color);
+  color: var(--head-row-bg-color);
 }
 #copy-bm.success::after {
   position: absolute;
@@ -463,6 +466,18 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     max-width: 100%;
   }
 }
+@media screen and (max-width: 550px) {
+  header h1 {
+    font-size: 1.8rem;
+  }
+  header ul .twitter span,
+header ul .kofi span {
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 60px;
+    text-overflow: ellipsis;
+  }
+}
 @media screen and (max-width: 768px) {
   .desktop-only {
     display: none;
@@ -472,7 +487,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     display: block;
   }
 }
-@media screen and (max-width: 668px) {
+@media screen and (max-width: 700px) {
   html {
     --card-gap: 1rem;
   }
@@ -520,9 +535,27 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     width: 100%;
   }
 
-  header h1 {
-    font-size: 1.8rem;
+  header ul .twitter,
+header ul .kofi {
+    border-radius: 50%;
   }
+  header ul .twitter span,
+header ul .kofi span {
+    display: none;
+  }
+  header ul .twitter svg,
+header ul .kofi svg {
+    margin: 0;
+  }
+
+  .card.panel {
+    display: block;
+  }
+  .card.panel img {
+    max-width: 100%;
+  }
+}
+@media screen and (max-width: 4px) {
   header .wrapper {
     display: flex;
     justify-content: flex-start;
@@ -533,15 +566,5 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     position: absolute;
     right: 0;
     top: 2.5rem;
-  }
-  header ul .github {
-    display: none;
-  }
-
-  .card.panel {
-    display: block;
-  }
-  .card.panel img {
-    max-width: 100%;
   }
 }

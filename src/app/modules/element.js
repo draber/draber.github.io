@@ -4,6 +4,45 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
+
+const cast = content => {
+
+    if (typeof content === 'undefined') {
+        return document.createDocumentFragment();
+    }
+
+    // HTML or SVG element or DocumentFragment, a single node either way
+    if (content instanceof Element || content instanceof DocumentFragment) {
+        return content;
+    }
+
+    // numeric values are acted to string
+    if (typeof content === 'number') {
+        content = content.toString();
+    }
+
+    // HTML, text or a mix
+    if (typeof content === 'string' ||
+        content instanceof String
+    ) {
+        const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
+        const doc = (new DOMParser()).parseFromString(content, mime);
+        let node;
+        if(doc.body) {
+            node = document.createDocumentFragment();
+            const children = Array.from(doc.body.childNodes);
+            children.forEach(elem => {
+                node.append(elem);
+            })
+        }
+        else {
+            node = doc.documentElement;
+        }
+        return node;
+    }
+    console.error('Expected Element|DocumentFragment|Iterable|String|HTMLCode, got', content);
+}
+
 /**
  * Container object for all functions
  */
@@ -58,40 +97,25 @@ const fn = {
      * @return {Element|DocumentFragment}
      */
     toNode: (content) => {
-        const fragment = document.createDocumentFragment();
-
-        if (typeof content === 'undefined') {
-            return fragment;
-        }
-
-        // HTML or SVG element or DocumentFragment, a single node either way
-        if (content instanceof Element || content instanceof DocumentFragment) {
-            return content;
-        }
-
-        // numeric values are acted to string
-        if (typeof content === 'number') {
-            content = content.toString();
-        }
-
-        // HTML, text or a mix
-        if (typeof content === 'string' ||
-            content instanceof String
-        ) {
-            const doc = (new DOMParser()).parseFromString(content, 'text/html');
-            content = doc.body.childNodes;
-        }
 
         // anything iterable
-        if (typeof content.forEach === 'function') {
-            // Array.from avoids problems with live collections
-            Array.from(content).forEach(element => {
-                fragment.append(element);
-            })
-            return fragment;
+        if (typeof content.forEach !== 'function') {
+            content = [content];
         }
 
-        console.error('Expected Element|DocumentFragment|Iterable|String|HTMLCode, got', content);
+        content = content.map(entry => cast(entry));
+
+        if (content.length === 1) {
+            return content[0]
+        } else {
+            const fragment = document.createDocumentFragment();
+            // Array.from avoids problems with live collections
+            content.forEach(entry => {
+                fragment.append(entry);
+            })
+            return fragment;
+
+        }
     },
 
     /**
