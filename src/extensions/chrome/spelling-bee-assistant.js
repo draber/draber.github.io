@@ -17,7 +17,7 @@
             const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
             const doc = (new DOMParser()).parseFromString(content, mime);
             let node;
-            if(doc.body) {
+            if (doc.body) {
                 node = document.createDocumentFragment();
                 const children = Array.from(doc.body.childNodes);
                 children.forEach(elem => {
@@ -29,7 +29,7 @@
             }
             return node;
         }
-        console.error('Expected Element|DocumentFragment|Iterable|String|HTMLCode, got', content);
+        console.error('Expected Element|DocumentFragment|String|HTMLCode|SVGCode, got', content);
     };
     const fn = {
         $: (selector, container = null) => {
@@ -52,7 +52,7 @@
             })
         },
         toNode: (content) => {
-            if (typeof content.forEach !== 'function') {
+            if (!content.forEach || typeof content.forEach !== 'function') {
                 content = [content];
             }
             content = content.map(entry => cast(entry));
@@ -75,15 +75,15 @@
         }
     };
     const create = function ({
-        tag,
-        content,
-        attributes = {},
-        style = {},
-        data = {},
-        events = {},
-        classNames = [],
-        isSvg
-    } = {}) {
+                                 tag,
+                                 content,
+                                 attributes = {},
+                                 style = {},
+                                 data = {},
+                                 events = {},
+                                 classNames = [],
+                                 isSvg
+                             } = {}) {
         const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
         if (tag === 'a' && attributes.href && !content) {
             content = (new URL(attributes.href)).hostname;
@@ -164,7 +164,7 @@
     const saveOptions = () => {
         localStorage.setItem(settings.prefix + '-settings', JSON.stringify(settings.options));
     };
-    if(settings.options.version && settings.options.version !== settings.version){
+    if (settings.options.version && settings.options.version !== settings.version) {
         settings.options.oldVersion = settings.options.version;
     }
     settings.options.version = settings.version;
@@ -413,7 +413,7 @@
                 if (this.app.popupCloser && evt.code === 'Escape') {
                     this.app.popupCloser.click();
                 }
-                delete(this.app.popupCloser);
+                delete (this.app.popupCloser);
             });
             return this;
         }
@@ -484,9 +484,9 @@
             return this;
         }
         getCloseButton() {
-            for(let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
+            for (let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
                 const closer = el.$(selector, this.app.gameWrapper);
-                if(closer) {
+                if (closer) {
                     return closer;
                 }
             }
@@ -687,71 +687,71 @@
     }
 
     class TablePane extends Plugin {
-    	run(evt) {
-    		this.pane = el.empty(this.pane);
-    		const tbody = el.tbody();
-    		const data = this.getData();
-    		if (this.hasHeadRow) {
-    			this.pane.append(this.buildHead(data.shift()));
-    		}
-    		const l = data.length;
-    		let colCnt = 0;
-    		data.forEach((rowData, i) => {
-    			colCnt = rowData.length;
-    			const classNames = [];
-    			for (const [marker, fn] of Object.entries(this.cssMarkers)) {
-    				if (fn(rowData, i, l)) {
-    					classNames.push(prefix(marker, 'd'));
-    				}
-    			}
-    			const tr = el.tr({
-    				classNames
-    			});
-    			rowData.forEach((cellData, rInd) => {
-    				const tag = rInd === 0 && this.hasHeadCol ? 'th' : 'td';
-    				tr.append(el[tag]({
-    					content: cellData
-    				}));
-    			});
-    			tbody.append(tr);
-    		});
-    		this.pane.dataset.cols = colCnt;
-    		this.pane.append(tbody);
-    		return this;
-    	}
-    	buildHead(rowData) {
-    		return el.thead({
-    			content: el.tr({
-    				content: rowData.map(cellData => el.th({
-    					content: cellData
-    				}))
-    			})
-    		});
-    	}
-    	getPane() {
-    		return this.pane;
-    	}
-    	constructor(app, title, description, {
-    		canChangeState = true,
-    		defaultState = true,
-    		cssMarkers = {},
-    		hasHeadRow = true,
-    		hasHeadCol = true
-    	} = {}) {
-    		super(app, title, description, {
-    			canChangeState,
-    			defaultState
-    		});
-    		app.on(prefix('refreshUi'), () => {
-    			this.run();
-    		});
-    		this.cssMarkers = cssMarkers;
-    		this.hasHeadRow = hasHeadRow;
-    		this.hasHeadCol = hasHeadCol;
-    		this.pane = el.table({
-    			classNames: ['pane', prefix('dataPane', 'd')]
-    		});
-    	}
+        run(evt) {
+            this.pane = el.empty(this.pane);
+            const tbody = el.tbody();
+            const data = this.getData();
+            if (this.hasHeadRow) {
+                this.pane.append(this.buildHead(data.shift()));
+            }
+            const l = data.length;
+            let colCnt = 0;
+            data.forEach((rowData, i) => {
+                colCnt = rowData.length;
+                const classNames = [];
+                for (const [marker, fn] of Object.entries(this.cssMarkers)) {
+                    if (fn(rowData, i, l)) {
+                        classNames.push(prefix(marker, 'd'));
+                    }
+                }
+                const tr = el.tr({
+                    classNames
+                });
+                rowData.forEach((cellData, rInd) => {
+                    const tag = rInd === 0 && this.hasHeadCol ? 'th' : 'td';
+                    tr.append(el[tag]({
+                        content: cellData
+                    }));
+                });
+                tbody.append(tr);
+            });
+            this.pane.dataset.cols = colCnt;
+            this.pane.append(tbody);
+            return this;
+        }
+        buildHead(rowData) {
+            return el.thead({
+                content: el.tr({
+                    content: rowData.map(cellData => el.th({
+                        content: cellData
+                    }))
+                })
+            });
+        }
+        getPane() {
+            return this.pane;
+        }
+        constructor(app, title, description, {
+            canChangeState = true,
+            defaultState = true,
+            cssMarkers = {},
+            hasHeadRow = true,
+            hasHeadCol = true
+        } = {}) {
+            super(app, title, description, {
+                canChangeState,
+                defaultState
+            });
+            app.on(prefix('refreshUi'), () => {
+                this.run();
+            });
+            this.cssMarkers = cssMarkers;
+            this.hasHeadRow = hasHeadRow;
+            this.hasHeadCol = hasHeadCol;
+            this.pane = el.table({
+                classNames: ['pane', prefix('dataPane', 'd')]
+            });
+        }
     }
 
     class Score extends TablePane {
@@ -784,12 +784,17 @@
             let emoji = '🙂';
             if (!evt.detail) {
                 emoji = '😐';
-            }
-            else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
+            } else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
                 emoji = '🙁';
             }
             this.ui.textContent = emoji;
             return this;
+        }
+        toggle(state) {
+            if (state) {
+                this.app.domSet('submenu', false);
+            }
+            return super.toggle(state);
         }
         constructor(app) {
             super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
@@ -801,7 +806,7 @@
                 content: '😐'
             });
             this.target = el.$('.sb-controls', this.app.gameWrapper);
-    		this.toggle(false);
+            this.toggle(false);
         }
     }
 
@@ -1099,7 +1104,7 @@
             });
             this.menuAction = 'popup';
             this.menuIcon = 'null';
-            const words = ['two','three','four', 'five','six','seven','eight','nine','ten'];
+            const words = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
             const features = el.ul({
                 content: [
                     el.li({
@@ -1181,49 +1186,49 @@
     }
 
     class TodaysAnswers extends Plugin {
-    	display() {
-    		const foundTerms = data.getList('foundTerms');
-    		const pangrams = data.getList('pangrams');
-    		const pane = el.ul({
-    			classNames: ['sb-modal-wordlist-items']
-    		});
-    		data.getList('answers').forEach(term => {
-    			pane.append(el.li({
-    				classNames: pangrams.includes(term) ? [prefix('pangram', 'd')] : [],
-    				content: [
-    					el.span({
-    						classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
-    					}), el.span({
-    						classNames: ['sb-anagram'],
-    						content: term
-    					})
-    				]
-    			}));
-    		});
-    		this.popup
-    			.setContent('body', [
-    				el.div({
-    					content: data.getList('letters').join(''),
-    					classNames: ['sb-modal-letters']
-    				}),
-    				pane
-    			])
-    			.toggle(true);
-    		return this;
-    	}
-    	constructor(app) {
-    		super(app, 'Today’s Answers', 'Reveals the solution of the game', {
-    			canChangeState: true,
-    			defaultState: false,
-    			key: 'todaysAnswers'
-    		});
-    		this.marker = prefix('resolved', 'd');
-    		this.popup = new Popup(this.app, this.key)
-    			.setContent('title', this.title)
-    			.setContent('subtitle', data.getDate().display);
-    		this.menuAction = 'popup';
-    		this.menuIcon = 'warning';
-    	}
+        display() {
+            const foundTerms = data.getList('foundTerms');
+            const pangrams = data.getList('pangrams');
+            const pane = el.ul({
+                classNames: ['sb-modal-wordlist-items']
+            });
+            data.getList('answers').forEach(term => {
+                pane.append(el.li({
+                    classNames: pangrams.includes(term) ? [prefix('pangram', 'd')] : [],
+                    content: [
+                        el.span({
+                            classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
+                        }), el.span({
+                            classNames: ['sb-anagram'],
+                            content: term
+                        })
+                    ]
+                }));
+            });
+            this.popup
+                .setContent('body', [
+                    el.div({
+                        content: data.getList('letters').join(''),
+                        classNames: ['sb-modal-letters']
+                    }),
+                    pane
+                ])
+                .toggle(true);
+            return this;
+        }
+        constructor(app) {
+            super(app, 'Today’s Answers', 'Reveals the solution of the game', {
+                canChangeState: true,
+                defaultState: false,
+                key: 'todaysAnswers'
+            });
+            this.marker = prefix('resolved', 'd');
+            this.popup = new Popup(this.app, this.key)
+                .setContent('title', this.title)
+                .setContent('subtitle', data.getDate().display);
+            this.menuAction = 'popup';
+            this.menuIcon = 'warning';
+        }
     }
 
     class PangramHl extends Plugin {
@@ -1269,7 +1274,7 @@
                 return true;
             }
         }
-        run(evt=null) {
+        run(evt = null) {
             const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
             [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
                 container[method]('pointerup', this.listener);
@@ -1444,75 +1449,75 @@
     }
 
     class Grid extends TablePane {
-    	display() {
-    		this.popup
-    			.setContent('subtitle', this.description)
-    			.setContent('body', this.getPane())
-    			.toggle(true);
-    		return this;
-    	}
-    	run(evt) {
-    		super.run(evt);
-    		const rows = el.$$('tr', this.pane);
-    		const rCnt = rows.length;
-    		rows.forEach((row, rInd) => {
-    			if(rCnt === rInd + 1) {
-    				return false;
-    			}
-    			const cells = el.$$('td', row);
-    			const cCnt = cells.length;
-    			cells.forEach((cell, cInd) => {
-    				const cellArr = cell.textContent.trim().split('/');
-    				if(cInd < cCnt -1 && cellArr.length === 2 && cellArr[0] === cellArr[1]){
-    					cell.classList.add(prefix('completed', 'd'));
-    				}
-    			});
-    		});
-    		return this;
-    	}
-    	getData() {
-    		const foundTerms = data.getList('foundTerms');
-    		const allTerms = data.getList('answers');
-    		const allLetters = Array.from(new Set(allTerms.map(entry => entry.charAt(0)))).concat(['∑']);
-    		const allDigits = Array.from(new Set(allTerms.map(term => term.length))).concat(['∑']);
-    		allDigits.sort((a, b) => a - b);
-    		allLetters.sort();
-    		const cellData = [[''].concat(allLetters)];
-    		let letterTpl = Object.fromEntries(allLetters.map(letter => [letter, {
-    			fnd: 0,
-    			all: 0
-    		}]));
-    		let rows = Object.fromEntries(allDigits.map(digit => [digit, JSON.parse(JSON.stringify(letterTpl))]));
-    		allTerms.forEach(term => {
-    			const letter = term.charAt(0);
-    			const digit = term.length;
-    			rows[digit][letter].all++;
-    			rows[digit]['∑'].all++;
-    			rows['∑'][letter].all++;
-    			rows['∑']['∑'].all++;
-    			if (foundTerms.includes(term)) {
-    				rows[digit][letter].fnd++;
-    				rows[digit]['∑'].fnd++;
-    				rows['∑'][letter].fnd++;
-    				rows['∑']['∑'].fnd++;
-    			}
-    		});
-    		for (let [digit, cols] of Object.entries(rows)) {
-    			const cellVals = [digit];
-    			Object.values(cols).forEach(colVals => {
-    				cellVals.push(colVals.all > 0 ? `${colVals.fnd}/${colVals.all}` : '-');
-    			});
-    			cellData.push(cellVals);
-    		}
-    		return cellData;
-    	}
-    	constructor(app) {
-    		super(app, 'Grid', 'The number of words by length and by first letter.');
-    		this.popup = new Popup(this.app, this.key)
-    			.setContent('title', this.title);
-    		this.menuAction = 'popup';
-    		this.menuIcon = 'null';
-    	}
+        display() {
+            this.popup
+                .setContent('subtitle', this.description)
+                .setContent('body', this.getPane())
+                .toggle(true);
+            return this;
+        }
+        run(evt) {
+            super.run(evt);
+            const rows = el.$$('tr', this.pane);
+            const rCnt = rows.length;
+            rows.forEach((row, rInd) => {
+                if (rCnt === rInd + 1) {
+                    return false;
+                }
+                const cells = el.$$('td', row);
+                const cCnt = cells.length;
+                cells.forEach((cell, cInd) => {
+                    const cellArr = cell.textContent.trim().split('/');
+                    if (cInd < cCnt - 1 && cellArr.length === 2 && cellArr[0] === cellArr[1]) {
+                        cell.classList.add(prefix('completed', 'd'));
+                    }
+                });
+            });
+            return this;
+        }
+        getData() {
+            const foundTerms = data.getList('foundTerms');
+            const allTerms = data.getList('answers');
+            const allLetters = Array.from(new Set(allTerms.map(entry => entry.charAt(0)))).concat(['∑']);
+            const allDigits = Array.from(new Set(allTerms.map(term => term.length))).concat(['∑']);
+            allDigits.sort((a, b) => a - b);
+            allLetters.sort();
+            const cellData = [[''].concat(allLetters)];
+            let letterTpl = Object.fromEntries(allLetters.map(letter => [letter, {
+                fnd: 0,
+                all: 0
+            }]));
+            let rows = Object.fromEntries(allDigits.map(digit => [digit, JSON.parse(JSON.stringify(letterTpl))]));
+            allTerms.forEach(term => {
+                const letter = term.charAt(0);
+                const digit = term.length;
+                rows[digit][letter].all++;
+                rows[digit]['∑'].all++;
+                rows['∑'][letter].all++;
+                rows['∑']['∑'].all++;
+                if (foundTerms.includes(term)) {
+                    rows[digit][letter].fnd++;
+                    rows[digit]['∑'].fnd++;
+                    rows['∑'][letter].fnd++;
+                    rows['∑']['∑'].fnd++;
+                }
+            });
+            for (let [digit, cols] of Object.entries(rows)) {
+                const cellVals = [digit];
+                Object.values(cols).forEach(colVals => {
+                    cellVals.push(colVals.all > 0 ? `${colVals.fnd}/${colVals.all}` : '-');
+                });
+                cellData.push(cellVals);
+            }
+            return cellData;
+        }
+        constructor(app) {
+            super(app, 'Grid', 'The number of words by length and by first letter.');
+            this.popup = new Popup(this.app, this.key)
+                .setContent('title', this.title);
+            this.menuAction = 'popup';
+            this.menuIcon = 'null';
+        }
     }
 
     const getPlugins = () => {

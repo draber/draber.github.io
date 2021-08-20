@@ -1,6 +1,6 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
@@ -13,7 +13,7 @@ import Plugin from '../modules/plugin.js';
 
 /**
  * Spill the beans plugin
- * 
+ *
  * @param {App} app
  * @returns {Plugin} SpillTheBeans
  */
@@ -27,12 +27,18 @@ class SpillTheBeans extends Plugin {
         let emoji = '🙂';
         if (!evt.detail) {
             emoji = '😐';
-        }
-        else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
+        } else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
             emoji = '🙁';
         }
         this.ui.textContent = emoji;
         return this;
+    }
+
+    toggle(state) {
+        if (state) {
+            this.app.domSet('submenu', false);
+        }
+        return super.toggle(state);
     }
 
     /**
@@ -56,7 +62,7 @@ class SpillTheBeans extends Plugin {
 
         this.target = el.$('.sb-controls', this.app.gameWrapper);
 
-		this.toggle(false);
+        this.toggle(false);
 
     }
 }

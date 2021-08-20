@@ -1,10 +1,11 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
- import settings from './settings.js';
+
+import settings from './settings.js';
 
 /**
  * Prefix used for event names and such
@@ -15,7 +16,7 @@ const pf = settings.get('prefix');
 /**
  * Convert a string to camelCase
  * @see https://stackoverflow.com/a/2970667 with some modifications
- * @param {String} term 
+ * @param {String} term
  */
 export const camel = term => {
     return term.replace(/[_-]+/, ' ').replace(/(?:^[\w]|[A-Z]|\b\w|\s+)/g, function (match, index) {

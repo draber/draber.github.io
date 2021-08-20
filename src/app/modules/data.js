@@ -1,10 +1,10 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
- import {
+import {
     prefix
 } from './string.js';
 
@@ -25,7 +25,7 @@ const sbData = window.gameData.today;
 let app;
 
 /**
- * Build array of terms subdivided into pangrams, found words and such
+ * Build arrays of terms subdivided into pangrams, found words and such
  */
 const completeLists = () => {
     lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));

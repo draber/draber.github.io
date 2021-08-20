@@ -1,10 +1,10 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
- import {
+import {
     prefix
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
@@ -49,7 +49,7 @@ class Googlify extends Plugin {
      * @returns {Googlify}
      */
     // eslint-disable-next-line no-unused-vars
-    run(evt=null) {
+    run(evt = null) {
         const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
         [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
             container[method]('pointerup', this.listener);
