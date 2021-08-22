@@ -14,20 +14,16 @@
         if (typeof content === 'string' ||
             content instanceof String
         ) {
-            const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
-            const isTextOnly = !(/<(.*)>/.test(content));
-            if(isTextOnly) {
-                content = 'x' + content;
+            if(!(/<(.*)>/.test(content))) {
+                return document.createTextNode(content);
             }
-            const doc = (new DOMParser()).parseFromString(content, mime);
             let node;
+            const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
+            const doc = (new DOMParser()).parseFromString(content, mime);
             if (doc.body) {
                 node = document.createDocumentFragment();
                 const children = Array.from(doc.body.childNodes);
                 children.forEach(elem => {
-                    if(isTextOnly) {
-                        elem.textContent = elem.textContent.substr(1);
-                    }
                     node.append(elem);
                 });
             }
