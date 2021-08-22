@@ -9,7 +9,7 @@ Visit the [project's homepage](https://spelling-bee-assistant.app/) for a full f
 
 ```
 // Clone the repository
-git clone draber/spelling-bee-extension
+git clone draber/draber.github.io
 
 // install node modules
 npm i
