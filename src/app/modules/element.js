@@ -32,13 +32,22 @@ const cast = content => {
     ) {
         // either HTML or SVG
         const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
+        // DOMParser.parseFromString removes leading whitespace, 
+        // which in the case of text content would be there intentionally
+        const isTextOnly = !(/<(.*)>/.test(content));
+        if(isTextOnly) {
+            content = 'x' + content;
+        }
         const doc = (new DOMParser()).parseFromString(content, mime);
         let node;
         // if the string is HTML or text
         if (doc.body) {
             node = document.createDocumentFragment();
             const children = Array.from(doc.body.childNodes);
-            children.forEach(elem => {
+            children.forEach(elem => { 
+                if(isTextOnly) {
+                    elem.textContent = elem.textContent.substr(1);
+                }               
                 node.append(elem);
             })
         }
@@ -105,12 +114,13 @@ const fn = {
      * @param {Element|DocumentFragment|Iterable|String|HTMLCode|SVGCode} content
      * @return {Element|DocumentFragment}
      */
-    toNode: (content) => {
+    toNode: content => {
 
         // cast non-iterables to array
         if (!content.forEach || typeof content.forEach !== 'function') {
             content = [content];
         }
+
 
         // cast all parts to Elements or DocumentFragments
         content = content.map(entry => cast(entry));

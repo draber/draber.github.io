@@ -148,12 +148,12 @@ class Community extends Plugin {
                                 const pp = this.getPerfectPangramCount();
                                 switch (pp) {
                                     case 0:
-                                        return `No, today it doesn’t`;
+                                        return `No, today it doesn’t.`;
                                     case 1:
-                                        return `Yes, today there’s one Perfect Pangram`;
+                                        return `Yes, today there’s one Perfect Pangram.`;
                                     default:
                                         // there have never been more then three pangrams, so this should be good enough
-                                        return `Yes, today there are ${words[pp - 2]} Perfect Pangrams`;
+                                        return `Yes, today there are ${words[pp - 2]} Perfect Pangrams.`;
                                 }
                             })()
                         }),
@@ -181,7 +181,7 @@ class Community extends Plugin {
                             content: 'Is it possible to reach Genius without using 4-letter words?'
                         }),
                         el.p({
-                            content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t'
+                            content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t.'
                         })
                     ]
                 }),

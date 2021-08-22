@@ -15,12 +15,19 @@
             content instanceof String
         ) {
             const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
+            const isTextOnly = !(/<(.*)>/.test(content));
+            if(isTextOnly) {
+                content = 'x' + content;
+            }
             const doc = (new DOMParser()).parseFromString(content, mime);
             let node;
             if (doc.body) {
                 node = document.createDocumentFragment();
                 const children = Array.from(doc.body.childNodes);
                 children.forEach(elem => {
+                    if(isTextOnly) {
+                        elem.textContent = elem.textContent.substr(1);
+                    }
                     node.append(elem);
                 });
             }
@@ -51,7 +58,7 @@
                 getElement();
             })
         },
-        toNode: (content) => {
+        toNode: content => {
             if (!content.forEach || typeof content.forEach !== 'function') {
                 content = [content];
             }
@@ -138,10 +145,6 @@
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
     var prefix$1 = "sba";
     var support = {
-    	bmac: {
-    		url: "https://www.buymeacoffee.com/sbassistant",
-    		text: "Buy me a coffee"
-    	},
     	kofi: {
     		url: "https://ko-fi.com/sbassistant",
     		text: "Buy me a coffee"
@@ -1117,11 +1120,11 @@
                                     const pp = this.getPerfectPangramCount();
                                     switch (pp) {
                                         case 0:
-                                            return `No, today it doesn’t`;
+                                            return `No, today it doesn’t.`;
                                         case 1:
-                                            return `Yes, today there’s one Perfect Pangram`;
+                                            return `Yes, today there’s one Perfect Pangram.`;
                                         default:
-                                            return `Yes, today there are ${words[pp - 2]} Perfect Pangrams`;
+                                            return `Yes, today there are ${words[pp - 2]} Perfect Pangrams.`;
                                     }
                                 })()
                             }),
@@ -1149,7 +1152,7 @@
                                 content: 'Is it possible to reach Genius without using 4-letter words?'
                             }),
                             el.p({
-                                content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t'
+                                content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t.'
                             })
                         ]
                     }),
