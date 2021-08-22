@@ -1,10 +1,10 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
- import * as config from '../../config/config.json';
+import * as config from '../../config/config.json';
 import * as pkg from '../../../package.json';
 
 /**
@@ -18,6 +18,7 @@ const settings = {
     url: config.url,
     prefix: config.prefix,
     repo: config.repo,
+    support: config.support.kofi,
     targetUrl: config.targetUrl,
     options: JSON.parse(localStorage.getItem(config.prefix + '-settings') || '{}')
 };
@@ -32,10 +33,11 @@ const saveOptions = () => {
 /**
  * Store the version in case something needs to be reset in a new release
  */
-if(settings.options.version && settings.options.version !== settings.version){
+if (settings.options.version && settings.options.version !== settings.version) {
     settings.options.oldVersion = settings.options.version;
 }
 
+// never used so far but could come in handy if some sort of reset is requires
 settings.options.version = settings.version;
 saveOptions();
 

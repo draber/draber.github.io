@@ -96,6 +96,7 @@ $gameWidth: 1280;
         .sba-container {
             top: 0;
             height: 0;
+            z-index: 4;
         }
     }
 
@@ -134,6 +135,38 @@ $gameWidth: 1280;
             width: 71px;
             min-width: auto;
         }
+    }
+}
+
+@media (max-width: 450px) {
+    [data-ui="grid"] {
+        table {
+            table-layout: auto;
+    
+            &.sba-data-pane {
+                tbody {
+                    th {
+                        width: 28px !important;
+                    }
+                }
+                thead {
+                    th {
+                        &:first-of-type {
+                            width: 28px !important;
+                        }
+                    }
+                }
+    
+                :is(thead, tbody) {
+                    tr {
+                        :is(th, td) {
+                            width: auto;
+                            font-size: 90%;
+                        }
+                    }
+                }
+            }
+        } 
     }
 }
 

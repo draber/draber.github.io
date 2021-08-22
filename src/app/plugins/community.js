@@ -1,6 +1,6 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
@@ -43,7 +43,7 @@ class Community extends Plugin {
      * @returns {Boolean}
      */
     hasBingo() {
-        return Array.from(new Set(data.getList('answers').map(term => term.charAt[0]))).length === 7;
+        return Array.from(new Set(data.getList('answers').map(term => term.charAt(0)))).length === 7;
     }
 
     /**
@@ -134,7 +134,7 @@ class Community extends Plugin {
 
         this.menuAction = 'popup';
         this.menuIcon = 'null';
-        const words = ['two','three','four', 'five','six','seven','eight','nine','ten'];
+        const words = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 
         const features = el.ul({
             content: [
@@ -148,12 +148,12 @@ class Community extends Plugin {
                                 const pp = this.getPerfectPangramCount();
                                 switch (pp) {
                                     case 0:
-                                        return `No, today it doesn’t`;
+                                        return `No, today it doesn’t.`;
                                     case 1:
-                                        return `Yes, today there’s one Perfect Pangram`;
+                                        return `Yes, today there’s one Perfect Pangram.`;
                                     default:
                                         // there have never been more then three pangrams, so this should be good enough
-                                        return `Yes, today there are ${words[pp - 2]} Perfect Pangrams`;
+                                        return `Yes, today there are ${words[pp - 2]} Perfect Pangrams.`;
                                 }
                             })()
                         }),
@@ -168,7 +168,7 @@ class Community extends Plugin {
                             content: 'Does it classify as "Bingo"?'
                         }),
                         el.p({
-                            content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'No, today it doesn’t'
+                            content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'No, today it doesn’t.'
                         }),
                         el.em({
                             content: '"Bingo" means that all seven letters in the puzzle are used to start at least one word in the word list.'
@@ -181,7 +181,7 @@ class Community extends Plugin {
                             content: 'Is it possible to reach Genius without using 4-letter words?'
                         }),
                         el.p({
-                            content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t'
+                            content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t.'
                         })
                     ]
                 }),

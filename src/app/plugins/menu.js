@@ -1,6 +1,6 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
@@ -10,6 +10,15 @@ import {
     prefix
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
+import iconWarning from '../../assets/svg/warning.svg';
+import iconCoffee from '../../assets/svg/kofi.svg';
+
+
+const svgIcons = {
+    warning: iconWarning,
+    coffee: iconCoffee
+}
+
 
 /**
  * Menu plugin
@@ -139,6 +148,7 @@ class Menu extends Plugin {
                     return false;
                 }
                 const action = plugin.menuAction || 'boolean';
+                const icon = plugin.menuIcon || null;
                 pane.append(el.li({
                     classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
                     attributes: {
@@ -146,16 +156,15 @@ class Menu extends Plugin {
                     },
                     data: {
                         component: key,
-                        icon: action === 'boolean' ? 'checkmark' : (plugin.menuIcon || null),
+                        icon: action === 'boolean' ? 'checkmark' : icon,
                         action
                     },
-                    content: plugin.title
+                    content: svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
                 }));
             })
-
             pane.append(el.li({
                 attributes: {
-                    title: settings.get('label') + ' Website'
+                    title: settings.get('support.text')
                 },
                 data: {
                     icon: prefix(),
@@ -163,14 +172,18 @@ class Menu extends Plugin {
                     action: 'link'
                 },
                 content: el.a({
-                    content: settings.get('label'),
+                    content: [
+                        iconCoffee,
+                        settings.get('support.text'),
+                    ],
                     attributes: {
-                        href: settings.get('url'),
+                        href: settings.get('support.url'),
                         target: prefix()
                     }
                 })
             }))
         })
+
 
         app.on(prefix('destroy'), () => this.ui.remove());
     }

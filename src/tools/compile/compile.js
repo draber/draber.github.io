@@ -11,7 +11,6 @@ import path from 'path';
 import substituteVars from '../modules/substitute-vars/substitute-vars.js';
 import format from '../modules/formatters/format.js';
 import getWatchDirs from './watch-list.js';
-import _ from 'lodash';
 
 const args = minimist(process.argv.slice(2));
 

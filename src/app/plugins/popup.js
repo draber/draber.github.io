@@ -1,6 +1,6 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
@@ -26,7 +26,7 @@ class Popup {
             if (this.app.popupCloser && evt.code === 'Escape') {
                 this.app.popupCloser.click();
             }
-            delete(this.app.popupCloser);
+            delete (this.app.popupCloser);
         })
         return this;
     }
@@ -119,9 +119,9 @@ class Popup {
      * @returns {HTMLElement|Boolean}
      */
     getCloseButton() {
-        for(let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
+        for (let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
             const closer = el.$(selector, this.app.gameWrapper);
-            if(closer) {
+            if (closer) {
                 return closer;
             }
         }

@@ -4,6 +4,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import cleanup from 'rollup-plugin-cleanup';
 import json from '@rollup/plugin-json';
+import svg from 'rollup-plugin-svg';
 import {
     string
 } from 'rollup-plugin-string';
@@ -18,6 +19,7 @@ const build = async () => {
                 include: '**/*.css'
             }),
             json(),
+            svg(),
             commonjs(),
             cleanup()
         ]

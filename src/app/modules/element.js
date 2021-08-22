@@ -1,9 +1,65 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
- * 
+ *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
+
+/**
+ * Build an Element or DocumentFragment from just about anything
+ * @param content
+ * @returns {Element|DocumentFragment|HTMLElement|DocumentFragment|DocumentFragment}
+ */
+const cast = content => {
+
+    if (typeof content === 'undefined') {
+        return document.createDocumentFragment();
+    }
+
+    // HTML or SVG element or DocumentFragment, a single node either way
+    if (content instanceof Element || content instanceof DocumentFragment) {
+        return content;
+    }
+
+    // numeric values are treated as strings
+    if (typeof content === 'number') {
+        content = content.toString();
+    }
+
+    // HTML, text or a mix
+    if (typeof content === 'string' ||
+        content instanceof String
+    ) {
+        // either HTML or SVG
+        const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
+        // DOMParser.parseFromString removes leading whitespace, 
+        // which in the case of text content would be there intentionally
+        const isTextOnly = !(/<(.*)>/.test(content));
+        if(isTextOnly) {
+            content = 'x' + content;
+        }
+        const doc = (new DOMParser()).parseFromString(content, mime);
+        let node;
+        // if the string is HTML or text
+        if (doc.body) {
+            node = document.createDocumentFragment();
+            const children = Array.from(doc.body.childNodes);
+            children.forEach(elem => { 
+                if(isTextOnly) {
+                    elem.textContent = elem.textContent.substr(1);
+                }               
+                node.append(elem);
+            })
+        }
+        // if the string is SVG
+        else {
+            node = doc.documentElement;
+        }
+        return node;
+    }
+    console.error('Expected Element|DocumentFragment|String|HTMLCode|SVGCode, got', content);
+}
+
 /**
  * Container object for all functions
  */
@@ -36,7 +92,7 @@ const fn = {
      * Wait for an element to be present in the DOM
      * @param selector
      * @param container
-     * @returns {Promise<unknown>}
+     * @returns {Promise<HTMLElement>}
      */
     waitFor: function (selector, container = null) {
         return new Promise(resolve => {
@@ -54,50 +110,38 @@ const fn = {
 
     /**
      * Convert whatever form of HTML to a single element or fragment
-     * @param {Element|DocumentFragment|Iterable|String|HTMLCode} content
+     * The actual conversion is mostly done by cast()
+     * @param {Element|DocumentFragment|Iterable|String|HTMLCode|SVGCode} content
      * @return {Element|DocumentFragment}
      */
-    toNode: (content) => {
-        const fragment = document.createDocumentFragment();
+    toNode: content => {
 
-        if (typeof content === 'undefined') {
-            return fragment;
+        // cast non-iterables to array
+        if (!content.forEach || typeof content.forEach !== 'function') {
+            content = [content];
         }
 
-        // HTML or SVG element or DocumentFragment, a single node either way
-        if (content instanceof Element || content instanceof DocumentFragment) {
-            return content;
-        }
 
-        // numeric values are acted to string
-        if (typeof content === 'number') {
-            content = content.toString();
-        }
+        // cast all parts to Elements or DocumentFragments
+        content = content.map(entry => cast(entry));
 
-        // HTML, text or a mix
-        if (typeof content === 'string' ||
-            content instanceof String
-        ) {
-            const doc = (new DOMParser()).parseFromString(content, 'text/html');
-            content = doc.body.childNodes;
-        }
-
-        // anything iterable
-        if (typeof content.forEach === 'function') {
+        if (content.length === 1) {
+            return content[0]
+        } else {
+            const fragment = document.createDocumentFragment();
             // Array.from avoids problems with live collections
-            Array.from(content).forEach(element => {
-                fragment.append(element);
+            content.forEach(entry => {
+                fragment.append(entry);
             })
             return fragment;
-        }
 
-        console.error('Expected Element|DocumentFragment|Iterable|String|HTMLCode, got', content);
+        }
     },
 
     /**
      * Empty an element whilst avoiding `innerHTML`;
-     * @param {HTMLElement} element 
-     * @returns 
+     * @param {HTMLElement} element
+     * @returns
      */
     empty: element => {
         while (element.lastChild) {
@@ -122,15 +166,15 @@ const fn = {
  * @todo Distinguish between attributes and properties
  */
 const create = function ({
-    tag,
-    content,
-    attributes = {},
-    style = {},
-    data = {},
-    events = {},
-    classNames = [],
-    isSvg
-} = {}) {
+                             tag,
+                             content,
+                             attributes = {},
+                             style = {},
+                             data = {},
+                             events = {},
+                             classNames = [],
+                             isSvg
+                         } = {}) {
     const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
     if (tag === 'a' && attributes.href && !content) {
         content = (new URL(attributes.href)).hostname;

@@ -7,6 +7,12 @@
     "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
     "twitter": "@d_raber",
     "prefix": "sba",
+    "support": {
+        "kofi": {
+            "url": "https://ko-fi.com/sbassistant",
+            "text": "Buy me a coffee"
+        }
+    },
     "extension": {
         "templates": {
             "manifest": "src/templates/extension/manifest.json",
@@ -30,7 +36,7 @@
                             "{{sbaFileName}}"
                         ],
                         "matches": [
-                            "https://www.nytimes.com/*" 
+                            "https://www.nytimes.com/*"
                         ]
                     }]
                 }
@@ -44,8 +50,8 @@
                     ],
                     "browser_specific_settings": {
                         "gecko": {
-                          "id": "{4474f7b5-4da5-4332-8847-074f35456496}",
-                          "strict_min_version": "89.0"
+                            "id": "{4474f7b5-4da5-4332-8847-074f35456496}",
+                            "strict_min_version": "68.0"
                         }
                     }
                 }
