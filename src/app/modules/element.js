@@ -30,32 +30,28 @@ const cast = content => {
     if (typeof content === 'string' ||
         content instanceof String
     ) {
+        // if the string is text without any code
+        if(!(/<(.*)>/.test(content))) {
+            return document.createTextNode(content);
+        }
+
+        let node;
         // either HTML or SVG
         const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
-        // DOMParser.parseFromString removes leading whitespace, 
-        // which in the case of text content would be there intentionally
-        const isTextOnly = !(/<(.*)>/.test(content));
-        if(isTextOnly) {
-            content = 'x' + content;
-        }
         const doc = (new DOMParser()).parseFromString(content, mime);
-        let node;
-        // if the string is HTML or text
+        // if the string is HTML code
         if (doc.body) {
             node = document.createDocumentFragment();
             const children = Array.from(doc.body.childNodes);
             children.forEach(elem => { 
-                if(isTextOnly) {
-                    elem.textContent = elem.textContent.substr(1);
-                }               
                 node.append(elem);
-            })
+            });
+            return node;
         }
-        // if the string is SVG
+        // if the string is SVG code
         else {
-            node = doc.documentElement;
+            return doc.documentElement;
         }
-        return node;
     }
     console.error('Expected Element|DocumentFragment|String|HTMLCode|SVGCode, got', content);
 }
@@ -155,7 +151,7 @@ const fn = {
 /**
  * Create elements conveniently
  * @param tag: String
- * @param content: Element|NodeList|Array|String|HTMLCode
+ * @param content: Element|DocumentFragment|Iterable|String|HTMLCode|SVGCode
  * @param attributes: Object
  * @param style: Object
  * @param data: Object
@@ -207,12 +203,12 @@ const create = function ({
 };
 
 /**
- * Dispatcher for the `create()`, `$` and `$$`
+ * Dispatcher for `create()`, and all functions within {fn}
  * Examples (for $, $$ see docs on the functions):
  * @example
  * el.div() returns a div element, where `div` can be any element
  * el.a({
- *     content: HTMLElement|NodeList|Array|String|HTMLCode,
+ *     content: Element|DocumentFragment|Iterable|String|HTMLCode|SVGCode,
  *     attributes: {
  *         href: 'http://example.com'
  *     },
