@@ -1,7 +1,7 @@
 import compact from './compact.js';
 import expand from './expand.js';
 import compress from './compress.js';
-import logger from '../../logger/logger.js';
+import console from 'a-nicer-console';
 
 const formatters = {
     compact,
@@ -11,7 +11,7 @@ const formatters = {
 
 const css = (css, format) => {
     if (!formatters[format] || !(formatters[format] instanceof Function)) {
-        logger.error(`cssFormat: Unknown format ${format}`);
+        console.error(`cssFormat: Unknown format ${format}`);
         return false;
     }
     return formatters[format](css);

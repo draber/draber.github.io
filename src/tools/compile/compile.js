@@ -1,7 +1,7 @@
 import minimist from 'minimist';
 import fs from 'fs-extra';
 import settings from '../modules/settings/settings.js';
-import logger from '../modules/logger/logger.js';
+import console from 'a-nicer-console';;
 import bundler from '../modules/bundler/bundler.js';
 import minifyJs from '../modules/minify-js/minify-js.js';
 import buildHtml from '../modules/tpl-to-html/tpl-to-html.js';
@@ -24,10 +24,10 @@ let debug = !!args.d;
 const save = (path, data) => {
     fs.outputFile(path, data)
         .then(() => {
-            logger.success(`Created ${path}`)
+            console.success(`Created ${path}`)
         })
         .catch(err => {
-            logger.error(err)
+            console.error(err)
         })
 }
 
@@ -100,12 +100,12 @@ const watch = () => {
     dirs.forEach(dir => {
         fs.watch(dir, 'utf8', (eventType, fileName) => {
             //_.debounce(() => {
-                logger.log(`Change detected on ${fileName}`);
+                console.log(`Change detected on ${fileName}`);
                 targets[args.t]();
            // }, 200)
         });
     })
-    logger.info(`Watching changes on \n - ${dirs.join('\n - ')}`)
+    console.info(`Watching changes on \n - ${dirs.join('\n - ')}`)
 }
 
 /**
@@ -113,10 +113,10 @@ const watch = () => {
  */
 const compile = () => {
     if (!args.t) {
-        logger.error('Missing parameter -t');
+        console.error('Missing parameter -t');
         process.exit(-1);
     } else if (!Object.keys(targets).includes(args.t)) {
-        logger.error(`compile: unknown type "${args.t}"`);
+        console.error(`compile: unknown type "${args.t}"`);
         process.exit(-1);
     }
 

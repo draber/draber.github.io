@@ -1,6 +1,6 @@
 
 import puppeteer from 'puppeteer';
-import logger from '../logger/logger.js'
+import console from 'a-nicer-console';
 
 const init = async url => {
     const browser = await puppeteer.launch();
@@ -20,7 +20,7 @@ const init = async url => {
                 contents: `${error} on ${msg.url}`
             }
         }
-        logger.error(msg);
+        console.error(msg);
     });
     
     // Emitted when a request, which is produced by the page, fails
@@ -32,7 +32,7 @@ const init = async url => {
                 contents: `No results from ${msg.url}`
             }
         }
-        logger.error(msg);
+        console.error(msg);
     });
     
     // Emitted when a response is received

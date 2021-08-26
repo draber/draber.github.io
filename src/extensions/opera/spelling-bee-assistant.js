@@ -26,11 +26,11 @@
                 children.forEach(elem => {
                     node.append(elem);
                 });
+                return node;
             }
             else {
-                node = doc.documentElement;
+                return doc.documentElement;
             }
-            return node;
         }
         console.error('Expected Element|DocumentFragment|String|HTMLCode|SVGCode, got', content);
     };

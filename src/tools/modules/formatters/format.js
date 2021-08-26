@@ -1,4 +1,4 @@
-import logger from '../logger/logger.js';
+import console from 'a-nicer-console';;
 import json from './json/index.js';
 import html from './html/index.js';
 import js from './js/index.js';
@@ -16,7 +16,7 @@ const format = (type, data, format) => {
         return data;
     }
     if (!formatters[type] || !(formatters[type] instanceof Function)) {
-        logger.error(`format: Unknown type ${type}`);
+        console.error(`format: Unknown type ${type}`);
         return false;
     }
     return formatters[type](data, format);

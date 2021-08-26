@@ -1,7 +1,7 @@
 import date from 'date-and-time';
 import msgFormat from './msgFormatter.js';
 import fs from 'fs-extra';
-import logger from '../modules/logger/logger.js';
+import console from 'a-nicer-console';;
 import path from 'path';
 import validate from '../modules/validators/validate.js';
 import _ from 'lodash';
@@ -53,7 +53,7 @@ const evaluate = async () => {
                 reference: files.reference[ext] ? files.reference[ext][key] : undefined
             }
             if (!pair.current || !pair.reference) {
-                logger.error(`Incomplete pair`, pair);
+                console.error(`Incomplete pair`, pair);
                 continue;
             }
             switch (ext) {
@@ -100,9 +100,9 @@ const evaluate = async () => {
 
 
     if (hasResult) {
-        logger.warning(`Spelling Bee from ${today} is different from the reference version`);
+        console.warning(`Spelling Bee from ${today} is different from the reference version`);
     } else {
-        logger.success(`Spelling Bee from ${today} is equal to the reference version`);
+        console.success(`Spelling Bee from ${today} is equal to the reference version`);
     }
     fs.outputFileSync(paths.current.report, msg);
 }

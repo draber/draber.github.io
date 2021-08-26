@@ -4,7 +4,7 @@ import {
 } from './common.js';
 import settings from '../modules/settings/settings.js';
 import finalize from '../modules/finalize/finalize.js'
-import logger from '../modules/logger/logger.js';
+import console from 'a-nicer-console';;
 import fs from 'fs-extra';
 
 const create = async type => {
@@ -21,11 +21,11 @@ const create = async type => {
             }
             fs.copySync(settings.get('mock.resources'), paths[type].assets)
             finalize(data);
-            logger.success(`Finished creating ${type}`);
+            console.success(`Finished creating ${type}`);
             process.exit();
         })
         .catch(e => {
-            logger.error(`Failed creating ${type}`);
+            console.error(`Failed creating ${type}`);
             process.exit();
         })
 
