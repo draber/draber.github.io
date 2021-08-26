@@ -4,7 +4,7 @@ import {
 } from './common.js';
 import settings from '../modules/settings/settings.js';
 import finalize from '../modules/finalize/finalize.js'
-import console from 'a-nicer-console';;
+import console from 'a-nicer-console';
 import fs from 'fs-extra';
 
 const create = async type => {

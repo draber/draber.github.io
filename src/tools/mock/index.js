@@ -1,7 +1,7 @@
 import create from './create.js'
 import evaluate from './evaluate.js'
 import minimist from 'minimist';
-import console from 'a-nicer-console';;
+import console from 'a-nicer-console';
 import {
     types
 } from './common.js';

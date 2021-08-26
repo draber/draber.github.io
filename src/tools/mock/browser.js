@@ -1,4 +1,4 @@
-import console from 'a-nicer-console';;
+import console from 'a-nicer-console';
 import init from '../modules/browser/init.js';
 import fetch from 'node-fetch';
 

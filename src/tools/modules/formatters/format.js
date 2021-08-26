@@ -1,4 +1,4 @@
-import console from 'a-nicer-console';;
+import console from 'a-nicer-console';
 import json from './json/index.js';
 import html from './html/index.js';
 import js from './js/index.js';

@@ -1,6 +1,6 @@
 import expand from './expand.js';
 import compress from './compress.js';
-import console from 'a-nicer-console';;
+import console from 'a-nicer-console';
 
 const formatters = {
     expand,
