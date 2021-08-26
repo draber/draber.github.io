@@ -1,7 +1,7 @@
 import create from './create.js'
 import evaluate from './evaluate.js'
 import minimist from 'minimist';
-import logger from '../modules/logger/logger.js';
+import console from 'a-nicer-console';
 import {
     types
 } from './common.js';
@@ -9,7 +9,7 @@ import {
 const args = minimist(process.argv.slice(2));
 
 const serve = target => {
-    logger.info(target)
+    console.info(target)
 }
 
 const run = (() => {
@@ -21,14 +21,14 @@ const run = (() => {
     for (let arg of Object.keys(fn)) {
         if (args[arg]) {
             if (!types.includes(args[arg])) {
-                logger.error(`Mock: Invalid value ${args[arg]}`);
+                console.error(`Mock: Invalid value ${args[arg]}`);
                 return false;
             }
             return fn[arg](args[arg]);
         }
     }
 
-    logger.error(`Mock: Invalid option ${Object.keys(args)[1]}`);
+    console.error(`Mock: Invalid option ${Object.keys(args)[1]}`);
     return false;
 })()
 

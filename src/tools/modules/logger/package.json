@@ -1,6 +1,0 @@
-{
-    "name": "logger-util",
-    "version": "1.0.0",
-    "main": "logger.js",
-    "type": "module"
-}

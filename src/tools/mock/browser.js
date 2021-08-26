@@ -1,4 +1,4 @@
-import logger from '../modules/logger/logger.js';
+import console from 'a-nicer-console';
 import init from '../modules/browser/init.js';
 import fetch from 'node-fetch';
 
@@ -213,7 +213,7 @@ const load = async (url, context) => {
         return data;
 
     } catch (e) {
-        logger.error(e, msg);
+        console.error(e, msg);
     }
     await browser.close();
 };

@@ -1,6 +1,6 @@
 import expand from './expand.js';
 import compress from './compress.js';
-import logger from '../../logger/logger.js';
+import console from 'a-nicer-console';
 
 const formatters = {
     expand,
@@ -9,7 +9,7 @@ const formatters = {
 
 const json = (json, format) => {
     if (!formatters[format] || !(formatters[format] instanceof Function)) {
-        logger.error(`jsonFormat: Unknown format ${format}`);
+        console.error(`jsonFormat: Unknown format ${format}`);
         return false;
     }
     return formatters[format](json);
