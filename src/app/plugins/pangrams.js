@@ -6,7 +6,7 @@
  */
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
-import el from '../modules/element.js';
+import fn from 'fancy-node';
 
 /**
  * Pangrams plugin
@@ -46,9 +46,9 @@ class Pangrams extends TablePane {
             hasHeadCol: false
         });
 
-        this.ui = el.details({
+        this.ui = fn.details({
             content: [
-                el.summary({
+                fn.summary({
                     content: this.title
                 }),
                 this.getPane()

@@ -4,13 +4,13 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from '../modules/element.js';
 import data from '../modules/data.js';
 import {
     prefix
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
 import Popup from './popup.js';
+import fn from 'fancy-node';
 
 /**
  * TodaysAnswers plugin
@@ -29,17 +29,17 @@ class TodaysAnswers extends Plugin {
         const foundTerms = data.getList('foundTerms');
         const pangrams = data.getList('pangrams');
 
-        const pane = el.ul({
+        const pane = fn.ul({
             classNames: ['sb-modal-wordlist-items']
         })
 
         data.getList('answers').forEach(term => {
-            pane.append(el.li({
+            pane.append(fn.li({
                 classNames: pangrams.includes(term) ? [prefix('pangram', 'd')] : [],
                 content: [
-                    el.span({
+                    fn.span({
                         classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
-                    }), el.span({
+                    }), fn.span({
                         classNames: ['sb-anagram'],
                         content: term
                     })
@@ -49,7 +49,7 @@ class TodaysAnswers extends Plugin {
 
         this.popup
             .setContent('body', [
-                el.div({
+                fn.div({
                     content: data.getList('letters').join(''),
                     classNames: ['sb-modal-letters']
                 }),

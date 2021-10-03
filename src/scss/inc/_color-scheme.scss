@@ -128,6 +128,16 @@ body {
     }
 }
 
+.pz-moment__frame {
+  &:is(.pz-moment__congrats, .pz-moment__welcome) {
+    .pz-moment__button {
+        &.secondary {
+            color: black;
+        }
+    }
+  }
+}
+
 .sb-modal-wrapper {
     .sb-modal-frame {
         border: 1px solid var(--border-color);

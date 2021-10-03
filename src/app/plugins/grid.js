@@ -7,10 +7,10 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
 import Popup from './popup.js';
-import el from '../modules/element.js';
 import {
     prefix
 } from '../modules/string.js';
+import fn from 'fancy-node';
 
 /**
  * Grid plugin
@@ -40,13 +40,13 @@ class Grid extends TablePane {
      */
     run(evt) {
         super.run(evt);
-        const rows = el.$$('tr', this.pane);
+        const rows = fn.$$('tr', this.pane);
         const rCnt = rows.length;
         rows.forEach((row, rInd) => {
             if (rCnt === rInd + 1) {
                 return false;
             }
-            const cells = el.$$('td', row);
+            const cells = fn.$$('td', row);
             const cCnt = cells.length;
             cells.forEach((cell, cInd) => {
                 const cellArr = cell.textContent.trim().split('/');

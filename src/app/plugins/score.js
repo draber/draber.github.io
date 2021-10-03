@@ -6,7 +6,7 @@
  */
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
-import el from '../modules/element.js';
+import fn from 'fancy-node';
 
 /**
  * Score so far plugin
@@ -37,12 +37,12 @@ class Score extends TablePane {
 
         super(app, 'Score', 'The number of words and points and how many have been found');
 
-        this.ui = el.details({
+        this.ui = fn.details({
             attributes: {
                 open: true
             },
             content: [
-                el.summary({
+                fn.summary({
                     content: this.title
                 }),
                 this.getPane()

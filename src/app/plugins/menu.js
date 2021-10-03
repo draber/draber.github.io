@@ -4,7 +4,6 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from '../modules/element.js';
 import settings from '../modules/settings.js';
 import {
     prefix
@@ -12,6 +11,7 @@ import {
 import Plugin from '../modules/plugin.js';
 import iconWarning from '../../assets/svg/warning.svg';
 import iconCoffee from '../../assets/svg/kofi.svg';
+import fn from 'fancy-node';
 
 
 const svgIcons = {
@@ -33,7 +33,7 @@ class Menu extends Plugin {
      * @returns {HTMLElement}
      */
     getTarget() {
-        return this.app.envIs('mobile') ? el.$('#js-mobile-toolbar') : el.$('#portal-game-toolbar > div:last-of-type');
+        return this.app.envIs('mobile') ? fn.$('#js-mobile-toolbar') : fn.$('#portal-game-toolbar > div:last-of-type');
     }
 
     /**
@@ -65,7 +65,7 @@ class Menu extends Plugin {
         /**
          * List of options
          */
-        const pane = el.ul({
+        const pane = fn.ul({
             classNames: ['pane'],
             data: {
                 ui: 'submenu'
@@ -98,7 +98,7 @@ class Menu extends Plugin {
                     }
                 }
             },
-            content: el.li({
+            content: fn.li({
                 classNames: this.app.getState() ? ['checked'] : [],
                 attributes: {
                     title: this.app.title
@@ -112,7 +112,7 @@ class Menu extends Plugin {
             })
         });
 
-        this.ui = el.div({
+        this.ui = fn.div({
             events: {
                 pointerup: evt => {
                     if (!evt.target.dataset.action) {
@@ -124,7 +124,7 @@ class Menu extends Plugin {
                 settings.get('title'),
                 pane
             ],
-            attributes: {
+            aria: {
                 role: 'presentation'
             },
             classNames
@@ -136,7 +136,7 @@ class Menu extends Plugin {
             }
         });
 
-        el.$('#pz-game-root').addEventListener('pointerdown', () => {
+        fn.$('#pz-game-root').addEventListener('pointerdown', () => {
             if (this.app.domGet('submenu') === true) {
                 this.app.domSet('submenu', false)
             }
@@ -149,7 +149,7 @@ class Menu extends Plugin {
                 }
                 const action = plugin.menuAction || 'boolean';
                 const icon = plugin.menuIcon || null;
-                pane.append(el.li({
+                pane.append(fn.li({
                     classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
                     attributes: {
                         title: plugin.description
@@ -162,7 +162,7 @@ class Menu extends Plugin {
                     content: svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
                 }));
             })
-            pane.append(el.li({
+            pane.append(fn.li({
                 attributes: {
                     title: settings.get('support.text')
                 },
@@ -171,7 +171,7 @@ class Menu extends Plugin {
                     component: prefix('web'),
                     action: 'link'
                 },
-                content: el.a({
+                content: fn.a({
                     content: [
                         iconCoffee,
                         settings.get('support.text'),

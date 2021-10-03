@@ -3,5 +3,7 @@ window.addEventListener('load', () => {
 	el.async = true;
 	el.src = chrome.runtime.getURL('{{sbaFileName}}');
 	el.id = '{{name}}';
-	document.body.append(el);
+	setTimeout(() => {
+		document.body.append(el);
+	}, 1500)
 })

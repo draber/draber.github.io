@@ -7,10 +7,10 @@
 
 import Popup from './popup.js';
 import Plugin from '../modules/plugin.js';
-import el from '../modules/element.js';
 import {
     prefix
 } from '../modules/string.js';
+import fn from 'fancy-node';
 
 /**
  * Dark Mode plugin
@@ -25,7 +25,7 @@ class ColorConfig extends Plugin {
      * @param state
      */
     toggle(state) {
-        el.$$('[data-sba-theme]').forEach(element => {
+        fn.$$('[data-sba-theme]').forEach(element => {
             element.style.setProperty('--dhue', state.hue);
             element.style.setProperty('--dsat', state.sat + '%');
         });
@@ -39,7 +39,7 @@ class ColorConfig extends Plugin {
      */
     display() {
         this.popup.toggle(true);
-        el.$('input:checked', this.popup.ui).focus();
+        fn.$('input:checked', this.popup.ui).focus();
     }
 
 
@@ -61,15 +61,15 @@ class ColorConfig extends Plugin {
         this.menuAction = 'popup';
         this.menuIcon = 'null';
 
-        const swatches = el.ul({
+        const swatches = fn.ul({
             classNames: [prefix('swatches', 'd')]
         });
 
         for (let hue = 0; hue < 360; hue += 30) {
             const sat = hue === 0 ? 0 : 25;
-            swatches.append(el.li({
+            swatches.append(fn.li({
                 content: [
-                    el.input({
+                    fn.input({
                         attributes: {
                             name: 'color-picker',
                             type: 'radio',
@@ -86,7 +86,7 @@ class ColorConfig extends Plugin {
                             }
                         }
                     }),
-                    el.label({
+                    fn.label({
                         attributes: {
                             htmlFor: prefix('h' + hue)
                         },
@@ -102,26 +102,26 @@ class ColorConfig extends Plugin {
         this.popup = new Popup(this.app, this.key)
             .setContent('title', this.title)
             .setContent('subtitle', this.description)
-            .setContent('body', el.div({
+            .setContent('body', fn.div({
                 classNames: [prefix('color-selector', 'd')],
                 content: [
                     swatches,
-                    el.div({
+                    fn.div({
                         classNames: ['hive'],
-                        content: [el.svg({
+                        content: [fn.svg({
                             classNames: ['hive-cell', 'outer'],
                             attributes: {
                                 viewBox: `0 0 24 21`
                             },
                             isSvg: true,
-                            content: [el.path({
+                            content: [fn.path({
                                 classNames: ['cell-fill'],
                                 isSvg: true,
                                 attributes: {
                                     d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
                                 }
                             }),
-                                el.text({
+                                fn.text({
                                     classNames: ['cell-letter'],
                                     attributes: {
                                         x: '50%',

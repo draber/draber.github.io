@@ -1,139 +1,6 @@
 (function () {
     'use strict';
 
-    const cast = content => {
-        if (typeof content === 'undefined') {
-            return document.createDocumentFragment();
-        }
-        if (content instanceof Element || content instanceof DocumentFragment) {
-            return content;
-        }
-        if (typeof content === 'number') {
-            content = content.toString();
-        }
-        if (typeof content === 'string' ||
-            content instanceof String
-        ) {
-            if(!(/<(.*)>/.test(content))) {
-                return document.createTextNode(content);
-            }
-            let node;
-            const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
-            const doc = (new DOMParser()).parseFromString(content, mime);
-            if (doc.body) {
-                node = document.createDocumentFragment();
-                const children = Array.from(doc.body.childNodes);
-                children.forEach(elem => {
-                    node.append(elem);
-                });
-                return node;
-            }
-            else {
-                return doc.documentElement;
-            }
-        }
-        console.error('Expected Element|DocumentFragment|String|HTMLCode|SVGCode, got', content);
-    };
-    const fn = {
-        $: (selector, container = null) => {
-            return typeof selector === 'string' ? (container || document).querySelector(selector) : selector || null;
-        },
-        $$: (selector, container = null) => {
-            return [].slice.call((container || document).querySelectorAll(selector));
-        },
-        waitFor: function (selector, container = null) {
-            return new Promise(resolve => {
-                const getElement = () => {
-                    const resultList = fn.$(selector, container);
-                    if (resultList) {
-                        resolve(resultList);
-                    } else {
-                        requestAnimationFrame(getElement);
-                    }
-                };
-                getElement();
-            })
-        },
-        toNode: content => {
-            if (!content.forEach || typeof content.forEach !== 'function') {
-                content = [content];
-            }
-            content = content.map(entry => cast(entry));
-            if (content.length === 1) {
-                return content[0]
-            } else {
-                const fragment = document.createDocumentFragment();
-                content.forEach(entry => {
-                    fragment.append(entry);
-                });
-                return fragment;
-            }
-        },
-        empty: element => {
-            while (element.lastChild) {
-                element.lastChild.remove();
-            }
-            element.textContent = '';
-            return element;
-        }
-    };
-    const create = function ({
-                                 tag,
-                                 content,
-                                 attributes = {},
-                                 style = {},
-                                 data = {},
-                                 events = {},
-                                 classNames = [],
-                                 isSvg
-                             } = {}) {
-        const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
-        if (tag === 'a' && attributes.href && !content) {
-            content = (new URL(attributes.href)).hostname;
-        }
-        for (let [key, value] of Object.entries(attributes)) {
-            if (isSvg) {
-                el.setAttributeNS(null, key, value.toString());
-            } else if (key === 'role' || key.startsWith('aria-')) {
-                el.setAttribute(key, value);
-            } else if (value !== false) {
-                el[key] = value.toString();
-            }
-        }
-        for (let [key, value] of Object.entries(data)) {
-            value = value.toString();
-            el.dataset[key] = value;
-        }
-        for (const [event, fn] of Object.entries(events)) {
-            el.addEventListener(event, fn, false);
-        }
-        Object.assign(el.style, style);
-        if (classNames.length) {
-            el.classList.add(...classNames);
-        }
-        if (typeof content !== 'undefined') {
-            el.append(fn.toNode(content));
-        }
-        return el;
-    };
-    const el = new Proxy(fn, {
-        get(target, prop) {
-            return function () {
-                const args = Array.from(arguments);
-                if (Object.prototype.hasOwnProperty.call(target, prop) && typeof target[prop] === 'function') {
-                    target[prop].bind(target);
-                    return target[prop].apply(null, args);
-                }
-                return create({
-                    ...{
-                        tag: prop
-                    },
-                    ...args.shift()
-                });
-            }
-        }
-    });
-
     var label = "Spelling Bee Assistant";
     var title = "Assistant";
     var url = "https://spelling-bee-assistant.app/";
@@ -147,7 +14,7 @@
     	}
     };
 
-    var version = "4.2.1";
+    var version = "4.2.2";
 
     const settings = {
         version: version,
@@ -405,6 +272,164 @@
         }
     }
 
+    const cast = content => {
+        if (typeof content === 'undefined') {
+            return document.createDocumentFragment();
+        }
+        if (content instanceof Element || content instanceof DocumentFragment) {
+            return content;
+        }
+        if (typeof content === 'number') {
+            content = content.toString();
+        }
+        if (typeof content === 'string' ||
+            content instanceof String
+        ) {
+            if (!(/<(.*)>/.test(content))) {
+                return document.createTextNode(content);
+            }
+            let node;
+            const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
+            const doc = (new DOMParser()).parseFromString(content, mime);
+            if (doc.body) {
+                node = document.createDocumentFragment();
+                const children = Array.from(doc.body.childNodes);
+                children.forEach(elem => {
+                    node.append(elem);
+                });
+                return node;
+            }
+            else {
+                return doc.documentElement;
+            }
+        }
+        console.error('Expected Element|DocumentFragment|String|HTMLCode|SVGCode, got', content);
+    };
+    const obj = {
+        $: (selector, container = null) => {
+            return typeof selector === 'string' ? (container || document).querySelector(selector) : selector || null;
+        },
+        $$: (selector, container = null) => {
+            return [].slice.call((container || document).querySelectorAll(selector));
+        },
+        waitFor: function (selector, container = null) {
+            return new Promise(resolve => {
+                const getElement = () => {
+                    const element = obj.$(selector, container);
+                    if (element) {
+                        resolve(element);
+                    } else {
+                        requestAnimationFrame(getElement);
+                    }
+                };
+                getElement();
+            })
+        },
+        toNode: content => {
+            if (!content.forEach || typeof content.forEach !== 'function') {
+                content = [content];
+            }
+            content = content.map(entry => cast(entry));
+            if (content.length === 1) {
+                return content[0]
+            } else {
+                const fragment = document.createDocumentFragment();
+                content.forEach(entry => {
+                    fragment.append(entry);
+                });
+                return fragment;
+            }
+        },
+        empty: element => {
+            while (element.lastChild) {
+                element.lastChild.remove();
+            }
+            element.textContent = '';
+            return element;
+        }
+    };
+    const create = function ({
+        tag,
+        content,
+        attributes = {},
+        style = {},
+        data = {},
+        aria = {},
+        events = {},
+        classNames = [],
+        isSvg = false
+    } = {}) {
+        const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
+        new Map([
+            ['class', 'className'],
+            ['for', 'htmlFor'],
+            ['tabindex', 'tabIndex'],
+            ['nomodule', 'noModule'],
+            ['contenteditable', 'contentEditable'],
+            ['accesskey', 'accessKey']
+        ]).forEach((right, wrong) => {
+            if (typeof attributes[right] === 'undefined' && attributes[wrong]) {
+                attributes[right] = attributes[wrong];
+            }
+            delete attributes[wrong];
+        });
+        if (attributes.style) {
+            const styleAttr = {};
+            attributes.style.split(';').forEach(rule => {
+                const parts = rule.split(':').map(entry => entry.trim());
+                styleAttr[parts[0]] = parts[1];
+            });
+            style = {
+                ...styleAttr,
+                ...style
+            };
+            delete attributes.style;
+        }
+        for (let [key, value] of Object.entries(attributes)) {
+            if (isSvg) {
+                el.setAttributeNS(null, key, value.toString());
+            } else if (value !== false) {
+                el[key] = value;
+            }
+        }
+        for (let [key, value] of Object.entries(aria)) {
+            key = key === 'role' ? key : 'aria-' + key;
+            el.setAttribute(key.toLowerCase(), value);
+        }
+        for (let [key, value] of Object.entries(data)) {
+            value = value.toString();
+            el.dataset[key] = value;
+        }
+        for (const [event, fn] of Object.entries(events)) {
+            el.addEventListener(event, fn, false);
+        }
+        Object.assign(el.style, style);
+        if (classNames.length) {
+            el.classList.add(...classNames);
+        }
+        if (typeof content !== 'undefined') {
+            el.append(obj.toNode(content));
+        }
+        return el;
+    };
+    var src = new Proxy(obj, {
+        get(target, prop) {
+            return function () {
+                const args = Array.from(arguments);
+                if (Object.prototype.hasOwnProperty.call(target, prop) && target[prop] instanceof Function) {
+                    target[prop].bind(target);
+                    return target[prop].apply(null, args);
+                }
+                return create({
+                    ...{
+                        tag: prop
+                    },
+                    ...args.shift()
+                });
+            }
+        }
+    });
+
     class Popup {
         enableKeyClose() {
             document.addEventListener('keyup', evt => {
@@ -418,21 +443,21 @@
         }
         getTarget() {
             const dataUi = prefix('popup-container', 'd');
-            let container = el.$(`[data-ui="${dataUi}"]`);
+            let container = src.$(`[data-ui="${dataUi}"]`);
             if (!container) {
-                container = el.template({
+                container = src.template({
                     data: {
                         ui: dataUi
                     }
                 });
-                el.$('body').append(container);
+                src.$('body').append(container);
             }
             return container;
         }
         create() {
-            return el.div({
+            return src.div({
                 classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
-                attributes: {
+                aria: {
                     role: 'button'
                 },
                 data: {
@@ -444,10 +469,10 @@
                     }
                 },
                 content: [
-                    el.div({
+                    src.div({
                         classNames: ['sb-modal-top'],
-                        content: el.div({
-                            attributes: {
+                        content: src.div({
+                            aria: {
                                 role: 'button'
                             },
                             classNames: ['sb-modal-close'],
@@ -459,10 +484,10 @@
                             }
                         })
                     }),
-                    el.div({
+                    src.div({
                         classNames: ['sb-modal-content'],
                         content: [
-                            el.div({
+                            src.div({
                                 classNames: ['sb-modal-header'],
                                 content: [this.parts.title, this.parts.subtitle]
                             }),
@@ -478,13 +503,13 @@
                 console.error(`Unknown target ${part}`);
                 return this;
             }
-            this.parts[part] = el.empty(this.parts[part]);
-            this.parts[part].append(el.toNode(content));
+            this.parts[part] = src.empty(this.parts[part]);
+            this.parts[part].append(src.toNode(content));
             return this;
         }
         getCloseButton() {
             for (let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
-                const closer = el.$(selector, this.app.gameWrapper);
+                const closer = src.$(selector, this.app.gameWrapper);
                 if (closer) {
                     return closer;
                 }
@@ -514,19 +539,19 @@
             this.isOpen = false;
             this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
             this.parts = {
-                title: el.h3({
+                title: src.h3({
                     classNames: ['sb-modal-title']
                 }),
-                subtitle: el.p({
+                subtitle: src.p({
                     classNames: ['sb-modal-message']
                 }),
-                body: el.div({
+                body: src.div({
                     classNames: ['sb-modal-body']
                 }),
-                footer: el.div({
+                footer: src.div({
                     classNames: ['sb-modal-message', 'sba-modal-footer'],
                     content: [
-                        el.a({
+                        src.a({
                             content: settings$1.get('label'),
                             attributes: {
                                 href: settings$1.get('url'),
@@ -544,7 +569,7 @@
 
     class ColorConfig extends Plugin {
         toggle(state) {
-            el.$$('[data-sba-theme]').forEach(element => {
+            src.$$('[data-sba-theme]').forEach(element => {
                 element.style.setProperty('--dhue', state.hue);
                 element.style.setProperty('--dsat', state.sat + '%');
             });
@@ -552,7 +577,7 @@
         }
         display() {
             this.popup.toggle(true);
-            el.$('input:checked', this.popup.ui).focus();
+            src.$('input:checked', this.popup.ui).focus();
         }
         constructor(app) {
             super(app, 'Dark Mode Colors', 'Select your favorite color scheme for the Dark Mode.', {
@@ -564,14 +589,14 @@
             });
             this.menuAction = 'popup';
             this.menuIcon = 'null';
-            const swatches = el.ul({
+            const swatches = src.ul({
                 classNames: [prefix('swatches', 'd')]
             });
             for (let hue = 0; hue < 360; hue += 30) {
                 const sat = hue === 0 ? 0 : 25;
-                swatches.append(el.li({
+                swatches.append(src.li({
                     content: [
-                        el.input({
+                        src.input({
                             attributes: {
                                 name: 'color-picker',
                                 type: 'radio',
@@ -588,7 +613,7 @@
                                 }
                             }
                         }),
-                        el.label({
+                        src.label({
                             attributes: {
                                 htmlFor: prefix('h' + hue)
                             },
@@ -602,26 +627,26 @@
             this.popup = new Popup(this.app, this.key)
                 .setContent('title', this.title)
                 .setContent('subtitle', this.description)
-                .setContent('body', el.div({
+                .setContent('body', src.div({
                     classNames: [prefix('color-selector', 'd')],
                     content: [
                         swatches,
-                        el.div({
+                        src.div({
                             classNames: ['hive'],
-                            content: [el.svg({
+                            content: [src.svg({
                                 classNames: ['hive-cell', 'outer'],
                                 attributes: {
                                     viewBox: `0 0 24 21`
                                 },
                                 isSvg: true,
-                                content: [el.path({
+                                content: [src.path({
                                     classNames: ['cell-fill'],
                                     isSvg: true,
                                     attributes: {
                                         d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
                                     }
                                 }),
-                                    el.text({
+                                    src.text({
                                         classNames: ['cell-letter'],
                                         attributes: {
                                             x: '50%',
@@ -646,7 +671,7 @@
             super(app, settings$1.get('title'), '', {
                 key: 'header'
             });
-            this.ui = el.div({
+            this.ui = src.div({
                 content: this.title
             });
         }
@@ -667,7 +692,7 @@
                 runEvt: prefix('refreshUi'),
                 addMethod: 'before'
             });
-            this.ui = el.progress({
+            this.ui = src.progress({
                 attributes: {
                     max: 100
                 }
@@ -680,15 +705,15 @@
                     });
                 }
             });
-            this.target = el.$('.sb-wordlist-heading', this.app.gameWrapper);
+            this.target = src.$('.sb-wordlist-heading', this.app.gameWrapper);
             this.toggle(this.getState());
         }
     }
 
     class TablePane extends Plugin {
         run(evt) {
-            this.pane = el.empty(this.pane);
-            const tbody = el.tbody();
+            this.pane = src.empty(this.pane);
+            const tbody = src.tbody();
             const data = this.getData();
             if (this.hasHeadRow) {
                 this.pane.append(this.buildHead(data.shift()));
@@ -703,12 +728,12 @@
                         classNames.push(prefix(marker, 'd'));
                     }
                 }
-                const tr = el.tr({
+                const tr = src.tr({
                     classNames
                 });
                 rowData.forEach((cellData, rInd) => {
                     const tag = rInd === 0 && this.hasHeadCol ? 'th' : 'td';
-                    tr.append(el[tag]({
+                    tr.append(src[tag]({
                         content: cellData
                     }));
                 });
@@ -719,9 +744,9 @@
             return this;
         }
         buildHead(rowData) {
-            return el.thead({
-                content: el.tr({
-                    content: rowData.map(cellData => el.th({
+            return src.thead({
+                content: src.tr({
+                    content: rowData.map(cellData => src.th({
                         content: cellData
                     }))
                 })
@@ -747,7 +772,7 @@
             this.cssMarkers = cssMarkers;
             this.hasHeadRow = hasHeadRow;
             this.hasHeadCol = hasHeadCol;
-            this.pane = el.table({
+            this.pane = src.table({
                 classNames: ['pane', prefix('dataPane', 'd')]
             });
         }
@@ -764,12 +789,12 @@
         }
         constructor(app) {
             super(app, 'Score', 'The number of words and points and how many have been found');
-            this.ui = el.details({
+            this.ui = src.details({
                 attributes: {
                     open: true
                 },
                 content: [
-                    el.summary({
+                    src.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -801,10 +826,10 @@
                 runEvt: prefix('newInput'),
                 addMethod: 'prepend'
             });
-            this.ui = el.div({
+            this.ui = src.div({
                 content: '😐'
             });
-            this.target = el.$('.sb-controls', this.app.gameWrapper);
+            this.target = src.$('.sb-controls', this.app.gameWrapper);
             this.toggle(false);
         }
     }
@@ -846,9 +871,9 @@
                     completed: (rowData, i) => rowData[2] === 0
                 }
             });
-            this.ui = el.details({
+            this.ui = src.details({
                 content: [
-                    el.summary({
+                    src.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -907,9 +932,9 @@
                     preeminent: (rowData, i) => rowData[0] === data.getCenterLetter()
                 }
             });
-            this.ui = el.details({
+            this.ui = src.details({
                 content: [
-                    el.summary({
+                    src.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -939,9 +964,9 @@
                 },
                 hasHeadCol: false
             });
-            this.ui = el.details({
+            this.ui = src.details({
                 content: [
-                    el.summary({
+                    src.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -959,28 +984,28 @@
             const progress = points * 100 / max;
             let content;
             if (next) {
-                content = el.span({
+                content = src.span({
                     content: [
                         'You are currently at ',
-                        el.b({
+                        src.b({
                             content: points + '/' + max
                         }),
                         ' points or ',
-                        el.b({
+                        src.b({
                             content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
                         }),
                         '. You need ',
-                        el.b({
+                        src.b({
                             content: next - points
                         }),
                         ' more points to go to the next level.',
                     ]
                 });
             } else {
-                content = el.span({
+                content = src.span({
                     content: [
                         'Congratulations, you’ve found all ',
-                        el.b({
+                        src.b({
                             content: points
                         }),
                         ' points!',
@@ -988,7 +1013,7 @@
                 });
             }
             this.popup
-                .setContent('subtitle', el.span({
+                .setContent('subtitle', src.span({
                     content
                 }))
                 .setContent('body', this.getPane())
@@ -1050,7 +1075,7 @@
         nytCommunity() {
             const date = data.getDate().print;
             const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-${date}.html#commentsContainer`;
-            return el.a({
+            return src.a({
                 content: 'NYT Spelling Bee Forum for today’s game',
                 attributes: {
                     href,
@@ -1059,7 +1084,7 @@
             })
         }
         twitter() {
-            const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => el.a({
+            const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => src.a({
                 content: `#${tag}`,
                 attributes: {
                     href: `https://twitter.com/hashtag/${tag}`,
@@ -1076,7 +1101,7 @@
         }
         nytSpotlight() {
             const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
-            return el.a({
+            return src.a({
                 content: 'Portal to all NYT Spelling Bee Forums',
                 attributes: {
                     href,
@@ -1085,7 +1110,7 @@
             })
         }
         redditCommunity() {
-            return el.a({
+            return src.a({
                 content: 'NY Times Spelling Bee Puzzle on Reddit',
                 attributes: {
                     href: 'https://www.reddit.com/r/NYTSpellingBee/',
@@ -1104,14 +1129,14 @@
             this.menuAction = 'popup';
             this.menuIcon = 'null';
             const words = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
-            const features = el.ul({
+            const features = src.ul({
                 content: [
-                    el.li({
+                    src.li({
                         content: [
-                            el.h4({
+                            src.h4({
                                 content: 'Does today’s game have a Perfect Pangram?'
                             }),
-                            el.p({
+                            src.p({
                                 content: (() => {
                                     const pp = this.getPerfectPangramCount();
                                     switch (pp) {
@@ -1124,51 +1149,51 @@
                                     }
                                 })()
                             }),
-                            el.em({
+                            src.em({
                                 content: 'Pangrams that use each letter only once are called "perfect" by the community.'
                             })
                         ]
                     }),
-                    el.li({
+                    src.li({
                         content: [
-                            el.h4({
+                            src.h4({
                                 content: 'Does it classify as "Bingo"?'
                             }),
-                            el.p({
+                            src.p({
                                 content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'No, today it doesn’t.'
                             }),
-                            el.em({
+                            src.em({
                                 content: '"Bingo" means that all seven letters in the puzzle are used to start at least one word in the word list.'
                             })
                         ]
                     }),
-                    el.li({
+                    src.li({
                         content: [
-                            el.h4({
+                            src.h4({
                                 content: 'Is it possible to reach Genius without using 4-letter words?'
                             }),
-                            el.p({
+                            src.p({
                                 content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t.'
                             })
                         ]
                     }),
-                    el.li({
+                    src.li({
                         content: [
-                            el.h4({
+                            src.h4({
                                 content: 'Forums and Hashtags'
                             }),
-                            el.ul({
+                            src.ul({
                                 content: [
-                                    el.li({
+                                    src.li({
                                         content: this.nytCommunity()
                                     }),
-                                    el.li({
+                                    src.li({
                                         content: this.nytSpotlight()
                                     }),
-                                    el.li({
+                                    src.li({
                                         content: this.redditCommunity()
                                     }),
-                                    el.li({
+                                    src.li({
                                         content: this.twitter()
                                     })
                                 ]
@@ -1188,16 +1213,16 @@
         display() {
             const foundTerms = data.getList('foundTerms');
             const pangrams = data.getList('pangrams');
-            const pane = el.ul({
+            const pane = src.ul({
                 classNames: ['sb-modal-wordlist-items']
             });
             data.getList('answers').forEach(term => {
-                pane.append(el.li({
+                pane.append(src.li({
                     classNames: pangrams.includes(term) ? [prefix('pangram', 'd')] : [],
                     content: [
-                        el.span({
+                        src.span({
                             classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
-                        }), el.span({
+                        }), src.span({
                             classNames: ['sb-anagram'],
                             content: term
                         })
@@ -1206,7 +1231,7 @@
             });
             this.popup
                 .setContent('body', [
-                    el.div({
+                    src.div({
                         content: data.getList('letters').join(''),
                         classNames: ['sb-modal-letters']
                     }),
@@ -1238,9 +1263,9 @@
         run(evt) {
             const pangrams = data.getList('pangrams');
             const container = evt && evt.detail ? evt.detail : this.app.resultList;
-            el.$$('li', container).forEach(node => {
+            src.$$('li', container).forEach(node => {
                 const term = node.textContent;
-                if (pangrams.includes(term) || el.$('.pangram', node)) {
+                if (pangrams.includes(term) || src.$('.pangram', node)) {
                     node.classList.toggle(this.marker, this.getState());
                 }
             });
@@ -1289,13 +1314,13 @@
         }
     }
 
-    var css = "@charset \"UTF-8\";\n/**\n *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle\n * \n *  Copyright (C) 2020  Dieter Raber\n *  https://www.gnu.org/licenses/gpl-3.0.en.html\n */\n/**\n *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle\n * \n *  Copyright (C) 2020  Dieter Raber\n *  https://www.gnu.org/licenses/gpl-3.0.en.html\n */\n[data-sba-theme] {\n  --dhue: 0;\n  --dsat: 0%;\n  --link-hue: 206;\n  --shadow-light-color: hsl(49, 96%, 50%, 0.35);\n  --shadow-dark-color: hsl(49, 96%, 50%, 0.7);\n  --highlight-text-color: hsl(0, 0%, 0%);\n}\n\n[data-sba-theme=light] {\n  --highlight-bg-color: #f7db22;\n  --text-color: black;\n  --site-text-color: rgba(0, 0, 0, 0.9);\n  --body-bg-color: white;\n  --modal-bg-color: rgba(255, 255, 255, 0.85);\n  --border-color: #dbdbdb;\n  --area-bg-color: #e6e6e6;\n  --invalid-color: #adadad;\n  --menu-hover-color: whitesmoke;\n  --head-row-bg-color: whitesmoke;\n  --card-color: rgba(247, 219, 34, 0.1);\n  --link-color: hsl(var(--link-hue), 45%, 38%);\n  --link-visited-color: hsl(var(--link-hue), 45%, 53%);\n  --link-hover-color: hsl(var(--link-hue), 45%, 53%);\n  --success-color: #2ca61c;\n}\n\n[data-sba-theme=dark] {\n  --highlight-bg-color: #facd05;\n  --text-color: hsl(var(--dhue), var(--dsat), 85%);\n  --site-text-color: hsl(var(--dhue), var(--dsat), 100%, 0.9);\n  --body-bg-color: hsl(var(--dhue), var(--dsat), 7%);\n  --modal-bg-color: hsl(var(--dhue), var(--dsat), 7%, 0.85);\n  --border-color: hsl(var(--dhue), var(--dsat), 20%);\n  --area-bg-color: hsl(var(--dhue), var(--dsat), 22%);\n  --invalid-color: hsl(var(--dhue), var(--dsat), 50%);\n  --menu-hover-color: hsl(var(--dhue), var(--dsat), 22%);\n  --head-row-bg-color: hsl(var(--dhue), var(--dsat), 13%);\n  --card-color: hsl(var(--dhue), var(--dsat), 22%);\n  --link-color: hsl(var(--link-hue), 90%, 64%);\n  --link-visited-color: hsl(var(--link-hue), 90%, 76%);\n  --link-hover-color: hsl(var(--link-hue), 90%, 76%);\n  --success-color: #64f651;\n}\n\n/**\n *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle\n * \n *  Copyright (C) 2020  Dieter Raber\n *  https://www.gnu.org/licenses/gpl-3.0.en.html\n */\nbody {\n  background: var(--body-bg-color);\n  color: var(--text-color);\n}\nbody .pz-game-field {\n  background: var(--body-bg-color);\n  color: var(--text-color);\n}\nbody[data-sba-theme=dark] .pz-game-wrapper, body[data-sba-theme=dark] #js-hook-pz-moment__loading {\n  background: var(--body-bg-color) !important;\n  color: var(--text-color);\n}\nbody .pz-game-wrapper .sb-modal-message a {\n  color: var(--link-color);\n}\nbody .pz-game-wrapper .sb-modal-message a:visited {\n  color: var(--link-visited-color);\n}\nbody .pz-game-wrapper .sb-modal-message a:hover {\n  color: var(--link-hover-color);\n}\nbody .pz-game-wrapper .sb-progress-marker .sb-progress-value,\nbody .pz-game-wrapper .hive-cell:first-child .cell-fill {\n  background: var(--highlight-bg-color);\n  fill: var(--highlight-bg-color);\n  color: var(--highlight-text-color);\n}\nbody .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,\nbody .pz-game-wrapper .hive-cell .cell-fill {\n  fill: var(--area-bg-color);\n}\nbody[data-sba-theme=dark] .sb-message {\n  background: var(--area-bg-color);\n}\nbody[data-sba-theme=dark] .hive-action__shuffle {\n  position: relative;\n}\nbody[data-sba-theme=dark] .sb-progress-value {\n  font-weight: bold;\n}\nbody[data-sba-theme=dark] .sb-toggle-icon,\nbody[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,\nbody[data-sba-theme=dark] .hive-action__shuffle {\n  background-position: -1000px;\n}\nbody[data-sba-theme=dark] .sb-toggle-icon:after,\nbody[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,\nbody[data-sba-theme=dark] .hive-action__shuffle:after {\n  content: \"\";\n  opacity: 0.85;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  position: absolute;\n  z-index: 0;\n  filter: invert(1);\n  background-image: inherit;\n  background-repeat: inherit;\n  background-position: center;\n  background-size: inherit;\n}\n\n#js-logo-nav rect {\n  fill: var(--body-bg-color);\n}\n#js-logo-nav path {\n  fill: var(--text-color);\n}\n\n.pz-moment__loading {\n  color: black;\n}\n\n.pz-nav__hamburger-inner,\n.pz-nav__hamburger-inner::before,\n.pz-nav__hamburger-inner::after {\n  background-color: var(--text-color);\n}\n\n.pz-nav {\n  width: 100%;\n  background: var(--body-bg-color);\n}\n\n.pz-modal__button.white,\n.pz-footer,\n.pz-moment,\n.sb-modal-scrim {\n  background: var(--modal-bg-color) !important;\n  color: var(--text-color) !important;\n}\n.pz-modal__button.white .pz-moment__button.secondary,\n.pz-footer .pz-moment__button.secondary,\n.pz-moment .pz-moment__button.secondary,\n.sb-modal-scrim .pz-moment__button.secondary {\n  color: white;\n}\n\n.sb-modal-wrapper .sb-modal-frame {\n  border: 1px solid var(--border-color);\n  background: var(--body-bg-color);\n  color: var(--text-color);\n}\n.sb-modal-wrapper .pz-modal__title,\n.sb-modal-wrapper .sb-modal-close {\n  color: var(--text-color);\n}\n\n.pz-moment__close::before, .pz-moment__close::after {\n  background: var(--text-color);\n}\n\n.pz-modal__button.white:hover {\n  background: var(--area-bg-color);\n}\n\n.sb-input-invalid {\n  color: var(--invalid-color);\n}\n\n.sb-toggle-expand {\n  box-shadow: none;\n}\n\n.sb-input-bright,\n.sb-progress-dot.completed::after {\n  color: var(--highlight-bg-color);\n}\n\n.cell-fill {\n  stroke: var(--body-bg-color);\n}\n\n.cell-letter {\n  fill: var(--text-color);\n}\n\n.hive-cell.center .cell-letter {\n  fill: var(--highhlight-text-color);\n}\n\n.hive-action {\n  background-color: var(--body-bg-color);\n  color: var(--text-color);\n}\n.hive-action.push-active {\n  background: var(--menu-hover-color);\n}\n\n[data-sba-theme] .sb-modal-wordlist-items li,\n.sb-wordlist-items-pag > li,\n.pz-ad-box,\n.pz-game-toolbar,\n.pz-spelling-bee-wordlist,\n.hive-action,\n.sb-wordlist-box,\n.sb-message {\n  border-color: var(--border-color);\n}\n\n.sb-toggle-expand {\n  background: var(--body-bg-color);\n}\n\n.sb-progress-line,\n.sb-progress-dot::after,\n.pz-nav::after {\n  background: var(--border-color);\n}\n\n.sb-bob {\n  background-color: var(--border-color);\n}\n.sb-bob.active {\n  background-color: var(--text-color);\n}\n\n/**\n *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle\n * \n *  Copyright (C) 2020  Dieter Raber\n *  https://www.gnu.org/licenses/gpl-3.0.en.html\n */\n.sba {\n  background: var(--body-bg-color);\n  border-radius: 6px;\n  border-style: solid;\n  border-width: 1px;\n}\n.sba *:focus {\n  outline: 0;\n}\n.sba ::selection {\n  background: transparent;\n}\n.sba details {\n  font-size: 90%;\n  margin-bottom: 1px;\n}\n.sba summary {\n  font-size: 13px;\n  line-height: 20px;\n  padding: 1px 6px 0 6px;\n  background: var(--area-bg-color);\n  color: var(--text-color);\n  cursor: pointer;\n  position: relative;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  border: 1px solid var(--border-color);\n}\n\n[data-ui].inactive {\n  display: none;\n}\n\n.sba-data-pane {\n  border: 1px solid var(--border-color);\n  width: 100%;\n  font-size: 85%;\n  margin-bottom: 2px;\n  border-collapse: collapse;\n  table-layout: fixed;\n  border-top: none;\n}\n.sba-data-pane[data-cols=\"3\"] :is(th, td) {\n  width: 33.3333333333%;\n}\n.sba-data-pane[data-cols=\"4\"] :is(th, td) {\n  width: 25%;\n}\n.sba-data-pane[data-cols=\"5\"] :is(th, td) {\n  width: 20%;\n}\n.sba-data-pane[data-cols=\"6\"] :is(th, td) {\n  width: 16.6666666667%;\n}\n.sba-data-pane[data-cols=\"7\"] :is(th, td) {\n  width: 14.2857142857%;\n}\n.sba-data-pane[data-cols=\"8\"] :is(th, td) {\n  width: 12.5%;\n}\n.sba-data-pane[data-cols=\"9\"] :is(th, td) {\n  width: 11.1111111111%;\n}\n.sba-data-pane[data-cols=\"10\"] :is(th, td) {\n  width: 10%;\n}\n.sba-data-pane th {\n  text-transform: uppercase;\n  background: var(--head-row-bg-color);\n}\n.sba-data-pane .sba-preeminent {\n  font-weight: bold;\n  border-bottom: 2px solid var(--highlight-bg-color) !important;\n}\n.sba-data-pane .sba-completed td,\n.sba-data-pane td.sba-completed {\n  color: var(--invalid-color);\n  font-weight: normal;\n}\n.sba-data-pane .sba-hidden {\n  display: none;\n}\n.sba-data-pane :is(th, td) {\n  border: 1px solid var(--border-color);\n  border-top: none;\n  white-space: nowrap;\n  text-align: center;\n  padding: 3px 2px;\n}\n.sba-data-pane th {\n  background-color: var(--head-row-bg-color);\n}\n\n[data-ui=community] h4 {\n  font-weight: 700;\n  font-family: nyt-franklin;\n  font-size: 18px;\n  margin: 0 0 1px 0;\n}\n[data-ui=community] p {\n  margin: 0 0 2px 0;\n  font-size: 16px;\n}\n[data-ui=community] em {\n  display: block;\n  font-weight: normal;\n  font-weight: 500;\n  font-size: 14px;\n  font-family: nyt-franklin;\n}\n[data-ui=community] li {\n  margin: 0 0 12px 0;\n}\n[data-ui=community] li ul {\n  padding-left: 20px;\n  list-style: disc;\n}\n[data-ui=community] li ul li {\n  margin: 0;\n}\n[data-ui=community] li ul li a {\n  color: var(--link-color);\n}\n[data-ui=community] li ul li a:hover {\n  color: var(--link-hover-color);\n}\n[data-ui=community] .sb-modal-body {\n  margin-top: 0;\n  padding-bottom: 10px;\n}\n\n[data-ui=yourProgress] b {\n  font-weight: 700;\n}\n[data-ui=yourProgress] .sba-data-pane {\n  margin-left: 5px;\n  max-width: 300px;\n  border: none;\n}\n[data-ui=yourProgress] .sba-data-pane tr.sba-completed td {\n  color: var(--text-color);\n}\n[data-ui=yourProgress] .sba-data-pane tr td {\n  border: none;\n  text-align: left;\n  line-height: 1.8;\n}\n[data-ui=yourProgress] .sba-data-pane tr td:nth-child(n+2) {\n  text-align: right;\n  width: 80px;\n}\n[data-ui=yourProgress] .sba-data-pane tr td:nth-child(2)::after {\n  content: \" pts.\";\n}\n[data-ui=yourProgress] .sba-data-pane tr td:last-child::after {\n  content: \"%\";\n}\n\n[data-ui=header] {\n  font-weight: bold;\n  line-height: 32px;\n  flex-grow: 2;\n  text-indent: 1px;\n}\n\n[data-ui=progressBar] {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  border-radius: 0;\n  margin: 0;\n  height: 6px;\n  padding: 0;\n  background: transparent;\n  display: block;\n  border: none;\n  border-bottom: 1px var(--border-color) solid;\n}\n[data-ui=progressBar]::-webkit-progress-bar {\n  background-color: transparent;\n}\n[data-ui=progressBar]::-webkit-progress-value {\n  background-color: var(--highlight-bg-color);\n  height: 4px;\n}\n[data-ui=progressBar]::-moz-progress-bar {\n  background-color: var(--highlight-bg-color);\n}\n\n[data-ui=spillTheBeans] {\n  text-align: center;\n  padding: 14px 0;\n  font-size: 38px;\n  margin-top: -24px;\n}\n\n[data-ui=menu] {\n  position: relative;\n  z-index: 1;\n}\n[data-ui=menu] .pane {\n  color: var(--text-color);\n  background: var(--body-bg-color);\n  border: 1px var(--border-color) solid;\n  padding: 5px;\n  width: 179px;\n}\n[data-ui=menu] li {\n  position: relative;\n  line-height: 1.8;\n  white-space: nowrap;\n  cursor: pointer;\n  overflow: hidden;\n  display: block;\n  padding: 5px 9px 5px 36px;\n  font-size: 14px;\n}\n[data-ui=menu] li::before, [data-ui=menu] li::after {\n  position: absolute;\n  display: block;\n}\n[data-ui=menu] li[data-icon=checkmark].checked::after {\n  content: \"✔\";\n  color: var(--highlight-bg-color);\n  top: 3px;\n  left: 14px;\n  font-size: 16px;\n}\n[data-ui=menu] li[data-target=darkModeColors], [data-ui=menu] li[data-icon=sba] {\n  border-top: 1px solid var(--border-color);\n}\n[data-ui=menu] li[data-icon=sba] {\n  color: currentColor;\n}\n[data-ui=menu] li[data-icon=sba]:hover {\n  color: var(--link-hover-color);\n  text-decoration: underline;\n}\n[data-ui=menu] li svg {\n  display: inline-block;\n  width: 20px;\n  height: 20px;\n  position: absolute;\n  left: 7px;\n  top: 6px;\n}\n[data-ui=menu] li svg .shape {\n  fill: var(--text-color);\n}\n[data-ui=menu] li svg .content {\n  fill: var(--highlight-bg-color);\n}\n\n.sba-color-selector {\n  display: flex;\n  justify-content: space-between;\n  gap: 10px;\n}\n.sba-color-selector svg {\n  width: 120px;\n  height: 120px;\n  display: block;\n}\n\n[data-ui=darkModeColors] .hive {\n  width: auto;\n  padding: 0;\n  flex-grow: 2;\n  display: flex;\n}\n[data-ui=darkModeColors] .hive-cell {\n  position: static;\n  margin: auto;\n  border: 1px solid var(--border-color);\n  padding: 20px;\n  width: 168px;\n  height: 100%;\n  border-radius: 6px;\n}\n[data-ui=darkModeColors] .cell-letter {\n  font-size: 8px;\n  font-weight: 600;\n}\n\n.sba-swatches {\n  display: flex;\n  flex-wrap: wrap;\n  list-style: none;\n  justify-content: space-around;\n  padding: 0;\n  width: 220px;\n}\n.sba-swatches li {\n  position: relative;\n  overflow: hidden;\n  margin-bottom: 5px;\n}\n.sba-swatches label {\n  border: 1px var(--border-color) solid;\n  display: block;\n  width: 50px;\n  height: 50px;\n  overflow: hidden;\n  cursor: pointer;\n}\n.sba-swatches input {\n  position: absolute;\n  left: -100px;\n}\n.sba-swatches input:checked ~ label {\n  border-color: var(--highlight-bg-color);\n}\n\n.sba-googlified .sb-anagram {\n  cursor: pointer;\n}\n.sba-googlified .sb-anagram:hover {\n  text-decoration: underline;\n  color: var(--link-hover-color);\n}\n\n#portal-game-toolbar [role=presentation]::selection {\n  background: transparent;\n}\n\n[data-sba-theme] .sb-modal-wordlist-items li .check.checked {\n  border: none;\n  height: auto;\n  transform: none;\n}\n[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after {\n  position: relative;\n  content: \"✔\";\n  color: var(--highlight-bg-color);\n  top: 4px;\n  font-size: 16px;\n}\n[data-sba-theme] .sb-modal-header .sb-modal-letters {\n  position: relative;\n  top: -5px;\n}\n\n.pz-toolbar-button:hover,\n[data-ui=menu] li:hover {\n  background: var(--menu-hover-color);\n  color: var(--text-color);\n}\n.pz-toolbar-button::selection,\n[data-ui=menu] li::selection {\n  background-color: transparent;\n}\n\n[data-ui=grid] table {\n  border-top: 1px solid var(--border-color);\n  margin-left: -20px;\n  width: calc(100% + 40px);\n}\n[data-ui=grid] tbody tr:last-child td {\n  background-color: var(--head-row-bg-color);\n}\n[data-ui=grid] tbody tr td {\n  padding: 5px 0 !important;\n}\n[data-ui=grid] tbody tr td:last-of-type {\n  background-color: var(--head-row-bg-color);\n}\n\n.sba details[open] summary:before {\n  transform: rotate(-90deg);\n  left: 10px;\n  top: 1px;\n}\n.sba summary {\n  list-style: none;\n  padding: 1px 15px 0 21px;\n}\n.sba summary::marker {\n  display: none;\n}\n.sba summary:before {\n  content: \"❯\";\n  font-size: 9px;\n  position: absolute;\n  display: inline-block;\n  transform: rotate(90deg);\n  transform-origin: center;\n  left: 7px;\n  top: 0;\n}\n\n[data-sba-theme] :is(.sb-wordlist-items-pag, .sb-modal-wordlist-items) > li.sba-pangram {\n  font-weight: 700;\n  border-bottom: 2px var(--highlight-bg-color) solid;\n}\n[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer {\n  text-align: right;\n  font-size: 13px;\n  border-top: 1px solid var(--border-color);\n  padding: 10px 10px 0 10px;\n}\n\n.sb-modal-frame .sb-modal-content::after {\n  background: linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%);\n}\n\n/**\n *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle\n * \n *  Copyright (C) 2020  Dieter Raber\n *  https://www.gnu.org/licenses/gpl-3.0.en.html\n */\n.sba-container {\n  display: none;\n}\n\n.sba {\n  margin: var(--sba-app-margin);\n  width: var(--sba-app-width);\n  padding: var(--sba-app-padding);\n  box-sizing: border-box;\n}\n.sba *,\n.sba *:before,\n.sba *:after {\n  box-sizing: border-box;\n}\n\n[data-ui=menu] .pane {\n  position: absolute;\n  top: 0;\n  right: -10000px;\n}\n\n[data-sba-submenu=true] .sba {\n  position: relative;\n  left: -167px;\n  top: -175px;\n}\n[data-sba-submenu=true] .pz-game-toolbar {\n  position: relative;\n  z-index: 4;\n}\n[data-sba-submenu=true] [data-ui=menu] .pane {\n  right: -16px;\n  top: 49px;\n}\n[data-sba-submenu=true] .sba {\n  left: -163px;\n  top: 0;\n}\n[data-sba-submenu=true].pz-desktop .pane {\n  right: -16px;\n  top: 55px;\n}\n\n[data-sba-active=true] {\n  --sba-app-width: 100px;\n  --sba-app-padding: 0;\n  --sba-app-margin: 0;\n  --sba-game-offset: 12px;\n  --sba-game-width: 1256px;\n  --sba-mobile-threshold: 900px;\n}\n[data-sba-active=true] .sba-container {\n  display: block;\n  position: absolute;\n  top: 50%;\n  transform: translate(0, -50%);\n  right: var(--sba-game-offset);\n  z-index: 1;\n}\n[data-sba-active=true] .sba {\n  border-color: transparent;\n}\n[data-sba-active=true] [data-ui=header] {\n  display: none;\n}\n[data-sba-active=true][data-sba-submenu=true] .sba-container {\n  top: 0;\n  height: 0;\n  z-index: 4;\n}\n[data-sba-active=true] .sb-expanded .sba-container {\n  visibility: hidden;\n  pointer-events: none;\n}\n[data-sba-active=true] .sb-content-box {\n  max-width: var(--sba-game-width);\n  justify-content: space-between;\n  position: relative;\n}\n[data-sba-active=true] .sb-controls-box {\n  max-width: calc(100vw - var(--sba-app-width));\n}\n\n@media (max-width: 370px) {\n  [data-sba-active=true] .sb-hive {\n    width: 70%;\n  }\n  [data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle) {\n    font-size: 0.9em;\n    margin: 0 4px 8px;\n    padding: 23px 0;\n  }\n  [data-sba-active=true] .hive-action:not(.hive-action__shuffle) {\n    width: 71px;\n    min-width: auto;\n  }\n}\n@media (max-width: 450px) {\n  [data-ui=grid] table {\n    table-layout: auto;\n  }\n  [data-ui=grid] table.sba-data-pane tbody th {\n    width: 28px !important;\n  }\n  [data-ui=grid] table.sba-data-pane thead th:first-of-type {\n    width: 28px !important;\n  }\n  [data-ui=grid] table.sba-data-pane :is(thead, tbody) tr :is(th, td) {\n    width: auto;\n    font-size: 90%;\n  }\n}\n[data-sba-active] .pz-game-toolbar .pz-row {\n  padding: 0;\n}\n\n@media (min-width: 516px) {\n  [data-sba-active] .pz-game-toolbar .pz-row {\n    padding: 0 12px;\n  }\n  [data-sba-active].pz-desktop .sba {\n    left: -175px;\n  }\n\n  [data-ui=score] .sba-data-pane tbody th {\n    text-transform: none;\n    width: 31%;\n  }\n  [data-ui=score] .sba-data-pane tbody td {\n    width: 23%;\n  }\n  [data-ui=score] .sba-data-pane tbody tr:nth-child(1) th::after {\n    content: \"ords\";\n  }\n  [data-ui=score] .sba-data-pane tbody tr:nth-child(2) th::after {\n    content: \"oints\";\n  }\n  [data-ui=score] .sba-data-pane thead th {\n    width: 23%;\n  }\n  [data-ui=score] .sba-data-pane thead th:first-of-type {\n    width: 31%;\n  }\n\n  [data-sba-active=true] {\n    --sba-app-width: 138px;\n    --sba-app-padding: 0 5px 5px;\n  }\n  [data-sba-active=true] .sba {\n    border-color: var(--border-color);\n  }\n  [data-sba-active=true] [data-ui=header] {\n    display: block;\n  }\n}\n@media (min-width: 900px) {\n  [data-sba-submenu=true].pz-desktop [data-ui=menu] .pane {\n    right: 0;\n    top: 55px;\n  }\n\n  [data-sba-active=true] {\n    --sba-app-width: 160px;\n    --sba-app-padding: 0 8px 8px;\n    --sba-app-margin: 66px 0 0 0;\n  }\n  [data-sba-active=true] .sb-content-box {\n    padding: 0 var(--sba-game-offset);\n  }\n  [data-sba-active=true] .sb-controls-box {\n    max-width: none;\n  }\n  [data-sba-active=true] .sba-container {\n    position: static;\n    transform: none;\n  }\n  [data-sba-active=true] .sb-expanded .sba-container {\n    z-index: 1;\n  }\n  [data-sba-active=true][data-sba-submenu=true] .sba {\n    top: -66px;\n  }\n  [data-sba-active=true].pz-desktop .sba {\n    left: -191px;\n  }\n}\n@media (min-width: 1298px) {\n  [data-sba-active=true][data-sba-submenu=true] .sba {\n    left: -179px;\n  }\n}\n@media (min-width: 768px) {\n  [data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-body {\n    padding-right: 56px;\n  }\n  [data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-header {\n    padding-right: 56px;\n  }\n  [data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer {\n    text-align: right;\n    border-top: 1px solid var(--border-color);\n    padding-top: 10px;\n    width: calc(100% - 112px);\n    margin: -8px auto 15px;\n  }\n}";
+    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--highlight-bg-color:#f7db22;--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:rgba(255,255,255,.85);--border-color:#dbdbdb;--area-bg-color:#e6e6e6;--invalid-color:#adadad;--menu-hover-color:#f5f5f5;--head-row-bg-color:#f5f5f5;--card-color:rgba(247,219,34,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--success-color:#2ca61c}[data-sba-theme=dark]{--highlight-bg-color:#facd05;--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), 7%);--modal-bg-color:hsl(var(--dhue), var(--dsat), 7%, 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 50%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--head-row-bg-color:hsl(var(--dhue), var(--dsat), 13%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--success-color:#64f651}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-game-wrapper,body[data-sba-theme=dark] #js-hook-pz-moment__loading{background:var(--body-bg-color) !important;color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--highlight-bg-color);fill:var(--highlight-bg-color);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.pz-modal__button.white,.pz-footer,.pz-moment,.sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}.pz-modal__button.white .pz-moment__button.secondary,.pz-footer .pz-moment__button.secondary,.pz-moment .pz-moment__button.secondary,.sb-modal-scrim .pz-moment__button.secondary{color:#fff}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary{color:#000}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--highlight-bg-color)}.cell-fill{stroke:var(--body-bg-color)}.cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highhlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}[data-sba-theme] .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist,.hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:transparent}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--border-color)}[data-ui].inactive{display:none}.sba-data-pane{border:1px solid var(--border-color);width:100%;font-size:85%;margin-bottom:2px;border-collapse:collapse;table-layout:fixed;border-top:none}.sba-data-pane[data-cols=\"3\"] :is(th,td){width:33.3333333333%}.sba-data-pane[data-cols=\"4\"] :is(th,td){width:25%}.sba-data-pane[data-cols=\"5\"] :is(th,td){width:20%}.sba-data-pane[data-cols=\"6\"] :is(th,td){width:16.6666666667%}.sba-data-pane[data-cols=\"7\"] :is(th,td){width:14.2857142857%}.sba-data-pane[data-cols=\"8\"] :is(th,td){width:12.5%}.sba-data-pane[data-cols=\"9\"] :is(th,td){width:11.1111111111%}.sba-data-pane[data-cols=\"10\"] :is(th,td){width:10%}.sba-data-pane th{text-transform:uppercase;background:var(--head-row-bg-color)}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-bg-color) !important}.sba-data-pane .sba-completed td,.sba-data-pane td.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane :is(th,td){border:1px solid var(--border-color);border-top:none;white-space:nowrap;text-align:center;padding:3px 2px}.sba-data-pane th{background-color:var(--head-row-bg-color)}[data-ui=community] h4{font-weight:700;font-family:nyt-franklin;font-size:18px;margin:0 0 1px 0}[data-ui=community] p{margin:0 0 2px 0;font-size:16px}[data-ui=community] em{display:block;font-weight:normal;font-weight:500;font-size:14px;font-family:nyt-franklin}[data-ui=community] li{margin:0 0 12px 0}[data-ui=community] li ul{padding-left:20px;list-style:disc}[data-ui=community] li ul li{margin:0}[data-ui=community] li ul li a{color:var(--link-color)}[data-ui=community] li ul li a:hover{color:var(--link-hover-color)}[data-ui=community] .sb-modal-body{margin-top:0;padding-bottom:10px}[data-ui=yourProgress] b{font-weight:700}[data-ui=yourProgress] .sba-data-pane{margin-left:5px;max-width:300px;border:none}[data-ui=yourProgress] .sba-data-pane tr.sba-completed td{color:var(--text-color)}[data-ui=yourProgress] .sba-data-pane tr td{border:none;text-align:left;line-height:1.8}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(n+2){text-align:right;width:80px}[data-ui=yourProgress] .sba-data-pane tr td:nth-child(2)::after{content:\" pts.\"}[data-ui=yourProgress] .sba-data-pane tr td:last-child::after{content:\"%\"}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px}[data-ui=progressBar]{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;height:6px;padding:0;background:transparent;display:block;border:none;border-bottom:1px var(--border-color) solid}[data-ui=progressBar]::-webkit-progress-bar{background-color:transparent}[data-ui=progressBar]::-webkit-progress-value{background-color:var(--highlight-bg-color);height:4px}[data-ui=progressBar]::-moz-progress-bar{background-color:var(--highlight-bg-color)}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px;width:179px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 36px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-bg-color);top:3px;left:14px;font-size:16px}[data-ui=menu] li[data-target=darkModeColors],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}[data-ui=menu] li svg{display:inline-block;width:20px;height:20px;position:absolute;left:7px;top:6px}[data-ui=menu] li svg .shape{fill:var(--text-color)}[data-ui=menu] li svg .content{fill:var(--highlight-bg-color)}.sba-color-selector{display:flex;justify-content:space-between;gap:10px}.sba-color-selector svg{width:120px;height:120px;display:block}[data-ui=darkModeColors] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkModeColors] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkModeColors] .cell-letter{font-size:8px;font-weight:600}.sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:220px}.sba-swatches li{position:relative;overflow:hidden;margin-bottom:5px}.sba-swatches label{border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer}.sba-swatches input{position:absolute;left:-100px}.sba-swatches input:checked~label{border-color:var(--highlight-bg-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}#portal-game-toolbar .pz-nav__toolbar-item,#portal-game-toolbar .pz-toolbar-button,#js-mobile-toolbar .pz-nav__toolbar-item,#js-mobile-toolbar .pz-toolbar-button{color:var(--text-color)}#portal-game-toolbar .pz-nav__toolbar-item::selection,#portal-game-toolbar .pz-toolbar-button::selection,#js-mobile-toolbar .pz-nav__toolbar-item::selection,#js-mobile-toolbar .pz-toolbar-button::selection{background:transparent}[data-sba-theme] .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--highlight-bg-color);top:4px;font-size:16px}[data-sba-theme] .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:transparent}[data-ui=grid] table{border-top:1px solid var(--border-color);margin-left:-20px;width:calc(100% + 40px)}[data-ui=grid] tbody tr:last-child td{background-color:var(--head-row-bg-color)}[data-ui=grid] tbody tr td{padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type{background-color:var(--head-row-bg-color)}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba summary{list-style:none;padding:1px 15px 0 21px}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li{position:relative}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li.sba-pangram{font-weight:700;border-bottom:2px var(--highlight-bg-color) solid}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks{position:absolute;right:0;bottom:3px}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks mark{display:none}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-s-active .sba-mark-s{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-p-active .sba-mark-p{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-d-active .sba-mark-d{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-c-active .sba-mark-c{display:inline-block}[data-sba-theme] mark{background:transparent;font-size:11px;pointer-events:none;text-transform:uppercase}[data-sba-theme] mark::after{content:\" \"}[data-sba-theme] mark:last-of-type::after{content:normal}[data-sba-theme] mark::selection{background-color:transparent}[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}.sb-modal-frame .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{position:absolute;top:0;right:-10000px}[data-sba-submenu=true] .sba{position:relative;left:-167px;top:-175px}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{right:-16px;top:49px}[data-sba-submenu=true] .sba{left:-163px;top:0}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:transparent}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true][data-sba-submenu=true] .sba-container{top:0;height:0;z-index:4}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}}@media(max-width: 450px){[data-ui=grid] table{table-layout:auto}[data-ui=grid] table.sba-data-pane tbody th{width:28px !important}[data-ui=grid] table.sba-data-pane thead th:first-of-type{width:28px !important}[data-ui=grid] table.sba-data-pane :is(thead,tbody) tr :is(th,td){width:auto;font-size:90%}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}[data-ui=score] .sba-data-pane tbody th{text-transform:none;width:31%}[data-ui=score] .sba-data-pane tbody td{width:23%}[data-ui=score] .sba-data-pane tbody tr:nth-child(1) th::after{content:\"ords\"}[data-ui=score] .sba-data-pane tbody tr:nth-child(2) th::after{content:\"oints\"}[data-ui=score] .sba-data-pane thead th{width:23%}[data-ui=score] .sba-data-pane thead th:first-of-type{width:31%}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:block}}@media(min-width: 900px){[data-sba-submenu=true].pz-desktop [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 66px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba{top:-66px}[data-sba-active=true].pz-desktop .sba{left:-191px}}@media(min-width: 1298px){[data-sba-active=true][data-sba-submenu=true] .sba{left:-179px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}";
 
     class Styles extends Plugin {
         constructor(app) {
             super(app, 'Styles', '');
-            this.target = el.$('head');
-            this.ui = el.style({
+            this.target = src.$('head');
+            this.ui = src.style({
                 content: css
             });
             app.on(prefix('destroy'), () => this.ui.remove());
@@ -1313,7 +1338,7 @@
     };
     class Menu extends Plugin {
         getTarget() {
-            return this.app.envIs('mobile') ? el.$('#js-mobile-toolbar') : el.$('#portal-game-toolbar > div:last-of-type');
+            return this.app.envIs('mobile') ? src.$('#js-mobile-toolbar') : src.$('#portal-game-toolbar > div:last-of-type');
         }
         getComponent(entry) {
             if (entry.dataset.component === this.app.key) {
@@ -1329,7 +1354,7 @@
             this.target = this.getTarget();
             const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
             this.app.domSet('submenu', false);
-            const pane = el.ul({
+            const pane = src.ul({
                 classNames: ['pane'],
                 data: {
                     ui: 'submenu'
@@ -1362,7 +1387,7 @@
                         }
                     }
                 },
-                content: el.li({
+                content: src.li({
                     classNames: this.app.getState() ? ['checked'] : [],
                     attributes: {
                         title: this.app.title
@@ -1375,7 +1400,7 @@
                     content: `Show ${settings$1.get('title')}`
                 })
             });
-            this.ui = el.div({
+            this.ui = src.div({
                 events: {
                     pointerup: evt => {
                         if (!evt.target.dataset.action) {
@@ -1387,7 +1412,7 @@
                     settings$1.get('title'),
                     pane
                 ],
-                attributes: {
+                aria: {
                     role: 'presentation'
                 },
                 classNames
@@ -1397,7 +1422,7 @@
                     this.app.domSet('submenu', false);
                 }
             });
-            el.$('#pz-game-root').addEventListener('pointerdown', () => {
+            src.$('#pz-game-root').addEventListener('pointerdown', () => {
                 if (this.app.domGet('submenu') === true) {
                     this.app.domSet('submenu', false);
                 }
@@ -1409,7 +1434,7 @@
                     }
                     const action = plugin.menuAction || 'boolean';
                     const icon = plugin.menuIcon || null;
-                    pane.append(el.li({
+                    pane.append(src.li({
                         classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
                         attributes: {
                             title: plugin.description
@@ -1422,7 +1447,7 @@
                         content: svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
                     }));
                 });
-                pane.append(el.li({
+                pane.append(src.li({
                     attributes: {
                         title: settings$1.get('support.text')
                     },
@@ -1431,7 +1456,7 @@
                         component: prefix('web'),
                         action: 'link'
                     },
-                    content: el.a({
+                    content: src.a({
                         content: [
                             iconCoffee,
                             settings$1.get('support.text'),
@@ -1457,13 +1482,13 @@
         }
         run(evt) {
             super.run(evt);
-            const rows = el.$$('tr', this.pane);
+            const rows = src.$$('tr', this.pane);
             const rCnt = rows.length;
             rows.forEach((row, rInd) => {
                 if (rCnt === rInd + 1) {
                     return false;
                 }
-                const cells = el.$$('td', row);
+                const cells = src.$$('td', row);
                 const cCnt = cells.length;
                 cells.forEach((cell, cInd) => {
                     const cellArr = cell.textContent.trim().split('/');
@@ -1568,11 +1593,11 @@
             return document.body.classList.contains('pz-' + env);
         }
         load() {
-            el.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
+            src.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
                 .then(resultList => {
                     this.observer = this.buildObserver();
                     data.init(this, this.getSyncData());
-                    this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+                    this.modalWrapper = src.$('.sb-modal-wrapper', this.gameWrapper);
                     this.resultList = resultList;
                     this.add();
                     this.domSet('active', true);
@@ -1600,7 +1625,7 @@
                     switch (true) {
                         case mutation.type === 'childList' &&
                         mutation.target.isSameNode(this.modalWrapper):
-                            if (el.$('.sb-modal-frame.yesterday', mutation.target)) {
+                            if (src.$('.sb-modal-frame.yesterday', mutation.target)) {
                                 this.trigger(prefix('yesterday'), mutation.target);
                             }
                             break;
@@ -1637,7 +1662,7 @@
                 this.domUnset('theme');
             };
             const classNames = [settings$1.get('prefix')];
-            return el.div({
+            return src.div({
                 data: {
                     id: this.key,
                     version: settings$1.get('version')
@@ -1658,26 +1683,26 @@
         }
         add() {
             this.container.append(this.ui);
-            el.$('.sb-content-box', this.gameWrapper).prepend(this.container);
+            src.$('.sb-content-box', this.gameWrapper).prepend(this.container);
         }
         constructor(gameWrapper) {
             super(settings$1.get('label'), {
                 canChangeState: true,
                 key: prefix('app'),
             });
-            const oldInstance = el.$(`[data-id="${this.key}"]`);
+            const oldInstance = src.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
                 oldInstance.dispatchEvent(new Event(prefix('destroy')));
             }
             this.gameWrapper = gameWrapper;
             this.ui = this.buildUi();
-            this.container = el.div({
+            this.container = src.div({
                 classNames: [prefix('container', 'd')]
             });
             this.load();
         }
     }
 
-    new App(el.$('#js-hook-game-wrapper'));
+    new App(src.$('#js-hook-game-wrapper'));
 
-}());
+})();

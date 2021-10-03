@@ -7,9 +7,9 @@
 import {
     prefix
 } from '../modules/string.js';
-import el from '../modules/element.js';
 import Plugin from '../modules/plugin.js';
 import data from '../modules/data.js';
+import fn from 'fancy-node';
 
 /**
  * Pangram Highlight plugin
@@ -38,9 +38,9 @@ class PangramHl extends Plugin {
     run(evt) {
         const pangrams = data.getList('pangrams');
         const container = evt && evt.detail ? evt.detail : this.app.resultList;
-        el.$$('li', container).forEach(node => {
+        fn.$$('li', container).forEach(node => {
             const term = node.textContent;
-            if (pangrams.includes(term) || el.$('.pangram', node)) {
+            if (pangrams.includes(term) || fn.$('.pangram', node)) {
                 node.classList.toggle(this.marker, this.getState());
             }
         });

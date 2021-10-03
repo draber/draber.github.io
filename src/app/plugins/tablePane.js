@@ -4,11 +4,11 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from '../modules/element.js';
 import {
     prefix
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
+import fn from 'fancy-node';
 
 /**
  * TablePane plugin
@@ -25,8 +25,8 @@ class TablePane extends Plugin {
      */
     // eslint-disable-next-line no-unused-vars
     run(evt) {
-        this.pane = el.empty(this.pane);
-        const tbody = el.tbody();
+        this.pane = fn.empty(this.pane);
+        const tbody = fn.tbody();
         const data = this.getData();
         if (this.hasHeadRow) {
             this.pane.append(this.buildHead(data.shift()));
@@ -41,12 +41,12 @@ class TablePane extends Plugin {
                     classNames.push(prefix(marker, 'd'))
                 }
             }
-            const tr = el.tr({
+            const tr = fn.tr({
                 classNames
             })
             rowData.forEach((cellData, rInd) => {
                 const tag = rInd === 0 && this.hasHeadCol ? 'th' : 'td';
-                tr.append(el[tag]({
+                tr.append(fn[tag]({
                     content: cellData
                 }))
             })
@@ -63,9 +63,9 @@ class TablePane extends Plugin {
      * @returns {HTMLElement}
      */
     buildHead(rowData) {
-        return el.thead({
-            content: el.tr({
-                content: rowData.map(cellData => el.th({
+        return fn.thead({
+            content: fn.tr({
+                content: rowData.map(cellData => fn.th({
                     content: cellData
                 }))
             })
@@ -111,7 +111,7 @@ class TablePane extends Plugin {
         this.cssMarkers = cssMarkers;
         this.hasHeadRow = hasHeadRow;
         this.hasHeadCol = hasHeadCol;
-        this.pane = el.table({
+        this.pane = fn.table({
             classNames: ['pane', prefix('dataPane', 'd')]
         });
     }

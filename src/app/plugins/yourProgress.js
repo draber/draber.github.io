@@ -7,7 +7,7 @@
 import data from '../modules/data.js';
 import TablePane from './tablePane.js';
 import Popup from './popup.js';
-import el from '../modules/element.js';
+import fn from 'fancy-node';
 
 /**
  * YourProgress plugin
@@ -30,28 +30,28 @@ class YourProgress extends TablePane {
         let content;
 
         if (next) {
-            content = el.span({
+            content = fn.span({
                 content: [
                     'You are currently at ',
-                    el.b({
+                    fn.b({
                         content: points + '/' + max
                     }),
                     ' points or ',
-                    el.b({
+                    fn.b({
                         content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
                     }),
                     '. You need ',
-                    el.b({
+                    fn.b({
                         content: next - points
                     }),
                     ' more points to go to the next level.',
                 ]
             })
         } else {
-            content = el.span({
+            content = fn.span({
                 content: [
                     'Congratulations, you’ve found all ',
-                    el.b({
+                    fn.b({
                         content: points
                     }),
                     ' points!',
@@ -60,7 +60,7 @@ class YourProgress extends TablePane {
         }
 
         this.popup
-            .setContent('subtitle', el.span({
+            .setContent('subtitle', fn.span({
                 content
             }))
             .setContent('body', this.getPane())

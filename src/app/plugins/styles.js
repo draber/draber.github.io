@@ -4,12 +4,12 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from '../modules/element.js';
 import {
     prefix
 } from '../modules/string.js';
 import css from '../../css/app.css';
 import Plugin from '../modules/plugin.js';
+import fn from 'fancy-node';
 
 /**
  * Styles plugin
@@ -27,9 +27,9 @@ class Styles extends Plugin {
 
         super(app, 'Styles', '');
 
-        this.target = el.$('head');
+        this.target = fn.$('head');
 
-        this.ui = el.style({
+        this.ui = fn.style({
             content: css
         });
         app.on(prefix('destroy'), () => this.ui.remove());

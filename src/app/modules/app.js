@@ -4,7 +4,6 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from './element.js';
 import settings from './settings.js';
 import data from './data.js';
 import getPlugins from './importer.js';
@@ -12,6 +11,7 @@ import Widget from './widget.js';
 import {
     prefix
 } from './string.js';
+import fn from 'fancy-node';
 
 /**
  * App container
@@ -80,12 +80,12 @@ class App extends Widget {
      * The result list depends on sync data from the server and it can therefore be assumed that everything is ready
      */
     load() {
-        el.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
+        fn.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
             .then(resultList => {
                 // Observe game for various changes
                 this.observer = this.buildObserver();
                 data.init(this, this.getSyncData());
-                this.modalWrapper = el.$('.sb-modal-wrapper', this.gameWrapper);
+                this.modalWrapper = fn.$('.sb-modal-wrapper', this.gameWrapper);
                 this.resultList = resultList;
 
                 this.add();
@@ -134,7 +134,7 @@ class App extends Widget {
                     // 'yesterday' modal is open
                     case mutation.type === 'childList' &&
                     mutation.target.isSameNode(this.modalWrapper):
-                        if (el.$('.sb-modal-frame.yesterday', mutation.target)) {
+                        if (fn.$('.sb-modal-frame.yesterday', mutation.target)) {
                             this.trigger(prefix('yesterday'), mutation.target);
                         }
                         break;
@@ -182,7 +182,7 @@ class App extends Widget {
 
         const classNames = [settings.get('prefix')];
 
-        return el.div({
+        return fn.div({
             data: {
                 id: this.key,
                 version: settings.get('version')
@@ -213,7 +213,7 @@ class App extends Widget {
      */
     add() {
         this.container.append(this.ui);
-        el.$('.sb-content-box', this.gameWrapper).prepend(this.container);
+        fn.$('.sb-content-box', this.gameWrapper).prepend(this.container);
     }
 
     /**
@@ -229,7 +229,7 @@ class App extends Widget {
 
         // Kill existing instance - this could happen on a conflict between bookmarklet and extension
         // or while debugging
-        const oldInstance = el.$(`[data-id="${this.key}"]`);
+        const oldInstance = fn.$(`[data-id="${this.key}"]`);
         if (oldInstance) {
             oldInstance.dispatchEvent(new Event(prefix('destroy')));
         }
@@ -241,7 +241,7 @@ class App extends Widget {
         this.ui = this.buildUi();
 
         // init dom elements for external access
-        this.container = el.div({
+        this.container = fn.div({
             classNames: [prefix('container', 'd')]
         });
 

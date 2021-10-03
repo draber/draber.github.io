@@ -4,11 +4,11 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from "../modules/element";
 import {
     prefix
-} from "../modules/string";
-import settings from "../modules/settings";
+} from "../modules/string.js";
+import settings from "../modules/settings.js";
+import fn from 'fancy-node';
 
 
 /**
@@ -38,14 +38,14 @@ class Popup {
      */
     getTarget() {
         const dataUi = prefix('popup-container', 'd');
-        let container = el.$(`[data-ui="${dataUi}"]`);
+        let container = fn.$(`[data-ui="${dataUi}"]`);
         if (!container) {
-            container = el.template({
+            container = fn.template({
                 data: {
                     ui: dataUi
                 }
             });
-            el.$('body').append(container);
+            fn.$('body').append(container);
         }
         return container;
     }
@@ -55,9 +55,9 @@ class Popup {
      * @returns {HTMLElement}
      */
     create() {
-        return el.div({
+        return fn.div({
             classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
-            attributes: {
+            aria: {
                 role: 'button'
             },
             data: {
@@ -69,10 +69,10 @@ class Popup {
                 }
             },
             content: [
-                el.div({
+                fn.div({
                     classNames: ['sb-modal-top'],
-                    content: el.div({
-                        attributes: {
+                    content: fn.div({
+                        aria: {
                             role: 'button'
                         },
                         classNames: ['sb-modal-close'],
@@ -84,10 +84,10 @@ class Popup {
                         }
                     })
                 }),
-                el.div({
+                fn.div({
                     classNames: ['sb-modal-content'],
                     content: [
-                        el.div({
+                        fn.div({
                             classNames: ['sb-modal-header'],
                             content: [this.parts.title, this.parts.subtitle]
                         }),
@@ -109,8 +109,8 @@ class Popup {
             console.error(`Unknown target ${part}`);
             return this;
         }
-        this.parts[part] = el.empty(this.parts[part]);
-        this.parts[part].append(el.toNode(content));
+        this.parts[part] = fn.empty(this.parts[part]);
+        this.parts[part].append(fn.toNode(content));
         return this;
     }
 
@@ -120,7 +120,7 @@ class Popup {
      */
     getCloseButton() {
         for (let selector of ['.pz-moment__frame.on-stage .pz-moment__close', '.sb-modal-close']) {
-            const closer = el.$(selector, this.app.gameWrapper);
+            const closer = fn.$(selector, this.app.gameWrapper);
             if (closer) {
                 return closer;
             }
@@ -171,22 +171,22 @@ class Popup {
         this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
 
         this.parts = {
-            title: el.h3({
+            title: fn.h3({
                 classNames: ['sb-modal-title']
             }),
 
-            subtitle: el.p({
+            subtitle: fn.p({
                 classNames: ['sb-modal-message']
             }),
 
-            body: el.div({
+            body: fn.div({
                 classNames: ['sb-modal-body']
             }),
 
-            footer: el.div({
+            footer: fn.div({
                 classNames: ['sb-modal-message', 'sba-modal-footer'],
                 content: [
-                    el.a({
+                    fn.a({
                         content: settings.get('label'),
                         attributes: {
                             href: settings.get('url'),

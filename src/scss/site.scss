@@ -32,7 +32,7 @@ h1 {
 }
 
 h2 {
-    margin: 3rem 0 1rem;
+    margin: 2.2rem 0 1rem;
     font-size: 2rem;
 }
 
@@ -90,7 +90,7 @@ a {
 
 main {
     &.wrapper {
-        padding: 10rem 0 3rem 0;
+        padding: 12rem 0 3rem 0;
     }
 
     img {
@@ -217,8 +217,10 @@ header {
     padding: 2rem 0;
     top: 0;
     z-index: 10;
-    background: var(--body-bg-color);
+    //background: var(--body-bg-color);
     color: var(--site-text-color);
+
+    background-color: #f9df6f;
 
     .wrapper {
         display: flex;

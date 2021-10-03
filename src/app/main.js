@@ -4,7 +4,7 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from './modules/element.js';
 import App from './modules/app.js';
+import fn from 'fancy-node';
 
-new App(el.$('#js-hook-game-wrapper'));
+new App(fn.$('#js-hook-game-wrapper'));

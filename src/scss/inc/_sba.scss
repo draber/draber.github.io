@@ -289,6 +289,7 @@
 
         &[data-icon="sba"] {
             color: currentColor;
+
             &:hover {
                 color: var(--link-hover-color);
                 text-decoration: underline
@@ -302,9 +303,11 @@
             position: absolute;
             left: 7px;
             top: 6px;
+
             .shape {
                 fill: var(--text-color);
             }
+
             .content {
                 fill: var(--highlight-bg-color);
             }
@@ -395,9 +398,13 @@
     }
 }
 
-#portal-game-toolbar {
-    [role="presentation"]::selection {
-        background: transparent
+#portal-game-toolbar,
+#js-mobile-toolbar {
+    .pz-nav__toolbar-item, .pz-toolbar-button {
+        color: var(--text-color);
+        &::selection {
+            background: transparent;
+        }
     }
 }
 
@@ -510,10 +517,67 @@
 
     :is(.sb-wordlist-items-pag, .sb-modal-wordlist-items) {
         &>li {
+            position: relative;
+
             &.sba-pangram {
                 font-weight: 700;
                 border-bottom: 2px var(--highlight-bg-color) solid;
             }
+
+            .sba-marks {
+                position: absolute;
+                right: 0;
+                bottom: 3px;
+
+                mark {
+                    display: none
+                }
+            }
+        }
+
+        &.sba-mark-s-active {
+            .sba-mark-s {
+                display: inline-block;
+            }
+        }
+
+        &.sba-mark-p-active {
+            .sba-mark-p {
+                display: inline-block;
+            }
+        }
+
+        &.sba-mark-d-active {
+            .sba-mark-d {
+                display: inline-block;
+            }
+        }
+
+        &.sba-mark-c-active {
+            .sba-mark-c {
+                display: inline-block;
+            }
+        }
+    }
+
+    mark {
+        background: transparent;
+        font-size: 11px;
+        pointer-events: none;
+        text-transform: uppercase;
+
+        &::after {
+            content: ' ';
+        }
+
+        &:last-of-type {
+            &::after {
+                content: normal;
+            }
+        }
+
+        &::selection {
+            background-color: transparent;
         }
     }
 

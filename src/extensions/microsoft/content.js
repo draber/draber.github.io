@@ -3,5 +3,7 @@ window.addEventListener('load', () => {
 	el.async = true;
 	el.src = chrome.runtime.getURL('spelling-bee-assistant.min.js');
 	el.id = 'spelling-bee-assistant';
-	document.body.append(el);
+	setTimeout(() => {
+		document.body.append(el);
+	}, 1500)
 })

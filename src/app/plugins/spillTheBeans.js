@@ -4,12 +4,12 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from '../modules/element.js';
 import data from '../modules/data.js';
 import {
     prefix
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
+import fn from 'fancy-node';
 
 /**
  * Spill the beans plugin
@@ -56,11 +56,11 @@ class SpillTheBeans extends Plugin {
         /**
          * Emoji area
          */
-        this.ui = el.div({
+        this.ui = fn.div({
             content: '😐'
         });
 
-        this.target = el.$('.sb-controls', this.app.gameWrapper);
+        this.target = fn.$('.sb-controls', this.app.gameWrapper);
 
         this.toggle(false);
 

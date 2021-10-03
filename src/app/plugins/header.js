@@ -4,9 +4,9 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import el from '../modules/element.js';
 import settings from '../modules/settings.js';
 import Plugin from '../modules/plugin.js';
+import fn from 'fancy-node';
 
 /**
  * Header plugin
@@ -26,7 +26,7 @@ class Header extends Plugin {
             key: 'header'
         });
 
-        this.ui = el.div({
+        this.ui = fn.div({
             content: this.title
         });
 

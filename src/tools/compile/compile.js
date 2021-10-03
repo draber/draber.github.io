@@ -6,7 +6,7 @@ import bundler from '../modules/bundler/bundler.js';
 import minifyJs from '../modules/minify-js/minify-js.js';
 import buildHtml from '../modules/tpl-to-html/tpl-to-html.js';
 import bookmarklify from '../modules/bookmarklet/bookmarklet.js';
-import convertScss from '../modules/convert-scss/convert-scss.js';
+import sass from 'sass';
 import path from 'path';
 import substituteVars from '../modules/substitute-vars/substitute-vars.js';
 import format from '../modules/formatters/format.js';
@@ -69,14 +69,22 @@ const targets = {
         const bookmarklet = fs.readFileSync(settings.get('bookmarklet.template'), 'utf8');
         settings.set('bookmarklet.code', bookmarklify(format('js', substituteVars(bookmarklet), 'compress')));
         save(settings.get('html.output'), buildHtml(template));
-        save(settings.get('css.site'), convertScss({
-            file: settings.get('scss.site')
-        }));
+        save(settings.get('css.site'), substituteVars(
+            sass.renderSync({
+                file: settings.get('scss.site'),
+                charset: false,
+                outputStyle: debug ? 'expanded' : 'compressed'
+            }).css.toString()
+        ))
     },
     app: async () => {
-        save(settings.get('css.app'), convertScss({
-            file: settings.get('scss.app')
-        }));
+        save(settings.get('css.app'), substituteVars(
+            sass.renderSync({
+                file: settings.get('scss.app'),
+                charset: false,
+                outputStyle: debug ? 'expanded' : 'compressed'
+            }).css.toString()
+        ));
         const appCode = await bundler.build();
         const minAppCode = await minifyJs(appCode);
 
@@ -99,10 +107,8 @@ const watch = () => {
     targets[args.t]();
     dirs.forEach(dir => {
         fs.watch(dir, 'utf8', (eventType, fileName) => {
-            //_.debounce(() => {
-                console.log(`Change detected on ${fileName}`);
-                targets[args.t]();
-           // }, 200)
+            console.log(`Change detected on ${fileName}`);
+            targets[args.t]();
         });
     })
     console.info(`Watching changes on \n - ${dirs.join('\n - ')}`)

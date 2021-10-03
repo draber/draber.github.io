@@ -100,7 +100,7 @@ const evaluate = async () => {
 
 
     if (hasResult) {
-        console.warning(`Spelling Bee from ${today} is different from the reference version`);
+        console.warn(`Spelling Bee from ${today} is different from the reference version`);
     } else {
         console.success(`Spelling Bee from ${today} is equal to the reference version`);
     }

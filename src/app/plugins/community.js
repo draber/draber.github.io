@@ -9,8 +9,8 @@ import {
 } from '../modules/string.js';
 import Plugin from '../modules/plugin.js';
 import data from '../modules/data.js';
-import el from '../modules/element.js';
 import Popup from './popup.js';
+import fn from 'fancy-node';
 
 /**
  * Community plugin
@@ -53,7 +53,7 @@ class Community extends Plugin {
     nytCommunity() {
         const date = data.getDate().print;
         const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-${date}.html#commentsContainer`;
-        return el.a({
+        return fn.a({
             content: 'NYT Spelling Bee Forum for today’s game',
             attributes: {
                 href,
@@ -67,7 +67,7 @@ class Community extends Plugin {
      * @returns {*[]}
      */
     twitter() {
-        const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => el.a({
+        const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => fn.a({
             content: `#${tag}`,
             attributes: {
                 href: `https://twitter.com/hashtag/${tag}`,
@@ -89,7 +89,7 @@ class Community extends Plugin {
      */
     nytSpotlight() {
         const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
-        return el.a({
+        return fn.a({
             content: 'Portal to all NYT Spelling Bee Forums',
             attributes: {
                 href,
@@ -103,7 +103,7 @@ class Community extends Plugin {
      * @returns {*}
      */
     redditCommunity() {
-        return el.a({
+        return fn.a({
             content: 'NY Times Spelling Bee Puzzle on Reddit',
             attributes: {
                 href: 'https://www.reddit.com/r/NYTSpellingBee/',
@@ -136,14 +136,14 @@ class Community extends Plugin {
         this.menuIcon = 'null';
         const words = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 
-        const features = el.ul({
+        const features = fn.ul({
             content: [
-                el.li({
+                fn.li({
                     content: [
-                        el.h4({
+                        fn.h4({
                             content: 'Does today’s game have a Perfect Pangram?'
                         }),
-                        el.p({
+                        fn.p({
                             content: (() => {
                                 const pp = this.getPerfectPangramCount();
                                 switch (pp) {
@@ -157,51 +157,51 @@ class Community extends Plugin {
                                 }
                             })()
                         }),
-                        el.em({
+                        fn.em({
                             content: 'Pangrams that use each letter only once are called "perfect" by the community.'
                         })
                     ]
                 }),
-                el.li({
+                fn.li({
                     content: [
-                        el.h4({
+                        fn.h4({
                             content: 'Does it classify as "Bingo"?'
                         }),
-                        el.p({
+                        fn.p({
                             content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'No, today it doesn’t.'
                         }),
-                        el.em({
+                        fn.em({
                             content: '"Bingo" means that all seven letters in the puzzle are used to start at least one word in the word list.'
                         })
                     ]
                 }),
-                el.li({
+                fn.li({
                     content: [
-                        el.h4({
+                        fn.h4({
                             content: 'Is it possible to reach Genius without using 4-letter words?'
                         }),
-                        el.p({
+                        fn.p({
                             content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t.'
                         })
                     ]
                 }),
-                el.li({
+                fn.li({
                     content: [
-                        el.h4({
+                        fn.h4({
                             content: 'Forums and Hashtags'
                         }),
-                        el.ul({
+                        fn.ul({
                             content: [
-                                el.li({
+                                fn.li({
                                     content: this.nytCommunity()
                                 }),
-                                el.li({
+                                fn.li({
                                     content: this.nytSpotlight()
                                 }),
-                                el.li({
+                                fn.li({
                                     content: this.redditCommunity()
                                 }),
-                                el.li({
+                                fn.li({
                                     content: this.twitter()
                                 })
                             ]
