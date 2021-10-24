@@ -132,7 +132,10 @@ body {
   &:is(.pz-moment__congrats, .pz-moment__welcome) {
     .pz-moment__button {
         &.secondary {
-            color: black;
+            color: var(--text-color);
+            &:hover {
+                color: var(--body-bg-color);
+            }
         }
     }
   }
