@@ -36,6 +36,33 @@ class Menu extends Plugin {
         return this.app.envIs('mobile') ? fn.$('#js-mobile-toolbar') : fn.$('#portal-game-toolbar > div:last-of-type');
     }
 
+    add() {
+        if (!this.app.envIs('mobile')) {
+            return super.add();
+        }
+
+        const navContainer = fn.$('#js-global-nav');
+        if (navContainer.classList.contains('show-mobile-toolbar')) {
+            return super.add();
+        }
+
+        const observer = new MutationObserver(mutationList => {
+            for(let mutation of mutationList){                
+                if (mutation.type === 'attributes' &&
+                    mutation.attributeName === 'class' &&
+                    mutation.target.classList.contains('show-mobile-toolbar')) {
+                    observer.disconnect();
+
+                    // @todo breaks chainability of add method
+                    return super.add();
+                }
+            }
+        });
+        observer.observe(navContainer, {
+            attributes: true
+        });
+    }
+
     /**
      * Get plugin or app from clicked entry
      * @param entry
@@ -59,6 +86,9 @@ class Menu extends Plugin {
 
         super(app, 'Menu', '');
         this.target = this.getTarget();
+        if (this.app.envIs('mobile')) {
+            this.addMethod = 'after'
+        }
         const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
         this.app.domSet('submenu', false);
 

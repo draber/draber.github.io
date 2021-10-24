@@ -400,10 +400,35 @@
 
 #portal-game-toolbar,
 #js-mobile-toolbar {
-    .pz-nav__toolbar-item, .pz-toolbar-button {
+    * {
         color: var(--text-color);
+        background-color: var(--body-bg-color);
+        border-color: var(--border-color);
+
         &::selection {
-            background: transparent;
+            background-color: var(--body-bg-color);
+        }
+    }
+
+    .pz-dropdown__arrow {
+        border-top-color: var(--text-color);
+        border-bottom-color: var(--text-color);
+        border-right-color: transparent;
+        border-left-color: transparent;
+    }
+}
+
+.pz-mobile .pz-toolbar-button__sba {
+    color: var(--text-color);
+}
+
+[data-sba-theme="dark"] {
+
+    #portal-game-toolbar,
+    #js-mobile-toolbar {
+        i {
+            filter: invert(1);
+            background-color: transparent;
         }
     }
 }

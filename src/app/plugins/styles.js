@@ -33,8 +33,6 @@ class Styles extends Plugin {
             content: css
         });
         app.on(prefix('destroy'), () => this.ui.remove());
-
-        this.add();
     }
 }
 
