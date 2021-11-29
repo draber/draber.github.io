@@ -378,7 +378,7 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td>Chromium ¹</td>
+								<td>Blink ¹<sup>|</sup>²</td>
 								<td class="win-10"><svg>
 										<title>Extension</title>
 										<use xlink:href="#icon-extension"></use>
@@ -409,8 +409,8 @@
 								<td class="android"><svg>
 										<title>Extension</title>
 										<use xlink:href="#icon-extension"></use>
-									</svg>³</td>
-								<th class="ios"></th>
+									</svg>²</td>
+								<td class="ios">?</td>
 							</tr>
 
 							<tr>
@@ -434,34 +434,51 @@
 										<use xlink:href="#icon-bookmark"></use>
 									</svg>
 								</td>
-								<td class="linux"></td>
-								<td class="android"></td>
-								<th class="ios"></th>
+								<td class="linux"><svg>
+									<title>Extension</title>
+									<use xlink:href="#icon-extension"></use>
+								</svg>
+								<svg>
+									<title>Bookmarklet</title>
+									<use xlink:href="#icon-bookmark"></use>
+								</svg></td>
+								<td class="android">?</td>
+								<td class="ios">?</td>
 							</tr>
 
 							<tr>
-								<td>Safari</td>
-								<td class="win-10"></td>
+								<td>WebKit ³<sup>|</sup>⁴</td>
+								<td class="win-10">n/a</td>
 								<td class="mac-os"><svg>
 										<title>Bookmarklet</title>
 										<use xlink:href="#icon-bookmark"></use>
-									</svg></td>
-								<td class="linux"></td>
-								<td class="android"></td>
-								<th class="ios"><svg>
+									</svg>³</td>
+								<td class="linux"><svg>
+									<title>Bookmarklet</title>
+									<use xlink:href="#icon-bookmark"></use>
+								</svg>⁴</td>
+								<td class="android">n/a</td>
+								<td class="ios"><svg>
 										<title>Bookmarklet</title>
 										<use xlink:href="#icon-bookmark"></use>
-									</svg>³</th>
+									</svg>³<sup>|</sup>⁵</td>
 							</tr>
 						</tbody>
 					</table>
-					<figcaption><svg>
+					<figcaption>
+						<ol>
+							<li>Chrome, Edge, Brave, Opera, Vivaldi…</li>
+							<li>Kiwi</li>
+							<li>Safari</li>
+							<li>GNOME Web</li>
+							<li>based on user report</li>
+						</ol> 
+						<svg>
 							<use xlink:href="#icon-extension"></use>
 						</svg> Browser extension | <svg>
 							<use xlink:href="#icon-bookmark"></use>
-						</svg> Bookmarklet | ¹ Chrome, Edge, Brave, Opera, Kiwi, Vivaldi… | ² Kiwi | ³ based on user
-						report
-						| empty: not tested</figcaption>
+						</svg> Bookmarklet
+					</figcaption>
 				</figure>
 				<h3 id="kiwi-install">Installing the extension on Kiwi (Android only)</h3>
 				<ol>
