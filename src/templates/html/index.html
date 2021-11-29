@@ -4,7 +4,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>{{label}}</title>
-	<meta content="{{description}}. Features Dark Mode, Grid, First Letter, Letter Count, Bingo, Perfect Pangram" name="description">
+	<meta content="{{description}}. Features Dark Mode, Grid, First Letter, Letter Count, Bingo, Perfect Pangram"
+		name="description">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
 	<meta content="{{label}}" property="og:title">
 	<meta content="{{description}}" property="og:description">
@@ -62,18 +63,21 @@
 			<h1> {{label}}</h1>
 			<ul class="social">
 				<li class="twitter action-button">
-					<svg>
-						<use xlink:href="#icon-twitter"></use>
-					</svg>
 					<a target="_blank"
 						href="https://twitter.com/intent/tweet?original_referer=https%3A%2F%2Fspelling-bee-assistant.app%2F&ref_src=twsrc%5Etfw&text=Spelling%20Bee%20Assistant&tw_p=tweetbutton&url=https%3A%2F%2Fspelling-bee-assistant.app%2F"
-						rel="noopener"><span>Tweet</span></a>
+						rel="noopener">
+						<svg>
+							<use xlink:href="#icon-twitter"></use>
+						</svg><span>Tweet</span>
+					</a>
 				</li>
 				<li class="kofi action-button">
-					<svg>
-						<use xlink:href="#icon-kofi"></use>
-					</svg>
-					<a target="_blank" href="{{support.kofi.url}}" rel="noopener"><span>{{support.kofi.text}}</span></a>
+					<a target="_blank" href="{{support.kofi.url}}" rel="noopener">
+						<svg>
+							<use xlink:href="#icon-kofi"></use>
+						</svg>
+						<span>{{support.kofi.text}}</span>
+					</a>
 				</li>
 			</ul>
 		</div>
@@ -306,7 +310,8 @@
 					<article>
 						<p><em>Bingo, Perfect Pangram, GN4L</em> - confused yet? The NYT has a
 							<a href="https://www.nytimes.com/2021/07/26/crosswords/spelling-bee-forum-introduction.html"
-								rel="noopener" target="_blank">glossary</a> of common terms Spelling Bee fans use when talking
+								rel="noopener" target="_blank">glossary</a> of common terms Spelling Bee fans use when
+							talking
 							about their favorite game.
 							Some terms refer to game features and some are addidtional fun challenges.
 						</p>
@@ -598,24 +603,24 @@
 
 		})(document);
 	</script>
-	    <script type="application/ld+json">
-			{
-			  "@context": "https://schema.org",
-			  "@type": "SoftwareApplication",
-			  "name": "{{label}}",
-			  "operatingSystem": "Any",
-			  "applicationCategory": "BrowserApplication",
-			  "aggregateRating": {
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "SoftwareApplication",
+			"name": "{{label}}",
+			"operatingSystem": "Any",
+			"applicationCategory": "BrowserApplication",
+			"aggregateRating": {
 				"@type": "AggregateRating",
 				"ratingValue": "5",
 				"ratingCount": "2"
-			  },
-			  "offers": {
+			},
+			"offers": {
 				"@type": "Offer",
 				"price": "0"
-			  }
 			}
-			</script>
+		}
+	</script>
 </body>
 
 </html>
