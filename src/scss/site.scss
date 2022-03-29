@@ -408,6 +408,14 @@ tr:nth-child(n+1) td:nth-child(n+2) {
   }
 }
 
+.main-panel {
+  & > ul {
+    margin: 0 0 1rem 0;
+    padding: 0 0 0 2.5rem;
+    list-style: disc;
+  }
+}
+
 .action-button {
   display: inline-block;
   border: none;
@@ -454,6 +462,30 @@ tr:nth-child(n+1) td:nth-child(n+2) {
   }
 }
 
+#btt {
+  position: fixed;
+  width: 100vw;
+  bottom: .5rem;
+  .wrapper {
+    justify-content: flex-end;
+    display: flex;
+    width: calc(103.4rem + 8rem);
+  }
+  svg {
+    width: 4rem;
+    aspect-ratio: 1 / 1;
+    display: block;
+  }
+}
+
+@media screen and (max-width: 1160px) {
+  #btt {
+    .wrapper {
+      max-width: calc(100vw - 4.5rem);
+    }
+  }
+}
+
 @media screen and (max-width: 990px) {
   .intro {
     .intro-text {
@@ -463,6 +495,7 @@ tr:nth-child(n+1) td:nth-child(n+2) {
     }
   }
 }
+
 
 @media screen and (max-width: 860px) {
   .card {

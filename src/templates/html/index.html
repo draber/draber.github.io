@@ -141,6 +141,14 @@
 			</div>
 
 		</section>
+		<section id="whats-new">
+			<h2>What’s new in SBA {{version}}?</h2>
+			<p>I have received quite a few requests to add a <strong>Two letter list</strong> similar to the one the NYT
+				features on the
+				<a href="https://www.nytimes.com/spotlight/spelling-bee-forum" rel="noopener" target="_blank">Spelling
+					Bee Forum</a>.
+				I liked the idea and so I made one for SBA {{version}}. I also fixed some minor visual bugs.</p>
+		</section>
 		<section id="installation">
 			<h2>Installation</h2>
 			<ul class="card-listing">
@@ -204,18 +212,18 @@
 					</figure>
 					<article class="main-panel">
 						<h3>The main panel</h3>
-						<p>These tools have been part of the {{label}} for a long while, albeit under different names or
-							in other forms.</p>
-						<p>They all work in the same fashion; they show you how
-							many words you’ve found so far (<b>✓</b>), how many are still in the pot (<b>?</b>)
-							and the sum thereof (<b>∑</b>). In addition, <em>Score</em> displays the same information
-							for points.</p>
-						<p><em>Score</em> represents your all-over progress. <em>Letter count</em> and
-							<em>First letter</em> group the words by their length, respectively, their first letter.
-							The row containing the center letter is highlighted. <em>Pangrams</em> used to be part of
-							<em>Letter count</em> but now have their own block.
-						</p>
-						<p>Once a line has been completed, it will be greyed out.</p>
+						<p>All tools in the main panel work in the same fashion; they show you how
+							many items you’ve found so far (<b>✓</b>), how many are still in the pot (<b>?</b>)
+							and the sum thereof (<b>∑</b>). </p>
+						<ul>
+							<li><strong>Score</strong> represents your all-over progress for both, words and points.
+							</li>
+							<li><strong>Letter count</strong> groups the terms by word length.</li>
+							<li><strong>First letter</strong> groups them by their first letter.</li>
+							<li><strong>First two letters</strong> is similar, but obviously, it's more revealing.</li>
+							<li><strong>Pangrams</strong> shows, well... the number of pangrams.</li>
+						</ul>
+						<p>Greyed out lines indicate that all terms in a row have been found.</p>
 					</article>
 				</li>
 				<li class="card row panel">
@@ -225,90 +233,89 @@
 					<article>
 						<h3>The {{title}} menu</h3>
 						<p>
-							<em>Show Assistant</em> allows you to show or hide the main panel. <em>Score</em>,
-							<em>Letter count</em>, <em>First letter</em> and <em>Pangrams</em> let you configure which
-							tools it contains.</p>
-						<p>
-							The <em>Progress Bar</em> has its home at the top of the result list and <em>Spill the
-								beans</em> appears above the hive.</p>
-						<p><em>Dark Mode</em> unsurprisingly applies a dark color scheme to the game and <em>Dark Mode
-								Colors</em> lets you choose your favorite colors for the said scheme.</p>
-						<p><em>Grid</em>, <em>Your Progress</em> and <em>Today’s Answers</em> are displayed as modal
-							pop-ups and
-							<em>Spelling Bee Assistant</em> eventually is a link to this website.</p>
+							<strong>Show Assistant</strong> lets you show or hide the main panel.
+							<strong>Score</strong>,	<strong>Letter count</strong>, <strong>First letter</strong>, <strong>First two
+								letters</strong> and <strong>Pangrams</strong> do the same for each section.</p>
+						<p>The <strong><a href="#fe-progress">Progress Bar</a></strong> is a visual indicator of your all-over progress.</p>
+						<p>The <strong><a href="#fe-grid">Grid</a></strong> is a matrix grouping the terms by first letter and word length.</p>
+						<p><strong><a href="#fe-spill">Spill the beans</a></strong> validates your answer while you type.</p>
+						<p><strong><a href="#fe-dark">Dark Mode</a></strong> and <strong><a href="#fe-dm-color">Dark Mode Colors</a></strong> provide a configurable dark color scheme.</p>
+						<p><strong><a href="#fe-your-progress">Your Progress</a></strong> explains in detail what you already achieved.</p>  
+						<p><strong><a href="#fe-community">Community</a></strong> shows how to connect to like-minded <em>hiveminds</em>.</p>  
+						<p><strong><a href="#fe-today">Today’s Answers</a></strong> should be the last resort.</p>
+						<p>Use the <strong><a target="_blank" href="{{support.kofi.url}}" rel="noopener">Buy me a coffee</a></strong> link if you want to show some appreciation...</p>
+		
 					</article>
 				</li>
-				<li class="card">
+				<li class="card" id="fe-progress">
 					<figure>
 						<img alt="Progress Bar" src="assets/img/progress-bar.png?{{version}}-{{cacheId}}">
-
+		
 					</figure>
 					<article>
-						<p>The progress bar displays your advancement based on your points so far. Clicking on it
-							reveals the more detailed <em>Your Progress</em> screen.</p>
+						<p>The <strong>Progress Bar</strong> displays your advancement based on your points so far. You can click on it
+							to reveal the more detailed <strong>Your Progress</strong> screen.</p>
 					</article>
 				</li>
-				<li class="card">
+				<li class="card" id="fe-spill">
 					<figure>
 						<img alt="Spill the Beans" src="assets/img/spill-the-beans.png?{{version}}-{{cacheId}}">
-
+		
 					</figure>
 					<article>
-						<p>With every letter you type, this emoticon reveals whether you’re on the right track or
-							barking up the wrong tree.</p>
+						<p>With every letter you type, the <strong>Spill the beans</strong> emoji reveals whether you’re on the right track or
+							barking up the wrong tree. </p>
 					</article>
 				</li>
-				<li class="card">
+				<li class="card" id="fe-dark">
 					<figure>
 						<img alt="Dark Mode" class="full" src="assets/img/dark-mode.png?{{version}}-{{cacheId}}">
-
+		
 					</figure>
 					<article>
-						<p>Many users prefer darker interfaces, especially on larger screens. {{label}} had
-							<em>Dark Mode</em> support from the beginning on, but now it’s even better because…</p>
+						<p>If you prefer darker interfaces, SBA's <strong>Dark Mode</strong> is for you. The default theme is too boring - you want it more colorful? Try…</p>
 					</article>
-
+		
 				</li>
-				<li class="card">
+				<li class="card" id="fe-dm-color">
 					<figure>
 						<img alt="Dark Mode Color Scheme" class="full"
 							src="assets/img/color-scheme.png?{{version}}-{{cacheId}}">
-
+		
 					</figure>
 					<article>
-						<p>…SBA 4 introduces <em>Dark Mode configuration</em>. It offers a range of 12 different color
-							schemes and lets you pick your favorite one. Why having just one Dark Mode when you can have
-							a dozen?</p>
+						<p>…the <strong>Dark Mode configuration</strong>. You can pick your favorite out of twelve different color
+							schemes.</p>
 					</article>
-
+		
 				</li>
-				<li class="card">
+				<li class="card" id="fe-your-progress">
 					<figure>
 						<img alt="Your Progress" src="assets/img/your-progress.png?{{version}}-{{cacheId}}">
-
+		
 					</figure>
 					<article>
 						<p>An overview of the different ranks and how far you made it into your journey. You can also
-							launch the <em>Your Progress</em> screen by clicking on the Progress Bar.</p>
+							launch the <strong>Your Progress</strong> screen by clicking on the <strong>Progress Bar</strong>.</p>
 					</article>
 				</li>
-				<li class="card">
+				<li class="card"  id="fe-grid">
 					<figure>
 						<img alt="Grid" src="assets/img/grid.png?{{version}}-{{cacheId}}">
-
+		
 					</figure>
 					<article>
-						<p><em>Letter count</em> and <em>First letter</em> from the main panel give you a brief overview
-							of the words that you’ve found and those that remain. The <em>Grid</em> screen combines
+						<p><strong>Letter count</strong> and <strong>First letter</strong> from the main panel give you a brief overview
+							of the words that you’ve found and those that remain. The <strong>Grid</strong> screen combines
 							these two views into a handy matrix.</p>
 					</article>
 				</li>
-				<li class="card" id="community">
+				<li class="card" id="fe-community">
 					<figure class="screen">
 						<img alt="Community" src="assets/img/community.png?{{version}}-{{cacheId}}">
 					</figure>
 					<article>
-						<p><em>Bingo, Perfect Pangram, GN4L</em> - confused yet? The NYT has a
+						<p><strong>Bingo, Perfect Pangram, GN4L</strong> - confused yet? The NYT has a
 							<a href="https://www.nytimes.com/2021/07/26/crosswords/spelling-bee-forum-introduction.html"
 								rel="noopener" target="_blank">glossary</a> of common terms Spelling Bee fans use when
 							talking
@@ -319,47 +326,39 @@
 							the {{title}} will you show you how to find them.</p>
 					</article>
 				</li>
-				<li class="card">
+				<li class="card" id="fe-today">
 					<figure class="screen">
 						<img alt="Today’s Answers" src="assets/img/todays-answers.png?{{version}}-{{cacheId}}">
 					</figure>
 					<article>
-						<p>When you’re eventually out of words but are dying to know the solution, the <em>Today’s
-								Answers</em> screen will satisfy your curiosity!</p>
+						<p>When you’re eventually out of words but are dying to know the solution, the <strong>Today’s
+								Answers</strong> screen will satisfy your curiosity!</p>
 						<p>All words are linked to the respective terms in Google; maybe this will
 							help you next time!</p>
-						<p>Spelling Bee’s <em>Yesterday’s Answers</em> has also been enriched with Google links.</p>
 					</article>
 				</li>
-				<li class="card">
+				<li class="card" id="fe-mobile">
 					<figure class="screen">
 						<img alt="Small Screens" src="assets/img/mobile.png?{{version}}-{{cacheId}}">
-
+		
 					</figure>
 					<article>
 						<p>{{label}} uses responsive design and has been tested on many screen sizes. If the <a
-								href="#requirements">system requirements</a> are met, there is a good chance it will
-							work on your mobile device.</p>
-						<p>I would want to make a bolder statement, but in reality, mobile
-							screens and browsers are so different that it’s hard to predict whether the installation
-							will
-							succeed. <a href="#contact">Let me know</a> how it went!</p>
+								href="#requirements">system requirements</a> are met, it should run on your mobile device.
+						</p>
 					</article>
 				</li>
 			</ul>
-			<div class="rgt"><a class="comment" href="#">Back to top</a></div>
 		</section>
 		<div class="text-part">
 			<section>
 				<h2 id="requirements">System requirements</h2>
-				<p>{{label}} works with modern browsers and has originally been built with laptops or desktop
-					computers in mind. The extension works in the <a
+				<p>{{label}} requires with modern web browser. The extension works in the <a
 						href="https://play.google.com/store/apps/details?id=com.kiwibrowser.browser" rel="noopener"
 						target="_blank">Kiwi browser</a> under Android. According to user reports, the bookmarklet can
 					be used on Safari/iPhone instead. The user experience on mobile devices might be limited due to the
 					screen size.
 				</p>
-
 
 				<figure id="requirement-chart">
 
@@ -435,13 +434,13 @@
 									</svg>
 								</td>
 								<td class="linux"><svg>
-									<title>Extension</title>
-									<use xlink:href="#icon-extension"></use>
-								</svg>
-								<svg>
-									<title>Bookmarklet</title>
-									<use xlink:href="#icon-bookmark"></use>
-								</svg></td>
+										<title>Extension</title>
+										<use xlink:href="#icon-extension"></use>
+									</svg>
+									<svg>
+										<title>Bookmarklet</title>
+										<use xlink:href="#icon-bookmark"></use>
+									</svg></td>
 								<td class="android">?</td>
 								<td class="ios">?</td>
 							</tr>
@@ -454,9 +453,9 @@
 										<use xlink:href="#icon-bookmark"></use>
 									</svg>³</td>
 								<td class="linux"><svg>
-									<title>Bookmarklet</title>
-									<use xlink:href="#icon-bookmark"></use>
-								</svg>⁴</td>
+										<title>Bookmarklet</title>
+										<use xlink:href="#icon-bookmark"></use>
+									</svg>⁴</td>
 								<td class="android">n/a</td>
 								<td class="ios"><svg>
 										<title>Bookmarklet</title>
@@ -472,7 +471,7 @@
 							<li>Safari</li>
 							<li>Gnome Web</li>
 							<li>based on user report</li>
-						</ol> 
+						</ol>
 						<svg>
 							<use xlink:href="#icon-extension"></use>
 						</svg> Browser extension | <svg>
@@ -503,21 +502,13 @@
 				</p>
 				<h3>The above options aren’t working for me</h3>
 				<p>If you can’t use {{label}}, for instance, because you play on the NYT app or any other environment it
-					won’t run on,
-					I suggest using <a href="https://www.shunn.net/bee/" target="_blank" rel="noopener">W. Shunn’s
-						excellent site</a>
-					instead.</p>
-				<div class="rgt"><a class="comment" href="#">Back to top</a></div>
+					won’t run on, I suggest using <a href="https://www.sbsolver.com/" target="_blank" rel="noopener">W. Shunn’s
+						excellent site</a> instead.</p>
 			</section>
 			<section>
 				<h2>Doesn’t it spoil the game?</h2>
-				<p>There are <a href="https://www.reddit.com/r/NYTSpellingBee/wiki/index#wiki_nyt_spelling_bee_helpers"
-						target="_blank" rel="noopener">numerous websites</a> with a similar purpose, which - according
-					to <a href="https://www.nytimes.com/2020/10/16/crosswords/spellingbee-puzzles.html" rel="noopener"
-						target="_blank">this article</a> - the Spelling Bee community seems to enjoy. The challenge
-					stays the same and so does the fun. But now you have a little helper at hand when you’re stuck in a
-					corner.
-				</p>
+				<p>I try to keep {{label}} as subtle and unobstrusive as possible. Judging from user feedback as well my own experience, this concept works out just fine.</p>
+				<p>The challenge stays the same and so does the fun. But now you have a set of little helpers at hand when you’re stuck in a corner.</p>
 			</section>
 			<section>
 				<h2 id="bookmarklet">What is a bookmarklet?</h2>
@@ -534,7 +525,6 @@
 					like regular bookmarks, in your browser’s bookmark menu. Unfortunately, there is no straightforward
 					way
 					to assign an icon to them.</p>
-				<div class="rgt"><a class="comment" href="#">Back to top</a></div>
 			</section>
 			<section id="contact">
 				<h2>I discovered a bug | I’d like to give feedback</h2>
@@ -550,7 +540,7 @@
 			</section>
 			<section>
 				<h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
-				<p>No.</p>
+				<p>No, no affiliation whatsover. They know that {{label}} exists and rumor has it that some of them are even users...</p>
 			</section>
 			<section id="privacy">
 				<h2>Your privacy</h2>
@@ -568,7 +558,6 @@
 				<p>Most <a href="#installation">add-on stores</a>
 					provide download statistics, sometimes grouped by country, but never any personally identifiable
 					information.</p>
-				<div class="rgt"><a class="comment" href="#">Back to top</a></div>
 			</section>
 			<section>
 				<h2>{{label}} on GitHub</h2>
@@ -588,6 +577,16 @@
 			</section>
 		</div>
 	</main>
+	<div id="btt">
+		<div class="wrapper">
+			<a title="Back to top" href="#">
+				<svg viewBox="0 0 78 78" xmlns="http://www.w3.org/2000/svg">
+					<circle cx="39" cy="39" r="39" fill="#999999" fill-opacity=".5" />
+					<path d="m39 18-24 22h16v22h16v-22h16z" fill="#fff" />
+				</svg>
+			</a>
+		</div>
+	</div>
 	<script>
 		(function (d) {
 			var features = ['queryselector', 'es6array', 'arrow', 'es6collections', 'generators', 'es6number',
