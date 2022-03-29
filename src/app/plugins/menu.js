@@ -104,7 +104,7 @@ class Menu extends Plugin {
                 pointerup: evt => {
                     const entry = evt.target.closest('li');
                     if (!entry || evt.button !== 0) {
-                        return false;
+                        return true;
                     }
                     const component = this.getComponent(entry);
                     switch (entry.dataset.action) {
@@ -145,6 +145,9 @@ class Menu extends Plugin {
         this.ui = fn.div({
             events: {
                 pointerup: evt => {
+                    if (evt.button !== 0) {
+                        return true;
+                    }
                     if (!evt.target.dataset.action) {
                         this.app.domSet('submenu', !this.app.domGet('submenu'));
                     }
@@ -166,7 +169,7 @@ class Menu extends Plugin {
             }
         });
 
-        fn.$('#pz-game-root').addEventListener('pointerdown', () => {
+        fn.$('#pz-game-root').addEventListener('pointerdown', evt => { 
             if (this.app.domGet('submenu') === true) {
                 this.app.domSet('submenu', false)
             }

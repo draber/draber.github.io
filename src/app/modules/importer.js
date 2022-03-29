@@ -12,6 +12,7 @@ import Score from '../plugins/score.js';
 import SpillTheBeans from '../plugins/spillTheBeans.js';
 import LetterCount from '../plugins/letterCount.js';
 import FirstLetter from '../plugins/firstLetter.js';
+import FirstTwoLetters from '../plugins/firstTwoLetters.js';
 import Pangrams from '../plugins/pangrams.js';
 import YourProgress from '../plugins/yourProgress.js';
 import Community from '../plugins/community.js';
@@ -33,8 +34,10 @@ const getPlugins = () => {
         Score,
         LetterCount,
         FirstLetter,
+        FirstTwoLetters,
         Pangrams,
         ProgressBar,
+        Grid,
         SpillTheBeans,
         DarkMode,
         ColorConfig,
@@ -42,7 +45,6 @@ const getPlugins = () => {
         Googlify,
         Styles,
         Menu,
-        Grid,
         YourProgress,
         Community,
         TodaysAnswers

@@ -35,6 +35,7 @@ $gameWidth: 1280;
 
 
 [data-sba-submenu="true"] {
+    overflow-y: hidden;
     .sba {
         position: relative;
         left: -167px;
