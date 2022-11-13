@@ -19,7 +19,7 @@
     "minimist": "^1.2.6",
     "node-fetch": "^2.6.1",
     "puppeteer": "^13.5.1",
-    "recursive-readdir": "^2.2.2",
+    "recursive-readdir": "^2.2.3",
     "rollup": "^2.52.8",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-string": "^3.0.0",
