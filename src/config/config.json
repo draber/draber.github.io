@@ -2,110 +2,13 @@
     "label": "Spelling Bee Assistant",
     "title": "Assistant",
     "url": "https://spelling-bee-assistant.app/",
-    "domain": "spelling-bee-assistant.app",
-    "repo": "draber/draber.github.io.git",
-    "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
-    "twitter": "@d_raber",
     "prefix": "sba",
-    "support": {
-        "kofi": {
-            "url": "https://ko-fi.com/sbassistant",
-            "text": "Buy me a coffee"
-        }
+    "support":
+    {
+        "url": "https://ko-fi.com/sbassistant",
+        "text": "Buy me a coffee"
     },
-    "extension": {
-        "templates": {
-            "manifest": "src/templates/extension/manifest.json",
-            "content": "src/templates/extension/content.js",
-            "readme": "src/templates/extension/readme.md"
-        },
-        "assets": "src/templates/extension/assets",
-        "output": "src/extensions",
-        "sba": "spelling-bee-assistant.js",
-        "sba-min": "spelling-bee-assistant.min.js",
-        "stores": {
-            "chrome": {
-                "url": "https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg",
-                "manifest": {
-                    "manifest_version": 3,
-                    "host_permissions": [
-                        "https://www.nytimes.com/*"
-                    ],
-                    "web_accessible_resources": [{
-                        "resources": [
-                            "{{sbaFileName}}"
-                        ],
-                        "matches": [
-                            "https://www.nytimes.com/*"
-                        ]
-                    }]
-                }
-            },
-            "firefox": {
-                "url": "https://addons.mozilla.org/en-US/firefox/addon/spelling-bee-assistant/",
-                "enforce_unminified": "true",
-                "manifest": {
-                    "permissions": [
-                        "https://www.nytimes.com/*"
-                    ],
-                    "browser_specific_settings": {
-                        "gecko": {
-                            "id": "{4474f7b5-4da5-4332-8847-074f35456496}",
-                            "strict_min_version": "68.0"
-                        }
-                    }
-                }
-            },
-            "microsoft": {
-                "url": "https://microsoftedge.microsoft.com/addons/detail/spelling-bee-assistant/doeniefjeejkkdfnakoflmjlmfipejin",
-                "manifest": {
-                    "permissions": [
-                        "https://www.nytimes.com/*"
-                    ]
-                }
-            },
-            "opera": {
-                "url": "https://addons.opera.com/en/extensions/details/spelling-bee-assistant/",
-                "manifest": {
-                    "permissions": [
-                        "https://www.nytimes.com/*"
-                    ]
-                }
-            }
-        }
-    },
-    "html": {
-        "template": "src/templates/html/index.html",
-        "output": "index.html"
-    },
-    "js": {
-        "input": "src/app/main.js",
-        "plain": "assets/js/spelling-bee-assistant.js",
-        "format": "iife"
-    },
-    "scss": {
-        "app": "src/scss/app.scss",
-        "site": "src/scss/site.scss"
-    },
-    "bookmarklet": {
-        "remote": "https://spelling-bee-assistant.app/assets/js/spelling-bee-assistant.min.js",
-        "local": "assets/js/spelling-bee-assistant.min.js",
-        "template": "src/templates/bookmarklet/template.js"
-    },
-    "css": {
-        "app": "src/css/app.css",
-        "site": "assets/css/site.css"
-    },
-    "gsc": {
-        "sba": "JdtUYs7m2sn0OLvWbE-xp0xxsluoRnMFJDmgzUiSKb0",
-        "pvt": "7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8"
-    },
-    "mock": {
-        "current": "storage/current",
-        "reference": "storage/reference",
-        "schema": "src/tools/mock/schema.json",
-        "resources": "src/tools/mock/resources",
-        "server": "src/tools/mock/server",
-        "data": "src/tools/mock/data"
-    }
+    "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
+    "buildPath": "build",
+    "bmlPath": "assets/js"
 }

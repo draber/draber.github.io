@@ -14,7 +14,8 @@ body {
     }
 
     &[data-sba-theme="dark"] {
-        .pz-game-wrapper, #js-hook-pz-moment__loading {
+        .pz-game-wrapper,
+        #js-hook-pz-moment__loading {
             background: var(--body-bg-color) !important;
             color: var(--text-color);
         }
@@ -35,7 +36,6 @@ body {
             }
         }
 
-
         .sb-progress-marker .sb-progress-value,
         .hive-cell:first-child .cell-fill {
             background: var(--highlight-bg-color);
@@ -53,6 +53,12 @@ body {
         .sb-message {
             background: var(--area-bg-color);
         }
+        .pangram-message {
+            .sb-message {
+                background: var(--highlight-bg-color);
+                color: var(--highlight-text-color);
+            }
+        }
 
         .hive-action__shuffle {
             position: relative;
@@ -61,6 +67,9 @@ body {
         .sb-progress-value {
             font-weight: bold;
         }
+        .pz-icon-close {
+            filter: invert(1);
+        }
 
         .sb-toggle-icon,
         .sb-kebob .sb-bob-arrow,
@@ -68,7 +77,7 @@ body {
             background-position: -1000px;
 
             &:after {
-                content: '';
+                content: "";
                 opacity: 0.85;
                 top: 0;
                 left: 0;
@@ -129,16 +138,16 @@ body {
 }
 
 .pz-moment__frame {
-  &:is(.pz-moment__congrats, .pz-moment__welcome) {
-    .pz-moment__button {
-        &.secondary {
-            color: var(--text-color);
-            &:hover {
-                color: var(--body-bg-color);
+    &:is(.pz-moment__congrats, .pz-moment__welcome) {
+        .pz-moment__button {
+            &.secondary {
+                color: var(--text-color);
+                &:hover {
+                    color: var(--body-bg-color);
+                }
             }
         }
     }
-  }
 }
 
 .sb-modal-wrapper {
@@ -155,11 +164,14 @@ body {
 }
 
 .pz-moment__close {
-
     &::before,
     &::after {
         background: var(--text-color);
     }
+}
+
+.pz-moment__close_text {
+    color: currentColor;
 }
 
 .pz-modal__button.white:hover {
@@ -167,7 +179,7 @@ body {
 }
 
 .sb-input-invalid {
-    color: var(--invalid-color)
+    color: var(--invalid-color);
 }
 
 .sb-toggle-expand {
@@ -176,7 +188,7 @@ body {
 
 .sb-input-bright,
 .sb-progress-dot.completed::after {
-    color: var(--highlight-bg-color)
+    color: var(--highlight-bg-color);
 }
 
 .cell-fill {
@@ -201,7 +213,7 @@ body {
 }
 
 [data-sba-theme] .sb-modal-wordlist-items li,
-.sb-wordlist-items-pag>li,
+.sb-wordlist-items-pag > li,
 .pz-ad-box,
 .pz-game-toolbar,
 .pz-spelling-bee-wordlist,

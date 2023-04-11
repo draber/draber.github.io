@@ -1,10 +1,3 @@
 .idea
 /node_modules
 .vscode
-/src/storage
-*.woff2
-/storage
-/src/tools/modules/mock/data/data.json
-/src/tools/modules/mock/data/missing.json
-/src/tools/mock/server/*.pem
-/data
