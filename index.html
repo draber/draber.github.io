@@ -26,7 +26,6 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
 	<link href="assets/css/site.css?4.3.1" rel="stylesheet">
-	<script src="assets/js/modernizr-custom.js"></script>
 </head>
 
 <body data-sba-theme="light">
@@ -180,7 +179,6 @@
 					</article>
 				</li>
 			</ul>
-			<p class="legacy">It seems that you’re using a legacy web browser on which Spelling Bee Assistant won’t work.</p>
 			<p><a href="#requirements">I want to install Spelling Bee Assistant on a mobile device</a>.</p>
 		</section>
 		<section id="features">
@@ -534,21 +532,6 @@
 	</div>
 	<script>
 		(function (d) {
-			var features = ['queryselector', 'es6array', 'arrow', 'es6collections', 'generators', 'es6number',
-					'es6object', 'es6string', 'fetch', 'sessionstorage', 'scriptasync', 'customevent',
-					'flexbox', 'matchmedia'
-				],
-				i = features.length,
-				cls = d.documentElement.classList;
-			var browserType = 'modern-browser';
-			while (i--) {
-				if (!cls.contains(features[i])) {
-					browserType = 'legacy-browser';
-					break;
-				}
-			}
-			d.documentElement.classList.add(browserType);
-
 			const bmBtn = d.querySelector("#copy-bm");
 			const bmContainer = d.querySelector("#content-bm");
 			if (navigator.clipboard) {
