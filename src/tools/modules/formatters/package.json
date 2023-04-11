@@ -1,6 +1,0 @@
-{
-  "name": "formatters",
-  "version": "1.0.0",
-  "main": "format.js",
-  "type": "module"
-}

@@ -398,11 +398,9 @@
     }
 }
 
-#portal-game-toolbar,
-#js-mobile-toolbar {
+:is(#portal-game-toolbar, #js-mobile-toolbar) {
     * {
         color: var(--text-color);
-        background-color: var(--body-bg-color);
         border-color: var(--border-color);
 
         &::selection {
@@ -422,6 +420,16 @@
     color: var(--text-color);
 }
 
+:is(.pz-dropdown, .pz-mobile-dropdown){
+    :is(button[class*="pz-dropdown__"], a[class*="pz-dropdown__"]){        
+        background-color: var(--body-bg-color);
+        &:hover{       
+            background: var(--menu-hover-color);
+        }
+    }
+}
+
+
 [data-sba-theme="dark"] {
 
     #portal-game-toolbar,
@@ -430,6 +438,14 @@
             filter: invert(1);
             background-color: transparent;
         }
+    }
+    .conversion-banner__icon {
+        filter: invert(1);
+    }
+
+    :is(.sb-stats-bar-rank__word-count,.sb-stats-bar-rank__text) {
+        filter: contrast(99%);
+        color: #999;
     }
 }
 
