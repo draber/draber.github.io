@@ -4,7 +4,7 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-@use 'sass:math';
+@use "sass:math";
 
 .sba {
     background: var(--body-bg-color);
@@ -60,13 +60,12 @@
     table-layout: fixed;
     border-top: none;
 
-
     @for $i from 3 through 10 {
         $width: percentage(math.div(1, $i));
 
         &[data-cols="#{$i}"] {
             :is(th, td) {
-                width: $width
+                width: $width;
             }
         }
     }
@@ -139,7 +138,7 @@
                     color: var(--link-color);
 
                     &:hover {
-                        color: var(--link-hover-color)
+                        color: var(--link-hover-color);
                     }
                 }
             }
@@ -162,7 +161,6 @@
         max-width: 300px;
         border: none;
 
-
         tr {
             &.sba-completed {
                 td {
@@ -175,28 +173,26 @@
                 text-align: left;
                 line-height: 1.8;
 
-                &:nth-child(n+2) {
+                &:nth-child(n + 2) {
                     text-align: right;
                     width: 80px;
                 }
 
                 &:nth-child(2) {
                     &::after {
-                        content: ' pts.';
+                        content: " pts.";
                     }
                 }
 
                 &:last-child {
                     &::after {
-                        content: '%';
+                        content: "%";
                     }
                 }
             }
-
         }
     }
 }
-
 
 [data-ui="header"] {
     font-weight: bold;
@@ -204,7 +200,6 @@
     flex-grow: 2;
     text-indent: 1px;
 }
-
 
 [data-ui="progressBar"] {
     -webkit-appearance: none;
@@ -240,7 +235,6 @@
     margin-top: -24px;
 }
 
-
 [data-ui="menu"] {
     position: relative;
     z-index: 1;
@@ -270,10 +264,9 @@
         }
 
         &[data-icon="checkmark"] {
-
             &.checked {
                 &::after {
-                    content: '✔';
+                    content: "✔";
                     color: var(--highlight-bg-color);
                     top: 3px;
                     left: 14px;
@@ -292,7 +285,7 @@
 
             &:hover {
                 color: var(--link-hover-color);
-                text-decoration: underline
+                text-decoration: underline;
             }
         }
 
@@ -312,7 +305,6 @@
                 fill: var(--highlight-bg-color);
             }
         }
-
     }
 }
 
@@ -379,12 +371,11 @@
         position: absolute;
         left: -100px;
 
-        &:checked~label {
+        &:checked ~ label {
             border-color: var(--highlight-bg-color);
         }
     }
 }
-
 
 // sb
 .sba-googlified {
@@ -420,18 +411,16 @@
     color: var(--text-color);
 }
 
-:is(.pz-dropdown, .pz-mobile-dropdown){
-    :is(button[class*="pz-dropdown__"], a[class*="pz-dropdown__"]){        
+:is(.pz-dropdown, .pz-mobile-dropdown) {
+    :is(button[class*="pz-dropdown__"], a[class*="pz-dropdown__"]) {
         background-color: var(--body-bg-color);
-        &:hover{       
+        &:hover {
             background: var(--menu-hover-color);
         }
     }
 }
 
-
 [data-sba-theme="dark"] {
-
     #portal-game-toolbar,
     #js-mobile-toolbar {
         i {
@@ -443,12 +432,11 @@
         filter: invert(1);
     }
 
-    :is(.sb-stats-bar-rank__word-count,.sb-stats-bar-rank__text) {
+    :is(.sb-stats-bar-rank__word-count, .sb-stats-bar-rank__text) {
         filter: contrast(99%);
         color: #999;
     }
 }
-
 
 [data-sba-theme] {
     .sb-modal-wordlist-items {
@@ -461,7 +449,7 @@
 
                     &::after {
                         position: relative;
-                        content: '✔';
+                        content: "✔";
                         color: var(--highlight-bg-color);
                         top: 4px;
                         font-size: 16px;
@@ -491,6 +479,13 @@
     }
 }
 
+[data-sba-submenu="true"] {
+    [data-ui="menu"] {
+        background: var(--menu-hover-color);
+        color: var(--text-color);
+    }
+}
+
 [data-ui="grid"] {
     table {
         border-top: 1px solid var(--border-color);
@@ -500,7 +495,6 @@
 
     tbody {
         tr {
-
             &:last-child {
                 td {
                     background-color: var(--head-row-bg-color);
@@ -519,9 +513,7 @@
 }
 
 .sba {
-
     details {
-
         &[open] {
             summary {
                 &:before {
@@ -538,7 +530,7 @@
         padding: 1px 15px 0 21px;
 
         &::marker {
-            display: none
+            display: none;
         }
 
         &:before {
@@ -549,15 +541,14 @@
             transform: rotate(90deg);
             transform-origin: center;
             left: 7px;
-            top: 0
+            top: 0;
         }
     }
 }
 
 [data-sba-theme] {
-
     :is(.sb-wordlist-items-pag, .sb-modal-wordlist-items) {
-        &>li {
+        & > li {
             position: relative;
 
             &.sba-pangram {
@@ -571,7 +562,7 @@
                 bottom: 3px;
 
                 mark {
-                    display: none
+                    display: none;
                 }
             }
         }
@@ -608,7 +599,7 @@
         text-transform: uppercase;
 
         &::after {
-            content: ' ';
+            content: " ";
         }
 
         &:last-of-type {
@@ -625,7 +616,6 @@
     .sba-pop-up {
         &.sb-modal-frame {
             .sb-modal-content {
-
                 .sba-modal-footer {
                     text-align: right;
                     font-size: 13px;
@@ -640,7 +630,12 @@
 .sb-modal-frame {
     .sb-modal-content {
         &::after {
-            background: linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%);
+            background: linear-gradient(
+                180deg,
+                transparent 0%,
+                var(--modal-bg-color) 56.65%,
+                var(--body-bg-color) 100%
+            );
         }
     }
 }
