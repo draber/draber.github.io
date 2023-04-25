@@ -92,6 +92,7 @@ class Menu extends Plugin {
 
         super(app, 'Menu', '');
         this.target = this.getTarget();
+        // has to be `after` rather than `append` because the SB menu is rebuild on almost every click
         if (this.app.envIs('mobile')) {
             this.addMethod = 'after'
         }
