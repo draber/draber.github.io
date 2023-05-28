@@ -22,15 +22,7 @@ class FirstLetter extends TablePane {
      */
     getData() {
         const letters = {};
-        const answers = data.getList('answers').sort((a, b) => {
-            if (a.startsWith(this.centerLetter)) {
-                return -1;
-            }
-            if (b.startsWith(this.centerLetter)) {
-                return 1;
-            }
-            return a < b ? -1 : 1;
-        });
+        const answers = data.getList('answers').sort();
         const remainders = data.getList('remainders');
         const tpl = {
             foundTerms: 0,
