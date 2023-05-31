@@ -58,12 +58,15 @@ class App extends Widget {
      * @returns {Array}
      */
     getSyncData() {
-        let sync = localStorage.getItem('sb-today');
+        if(!window.userType.regiId) {
+            return [];
+        }
+        let sync = localStorage.getItem(`nytsb/${window.gameData.today.printDate}/${window.userType.regiId}`);
         if (!sync) {
             return [];
         }
         sync = JSON.parse(sync);
-        return sync.words || [];
+        return sync.answers || [];
     }
 
     /**
