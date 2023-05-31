@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "4.3.3";
+    var version = "4.3.4";
 
     const settings = {
         version: version,
@@ -1662,12 +1662,15 @@
             return JSON.parse(document.body.dataset[prefix(key)]);
         }
         getSyncData() {
-            let sync = localStorage.getItem('sb-today');
+            if(!window.userType.regiId) {
+                return [];
+            }
+            let sync = localStorage.getItem(`nytsb/${window.gameData.today.printDate}/${window.userType.regiId}`);
             if (!sync) {
                 return [];
             }
             sync = JSON.parse(sync);
-            return sync.words || [];
+            return sync.answers || [];
         }
         envIs(env) {
             return document.body.classList.contains('pz-' + env);
