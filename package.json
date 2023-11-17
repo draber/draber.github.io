@@ -1,6 +1,6 @@
 {
     "name": "spelling-bee-assistant",
-    "version": "4.3.6",
+    "version": "4.3.7",
     "description": "Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle",
     "main": "index.js",
     "type": "module",

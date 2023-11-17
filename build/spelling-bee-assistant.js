@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "4.3.6";
+    var version = "4.3.7";
 
     const settings = {
         version: version,
@@ -268,6 +268,10 @@
         }
     }
 
+    function getDefaultExportFromCjs (x) {
+    	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+    }
+
     const cast = content => {
         if (typeof content === 'undefined') {
             return document.createDocumentFragment();
@@ -426,6 +430,8 @@
         }
     });
 
+    var fn = /*@__PURE__*/getDefaultExportFromCjs(src);
+
     class Popup {
         enableKeyClose() {
             document.addEventListener('keyup', evt => {
@@ -439,19 +445,19 @@
         }
         getTarget() {
             const dataUi = prefix('popup-container', 'd');
-            let container = src.$(`[data-ui="${dataUi}"]`);
+            let container = fn.$(`[data-ui="${dataUi}"]`);
             if (!container) {
-                container = src.template({
+                container = fn.template({
                     data: {
                         ui: dataUi
                     }
                 });
-                src.$('body').append(container);
+                fn.$('body').append(container);
             }
             return container;
         }
         create() {
-            return src.div({
+            return fn.div({
                 classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
                 aria: {
                     role: 'button'
@@ -465,9 +471,9 @@
                     }
                 },
                 content: [
-                    src.div({
+                    fn.div({
                         classNames: ['sb-modal-top'],
-                        content: src.div({
+                        content: fn.div({
                             aria: {
                                 role: 'button'
                             },
@@ -480,10 +486,10 @@
                             }
                         })
                     }),
-                    src.div({
+                    fn.div({
                         classNames: ['sb-modal-content'],
                         content: [
-                            src.div({
+                            fn.div({
                                 classNames: ['sb-modal-header'],
                                 content: [this.parts.title, this.parts.subtitle]
                             }),
@@ -499,8 +505,8 @@
                 console.error(`Unknown target ${part}`);
                 return this;
             }
-            this.parts[part] = src.empty(this.parts[part]);
-            this.parts[part].append(src.toNode(content));
+            this.parts[part] = fn.empty(this.parts[part]);
+            this.parts[part].append(fn.toNode(content));
             return this;
         }
         getCloseButton() {
@@ -509,7 +515,7 @@
                 '.pz-moment__frame.on-stage .pz-moment__close_text',
                 '.sb-modal-close'
             ]) {
-                const closer = src.$(selector, this.app.gameWrapper);
+                const closer = fn.$(selector, this.app.gameWrapper);
                 if (closer) {
                     return closer;
                 }
@@ -539,19 +545,19 @@
             this.isOpen = false;
             this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
             this.parts = {
-                title: src.h3({
+                title: fn.h3({
                     classNames: ['sb-modal-title']
                 }),
-                subtitle: src.p({
+                subtitle: fn.p({
                     classNames: ['sb-modal-message']
                 }),
-                body: src.div({
+                body: fn.div({
                     classNames: ['sb-modal-body']
                 }),
-                footer: src.div({
+                footer: fn.div({
                     classNames: ['sb-modal-message', 'sba-modal-footer'],
                     content: [
-                        src.a({
+                        fn.a({
                             content: settings$1.get('label'),
                             attributes: {
                                 href: settings$1.get('url'),
@@ -569,7 +575,7 @@
 
     class ColorConfig extends Plugin {
         toggle(state) {
-            src.$$('[data-sba-theme]').forEach(element => {
+            fn.$$('[data-sba-theme]').forEach(element => {
                 element.style.setProperty('--dhue', state.hue);
                 element.style.setProperty('--dsat', state.sat + '%');
             });
@@ -577,7 +583,7 @@
         }
         display() {
             this.popup.toggle(true);
-            src.$('input:checked', this.popup.ui).focus();
+            fn.$('input:checked', this.popup.ui).focus();
         }
         constructor(app) {
             super(app, 'Dark Mode Colors', 'Select your favorite color scheme for the Dark Mode.', {
@@ -589,14 +595,14 @@
             });
             this.menuAction = 'popup';
             this.menuIcon = 'null';
-            const swatches = src.ul({
+            const swatches = fn.ul({
                 classNames: [prefix('swatches', 'd')]
             });
             for (let hue = 0; hue < 360; hue += 30) {
                 const sat = hue === 0 ? 0 : 25;
-                swatches.append(src.li({
+                swatches.append(fn.li({
                     content: [
-                        src.input({
+                        fn.input({
                             attributes: {
                                 name: 'color-picker',
                                 type: 'radio',
@@ -613,7 +619,7 @@
                                 }
                             }
                         }),
-                        src.label({
+                        fn.label({
                             attributes: {
                                 htmlFor: prefix('h' + hue)
                             },
@@ -627,26 +633,26 @@
             this.popup = new Popup(this.app, this.key)
                 .setContent('title', this.title)
                 .setContent('subtitle', this.description)
-                .setContent('body', src.div({
+                .setContent('body', fn.div({
                     classNames: [prefix('color-selector', 'd')],
                     content: [
                         swatches,
-                        src.div({
+                        fn.div({
                             classNames: ['hive'],
-                            content: [src.svg({
+                            content: [fn.svg({
                                 classNames: ['hive-cell', 'outer'],
                                 attributes: {
                                     viewBox: `0 0 24 21`
                                 },
                                 isSvg: true,
-                                content: [src.path({
+                                content: [fn.path({
                                     classNames: ['cell-fill'],
                                     isSvg: true,
                                     attributes: {
                                         d: 'M18 21H6L0 10.5 6 0h12l6 10.5z'
                                     }
                                 }),
-                                    src.text({
+                                    fn.text({
                                         classNames: ['cell-letter'],
                                         attributes: {
                                             x: '50%',
@@ -671,7 +677,7 @@
             super(app, settings$1.get('title'), '', {
                 key: 'header'
             });
-            this.ui = src.div({
+            this.ui = fn.div({
                 content: this.title
             });
         }
@@ -692,7 +698,7 @@
                 runEvt: prefix('refreshUi'),
                 addMethod: 'before'
             });
-            this.ui = src.progress({
+            this.ui = fn.progress({
                 attributes: {
                     max: 100
                 }
@@ -705,15 +711,15 @@
                     });
                 }
             });
-            this.target = src.$('.sb-wordlist-heading', this.app.gameWrapper);
+            this.target = fn.$('.sb-wordlist-heading', this.app.gameWrapper);
             this.toggle(this.getState());
         }
     }
 
     class TablePane extends Plugin {
         run(evt) {
-            this.pane = src.empty(this.pane);
-            const tbody = src.tbody();
+            this.pane = fn.empty(this.pane);
+            const tbody = fn.tbody();
             const data = this.getData();
             if (this.hasHeadRow) {
                 this.pane.append(this.buildHead(data.shift()));
@@ -728,12 +734,12 @@
                         classNames.push(prefix(marker, 'd'));
                     }
                 }
-                const tr = src.tr({
+                const tr = fn.tr({
                     classNames
                 });
                 rowData.forEach((cellData, rInd) => {
                     const tag = rInd === 0 && this.hasHeadCol ? 'th' : 'td';
-                    tr.append(src[tag]({
+                    tr.append(fn[tag]({
                         content: cellData
                     }));
                 });
@@ -744,9 +750,9 @@
             return this;
         }
         buildHead(rowData) {
-            return src.thead({
-                content: src.tr({
-                    content: rowData.map(cellData => src.th({
+            return fn.thead({
+                content: fn.tr({
+                    content: rowData.map(cellData => fn.th({
                         content: cellData
                     }))
                 })
@@ -772,7 +778,7 @@
             this.cssMarkers = cssMarkers;
             this.hasHeadRow = hasHeadRow;
             this.hasHeadCol = hasHeadCol;
-            this.pane = src.table({
+            this.pane = fn.table({
                 classNames: ['pane', prefix('dataPane', 'd')]
             });
         }
@@ -789,12 +795,12 @@
         }
         constructor(app) {
             super(app, 'Score', 'The number of words and points and how many have been found');
-            this.ui = src.details({
+            this.ui = fn.details({
                 attributes: {
                     open: true
                 },
                 content: [
-                    src.summary({
+                    fn.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -826,10 +832,10 @@
                 runEvt: prefix('newInput'),
                 addMethod: 'prepend'
             });
-            this.ui = src.div({
+            this.ui = fn.div({
                 content: '😐'
             });
-            this.target = src.$('.sb-controls', this.app.gameWrapper);
+            this.target = fn.$('.sb-controls', this.app.gameWrapper);
             this.toggle(false);
         }
     }
@@ -871,9 +877,9 @@
                     completed: (rowData, i) => rowData[2] === 0
                 }
             });
-            this.ui = src.details({
+            this.ui = fn.details({
                 content: [
-                    src.summary({
+                    fn.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -924,9 +930,9 @@
                     preeminent: (rowData, i) => rowData[0] === data.getCenterLetter()
                 }
             });
-            this.ui = src.details({
+            this.ui = fn.details({
                 content: [
-                    src.summary({
+                    fn.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -976,9 +982,9 @@
                     completed: (rowData, i) => rowData[2] === 0
                 }
             });
-            this.ui = src.details({
+            this.ui = fn.details({
                 content: [
-                    src.summary({
+                    fn.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -1008,9 +1014,9 @@
                 },
                 hasHeadCol: false
             });
-            this.ui = src.details({
+            this.ui = fn.details({
                 content: [
-                    src.summary({
+                    fn.summary({
                         content: this.title
                     }),
                     this.getPane()
@@ -1028,28 +1034,28 @@
             const progress = points * 100 / max;
             let content;
             if (next) {
-                content = src.span({
+                content = fn.span({
                     content: [
                         'You are currently at ',
-                        src.b({
+                        fn.b({
                             content: points + '/' + max
                         }),
                         ' points or ',
-                        src.b({
+                        fn.b({
                             content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
                         }),
                         '. You need ',
-                        src.b({
+                        fn.b({
                             content: next - points
                         }),
                         ' more points to go to the next level.',
                     ]
                 });
             } else {
-                content = src.span({
+                content = fn.span({
                     content: [
                         'Congratulations, you’ve found all ',
-                        src.b({
+                        fn.b({
                             content: points
                         }),
                         ' points!',
@@ -1057,7 +1063,7 @@
                 });
             }
             this.popup
-                .setContent('subtitle', src.span({
+                .setContent('subtitle', fn.span({
                     content
                 }))
                 .setContent('body', this.getPane())
@@ -1119,7 +1125,7 @@
         nytCommunity() {
             const date = data.getDate().print;
             const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-${date}.html#commentsContainer`;
-            return src.a({
+            return fn.a({
                 content: 'NYT Spelling Bee Forum for today’s game',
                 attributes: {
                     href,
@@ -1128,7 +1134,7 @@
             })
         }
         twitter() {
-            const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => src.a({
+            const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => fn.a({
                 content: `#${tag}`,
                 attributes: {
                     href: `https://twitter.com/hashtag/${tag}`,
@@ -1145,7 +1151,7 @@
         }
         nytSpotlight() {
             const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
-            return src.a({
+            return fn.a({
                 content: 'Portal to all NYT Spelling Bee Forums',
                 attributes: {
                     href,
@@ -1154,7 +1160,7 @@
             })
         }
         redditCommunity() {
-            return src.a({
+            return fn.a({
                 content: 'NY Times Spelling Bee Puzzle on Reddit',
                 attributes: {
                     href: 'https://www.reddit.com/r/NYTSpellingBee/',
@@ -1173,14 +1179,14 @@
             this.menuAction = 'popup';
             this.menuIcon = 'null';
             const words = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
-            const features = src.ul({
+            const features = fn.ul({
                 content: [
-                    src.li({
+                    fn.li({
                         content: [
-                            src.h4({
+                            fn.h4({
                                 content: 'Does today’s game have a Perfect Pangram?'
                             }),
-                            src.p({
+                            fn.p({
                                 content: (() => {
                                     const pp = this.getPerfectPangramCount();
                                     switch (pp) {
@@ -1193,51 +1199,51 @@
                                     }
                                 })()
                             }),
-                            src.em({
+                            fn.em({
                                 content: 'Pangrams that use each letter only once are called "perfect" by the community.'
                             })
                         ]
                     }),
-                    src.li({
+                    fn.li({
                         content: [
-                            src.h4({
+                            fn.h4({
                                 content: 'Does it classify as "Bingo"?'
                             }),
-                            src.p({
+                            fn.p({
                                 content: this.hasBingo() ? 'Yes, today is Bingo day!' : 'No, today it doesn’t.'
                             }),
-                            src.em({
+                            fn.em({
                                 content: '"Bingo" means that all seven letters in the puzzle are used to start at least one word in the word list.'
                             })
                         ]
                     }),
-                    src.li({
+                    fn.li({
                         content: [
-                            src.h4({
+                            fn.h4({
                                 content: 'Is it possible to reach Genius without using 4-letter words?'
                             }),
-                            src.p({
+                            fn.p({
                                 content: this.hasGeniusNo4Letters() ? 'Yes, today it is!' : 'No, today it isn’t.'
                             })
                         ]
                     }),
-                    src.li({
+                    fn.li({
                         content: [
-                            src.h4({
+                            fn.h4({
                                 content: 'Forums and Hashtags'
                             }),
-                            src.ul({
+                            fn.ul({
                                 content: [
-                                    src.li({
+                                    fn.li({
                                         content: this.nytCommunity()
                                     }),
-                                    src.li({
+                                    fn.li({
                                         content: this.nytSpotlight()
                                     }),
-                                    src.li({
+                                    fn.li({
                                         content: this.redditCommunity()
                                     }),
-                                    src.li({
+                                    fn.li({
                                         content: this.twitter()
                                     })
                                 ]
@@ -1257,15 +1263,15 @@
         display() {
             const foundTerms = data.getList('foundTerms');
             const pangrams = data.getList('pangrams');
-            const pane = src.ul({
+            const pane = fn.ul({
                 classNames: ['sb-modal-wordlist-items']
             });
             data.getList('answers').forEach(term => {
-                pane.append(src.li({
+                pane.append(fn.li({
                     content: [
-                        src.span({
+                        fn.span({
                             classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
-                        }), src.span({
+                        }), fn.span({
                             classNames: pangrams.includes(term) ? ['sb-anagram', 'pangram'] : ['sb-anagram'],
                             content: term
                         })
@@ -1274,7 +1280,7 @@
             });
             this.popup
                 .setContent('body', [
-                    src.div({
+                    fn.div({
                         content: data.getList('letters').join(''),
                         classNames: ['sb-modal-letters']
                     }),
@@ -1306,9 +1312,9 @@
         run(evt) {
             const pangrams = data.getList('pangrams');
             const container = evt && evt.detail ? evt.detail : this.app.resultList;
-            src.$$('li', container).forEach(node => {
+            fn.$$('li', container).forEach(node => {
                 const term = node.textContent;
-                if (pangrams.includes(term) || src.$('.pangram', node)) {
+                if (pangrams.includes(term) || fn.$('.pangram', node)) {
                     node.classList.toggle(this.marker, this.getState());
                 }
             });
@@ -1362,8 +1368,8 @@
     class Styles extends Plugin {
         constructor(app) {
             super(app, 'Styles', '');
-            this.target = src.$('head');
-            this.ui = src.style({
+            this.target = fn.$('head');
+            this.ui = fn.style({
                 content: css
             });
             app.on(prefix('destroy'), () => this.ui.remove());
@@ -1380,13 +1386,13 @@
     };
     class Menu extends Plugin {
         getTarget() {
-            return this.app.envIs('mobile') ? src.$('#js-mobile-toolbar') : src.$('#portal-game-toolbar > div:last-of-type');
+            return this.app.envIs('mobile') ? fn.$('#js-mobile-toolbar') : fn.$('#portal-game-toolbar > div:last-of-type');
         }
         add() {
             if (!this.app.envIs('mobile')) {
                 return super.add();
             }
-            const navContainer = src.$('#js-global-nav');
+            const navContainer = fn.$('#js-global-nav');
             if (navContainer.classList.contains('show-mobile-toolbar')) {
                 return super.add();
             }
@@ -1426,7 +1432,7 @@
             }
             const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
             this.resetSubmenu();
-            const pane = src.ul({
+            const pane = fn.ul({
                 classNames: ['pane'],
                 data: {
                     ui: 'submenu'
@@ -1463,7 +1469,7 @@
                         }
                     }
                 },
-                content: src.li({
+                content: fn.li({
                     classNames: this.app.getState() ? ['checked'] : [],
                     attributes: {
                         title: this.app.title
@@ -1476,7 +1482,7 @@
                     content: `Show ${settings$1.get('title')}`
                 })
             });
-            this.ui = src.div({
+            this.ui = fn.div({
                 events: {
                     pointerup: evt => {
                         if (evt.button !== 0) {
@@ -1501,7 +1507,7 @@
                     this.app.domSet('submenu', false);
                 }
             });
-            src.$('#pz-game-root').addEventListener('pointerdown', evt => {
+            fn.$('#pz-game-root').addEventListener('pointerdown', evt => {
                 if (this.app.domGet('submenu') === true) {
                     this.app.domSet('submenu', false);
                 }
@@ -1513,7 +1519,7 @@
                     }
                     const action = plugin.menuAction || 'boolean';
                     const icon = plugin.menuIcon || null;
-                    pane.append(src.li({
+                    pane.append(fn.li({
                         classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
                         attributes: {
                             title: plugin.description
@@ -1526,7 +1532,7 @@
                         content: svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
                     }));
                 });
-                pane.append(src.li({
+                pane.append(fn.li({
                     attributes: {
                         title: settings$1.get('support.text')
                     },
@@ -1535,7 +1541,7 @@
                         component: prefix('web'),
                         action: 'link'
                     },
-                    content: src.a({
+                    content: fn.a({
                         content: [
                             iconCoffee,
                             settings$1.get('support.text'),
@@ -1561,13 +1567,13 @@
         }
         run(evt) {
             super.run(evt);
-            const rows = src.$$('tr', this.pane);
+            const rows = fn.$$('tr', this.pane);
             const rCnt = rows.length;
             rows.forEach((row, rInd) => {
                 if (rCnt === rInd + 1) {
                     return false;
                 }
-                const cells = src.$$('td', row);
+                const cells = fn.$$('td', row);
                 const cCnt = cells.length;
                 cells.forEach((cell, cInd) => {
                     const cellArr = cell.textContent.trim().split('/');
@@ -1683,11 +1689,11 @@
             return document.body.classList.contains('pz-' + env);
         }
         load() {
-            src.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
+            fn.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
                 .then(resultList => {
                     this.observer = this.buildObserver();
                     data.init(this, this.getSyncData());
-                    this.modalWrapper = src.$('.sb-modal-wrapper', this.gameWrapper);
+                    this.modalWrapper = fn.$('.sb-modal-wrapper', this.gameWrapper);
                     this.resultList = resultList;
                     this.add();
                     this.domSet('active', true);
@@ -1715,7 +1721,7 @@
                     switch (true) {
                         case mutation.type === 'childList' &&
                         mutation.target.isSameNode(this.modalWrapper):
-                            if (src.$('.sb-modal-frame.yesterday', mutation.target)) {
+                            if (fn.$('.sb-modal-frame.yesterday', mutation.target)) {
                                 this.trigger(prefix('yesterday'), mutation.target);
                             }
                             break;
@@ -1752,7 +1758,7 @@
                 this.domUnset('theme');
             };
             const classNames = [settings$1.get('prefix')];
-            return src.div({
+            return fn.div({
                 data: {
                     id: this.key,
                     version: settings$1.get('version')
@@ -1773,26 +1779,26 @@
         }
         add() {
             this.container.append(this.ui);
-            src.$('.sb-content-box', this.gameWrapper).prepend(this.container);
+            fn.$('.sb-content-box', this.gameWrapper).prepend(this.container);
         }
         constructor(gameWrapper) {
             super(settings$1.get('label'), {
                 canChangeState: true,
                 key: prefix('app'),
             });
-            const oldInstance = src.$(`[data-id="${this.key}"]`);
+            const oldInstance = fn.$(`[data-id="${this.key}"]`);
             if (oldInstance) {
                 oldInstance.dispatchEvent(new Event(prefix('destroy')));
             }
             this.gameWrapper = gameWrapper;
             this.ui = this.buildUi();
-            this.container = src.div({
+            this.container = fn.div({
                 classNames: [prefix('container', 'd')]
             });
             this.load();
         }
     }
 
-    new App(src.$('#js-hook-game-wrapper'));
+    new App(fn.$('#js-hook-game-wrapper'));
 
 })();

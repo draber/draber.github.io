@@ -413,7 +413,7 @@
 
 :is(.pz-dropdown, .pz-mobile-dropdown) {
     :is(button[class*="pz-dropdown__"], a[class*="pz-dropdown__"]) {
-        background-color: var(--body-bg-color);
+        background-color: var(--body-bg-color) !important;
         &:hover {
             background: var(--menu-hover-color);
         }
