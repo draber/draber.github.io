@@ -8,3 +8,6 @@ import App from './modules/app.js';
 import fn from 'fancy-node';
 
 new App(fn.$('#js-hook-game-wrapper'));
+
+
+
