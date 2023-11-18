@@ -4,14 +4,12 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import settings from './settings.js';
-import data from './data.js';
-import getPlugins from './importer.js';
-import Widget from './widget.js';
-import {
-    prefix
-} from './string.js';
-import fn from 'fancy-node';
+import settings from "./settings.js";
+import data from "./data.js";
+import getPlugins from "./importer.js";
+import Widget from "./widget.js";
+import { prefix } from "./string.js";
+import fn from "fancy-node";
 
 /**
  * App container
@@ -19,7 +17,6 @@ import fn from 'fancy-node';
  * @returns {App} app
  */
 class App extends Widget {
-
     /**
      * Set a `data` value on `<body>`
      * @param key
@@ -47,7 +44,7 @@ class App extends Widget {
      * @returns {App}
      */
     domGet(key) {
-        if (typeof document.body.dataset[prefix(key)] === 'undefined') {
+        if (typeof document.body.dataset[prefix(key)] === "undefined") {
             return false;
         }
         return JSON.parse(document.body.dataset[prefix(key)]);
@@ -58,23 +55,23 @@ class App extends Widget {
      * @returns {Array}
      */
     getSyncData() {
-        let regiId = window.userType?.regiId;
+        let re = new RegExp(`nytsb/${window.gameData.today.printDate}/\\w+`);
+        let lsKeysFiltered = Object.keys(localStorage).filter((key) => re.test(key));
 
-        if (!regiId) {
-            regiId = JSON.parse(localStorage.getItem('iterate_hq'))?.user_traits?.regiId;
+        // make sure that folks that aren't subscribed are covered
+        if (lsKeysFiltered.length === 2) {
+            lsKeysFiltered = lsKeysFiltered.filter((key) => !key.endsWith("ANON"));
         }
 
-        if (!regiId) {
-            regiId = JSON.parse(sessionStorage.getItem('pz-user'))?.id;
-        }
-
-        if(!regiId) {
+        if (lsKeysFiltered.length !== 1) {
             return [];
         }
-        let sync = localStorage.getItem(`nytsb/${window.gameData.today.printDate}/${regiId}`);
+
+        let sync = localStorage.getItem(lsKeysFiltered[0]);
         if (!sync) {
             return [];
         }
+
         sync = JSON.parse(sync);
         return sync.answers || [];
     }
@@ -85,7 +82,7 @@ class App extends Widget {
      * @returns {Boolean}
      */
     envIs(env) {
-        return document.body.classList.contains('pz-' + env);
+        return document.body.classList.contains("pz-" + env);
     }
 
     /**
@@ -93,24 +90,22 @@ class App extends Widget {
      * The result list depends on sync data from the server and it can therefore be assumed that everything is ready
      */
     load() {
-        fn.waitFor('.sb-wordlist-items-pag', this.gameWrapper)
-            .then(resultList => {
-                // Observe game for various changes
-                this.observer = this.buildObserver();
-                data.init(this, this.getSyncData());
-                this.modalWrapper = fn.$('.sb-modal-wrapper', this.gameWrapper);
-                this.resultList = resultList;
+        fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
+            // Observe game for various changes
+            this.observer = this.buildObserver();
+            data.init(this, this.getSyncData());
+            this.modalWrapper = fn.$(".sb-modal-wrapper", this.gameWrapper);
+            this.resultList = resultList;
 
-                this.add();
-                this.domSet('active', true);
-                this.registerPlugins();
-                this.trigger(prefix('refreshUi'));
-                document.dispatchEvent(new Event(prefix('ready')));
-                if (this.envIs('desktop')) {
-                    window.scrollTo(0, 472);
-                }
-            })
-
+            this.add();
+            this.domSet("active", true);
+            this.registerPlugins();
+            this.trigger(prefix("refreshUi"));
+            document.dispatchEvent(new Event(prefix("ready")));
+            if (this.envIs("desktop")) {
+                window.scrollTo(0, 472);
+            }
+        });
     }
 
     /**
@@ -118,7 +113,7 @@ class App extends Widget {
      * @returns {App}
      */
     getState() {
-        return this.domGet('active');
+        return this.domGet("active");
     }
 
     /**
@@ -127,7 +122,7 @@ class App extends Widget {
      * @returns {App}
      */
     toggle(state) {
-        this.domSet('active', state);
+        this.domSet("active", state);
         return this;
     }
 
@@ -136,35 +131,32 @@ class App extends Widget {
      * @returns {MutationObserver}
      */
     buildObserver() {
-        const observer = new MutationObserver(mutationList => {
-            mutationList.forEach(mutation => {
+        const observer = new MutationObserver((mutationList) => {
+            mutationList.forEach((mutation) => {
                 if (!(mutation.target instanceof HTMLElement)) {
                     return false;
                 }
 
                 switch (true) {
-
                     // 'yesterday' modal is open
-                    case mutation.type === 'childList' &&
-                    mutation.target.isSameNode(this.modalWrapper):
-                        if (fn.$('.sb-modal-frame.yesterday', mutation.target)) {
-                            this.trigger(prefix('yesterday'), mutation.target);
+                    case mutation.type === "childList" && mutation.target.isSameNode(this.modalWrapper):
+                        if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
+                            this.trigger(prefix("yesterday"), mutation.target);
                         }
                         break;
 
                     // text input
-                    case mutation.type === 'childList' &&
-                    mutation.target.classList.contains('sb-hive-input-content'):
-                        this.trigger(prefix('newInput'), mutation.target.textContent.trim());
+                    case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
+                        this.trigger(prefix("newInput"), mutation.target.textContent.trim());
                         break;
 
                     // term added to word list
-                    case mutation.type === 'childList' &&
-                    mutation.target.isSameNode(this.resultList) &&
-                    !!mutation.addedNodes.length &&
-                    !!mutation.addedNodes[0].textContent.trim() &&
-                    mutation.addedNodes[0] instanceof HTMLElement:
-                        this.trigger(prefix('newWord'), mutation.addedNodes[0].textContent.trim());
+                    case mutation.type === "childList" &&
+                        mutation.target.isSameNode(this.resultList) &&
+                        !!mutation.addedNodes.length &&
+                        !!mutation.addedNodes[0].textContent.trim() &&
+                        mutation.addedNodes[0] instanceof HTMLElement:
+                        this.trigger(prefix("newWord"), mutation.addedNodes[0].textContent.trim());
                         break;
                 }
             });
@@ -174,8 +166,8 @@ class App extends Widget {
             options: {
                 childList: true,
                 subtree: true,
-                attributes: true
-            }
+                attributes: true,
+            },
         };
         observer.observe(args.target, args.options);
         return observer;
@@ -187,23 +179,22 @@ class App extends Widget {
      */
     buildUi() {
         const events = {};
-        events[prefix('destroy')] = () => {
+        events[prefix("destroy")] = () => {
             this.observer.disconnect();
             this.container.remove();
-            this.domUnset('theme');
+            this.domUnset("theme");
         };
 
-        const classNames = [settings.get('prefix')];
+        const classNames = [settings.get("prefix")];
 
         return fn.div({
             data: {
                 id: this.key,
-                version: settings.get('version')
+                version: settings.get("version"),
             },
             classNames,
-            events
+            events,
         });
-
     }
 
     /**
@@ -212,12 +203,12 @@ class App extends Widget {
      */
     registerPlugins() {
         this.plugins = new Map();
-        Object.values(getPlugins()).forEach(plugin => {
+        Object.values(getPlugins()).forEach((plugin) => {
             const instance = new plugin(this);
             instance.add();
             this.plugins.set(instance.key, instance);
-        })
-        this.trigger(prefix('pluginsReady'), this.plugins);
+        });
+        this.trigger(prefix("pluginsReady"), this.plugins);
         return this;
     }
 
@@ -226,7 +217,7 @@ class App extends Widget {
      */
     add() {
         this.container.append(this.ui);
-        fn.$('.sb-content-box', this.gameWrapper).prepend(this.container);
+        fn.$(".sb-content-box", this.gameWrapper).prepend(this.container);
     }
 
     /**
@@ -234,17 +225,16 @@ class App extends Widget {
      * @param {HTMLElement} gameWrapper
      */
     constructor(gameWrapper) {
-
-        super(settings.get('label'), {
+        super(settings.get("label"), {
             canChangeState: true,
-            key: prefix('app'),
+            key: prefix("app"),
         });
 
         // Kill existing instance - this could happen on a conflict between bookmarklet and extension
         // or while debugging
         const oldInstance = fn.$(`[data-id="${this.key}"]`);
         if (oldInstance) {
-            oldInstance.dispatchEvent(new Event(prefix('destroy')));
+            oldInstance.dispatchEvent(new Event(prefix("destroy")));
         }
 
         // Outer container
@@ -255,7 +245,7 @@ class App extends Widget {
 
         // init dom elements for external access
         this.container = fn.div({
-            classNames: [prefix('container', 'd')]
+            classNames: [prefix("container", "d")],
         });
 
         this.load();
