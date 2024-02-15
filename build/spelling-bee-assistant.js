@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "4.3.8";
+    var version = "4.3.9";
 
     const settings = {
         version: version,
@@ -1668,20 +1668,21 @@
             return JSON.parse(document.body.dataset[prefix(key)]);
         }
         getSyncData() {
-            let re = new RegExp(`nytsb/${window.gameData.today.printDate}/\\w+`);
-            let lsKeysFiltered = Object.keys(localStorage).filter((key) => re.test(key));
-            if (lsKeysFiltered.length === 2) {
-                lsKeysFiltered = lsKeysFiltered.filter((key) => !key.endsWith("ANON"));
-            }
-            if (lsKeysFiltered.length !== 1) {
+            let puzzleId = window.gameData.today.id.toString();
+            let gameData;
+            let lsKeysFiltered = Object.keys(localStorage).filter((key) => key.startsWith("games-state-spelling_bee"));
+            if (!lsKeysFiltered.length) {
                 return [];
             }
-            let sync = localStorage.getItem(lsKeysFiltered[0]);
-            if (!sync) {
+            gameData = JSON.parse(localStorage.getItem(lsKeysFiltered.shift()) || "{}");
+            if (!gameData.states) {
                 return [];
             }
-            sync = JSON.parse(sync);
-            return sync.answers || [];
+            gameData.states = gameData.states.filter((item) => item.puzzleId === puzzleId);
+            if (!gameData.states.length) {
+                return [];
+            }
+            return gameData.states.shift().data.answers || [];
         }
         envIs(env) {
             return document.body.classList.contains("pz-" + env);
