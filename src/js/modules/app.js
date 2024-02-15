@@ -55,25 +55,25 @@ class App extends Widget {
      * @returns {Array}
      */
     getSyncData() {
-        let re = new RegExp(`nytsb/${window.gameData.today.printDate}/\\w+`);
-        let lsKeysFiltered = Object.keys(localStorage).filter((key) => re.test(key));
+        let puzzleId = window.gameData.today.id.toString();
+        let gameData;
+        let lsKeysFiltered = Object.keys(localStorage).filter((key) => key.startsWith("games-state-spelling_bee"));
 
-        // make sure that folks that aren't subscribed are covered
-        if (lsKeysFiltered.length === 2) {
-            lsKeysFiltered = lsKeysFiltered.filter((key) => !key.endsWith("ANON"));
-        }
-
-        if (lsKeysFiltered.length !== 1) {
+        if (!lsKeysFiltered.length) {
             return [];
         }
 
-        let sync = localStorage.getItem(lsKeysFiltered[0]);
-        if (!sync) {
+        gameData = JSON.parse(localStorage.getItem(lsKeysFiltered.shift()) || "{}");
+        if (!gameData.states) {
             return [];
         }
 
-        sync = JSON.parse(sync);
-        return sync.answers || [];
+        gameData.states = gameData.states.filter((item) => item.puzzleId === puzzleId);
+        if (!gameData.states.length) {
+            return [];
+        }
+        
+        return gameData.states.shift().data.answers || [];
     }
 
     /**
