@@ -57,10 +57,17 @@ class App extends Widget {
     getSyncData() {
         let puzzleId = window.gameData.today.id.toString();
         let gameData;
-        let lsKeysFiltered = Object.keys(localStorage).filter((key) => key.startsWith("games-state-spelling_bee"));
-
+        let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/\d+$/.test(key));
+        
+        // if the user has never been logged in, e.g. in an incognito window
         if (!lsKeysFiltered.length) {
             return [];
+        }
+
+        // At this point the user is either logged or has been logged in at some point.
+        // `nyt-auth-action=logout` indicates, the user was logged in but is no longer
+        if(/nyt-auth-action=logout/.test(document.cookie)) {
+            return []
         }
 
         gameData = JSON.parse(localStorage.getItem(lsKeysFiltered.shift()) || "{}");

@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "4.3.9";
+    var version = "4.3.10";
 
     const settings = {
         version: version,
@@ -1670,9 +1670,12 @@
         getSyncData() {
             let puzzleId = window.gameData.today.id.toString();
             let gameData;
-            let lsKeysFiltered = Object.keys(localStorage).filter((key) => key.startsWith("games-state-spelling_bee"));
+            let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/\d+$/.test(key));
             if (!lsKeysFiltered.length) {
                 return [];
+            }
+            if(/nyt-auth-action=logout/.test(document.cookie)) {
+                return []
             }
             gameData = JSON.parse(localStorage.getItem(lsKeysFiltered.shift()) || "{}");
             if (!gameData.states) {
