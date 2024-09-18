@@ -71,6 +71,21 @@ body {
             filter: invert(1);
         }
 
+        &.pz-mobile {
+            .pz-toolbar-button,
+            .pz-dropdown__button {
+                background-color: transparent !important;
+            }
+        }
+
+        .pz-moment__frame {
+            &.pz-moment__welcome {
+                * {
+                    color: var(--text-color);
+                }
+            }
+        }
+
         .sb-toggle-icon,
         .sb-kebob .sb-bob-arrow,
         .hive-action__shuffle {
@@ -191,16 +206,19 @@ body {
     color: var(--highlight-bg-color);
 }
 
-.cell-fill {
-    stroke: var(--body-bg-color);
-}
+.hive-cell {
+    .cell-fill {
+        stroke: var(--body-bg-color);
+    }
 
-.cell-letter {
-    fill: var(--text-color);
-}
-
-.hive-cell.center .cell-letter {
-    fill: var(--highhlight-text-color);
+    .cell-letter {
+        fill: var(--text-color);
+    }
+    &.center {
+        .cell-letter {
+            fill: var(--highhlight-text-color);
+        }
+    }
 }
 
 .hive-action {
