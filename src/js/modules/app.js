@@ -58,7 +58,7 @@ class App extends Widget {
         let puzzleId = window.gameData.today.id.toString();
         let gameData;
         let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/\d+$/.test(key));
-        
+
         // if the user has never been logged in, e.g. in an incognito window
         if (!lsKeysFiltered.length) {
             return [];
@@ -66,8 +66,8 @@ class App extends Widget {
 
         // At this point the user is either logged or has been logged in at some point.
         // `nyt-auth-action=logout` indicates, the user was logged in but is no longer
-        if(/nyt-auth-action=logout/.test(document.cookie)) {
-            return []
+        if (/nyt-auth-action=logout/.test(document.cookie)) {
+            return [];
         }
 
         gameData = JSON.parse(localStorage.getItem(lsKeysFiltered.shift()) || "{}");
@@ -79,7 +79,7 @@ class App extends Widget {
         if (!gameData.states.length) {
             return [];
         }
-        
+
         return gameData.states.shift().data.answers || [];
     }
 
@@ -90,6 +90,23 @@ class App extends Widget {
      */
     envIs(env) {
         return document.body.classList.contains("pz-" + env);
+    }
+
+    /**
+     * Position the game on launch
+     * @returns {Boolean}
+     */
+    focusGame(){        
+        if (!this.envIs("desktop")) {
+            return false;
+        }
+        fn.$(".pz-moment__welcome.on-stage .pz-moment__button").addEventListener('pointerup', () => {
+            window.scrollTo(0,0);
+            const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
+            const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
+            window.scrollTo(0, targetOffsetTop);
+        }, false);
+        return true;
     }
 
     /**
@@ -109,9 +126,7 @@ class App extends Widget {
             this.registerPlugins();
             this.trigger(prefix("refreshUi"));
             document.dispatchEvent(new Event(prefix("ready")));
-            if (this.envIs("desktop")) {
-                window.scrollTo(0, 472);
-            }
+            this.focusGame();            
         });
     }
 
