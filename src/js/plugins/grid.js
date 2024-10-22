@@ -10,6 +10,7 @@ import Popup from './popup.js';
 import {
     prefix
 } from '../modules/string.js';
+import gridIcon from '../assets/grid.svg';
 import fn from 'fancy-node';
 
 /**
@@ -112,10 +113,20 @@ class Grid extends TablePane {
         super(app, 'Grid', 'The number of words by length and by first letter.');
 
         this.popup = new Popup(this.app, this.key)
-            .setContent('title', this.title);
+            .setContent('title', `Show ${this.title}`);
 
         this.menuAction = 'popup';
         this.menuIcon = 'null';
+        this.panelBtn = fn.span({
+            classNames: ['sba-tool-btn'],
+            events: {
+                pointerup: () => this.display()
+            },
+            attributes:{
+                title: this.title
+            },
+            content: gridIcon
+        });
     }
 }
 
