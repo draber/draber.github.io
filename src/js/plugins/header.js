@@ -4,9 +4,10 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import settings from '../modules/settings.js';
-import Plugin from '../modules/plugin.js';
-import fn from 'fancy-node';
+import settings from "../modules/settings.js";
+import Plugin from "../modules/plugin.js";
+import fn from "fancy-node";
+import { prefix } from "../modules/string.js";
 
 /**
  * Header plugin
@@ -15,21 +16,36 @@ import fn from 'fancy-node';
  * @returns {Plugin} Header
  */
 class Header extends Plugin {
-
     /**
      * Header constructor
      * @param {App} app
      */
     constructor(app) {
+        super(app, settings.get("title"), "", {
+            key: "header",
+        });
 
-        super(app, settings.get('title'), '', {
-            key: 'header'
+        const toolbar = fn.div({
+            classNames: ["sba-toolbar"],
+        });
+
+        app.on(prefix("pluginsReady"), (evt) => {
+            evt.detail.forEach((plugin, key) => {
+                if (plugin.panelBtn) {
+                    toolbar.append(plugin.panelBtn);
+                }
+            });
         });
 
         this.ui = fn.div({
-            content: this.title
+            content: [
+                fn.div({
+                    classNames: ["sba-title"],
+                    content: this.title,
+                }),
+                toolbar,
+            ],
         });
-
     }
 }
 
