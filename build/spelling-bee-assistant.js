@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "4.4.0";
+    var version = "4.4.1";
 
     const settings = {
         version: version,
@@ -1650,7 +1650,7 @@
         constructor(app) {
             super(app, 'Grid', 'The number of words by length and by first letter.');
             this.popup = new Popup(this.app, this.key)
-                .setContent('title', `Show ${this.title}`);
+                .setContent('title', this.title);
             this.menuAction = 'popup';
             this.menuIcon = 'null';
             this.panelBtn = fn.span({
@@ -1659,7 +1659,7 @@
                     pointerup: () => this.display()
                 },
                 attributes:{
-                    title: this.title
+                    title: `Show ${this.title}`
                 },
                 content: gridIcon
             });
