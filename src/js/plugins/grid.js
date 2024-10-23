@@ -113,7 +113,7 @@ class Grid extends TablePane {
         super(app, 'Grid', 'The number of words by length and by first letter.');
 
         this.popup = new Popup(this.app, this.key)
-            .setContent('title', `Show ${this.title}`);
+            .setContent('title', this.title);
 
         this.menuAction = 'popup';
         this.menuIcon = 'null';
@@ -123,7 +123,7 @@ class Grid extends TablePane {
                 pointerup: () => this.display()
             },
             attributes:{
-                title: this.title
+                title: `Show ${this.title}`
             },
             content: gridIcon
         });
