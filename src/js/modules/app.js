@@ -10,6 +10,7 @@ import getPlugins from "./importer.js";
 import Widget from "./widget.js";
 import { prefix } from "./string.js";
 import fn from "fancy-node";
+import shortcuts from "./shortcuts.js";
 
 /**
  * App container
@@ -96,16 +97,20 @@ class App extends Widget {
      * Position the game on launch
      * @returns {Boolean}
      */
-    focusGame(){        
+    focusGame() {
         if (!this.envIs("desktop")) {
             return false;
         }
-        fn.$(".pz-moment__welcome.on-stage .pz-moment__button").addEventListener('pointerup', () => {
-            window.scrollTo(0,0);
-            const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
-            const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
-            window.scrollTo(0, targetOffsetTop);
-        }, false);
+        fn.$(".pz-moment__welcome.on-stage .pz-moment__button").addEventListener(
+            "pointerup",
+            () => {
+                window.scrollTo(0, 0);
+                const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
+                const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
+                window.scrollTo(0, targetOffsetTop);
+            },
+            false
+        );
         return true;
     }
 
@@ -126,7 +131,8 @@ class App extends Widget {
             this.registerPlugins();
             this.trigger(prefix("refreshUi"));
             document.dispatchEvent(new Event(prefix("ready")));
-            this.focusGame();            
+            document.addEventListener("keydown", shortcuts.handleShortcut.bind(this));
+            this.focusGame();
         });
     }
 
@@ -228,9 +234,42 @@ class App extends Widget {
         Object.values(getPlugins()).forEach((plugin) => {
             const instance = new plugin(this);
             instance.add();
+            this.registerShortcuts(instance);
             this.plugins.set(instance.key, instance);
         });
         this.trigger(prefix("pluginsReady"), this.plugins);
+        return this;
+    }
+
+    /**
+     * Register all plugin shortcuts
+     * @returns {App}
+     */
+    registerShortcuts(instance) {
+        instance.shortcuts.forEach(({ combo, method }) => {
+            if (!combo || !method || typeof instance[method] !== "function") {
+                console.warn(`Invalid shortcut in plugin ${instance.key}:`, { combo, method });
+                return;
+            }
+    
+            combo = shortcuts.normalizeCombo(combo);
+
+            // shortcuts with letters vs digits vs ESC and such
+            const callback = /\b[A-Z]\b/.test(combo)
+                ? () => {
+                      setTimeout(() => {
+                          const el = document.querySelector(".hive-action__delete");
+                          el.dispatchEvent(new Event("touchstart", { bubbles: true, cancelable: true }));
+                          setTimeout(() => {
+                              el.dispatchEvent(new Event("touchend", { bubbles: true, cancelable: true }));
+                          }, 50);
+                          instance[method]();
+                      }, 0);
+                  }
+                : () => instance[method]();
+
+            shortcuts.set(combo, callback);
+        });
         return this;
     }
 
@@ -271,6 +310,8 @@ class App extends Widget {
         });
 
         this.load();
+
+        console.log(shortcuts.registry)
     }
 }
 

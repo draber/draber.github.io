@@ -78,6 +78,11 @@ class TodaysAnswers extends Plugin {
 
         this.menuAction = 'popup';
         this.menuIcon = 'warning';
+
+        this.shortcuts = [{
+            combo: "Shift+Alt+A",
+            method: "display"
+        }];
     }
 }
 

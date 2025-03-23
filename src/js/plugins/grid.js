@@ -127,6 +127,11 @@ class Grid extends TablePane {
             },
             content: gridIcon
         });
+
+        this.shortcuts = [{
+            combo: "Shift+Alt+G",
+            method: "display"
+        }];
     }
 }
 

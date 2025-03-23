@@ -5,8 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import data from '../modules/data.js';
-import TablePane from './tablePane.js';
-import fn from 'fancy-node';
+import DetailsPane from './detailsPane.js';
 
 /**
  * FirstLetter plugin
@@ -14,7 +13,7 @@ import fn from 'fancy-node';
  * @param {App} app
  * @returns {Plugin} FirstLetter
  */
-class FirstLetter extends TablePane {
+class FirstLetter extends DetailsPane {
 
     /**
      * Get the data for the table cells
@@ -66,19 +65,12 @@ class FirstLetter extends TablePane {
             cssMarkers: {
                 completed: (rowData, i) => rowData[2] === 0,
                 preeminent: (rowData, i) => rowData[0] === data.getCenterLetter()
-            }
+            },
+            shortcuts: [{
+                combo: "Shift+Alt+F",
+                method: "togglePane"
+            }]
         });
-
-        this.ui = fn.details({
-            content: [
-                fn.summary({
-                    content: this.title
-                }),
-                this.getPane()
-            ]
-        });
-
-        this.toggle(this.getState());
     }
 }
 

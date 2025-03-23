@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "4.4.1";
+    var version = "4.5.0";
 
     const settings = {
         version: version,
@@ -31,7 +31,7 @@
     }
     settings.options.version = settings.version;
     saveOptions();
-    const get = key => {
+    const get$1 = key => {
         let current = Object.create(settings);
         for (let token of key.split('.')) {
             if (typeof current[token] === 'undefined') {
@@ -41,7 +41,7 @@
         }
         return current;
     };
-    const set = (key, value) => {
+    const set$1 = (key, value) => {
         const keys = key.split('.');
         const last = keys.pop();
         let current = settings;
@@ -59,8 +59,8 @@
         saveOptions();
     };
     var settings$1 = {
-        get,
-        set
+        get: get$1,
+        set: set$1
     };
 
     const pf = settings$1.get('prefix');
@@ -227,26 +227,20 @@
         run(evt) {
             return this;
         }
-        constructor(app, title, description, {
-            key,
-            canChangeState,
-            defaultState,
-            menuIcon,
-            runEvt,
-            addMethod
-        } = {}) {
+        constructor(app, title, description, { key, canChangeState, defaultState, menuIcon, runEvt, addMethod } = {}) {
             super(title, {
                 key,
                 canChangeState,
-                defaultState
+                defaultState,
             });
             this.target;
-            this.description = description || '';
+            this.description = description || "";
             this.app = app;
-            this.addMethod = addMethod || 'append';
-            this.menuIcon = menuIcon || 'checkbox';
+            this.addMethod = addMethod || "append";
+            this.menuIcon = menuIcon || "checkbox";
+            this.shortcuts = [];
             if (runEvt) {
-                this.app.on(runEvt, evt => {
+                this.app.on(runEvt, (evt) => {
                     this.run(evt);
                 });
             }
@@ -809,63 +803,92 @@
         }
     }
 
-    class Score extends TablePane {
+    class DetailsPane extends TablePane {
+        constructor(app, title, description, options = {}) {
+            const shortcuts = options.shortcuts || [];
+            delete options.shortcuts;
+            super(app, title, description, options);
+            this.shortcuts = shortcuts;
+            this.summary = fn.summary({
+                content: this.title,
+            });
+            this.ui = fn.details({
+                content: [this.summary, this.getPane()],
+            });
+            this.togglePane = () => this.summary.click();
+            this.toggle = (state) => {
+                if (state) {
+                    this.app.domSet("submenu", false);
+                }
+                return super.toggle(state);
+            };
+            this.toggle(this.getState());
+        }
+    }
+
+    class Score extends DetailsPane {
         getData() {
-            const keys = ['foundTerms', 'remainders', 'answers'];
+            const keys = ["foundTerms", "remainders", "answers"];
             return [
-                ['', '✓', '?', '∑'],
-                ['W'].concat(keys.map(key => data.getCount(key))),
-                ['P'].concat(keys.map(key => data.getPoints(key)))
+                ["", "✓", "?", "∑"],
+                ["W"].concat(keys.map((key) => data.getCount(key))),
+                ["P"].concat(keys.map((key) => data.getPoints(key))),
             ];
         }
         constructor(app) {
-            super(app, 'Score', 'The number of words and points and how many have been found');
-            this.ui = fn.details({
-                attributes: {
-                    open: true
-                },
-                content: [
-                    fn.summary({
-                        content: this.title
-                    }),
-                    this.getPane()
-                ]
+            super(app, "Score", "The number of words and points and how many have been found", {
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+X",
+                        method: "togglePane",
+                    },
+                ],
             });
+            this.toggle(false);
         }
     }
 
     class SpillTheBeans extends Plugin {
         run(evt) {
-            let emoji = '🙂';
+            let emoji = "🙂";
             if (!evt.detail) {
-                emoji = '😐';
-            } else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
-                emoji = '🙁';
+                emoji = "😐";
+            } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail)).length) {
+                emoji = "🙁";
             }
             this.ui.textContent = emoji;
             return this;
         }
         toggle(state) {
             if (state) {
-                this.app.domSet('submenu', false);
+                this.app.domSet("submenu", false);
+            }
+            if(typeof state === 'undefined') {
+                state = !this.getState();
             }
             return super.toggle(state);
         }
         constructor(app) {
-            super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
+            super(app, "Spill the beans", "An emoji that shows if the last letter was right or wrong", {
                 canChangeState: true,
-                runEvt: prefix('newInput'),
-                addMethod: 'prepend'
+                runEvt: prefix("newInput"),
+                addMethod: "prepend",
             });
             this.ui = fn.div({
-                content: '😐'
+                content: "😐",
             });
-            this.target = fn.$('.sb-controls', this.app.gameWrapper);
+            this.target = fn.$(".sb-controls", this.app.gameWrapper);
             this.toggle(false);
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+S",
+                    method: 'toggle',
+                },
+            ];
         }
     }
 
-    class LetterCount extends TablePane {
+    class LetterCount extends DetailsPane {
         getData() {
             const counts = {};
             const cellData = [
@@ -900,21 +923,16 @@
             super(app, 'Letter count', 'The number of words by length', {
                 cssMarkers: {
                     completed: (rowData, i) => rowData[2] === 0
-                }
+                },
+                shortcuts: [{
+                    combo: "Shift+Alt+L",
+                    method: "togglePane"
+                }]
             });
-            this.ui = fn.details({
-                content: [
-                    fn.summary({
-                        content: this.title
-                    }),
-                    this.getPane()
-                ]
-            });
-            this.toggle(this.getState());
         }
     }
 
-    let FirstLetter$1 = class FirstLetter extends TablePane {
+    let FirstLetter$1 = class FirstLetter extends DetailsPane {
         getData() {
             const letters = {};
             const answers = data.getList('answers').sort();
@@ -953,21 +971,16 @@
                 cssMarkers: {
                     completed: (rowData, i) => rowData[2] === 0,
                     preeminent: (rowData, i) => rowData[0] === data.getCenterLetter()
-                }
+                },
+                shortcuts: [{
+                    combo: "Shift+Alt+F",
+                    method: "togglePane"
+                }]
             });
-            this.ui = fn.details({
-                content: [
-                    fn.summary({
-                        content: this.title
-                    }),
-                    this.getPane()
-                ]
-            });
-            this.toggle(this.getState());
         }
     };
 
-    class FirstLetter extends TablePane {
+    class FirstLetter extends DetailsPane {
         getData() {
             const letters = {};
             const answers = data.getList('answers').sort();
@@ -1005,21 +1018,16 @@
             super(app, 'First two letters', 'The number of words by the first two letters', {
                 cssMarkers: {
                     completed: (rowData, i) => rowData[2] === 0
-                }
+                },
+                shortcuts: [{
+                    combo: "Shift+Alt+2",
+                    method: "togglePane"
+                }]
             });
-            this.ui = fn.details({
-                content: [
-                    fn.summary({
-                        content: this.title
-                    }),
-                    this.getPane()
-                ]
-            });
-            this.toggle(this.getState());
         }
     }
 
-    class Pangrams extends TablePane {
+    class Pangrams extends DetailsPane {
         getData() {
             const pangramCount = data.getCount('pangrams');
             const foundPangramCount = data.getCount('foundPangrams');
@@ -1037,17 +1045,12 @@
                 cssMarkers: {
                     completed: (rowData, i) => rowData[1] === 0
                 },
-                hasHeadCol: false
+                hasHeadCol: false,
+                shortcuts: [{
+                    combo: "Shift+Alt+P",
+                    method: "togglePane"
+                }]
             });
-            this.ui = fn.details({
-                content: [
-                    fn.summary({
-                        content: this.title
-                    }),
-                    this.getPane()
-                ]
-            });
-            this.toggle(this.getState());
         }
     }
 
@@ -1132,6 +1135,10 @@
                 .setContent('title', this.title);
             this.menuAction = 'popup';
             this.menuIcon = 'null';
+            this.shortcuts = [{
+                combo: "Shift+Alt+P",
+                method: "display"
+            }];
         }
     }
 
@@ -1149,7 +1156,7 @@
         }
         nytCommunity() {
             const date = data.getDate().print;
-            const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-${date}.html#commentsContainer`;
+            const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-forum.html#commentsContainer`;
             return fn.a({
                 content: 'NYT Spelling Bee Forum for today’s game',
                 attributes: {
@@ -1158,11 +1165,11 @@
                 }
             })
         }
-        twitter() {
+        bluesky() {
             const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => fn.a({
                 content: `#${tag}`,
                 attributes: {
-                    href: `https://twitter.com/hashtag/${tag}`,
+                    href: `https://bsky.app/hashtag/${tag}`,
                     target: prefix()
                 }
             }));
@@ -1171,7 +1178,7 @@
                 result.push(entry, ', ');
             });
             result.pop();
-            result.push(' on Twitter');
+            result.push(' on Bluesky');
             return result;
         }
         nytSpotlight() {
@@ -1269,7 +1276,7 @@
                                         content: this.redditCommunity()
                                     }),
                                     fn.li({
-                                        content: this.twitter()
+                                        content: this.bluesky()
                                     })
                                 ]
                             })
@@ -1326,6 +1333,10 @@
                 .setContent('subtitle', data.getDate().display);
             this.menuAction = 'popup';
             this.menuIcon = 'warning';
+            this.shortcuts = [{
+                combo: "Shift+Alt+A",
+                method: "display"
+            }];
         }
     }
 
@@ -1663,6 +1674,10 @@
                 },
                 content: gridIcon
             });
+            this.shortcuts = [{
+                combo: "Shift+Alt+G",
+                method: "display"
+            }];
         }
     }
 
@@ -1687,6 +1702,55 @@
             Community,
             TodaysAnswers
         }
+    };
+
+    let registry = new Map();
+    const normalizeCombo = (data) => {
+        if (data instanceof KeyboardEvent) {
+            let parts = [];
+            if (data.ctrlKey) parts.push("CONTROL");
+            if (data.metaKey) parts.push("META");
+            if (data.altKey) parts.push("ALT");
+            if (data.shiftKey) parts.push("SHIFT");
+            parts.push(data.code);
+            data = parts;
+        }
+        if (typeof data === "string") {
+            data = data.split("+").map((part) => {
+                if (part.length !== 1) {
+                    return part;
+                }
+                return (!isNaN(part) ? "Digit" : "Key") + part;
+            });
+        }
+        if (!Array.isArray(data)) {
+            throw new Error("Unsupported input type for combo normalization");
+        }
+        data = data.map((part) => part.trim().toUpperCase().replace("CTRL", "CONTROL"));
+        return data.sort().join("+");
+    };
+    const handleShortcut = (event) => {
+        const callback = get(event);
+        if (!callback) {
+            return false;
+        }
+        event.preventDefault();
+        callback();
+        return true;
+    };
+    const set = (input, callback) => {
+        const combo = normalizeCombo(input);
+        registry.set(combo, callback);
+    };
+    const get = (input) => {
+        return registry.get(normalizeCombo(input));
+    };
+    var shortcuts = {
+        set,
+        get,
+        normalizeCombo,
+        handleShortcut,
+        registry,
     };
 
     class App extends Widget {
@@ -1727,16 +1791,20 @@
         envIs(env) {
             return document.body.classList.contains("pz-" + env);
         }
-        focusGame(){
+        focusGame() {
             if (!this.envIs("desktop")) {
                 return false;
             }
-            fn.$(".pz-moment__welcome.on-stage .pz-moment__button").addEventListener('pointerup', () => {
-                window.scrollTo(0,0);
-                const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
-                const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
-                window.scrollTo(0, targetOffsetTop);
-            }, false);
+            fn.$(".pz-moment__welcome.on-stage .pz-moment__button").addEventListener(
+                "pointerup",
+                () => {
+                    window.scrollTo(0, 0);
+                    const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
+                    const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
+                    window.scrollTo(0, targetOffsetTop);
+                },
+                false
+            );
             return true;
         }
         load() {
@@ -1750,6 +1818,7 @@
                 this.registerPlugins();
                 this.trigger(prefix("refreshUi"));
                 document.dispatchEvent(new Event(prefix("ready")));
+                document.addEventListener("keydown", shortcuts.handleShortcut.bind(this));
                 this.focusGame();
             });
         }
@@ -1818,9 +1887,33 @@
             Object.values(getPlugins()).forEach((plugin) => {
                 const instance = new plugin(this);
                 instance.add();
+                this.registerShortcuts(instance);
                 this.plugins.set(instance.key, instance);
             });
             this.trigger(prefix("pluginsReady"), this.plugins);
+            return this;
+        }
+        registerShortcuts(instance) {
+            instance.shortcuts.forEach(({ combo, method }) => {
+                if (!combo || !method || typeof instance[method] !== "function") {
+                    console.warn(`Invalid shortcut in plugin ${instance.key}:`, { combo, method });
+                    return;
+                }
+                combo = shortcuts.normalizeCombo(combo);
+                const callback = /\b[A-Z]\b/.test(combo)
+                    ? () => {
+                          setTimeout(() => {
+                              const el = document.querySelector(".hive-action__delete");
+                              el.dispatchEvent(new Event("touchstart", { bubbles: true, cancelable: true }));
+                              setTimeout(() => {
+                                  el.dispatchEvent(new Event("touchend", { bubbles: true, cancelable: true }));
+                              }, 50);
+                              instance[method]();
+                          }, 0);
+                      }
+                    : () => instance[method]();
+                shortcuts.set(combo, callback);
+            });
             return this;
         }
         add() {
@@ -1842,6 +1935,7 @@
                 classNames: [prefix("container", "d")],
             });
             this.load();
+            console.log(shortcuts.registry);
         }
     }
 

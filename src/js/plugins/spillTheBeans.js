@@ -4,12 +4,10 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import data from '../modules/data.js';
-import {
-    prefix
-} from '../modules/string.js';
-import Plugin from '../modules/plugin.js';
-import fn from 'fancy-node';
+import data from "../modules/data.js";
+import { prefix } from "../modules/string.js";
+import Plugin from "../modules/plugin.js";
+import fn from "fancy-node";
 
 /**
  * Spill the beans plugin
@@ -18,17 +16,16 @@ import fn from 'fancy-node';
  * @returns {Plugin} SpillTheBeans
  */
 class SpillTheBeans extends Plugin {
-
     /**
      * Check if the input matches a term in the remainder list
      * @param evt
      */
     run(evt) {
-        let emoji = '🙂';
+        let emoji = "🙂";
         if (!evt.detail) {
-            emoji = '😐';
-        } else if (!data.getList('remainders').filter(term => term.startsWith(evt.detail)).length) {
-            emoji = '🙁';
+            emoji = "😐";
+        } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail)).length) {
+            emoji = "🙁";
         }
         this.ui.textContent = emoji;
         return this;
@@ -36,7 +33,10 @@ class SpillTheBeans extends Plugin {
 
     toggle(state) {
         if (state) {
-            this.app.domSet('submenu', false);
+            this.app.domSet("submenu", false);
+        }
+        if(typeof state === 'undefined') {
+            state = !this.getState();
         }
         return super.toggle(state);
     }
@@ -46,24 +46,29 @@ class SpillTheBeans extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-
-        super(app, 'Spill the beans', 'An emoji that shows if the last letter was right or wrong', {
+        super(app, "Spill the beans", "An emoji that shows if the last letter was right or wrong", {
             canChangeState: true,
-            runEvt: prefix('newInput'),
-            addMethod: 'prepend'
+            runEvt: prefix("newInput"),
+            addMethod: "prepend",
         });
 
         /**
          * Emoji area
          */
         this.ui = fn.div({
-            content: '😐'
+            content: "😐",
         });
 
-        this.target = fn.$('.sb-controls', this.app.gameWrapper);
+        this.target = fn.$(".sb-controls", this.app.gameWrapper);
 
         this.toggle(false);
 
+        this.shortcuts = [
+            {
+                combo: "Shift+Alt+S",
+                method: 'toggle',
+            },
+        ];
     }
 }
 

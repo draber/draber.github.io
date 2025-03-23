@@ -5,8 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import data from '../modules/data.js';
-import TablePane from './tablePane.js';
-import fn from 'fancy-node';
+import DetailsPane from './detailsPane.js';
 
 /**
  * FirstLetter plugin
@@ -14,7 +13,7 @@ import fn from 'fancy-node';
  * @param {App} app
  * @returns {Plugin} FirstLetter
  */
-class FirstLetter extends TablePane {
+class FirstLetter extends DetailsPane {
 
     /**
      * Get the data for the table cells
@@ -55,7 +54,6 @@ class FirstLetter extends TablePane {
         return cellData;
     }
 
-
     /**
      * FirstLetter constructor
      * @param {App} app
@@ -65,19 +63,12 @@ class FirstLetter extends TablePane {
         super(app, 'First two letters', 'The number of words by the first two letters', {
             cssMarkers: {
                 completed: (rowData, i) => rowData[2] === 0
-            }
+            },
+            shortcuts: [{
+                combo: "Shift+Alt+2",
+                method: "togglePane"
+            }]
         });
-
-        this.ui = fn.details({
-            content: [
-                fn.summary({
-                    content: this.title
-                }),
-                this.getPane()
-            ]
-        });
-
-        this.toggle(this.getState());
     }
 }
 

@@ -130,6 +130,11 @@ class YourProgress extends TablePane {
         this.menuAction = 'popup';
         this.menuIcon = 'null';
 
+        this.shortcuts = [{
+            combo: "Shift+Alt+P",
+            method: "display"
+        }]
+
     }
 }
 

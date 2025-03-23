@@ -5,8 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import data from '../modules/data.js';
-import TablePane from './tablePane.js';
-import fn from 'fancy-node';
+import DetailsPane from './detailsPane.js';
 
 /**
  * Pangrams plugin
@@ -14,7 +13,7 @@ import fn from 'fancy-node';
  * @param {App} app
  * @returns {Plugin} Pangrams
  */
-class Pangrams extends TablePane {
+class Pangrams extends DetailsPane {
 
     /**
      * Get the data for the table cells
@@ -43,19 +42,12 @@ class Pangrams extends TablePane {
             cssMarkers: {
                 completed: (rowData, i) => rowData[1] === 0
             },
-            hasHeadCol: false
+            hasHeadCol: false,
+            shortcuts: [{
+                combo: "Shift+Alt+P",
+                method: "togglePane"
+            }]
         });
-
-        this.ui = fn.details({
-            content: [
-                fn.summary({
-                    content: this.title
-                }),
-                this.getPane()
-            ]
-        });
-
-        this.toggle(this.getState());
     }
 }
 

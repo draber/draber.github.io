@@ -52,7 +52,7 @@ class Community extends Plugin {
      */
     nytCommunity() {
         const date = data.getDate().print;
-        const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-${date}.html#commentsContainer`;
+        const href = `https://www.nytimes.com/${date.replace(/-/g, '/')}/crosswords/spelling-bee-forum.html#commentsContainer`;
         return fn.a({
             content: 'NYT Spelling Bee Forum for today’s game',
             attributes: {
@@ -63,14 +63,14 @@ class Community extends Plugin {
     }
 
     /**
-     * Links to popular Twitter hashtags
+     * Links to popular Bluesky hashtags
      * @returns {*[]}
      */
-    twitter() {
+    bluesky() {
         const hashtags = ['hivemind', 'nytspellingbee', 'nytbee', 'nytsb'].map(tag => fn.a({
             content: `#${tag}`,
             attributes: {
-                href: `https://twitter.com/hashtag/${tag}`,
+                href: `https://bsky.app/hashtag/${tag}`,
                 target: prefix()
             }
         }));
@@ -79,7 +79,7 @@ class Community extends Plugin {
             result.push(entry, ', ');
         })
         result.pop();
-        result.push(' on Twitter');
+        result.push(' on Bluesky');
         return result;
     }
 
@@ -202,7 +202,7 @@ class Community extends Plugin {
                                     content: this.redditCommunity()
                                 }),
                                 fn.li({
-                                    content: this.twitter()
+                                    content: this.bluesky()
                                 })
                             ]
                         })

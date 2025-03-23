@@ -4,9 +4,8 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import data from '../modules/data.js';
-import TablePane from './tablePane.js';
-import fn from 'fancy-node';
+import data from "../modules/data.js";
+import DetailsPane from "./detailsPane.js";
 
 /**
  * Score so far plugin
@@ -14,18 +13,17 @@ import fn from 'fancy-node';
  * @param {App} app
  * @returns {Plugin} Score
  */
-class Score extends TablePane {
-
+class Score extends DetailsPane {
     /**
      * Build table data set
      * @returns {Array}
      */
     getData() {
-        const keys = ['foundTerms', 'remainders', 'answers'];
+        const keys = ["foundTerms", "remainders", "answers"];
         return [
-            ['', '✓', '?', '∑'],
-            ['W'].concat(keys.map(key => data.getCount(key))),
-            ['P'].concat(keys.map(key => data.getPoints(key)))
+            ["", "✓", "?", "∑"],
+            ["W"].concat(keys.map((key) => data.getCount(key))),
+            ["P"].concat(keys.map((key) => data.getPoints(key))),
         ];
     }
 
@@ -34,20 +32,16 @@ class Score extends TablePane {
      * @param {App} app
      */
     constructor(app) {
-
-        super(app, 'Score', 'The number of words and points and how many have been found');
-
-        this.ui = fn.details({
-            attributes: {
-                open: true
-            },
-            content: [
-                fn.summary({
-                    content: this.title
-                }),
-                this.getPane()
-            ]
+        super(app, "Score", "The number of words and points and how many have been found", {
+            shortcuts: [
+                {
+                    combo: "Shift+Alt+X",
+                    method: "togglePane",
+                },
+            ],
         });
+
+        this.toggle(false);
     }
 }
 

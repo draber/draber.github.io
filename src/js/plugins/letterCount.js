@@ -5,8 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import data from '../modules/data.js';
-import TablePane from './tablePane.js';
-import fn from 'fancy-node';
+import DetailsPane from './detailsPane.js';
 
 /**
  * LetterCount plugin
@@ -14,7 +13,7 @@ import fn from 'fancy-node';
  * @param {App} app
  * @returns {Plugin} LetterCount
  */
-class LetterCount extends TablePane {
+class LetterCount extends DetailsPane {
 
     /**
      * Get the data for the table cells
@@ -60,19 +59,12 @@ class LetterCount extends TablePane {
         super(app, 'Letter count', 'The number of words by length', {
             cssMarkers: {
                 completed: (rowData, i) => rowData[2] === 0
-            }
+            },
+            shortcuts: [{
+                combo: "Shift+Alt+L",
+                method: "togglePane"
+            }]
         });
-
-        this.ui = fn.details({
-            content: [
-                fn.summary({
-                    content: this.title
-                }),
-                this.getPane()
-            ]
-        });
-
-        this.toggle(this.getState());
     }
 }
 
