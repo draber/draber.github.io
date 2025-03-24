@@ -65,7 +65,7 @@ class SpillTheBeans extends Plugin {
 
         this.shortcuts = [
             {
-                combo: "Shift+Alt+S",
+                combo: "Shift+Alt+B",
                 method: 'toggle',
             },
         ];

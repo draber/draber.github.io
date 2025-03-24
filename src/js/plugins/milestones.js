@@ -114,7 +114,7 @@ class YourProgress extends TablePane {
      */
     constructor(app) {
 
-        super(app, 'Your Progress', 'The number of points required for each level', {
+        super(app, 'Milestones', 'The number of points required for each level', {
             cssMarkers: {
                 completed: rowData => rowData[1] < data.getPoints('foundTerms') && rowData[1] !== this.getCurrentTier(),
                 preeminent: rowData => rowData[1] === this.getCurrentTier()
@@ -131,7 +131,7 @@ class YourProgress extends TablePane {
         this.menuIcon = 'null';
 
         this.shortcuts = [{
-            combo: "Shift+Alt+P",
+            combo: "Shift+Alt+M",
             method: "display"
         }]
 

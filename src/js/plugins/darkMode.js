@@ -4,10 +4,8 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import {
-    prefix
-} from '../modules/string.js';
-import Plugin from '../modules/plugin.js';
+import { prefix } from "../modules/string.js";
+import Plugin from "../modules/plugin.js";
 
 /**
  * Dark Mode plugin
@@ -16,7 +14,6 @@ import Plugin from '../modules/plugin.js';
  * @returns {Plugin} DarkMode
  */
 class DarkMode extends Plugin {
-
     /**
      * Toggle dark mode
      * @param state
@@ -24,7 +21,7 @@ class DarkMode extends Plugin {
      */
     toggle(state) {
         super.toggle(state);
-        document.body.dataset[prefix('theme')] = state ? 'dark' : 'light';
+        document.body.dataset[prefix("theme")] = state ? "dark" : "light";
         return this;
     }
 
@@ -33,11 +30,16 @@ class DarkMode extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-
-        super(app, 'Dark Mode', 'Applies a dark theme to this page', {
+        super(app, "Dark Mode", "Applies a dark theme to this page", {
             canChangeState: true,
             defaultState: false
         });
+
+
+        this.shortcuts = [{
+            combo: "Shift+Alt+D",
+            method: "toggle"
+        }];
 
         // toggle body dataset
         this.toggle(this.getState());

@@ -14,7 +14,7 @@ import LetterCount from '../plugins/letterCount.js';
 import FirstLetter from '../plugins/firstLetter.js';
 import FirstTwoLetters from '../plugins/firstTwoLetters.js';
 import Pangrams from '../plugins/pangrams.js';
-import YourProgress from '../plugins/yourProgress.js';
+import Milestones from '../plugins/milestones.js';
 import Community from '../plugins/community.js';
 import TodaysAnswers from '../plugins/todaysAnswers.js';
 import PangramHl from '../plugins/pangramHl.js';
@@ -22,6 +22,7 @@ import Googlify from '../plugins/googlify.js';
 import Styles from '../plugins/styles.js';
 import Menu from '../plugins/menu.js';
 import Grid from '../plugins/grid.js';
+import NytShortcuts from '../plugins/nytShortcuts.js';
 
 /**
  * Plugins
@@ -45,9 +46,10 @@ const getPlugins = () => {
         Googlify,
         Styles,
         Menu,
-        YourProgress,
+        Milestones,
         Community,
-        TodaysAnswers
+        TodaysAnswers,
+        NytShortcuts
     }
 }
 
