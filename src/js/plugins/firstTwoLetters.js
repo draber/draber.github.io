@@ -59,15 +59,18 @@ class FirstLetter extends DetailsPane {
      * @param {App} app
      */
     constructor(app) {
-
-        super(app, 'First two letters', 'The number of words by the first two letters', {
+        super(app, {
+            title: "First two letters",
+            description: "The number of words by the first two letters",
             cssMarkers: {
                 completed: (rowData, i) => rowData[2] === 0
             },
-            shortcuts: [{
-                combo: "Shift+Alt+2",
-                method: "togglePane"
-            }]
+            shortcuts: [
+                {
+                    combo: "Shift+Alt+2",
+                    method: "togglePane",
+                },
+            ]
         });
     }
 }

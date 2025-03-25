@@ -4,8 +4,8 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import data from '../modules/data.js';
-import DetailsPane from './detailsPane.js';
+import data from "../modules/data.js";
+import DetailsPane from "./detailsPane.js";
 
 /**
  * LetterCount plugin
@@ -14,23 +14,20 @@ import DetailsPane from './detailsPane.js';
  * @returns {Plugin} LetterCount
  */
 class LetterCount extends DetailsPane {
-
     /**
      * Get the data for the table cells
      * @returns {Array}
      */
     getData() {
         const counts = {};
-        const cellData = [
-            ['', '✓', '?', '∑']
-        ];
-        data.getList('answers').forEach(term => {
+        const cellData = [["", "✓", "?", "∑"]];
+        data.getList("answers").forEach((term) => {
             counts[term.length] = counts[term.length] || {
                 found: 0,
                 missing: 0,
-                total: 0
+                total: 0,
             };
-            if (data.getList('foundTerms').includes(term)) {
+            if (data.getList("foundTerms").includes(term)) {
                 counts[term.length].found++;
             } else {
                 counts[term.length].missing++;
@@ -39,13 +36,8 @@ class LetterCount extends DetailsPane {
         });
         let keys = Object.keys(counts);
         keys.sort((a, b) => a - b);
-        keys.forEach(count => {
-            cellData.push([
-                count,
-                counts[count].found,
-                counts[count].missing,
-                counts[count].total
-            ]);
+        keys.forEach((count) => {
+            cellData.push([count, counts[count].found, counts[count].missing, counts[count].total]);
         });
         return cellData;
     }
@@ -55,15 +47,18 @@ class LetterCount extends DetailsPane {
      * @param {App} app
      */
     constructor(app) {
-
-        super(app, 'Letter count', 'The number of words by length', {
+        super(app, {
+            title: "Letter count",
+            description: "The number of words by length",
             cssMarkers: {
-                completed: (rowData, i) => rowData[2] === 0
+                completed: (rowData, i) => rowData[2] === 0,
             },
-            shortcuts: [{
-                combo: "Shift+Alt+L",
-                method: "togglePane"
-            }]
+            shortcuts: [
+                {
+                    combo: "Shift+Alt+L",
+                    method: "togglePane",
+                },
+            ]
         });
     }
 }

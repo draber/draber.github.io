@@ -19,11 +19,19 @@ import fn from 'fancy-node';
  * @param {App} app
  * @returns {Plugin} Grid
  */
-class Shortcuts extends TablePane {
+class ShortcutScreen extends TablePane {
+
+    /**
+     * 
+     * 
+     * For now just a copied version of the Grid plugin
+     * 
+     * 
+     */
 
     /**
      * Display pop-up
-     * @returns {Shortcuts}
+     * @returns {ShortcutScreen}
      */
     display() {
         this.popup
@@ -37,7 +45,7 @@ class Shortcuts extends TablePane {
     /**
      * Update table and mark completed cells
      * @param evt
-     * @returns {Shortcuts}
+     * @returns {ShortcutScreen}
      */
     run(evt) {
         super.run(evt);
@@ -135,4 +143,4 @@ class Shortcuts extends TablePane {
     }
 }
 
-export default Shortcuts;
+export default ShortcutScreen;

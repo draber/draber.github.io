@@ -14,7 +14,7 @@ const tmpSettings = {
         "shortcuts": [
         {
             "combo": "Alt+Shift+KeyX",
-            "method": "togglePane",
+            "method": "togglePanePane",
             "enabled": true
         }]
     },
@@ -24,7 +24,7 @@ const tmpSettings = {
         "shortcuts": [
         {
             "combo": "Alt+Shift+KeyL",
-            "method": "togglePane",
+            "method": "togglePanePane",
             "enabled": true
         }]
     },
@@ -34,7 +34,7 @@ const tmpSettings = {
         "shortcuts": [
         {
             "combo": "Alt+Shift+KeyF",
-            "method": "togglePane",
+            "method": "togglePanePane",
             "enabled": true
         }]
     },
@@ -44,7 +44,7 @@ const tmpSettings = {
         "shortcuts": [
         {
             "combo": "Alt+Shift+Digit2",
-            "method": "togglePane",
+            "method": "togglePanePane",
             "enabled": true
         }]
     },
@@ -54,7 +54,7 @@ const tmpSettings = {
         "shortcuts": [
         {
             "combo": "Alt+Shift+KeyP",
-            "method": "togglePane",
+            "method": "togglePanePane",
             "enabled": true
         }]
     },
@@ -74,7 +74,7 @@ const tmpSettings = {
         "shortcuts": [
         {
             "combo": "Alt+Shift+KeyB",
-            "method": "toggle",
+            "method": "togglePane",
             "enabled": true
         }]
     },
@@ -84,7 +84,7 @@ const tmpSettings = {
         "shortcuts": [
         {
             "combo": "Alt+Shift+KeyD",
-            "method": "toggle",
+            "method": "togglePane",
             "enabled": true
         }]
     },

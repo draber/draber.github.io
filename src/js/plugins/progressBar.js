@@ -41,7 +41,7 @@ class ProgressBar extends Plugin {
     constructor(app) {
 
         super(app, 'Progress Bar', 'Displays your progress as a yellow bar', {
-            canChangeState: true,
+            canChangeState: false,
             runEvt: prefix('refreshUi'),
             addMethod: 'before'
         });

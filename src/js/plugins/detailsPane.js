@@ -14,41 +14,54 @@ import fn from "fancy-node";
  * @returns {Plugin} FirstLetter
  */
 class DetailsPane extends TablePane {
-
     /**
-     * Create the details wrapper for this table
-     * @param {App} app 
-     * @param {String} title 
-     * @param {String} description 
-     * @param {Object} options 
+     * Create the details wrapper for this table plugin
+     *
+     * @param {App} app - Reference to the main application instance
+     * @param {Object} config - Configuration object
+     * @param {String} config.title - Title shown in the summary element
+     * @param {String} config.description - Description of the plugin
+     * @param {Object} [config.options={}] - Additional options passed to the base class
+     * @param {Array} [config.shortcuts=[]] - List of shortcut definitions ({ combo, method })
+     * @param {boolean} [config.open=false] - Whether the details pane should start open
      */
-    constructor(app, title, description, options = {}) {
-
-        const shortcuts = options.shortcuts || [];
-        delete options.shortcuts;
-
-        super(app, title, description, options);
+    constructor(
+        app,
+        {
+            title,
+            description,
+            shortcuts = [],
+            canChangeState = false,
+            defaultState = true,
+            hasHeadCol = true,
+            hasHeadRow = true,
+            cssMarkers = {},
+            open = false,
+        }
+    ) {
+        super(app, title, description, {
+            canChangeState,
+            defaultState,
+            cssMarkers,
+            hasHeadRow,
+            hasHeadCol,
+        });
 
         this.shortcuts = shortcuts;
 
-        this.summary = fn.summary({
-            content: this.title,
-        });
-
         this.ui = fn.details({
-            content: [this.summary, this.getPane()],
+            content: [
+                fn.summary({
+                    content: title,
+                }),
+                this.getPane(),
+            ],
+            attributes: {
+                open,
+            },
         });
 
-        this.togglePane = () => this.summary.click();
-
-        this.toggle = (state) => {
-            if (state) {
-                this.app.domSet("submenu", false);
-            }
-            return super.toggle(state);
-        }
-
-        this.toggle(this.getState());
+        this.togglePane = () => (this.ui.open = !this.ui.open);
     }
 }
 

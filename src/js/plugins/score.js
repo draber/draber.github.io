@@ -32,16 +32,17 @@ class Score extends DetailsPane {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Score", "The number of words and points and how many have been found", {
+        super(app, {
+            title: "Score",
+            description: "The number of words and points and how many have been found",
             shortcuts: [
                 {
                     combo: "Shift+Alt+X",
                     method: "togglePane",
                 },
             ],
+            open: true,
         });
-
-        this.toggle(false);
     }
 }
 
