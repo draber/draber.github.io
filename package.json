@@ -7,11 +7,13 @@
     "scripts": {
         "js:once": "rollup -c ./src/builder/rollup.js",
         "js:watch": "rollup -c ./src/builder/rollup.js -w",
-        "js:build": "rollup -c ./src/builder/rollup.js --config-env=prod",
+        "js:build-dev": "rollup -c ./src/builder/rollup.js --config-env=dev",
+        "js:build-prod": "rollup -c ./src/builder/rollup.js --config-env=prod",
         "css:once": "sass --no-charset --style=compressed ./src/scss:./src/js/assets",
         "css:watch": "sass --watch --no-charset --style=compressed ./src/scss:./src/js/assets",
         "css:build": "sass --no-charset --no-source-map --style=compressed ./src/scss:./src/js/assets",
-        "app:build": "npm run js:once & npm run css:build & npm run js:build & node ./src/builder/copy-assets.js --config-env=prod"
+        "app:build:dev": "npm run js:once & npm run css:build & npm run js:build-dev & node ./src/builder/copy-assets.js --config-env=dev",
+        "app:build:prod": "npm run js:once & npm run css:build & npm run js:build-prod & node ./src/builder/copy-assets.js --config-env=prod"
     },
     "author": "Dieter Raber",
     "license": "GPL-3",

@@ -71,7 +71,7 @@ body {
             filter: invert(1);
         }
 
-        &.pz-mobile {
+        &.pz-mobile, &.pz-desktop {
             .pz-toolbar-button,
             .pz-dropdown__button {
                 background-color: transparent !important;

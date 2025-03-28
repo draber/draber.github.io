@@ -22,10 +22,14 @@ import fn from 'fancy-node';
 class Grid extends TablePane {
 
     /**
-     * Display pop-up
+     * Toggle pop-up
      * @returns {Grid}
      */
-    display() {
+    togglePopup() {
+        if(this.popup.isOpen) {
+            this.popup.toggle(false);
+            return this;
+        }
         this.popup
             .setContent('subtitle', this.description)
             .setContent('body', this.getPane())
@@ -120,7 +124,7 @@ class Grid extends TablePane {
         this.panelBtn = fn.span({
             classNames: ['sba-tool-btn'],
             events: {
-                pointerup: () => this.display()
+                pointerup: () => this.togglePopup()
             },
             attributes:{
                 title: `Show ${this.title}`
@@ -130,7 +134,7 @@ class Grid extends TablePane {
 
         this.shortcuts = [{
             combo: "Shift+Alt+G",
-            method: "display"
+            method: "togglePopup"
         }];
     }
 }

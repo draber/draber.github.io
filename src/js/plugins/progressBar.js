@@ -55,15 +55,10 @@ class ProgressBar extends Plugin {
         app.on(prefix('pluginsReady'), evt => {
             if (this.app.plugins.has('yourProgress')) {
                 this.ui.style.cursor = 'pointer';
-                this.ui.addEventListener('pointerup', () => {
-                    this.app.plugins.get('yourProgress').display();
-                });
             }
         })
 
         this.target = fn.$('.sb-wordlist-heading', this.app.gameWrapper);
-
-        this.toggle(this.getState());
     }
 }
 

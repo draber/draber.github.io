@@ -21,11 +21,15 @@ import fn from 'fancy-node';
 class TodaysAnswers extends Plugin {
 
     /**
-     * Display pop-up
+     * Toggle pop-up
      * @param {Event} evt
      * @returns {TodaysAnswers}
      */
-    display() {
+    togglePopup() {
+        if(this.popup.isOpen) {
+            this.popup.toggle(false);
+            return this;
+        }
         const foundTerms = data.getList('foundTerms');
         const pangrams = data.getList('pangrams');
 
@@ -80,8 +84,8 @@ class TodaysAnswers extends Plugin {
         this.menuIcon = 'warning';
 
         this.shortcuts = [{
-            combo: "Shift+Alt+A",
-            method: "display"
+            combo: "Shift+Alt+T",
+            method: "togglePopup"
         }];
     }
 }

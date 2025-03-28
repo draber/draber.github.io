@@ -30,10 +30,14 @@ class ShortcutScreen extends TablePane {
      */
 
     /**
-     * Display pop-up
+     * Toggle pop-up
      * @returns {ShortcutScreen}
      */
-    display() {
+    togglePopup() {
+        if(this.popup.isOpen) {
+            this.popup.toggle(false);
+            return this;
+        }
         this.popup
             .setContent('subtitle', this.description)
             .setContent('body', this.getPane())
@@ -73,43 +77,23 @@ class ShortcutScreen extends TablePane {
      * @returns {Array}
      */
     getData() {
-        const foundTerms = data.getList('foundTerms');
-        const allTerms = data.getList('answers');
-        const allLetters = Array.from(new Set(allTerms.map(entry => entry.charAt(0)))).concat(['∑']);
-        const allDigits = Array.from(new Set(allTerms.map(term => term.length))).concat(['∑']);
-        allDigits.sort((a, b) => a - b);
-        allLetters.sort();
-        const cellData = [[''].concat(allLetters)];
-        let letterTpl = Object.fromEntries(allLetters.map(letter => [letter, {
-            fnd: 0,
-            all: 0
-        }]));
-        let rows = Object.fromEntries(allDigits.map(digit => [digit, JSON.parse(JSON.stringify(letterTpl))]));
-
-        allTerms.forEach(term => {
-            const letter = term.charAt(0);
-            const digit = term.length;
-            rows[digit][letter].all++;
-            rows[digit]['∑'].all++;
-            rows['∑'][letter].all++;
-            rows['∑']['∑'].all++;
-            if (foundTerms.includes(term)) {
-                rows[digit][letter].fnd++;
-                rows[digit]['∑'].fnd++;
-                rows['∑'][letter].fnd++;
-                rows['∑']['∑'].fnd++;
-            }
-        })
-
-        for (let [digit, cols] of Object.entries(rows)) {
-            const cellVals = [digit];
-            Object.values(cols).forEach(colVals => {
-                cellVals.push(colVals.all > 0 ? `${colVals.fnd}/${colVals.all}` : '-');
-            })
-            cellData.push(cellVals);
-        }
-
-        return cellData;
+        const rows = [
+            ['Plugin', 'Action', 'Shortcut', 'Enabled']
+        ];
+    
+        // for (const [plugin, config] of Object.entries(tmpSettings)) {
+        //     const shortcuts = config.shortcuts || [];
+        //     shortcuts.forEach(({ method, combo, enabled }) => {
+        //         rows.push([
+        //             plugin,
+        //             method,
+        //             combo.replace(/^Alt\+Shift\+/, ''), // for clarity
+        //             enabled ? '✓' : ''
+        //         ]);
+        //     });
+        // }
+    
+        return rows;
     }
 
     /**
@@ -128,7 +112,7 @@ class ShortcutScreen extends TablePane {
         this.panelBtn = fn.span({
             classNames: ['sba-tool-btn'],
             events: {
-                pointerup: () => this.display()
+                pointerup: () => this.togglePopup()
             },
             attributes:{
                 title: `Show ${this.title}`
@@ -137,8 +121,8 @@ class ShortcutScreen extends TablePane {
         });
 
         this.shortcuts = [{
-            combo: "Shift+Alt+G",
-            method: "display"
+            combo: "Shift+Alt+S",
+            method: "togglePopup"
         }];
     }
 }

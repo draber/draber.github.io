@@ -9,6 +9,7 @@ import {
 } from "../modules/string.js";
 import settings from "../modules/settings.js";
 import fn from 'fancy-node';
+import { getPopupCloser } from "../modules/helpers.js";
 
 
 /**
@@ -22,7 +23,7 @@ class Popup {
      */
     enableKeyClose() {
         document.addEventListener('keyup', evt => {
-            this.app.popupCloser = this.getCloseButton();
+            this.app.popupCloser = getPopupCloser(this.app);
             if (this.app.popupCloser && evt.code === 'Escape') {
                 this.app.popupCloser.click();
             }
@@ -114,23 +115,6 @@ class Popup {
         return this;
     }
 
-    /**
-     * Get the close button of the various pop-up formats
-     * @returns {HTMLElement|Boolean}
-     */
-    getCloseButton() {
-        for (let selector of [
-            '.pz-moment__frame.on-stage .pz-moment__close', 
-            '.pz-moment__frame.on-stage .pz-moment__close_text',
-            '.sb-modal-close'
-        ]) {
-            const closer = fn.$(selector, this.app.gameWrapper);
-            if (closer) {
-                return closer;
-            }
-        }
-        return false;
-    }
 
     /**
      * Open/close popup
@@ -138,7 +122,7 @@ class Popup {
      * @returns {Popup}
      */
     toggle(state) {
-        const closer = this.getCloseButton();
+        const closer = getPopupCloser(this.app);
         if (!state && closer) {
             closer.click();
         }

@@ -20,7 +20,7 @@ class Widget {
      * @returns {*}
      */
     getState() {
-        const stored = settings.get(`options.${this.key}`);
+        const stored = settings.get(`options.${this.key}.enabled`);
         return typeof stored !== 'undefined' ? stored : this.defaultState;
     }
 
@@ -31,7 +31,7 @@ class Widget {
      */
     setState(state) {
         if (this.canChangeState) {
-            settings.set(`options.${this.key}`, state);
+            settings.set(`options.${this.key}.enabled`, state);
         }
         return this;
     }

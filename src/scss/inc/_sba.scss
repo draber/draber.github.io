@@ -6,6 +6,15 @@
  */
 @use "sass:math";
 
+
+.hive-action {
+    &.push-active {
+        &.sba-no-feedback {
+            background: var(--body-bg-color) !important;
+        }
+    }
+}
+
 .sba {
     background: var(--body-bg-color);
 
@@ -201,16 +210,6 @@
     text-indent: 1px;
     justify-content: space-between;
     align-items: center;
-    .sba-toolbar {
-        padding-inline: 2px;
-    }
-    .sba-tool-btn {
-        padding: 1px;
-        width: 12px;
-        aspect-ratio: 1 / 1;
-        display: inline-block;
-        cursor: pointer
-    }
 }
 
 [data-ui="progressBar"] {

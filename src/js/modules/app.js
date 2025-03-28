@@ -11,7 +11,7 @@ import Widget from "./widget.js";
 import { prefix } from "./string.js";
 import fn from "fancy-node";
 import pluginRegistry from "./pluginRegistry.js";
-//import shortcutRegistry from "./shortcutRegistry.js";
+import shortcutRegistry from "./shortcutRegistry.js";
 
 /**
  * App container
@@ -130,10 +130,31 @@ class App extends Widget {
             this.add();
             this.domSet("active", true);
             this.registerPlugins();
+            shortcutRegistry.add(this.shortcut);
             this.trigger(prefix("refreshUi"));
             document.dispatchEvent(new Event(prefix("ready")));
-            document.addEventListener("keydown", pluginRegistry.handleShortcut.bind(this));
-            this.focusGame();
+
+            // fire shortcuts
+            document.addEventListener("keydown", (event) => {
+                if (!shortcutRegistry.getSbaShortcutEntry(event)) {
+                    return;
+                }
+                if (!shortcutRegistry.requiresDeletion(event, this)) {
+                    shortcutRegistry.handleShortcut(event); // run immediately
+                } else {
+                    this._lastShortcutEvent = event; // delay and run after newInput
+                }
+            });
+
+            this.on(prefix("newInput"), (event) => {
+                const lastLetterNode = event.detail;
+                if (this._lastShortcutEvent) {
+                    shortcutRegistry.handleShortcut(this._lastShortcutEvent, lastLetterNode);
+                    this._lastShortcutEvent = null;
+                }
+            });
+            // @todo: fix focusGame
+            // this.focusGame();
         });
     }
 
@@ -153,6 +174,10 @@ class App extends Widget {
     toggle(state) {
         this.domSet("active", state);
         return this;
+    }
+
+    toggleDisplay() {
+        this.toggle(!this.getState());
     }
 
     /**
@@ -176,7 +201,7 @@ class App extends Widget {
 
                     // text input
                     case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
-                        this.trigger(prefix("newInput"), mutation.target.textContent.trim());
+                        this.trigger(prefix("newInput"), mutation.target);
                         break;
 
                     // term added to word list
@@ -274,6 +299,13 @@ class App extends Widget {
         this.container = fn.div({
             classNames: [prefix("container", "d")],
         });
+
+        this.shortcut = {
+            combo: "Shift+Alt+A",
+            label: "Assistant Panel",
+            module: this.key,
+            callback: () => this.toggleDisplay(),
+        };
 
         this.load();
     }

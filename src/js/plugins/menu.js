@@ -132,7 +132,7 @@ class Menu extends Plugin {
                         }
                         case 'popup':
                             this.app.domSet('submenu', false);
-                            component.display();
+                            component.togglePopup();
                             break;
                         default:
                             this.resetSubmenu();

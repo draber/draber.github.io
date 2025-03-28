@@ -8,7 +8,7 @@ import DarkMode from '../plugins/darkMode.js';
 import ColorConfig from '../plugins/colorConfig.js';
 import Header from '../plugins/header.js';
 import ProgressBar from '../plugins/ProgressBar.js';
-import Score from '../plugins/score.js';
+import Overview from '../plugins/overview.js';
 import SpillTheBeans from '../plugins/spillTheBeans.js';
 import LetterCount from '../plugins/letterCount.js';
 import FirstLetter from '../plugins/firstLetter.js';
@@ -23,6 +23,7 @@ import Styles from '../plugins/styles.js';
 import Menu from '../plugins/menu.js';
 import Grid from '../plugins/grid.js';
 import NytShortcuts from '../plugins/nytShortcuts.js';
+import ShortcutScreen from '../plugins/shortcutScreen.js';
 
 /**
  * Plugins
@@ -32,7 +33,7 @@ import NytShortcuts from '../plugins/nytShortcuts.js';
 const getPlugins = () => {
     return {
         Header,
-        Score,
+        Overview,
         LetterCount,
         FirstLetter,
         FirstTwoLetters,
@@ -48,6 +49,7 @@ const getPlugins = () => {
         Menu,
         Milestones,
         Community,
+        ShortcutScreen,
         TodaysAnswers,
         NytShortcuts
     }

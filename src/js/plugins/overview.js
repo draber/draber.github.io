@@ -8,12 +8,12 @@ import data from "../modules/data.js";
 import DetailsPane from "./detailsPane.js";
 
 /**
- * Score so far plugin
+ * Overview so far plugin
  *
  * @param {App} app
- * @returns {Plugin} Score
+ * @returns {Plugin} Overview
  */
-class Score extends DetailsPane {
+class Overview extends DetailsPane {
     /**
      * Build table data set
      * @returns {Array}
@@ -28,16 +28,16 @@ class Score extends DetailsPane {
     }
 
     /**
-     * Score constructor
+     * Overview constructor
      * @param {App} app
      */
     constructor(app) {
         super(app, {
-            title: "Score",
+            title: "Overview",
             description: "The number of words and points and how many have been found",
             shortcuts: [
                 {
-                    combo: "Shift+Alt+X",
+                    combo: "Shift+Alt+O",
                     method: "togglePane",
                 },
             ],
@@ -46,4 +46,4 @@ class Score extends DetailsPane {
     }
 }
 
-export default Score;
+export default Overview;

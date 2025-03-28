@@ -22,9 +22,9 @@ class SpillTheBeans extends Plugin {
      */
     run(evt) {
         let emoji = "🙂";
-        if (!evt.detail) {
+        if (!evt.detail) {            
             emoji = "😐";
-        } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail)).length) {
+        } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail.textContent.trim())).length) {
             emoji = "🙁";
         }
         this.ui.textContent = emoji;
@@ -65,7 +65,7 @@ class SpillTheBeans extends Plugin {
 
         this.shortcuts = [
             {
-                combo: "Shift+Alt+B",
+                combo: "Shift+Alt+E",
                 method: 'toggle',
             },
         ];

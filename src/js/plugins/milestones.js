@@ -18,10 +18,14 @@ import fn from 'fancy-node';
 class YourProgress extends TablePane {
 
     /**
-     * Display pop-up
+     * Toggle pop-up
      * @returns {YourProgress}
      */
-    display() {
+    togglePopup() {
+        if(this.popup.isOpen) {
+            this.popup.toggle(false);
+            return this;
+        }
         const points = data.getPoints('foundTerms');
         const max = data.getPoints('answers');
         const next = this.getPointsToNextTier();
@@ -32,7 +36,7 @@ class YourProgress extends TablePane {
         if (next) {
             content = fn.span({
                 content: [
-                    'You are currently at ',
+                    'Progress: ',
                     fn.b({
                         content: points + '/' + max
                     }),
@@ -40,11 +44,11 @@ class YourProgress extends TablePane {
                     fn.b({
                         content: Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100) + '%'
                     }),
-                    '. You need ',
+                    '. Only ',
                     fn.b({
                         content: next - points
                     }),
-                    ' more points to go to the next level.',
+                    ' more points to your next milestone!',
                 ]
             })
         } else {
@@ -107,6 +111,7 @@ class YourProgress extends TablePane {
         const remainders = this.getData().filter(entry => entry[1] > data.getPoints('foundTerms')).shift();
         return remainders ? remainders[1] : null;
     }
+    
 
     /**
      * Rankings constructor
@@ -132,7 +137,7 @@ class YourProgress extends TablePane {
 
         this.shortcuts = [{
             combo: "Shift+Alt+M",
-            method: "display"
+            method: "togglePopup"
         }]
 
     }
