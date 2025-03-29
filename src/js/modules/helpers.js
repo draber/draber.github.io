@@ -24,21 +24,17 @@ export const getPopupCloser = (app) => {
     return false;
 };
 
+
 export const manualDelete = () => {
-    const visible = document.querySelector(".sb-hive-input > .sb-hive-input-content");
-    const hidden = document.querySelector(".sb-hive-hidden-input .sb-hive-input-content");
+    const el = document.querySelector(".hive-action__delete");
+    if (!el) return;
 
-    if (!visible || !hidden) return;
+    el.classList.add("sba-no-feedback");
+    const evtOpts = { bubbles: true, cancelable: true };
 
-    const removeLastSpan = (el) => {
-        if (el.lastElementChild && el.lastElementChild.tagName === "SPAN") {
-            el.removeChild(el.lastElementChild);
-        }
-        if (el.children.length === 0) {
-            el.classList.remove("non-empty");
-        }
-    };
-
-    removeLastSpan(visible);
-    removeLastSpan(hidden);
+    el.dispatchEvent(new Event("touchstart", evtOpts));
+    setTimeout(() => {
+        el.dispatchEvent(new Event("touchend", evtOpts));
+        el.classList.remove("sba-no-feedback");
+    }, 50);
 };

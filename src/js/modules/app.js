@@ -147,9 +147,8 @@ class App extends Widget {
             });
 
             this.on(prefix("newInput"), (event) => {
-                const lastLetterNode = event.detail;
                 if (this._lastShortcutEvent) {
-                    shortcutRegistry.handleShortcut(this._lastShortcutEvent, lastLetterNode);
+                    shortcutRegistry.handleShortcut(this._lastShortcutEvent);
                     this._lastShortcutEvent = null;
                 }
             });

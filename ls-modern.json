@@ -1,149 +1,150 @@
 {
-    "version": "4.5.0",
+    "version": "5.0.0",
     "oldVersion": "4.4.1",
     "overview": {
-        "shortcuts": [
-            {
-                "label": "Overview",
-                "enabled": true,
-                "human": "Alt+Shift+O"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyO": {
+          "label": "Overview",
+          "enabled": true,
+          "human": "Alt+Shift+O"
+        }
+      }
     },
     "letterCount": {
-        "shortcuts": [
-            {
-                "label": "Letter count",
-                "enabled": true,
-                "human": "Alt+Shift+L"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyL": {
+          "label": "Letter count",
+          "enabled": true,
+          "human": "Alt+Shift+L"
+        }
+      }
     },
     "firstLetter": {
-        "shortcuts": [
-            {
-                "label": "First letter",
-                "enabled": true,
-                "human": "Alt+Shift+F"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyF": {
+          "label": "First letter",
+          "enabled": true,
+          "human": "Alt+Shift+F"
+        }
+      }
     },
     "firstTwoLetters": {
-        "shortcuts": [
-            {
-                "label": "First two letters",
-                "enabled": true,
-                "human": "Alt+Shift+2"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+Digit2": {
+          "label": "First two letters",
+          "enabled": true,
+          "human": "Alt+Shift+2"
+        }
+      }
     },
     "pangrams": {
-        "shortcuts": [
-            {
-                "label": "Pangrams",
-                "enabled": true,
-                "human": "Alt+Shift+P"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyP": {
+          "label": "Pangrams",
+          "enabled": true,
+          "human": "Alt+Shift+P"
+        }
+      }
     },
     "grid": {
-        "shortcuts": [
-            {
-                "label": "Grid",
-                "enabled": true,
-                "human": "Alt+Shift+G"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyG": {
+          "label": "Grid",
+          "enabled": true,
+          "human": "Alt+Shift+G"
+        }
+      }
     },
     "spillTheBeans": {
-        "shortcuts": [
-            {
-                "label": "Spill the beans",
-                "enabled": true,
-                "human": "Alt+Shift+E"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyE": {
+          "label": "Spill the beans",
+          "enabled": true,
+          "human": "Alt+Shift+E"
+        }
+      }
     },
     "darkMode": {
-        "enabled": true,
-        "shortcuts": [
-            {
-                "label": "Dark Mode",
-                "enabled": true,
-                "human": "Alt+Shift+D"
-            }
-        ]
+      "enabled": true,
+      "shortcuts": {
+        "Alt+Shift+KeyD": {
+          "label": "Dark Mode",
+          "enabled": true,
+          "human": "Alt+Shift+D"
+        }
+      }
     },
     "darkModeColors": {
-        "enabled": true,
-        "hue": 210,
-        "sat": 25,
-        "shortcuts": [
-            {
-                "label": "Dark Mode Colors",
-                "enabled": true,
-                "human": "Alt+Shift+K"
-            }
-        ]
+      "enabled": true,
+      "hue": 210,
+      "sat": 25,
+      "shortcuts": {
+        "Alt+Shift+KeyK": {
+          "label": "Dark Mode Colors",
+          "enabled": true,
+          "human": "Alt+Shift+K"
+        }
+      }
     },
     "milestones": {
-        "shortcuts": [
-            {
-                "label": "Milestones",
-                "enabled": true,
-                "human": "Alt+Shift+M"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyM": {
+          "label": "Milestones",
+          "enabled": true,
+          "human": "Alt+Shift+M"
+        }
+      }
     },
     "community": {
-        "shortcuts": [
-            {
-                "label": "Community",
-                "enabled": true,
-                "human": "Alt+Shift+C"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyC": {
+          "label": "Community",
+          "enabled": true,
+          "human": "Alt+Shift+C"
+        }
+      }
     },
     "shortcuts": {
-        "shortcuts": [
-            {
-                "label": "Shortcuts",
-                "enabled": true,
-                "human": "Alt+Shift+S"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyS": {
+          "label": "Shortcuts",
+          "enabled": true,
+          "human": "Alt+Shift+S"
+        }
+      }
     },
     "todaysAnswers": {
-        "shortcuts": [
-            {
-                "label": "Today’s Answers",
-                "enabled": true,
-                "human": "Alt+Shift+T"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyT": {
+          "label": "Today’s Answers",
+          "enabled": true,
+          "human": "Alt+Shift+T"
+        }
+      }
     },
     "nytShortcuts": {
-        "shortcuts": [
-            {
-                "label": "Yesterday's answers",
-                "enabled": true,
-                "human": "Alt+Shift+Y"
-            },
-            {
-                "label": "Statistics",
-                "enabled": true,
-                "human": "Alt+Shift+I"
-            }
-        ]
+      "shortcuts": {
+        "Alt+Shift+KeyY": {
+          "label": "Yesterday's answers",
+          "enabled": true,
+          "human": "Alt+Shift+Y"
+        },
+        "Alt+Shift+KeyI": {
+          "label": "Statistics",
+          "enabled": true,
+          "human": "Alt+Shift+I"
+        }
+      }
     },
     "sbaApp": {
-        "enabled": true,
-        "shortcuts": [
-            {
-                "label": "Assistant Panel",
-                "enabled": true,
-                "human": "Alt+Shift+A"
-            }
-        ]
+      "enabled": true,
+      "shortcuts": {
+        "Alt+Shift+KeyA": {
+          "label": "Assistant Panel",
+          "enabled": true,
+          "human": "Alt+Shift+A"
+        }
+      }
     }
-}
+  }
+  

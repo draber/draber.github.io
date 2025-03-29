@@ -47,6 +47,10 @@ body {
         .hive-cell .cell-fill {
             fill: var(--area-bg-color);
         }
+
+        .sba-color-selector .hive .hive-cell .cell-letter {
+            fill: var(--text-color);
+        }
     }
 
     &[data-sba-theme="dark"] {
@@ -71,7 +75,8 @@ body {
             filter: invert(1);
         }
 
-        &.pz-mobile, &.pz-desktop {
+        &.pz-mobile,
+        &.pz-desktop {
             .pz-toolbar-button,
             .pz-dropdown__button {
                 background-color: transparent !important;

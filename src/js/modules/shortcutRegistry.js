@@ -8,8 +8,17 @@
 import { getPopupCloser, manualDelete } from "./helpers";
 import settings from "./settings";
 
+/** 
+ * Registry of all registered shortcuts.
+ * The key is the normalized combo (e.g., "Alt+Shift+KeyO"), 
+ * and the value is the shortcut object.
+ */
 let registry = new Map();
 
+/**
+ * Maps various modifier key names to a canonical form and human-readable label.
+ * This allows flexible input like "ctrl" or "control", which both normalize to "Control".
+ */
 const modifierMap = new Map([
     ["ctrl", { canonical: "Control", human: "Ctrl" }],
     ["control", { canonical: "Control", human: "Ctrl" }],
@@ -20,10 +29,26 @@ const modifierMap = new Map([
     ["shift", { canonical: "Shift", human: "Shift" }],
 ]);
 
+/**
+ * Canonical order of modifier keys, used when normalizing shortcut combos
+ * to ensure consistent sorting.
+ */
 const order = Array.from(new Set(Array.from(modifierMap.values()).map((m) => m.canonical)));
 
+/**
+ * Tracks the single-character keys (A-Z) used in shortcuts,
+ * grouped by origin (e.g. "sba" or "nyt"). Used to determine 
+ * if a manual delete is needed after firing the shortcut.
+ */
 const characterKeys = { nyt: [], sba: [] };
 
+/**
+ * Extract and register the letter key used in a shortcut,
+ * only if it’s a single letter A-Z. Used for deciding
+ * whether it needs post-shortcut deletion.
+ * 
+ * @param {Object} shortcut - The shortcut object with `.combo` and optional `.origin`
+ */
 const registerCharacterKey = (shortcut) => {
     const key = getCharacterKey(shortcut.combo);
     if (!key || !/^[A-Z]$/.test(key)) {
@@ -32,10 +57,18 @@ const registerCharacterKey = (shortcut) => {
     characterKeys[shortcut.origin || "sba"].push(key);
 };
 
+/**
+ * Extracts the main character key (letter or digit) from a combo string.
+ * E.g., "Alt+Shift+KeyA" → "A", "Ctrl+Digit2" → "2"
+ * 
+ * @param {String} combo
+ * @returns {String} The character part of the combo in uppercase.
+ */
 const getCharacterKey = (combo) => {
     const match = combo.match(/(?:^|\+)(?:Key|Digit)?([A-Za-z0-9])(?:\+|$)/i);
     return match ? match[1].toUpperCase() : "";
 };
+
 
 /**
  * Build a more human readable form of combo
@@ -52,14 +85,39 @@ const comboToHuman = (combo) => {
     );
 };
 
+/**
+ * Determines whether a manually typed character needs to be deleted
+ * after a shortcut is triggered. This is necessary when the letter
+ * would otherwise be inserted into the game's input field.
+ *
+ * Logic:
+ * - If a popup is open, assume we're dealing with an SBA shortcut (not NYT).
+ * - Check whether the key is one of the registered SBA character keys.
+ *
+ * @param {String|Array|Object} combo - A shortcut combo (e.g., "Alt+Shift+KeyO")
+ * @param {App} app - Reference to the main app, needed to detect popup state
+ * @returns {Boolean} Whether the key requires deletion from the input field
+ */
 const requiresDeletion = (combo, app) => {
     const key = getCharacterKey(normalizeCombo(combo));
     let pool = getPopupCloser(app) ? characterKeys.sba : characterKeys.sba.join(characterKeys.nyt);
     return key && pool.includes(key);
 };
 
+/**
+ * Checks whether the given object is a valid shortcut config.
+ *
+ * A valid shortcut must be an object with:
+ * - a `combo` string (e.g. "Alt+Shift+O")
+ * - a `callback` function to invoke when the shortcut is triggered
+ *
+ * @param {Object} obj
+ * @returns {Boolean} True if the object is a valid shortcut
+ */
 const isValidShortcut = (obj) =>
-    obj && typeof obj === "object" && typeof obj.combo === "string" && typeof obj.callback === "function";
+    obj && typeof obj === "object" &&
+    typeof obj.combo === "string" &&
+    typeof obj.callback === "function";
 
 /**
  * Normalize a key combination
@@ -123,7 +181,7 @@ const getSbaShortcutEntry = (event) => get(normalizeCombo(event));
  * @param {Event} event
  * @returns {boolean}
  */
-const handleShortcut = (event, lastLetterNode) => {
+const handleShortcut = (event) => {
     const entry = getSbaShortcutEntry(event);
     if (!entry) {
         return false;
@@ -133,7 +191,7 @@ const handleShortcut = (event, lastLetterNode) => {
         entry.callback();
         return true;
     }
-    manualDelete(lastLetterNode);
+    manualDelete();
     entry.callback();
     return true;
 };
@@ -149,7 +207,8 @@ const add = (shortcut) => {
     }
 
     shortcut.combo = normalizeCombo(shortcut);
-    const overrides = settings.get(`shortcuts.${shortcut.module}.${shortcut.combo}`) || {};
+    const overrides = settings.get(`options.shortcuts.${shortcut.module}.${shortcut.combo}`) || {};
+    console.log(overrides)
     Object.assign(shortcut, { enabled: true }, overrides, {
         human: comboToHuman(shortcut.combo),
     });

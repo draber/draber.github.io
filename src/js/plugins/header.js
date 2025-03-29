@@ -7,8 +7,6 @@
 import settings from "../modules/settings.js";
 import Plugin from "../modules/plugin.js";
 import fn from "fancy-node";
-import { prefix } from "../modules/string.js";
-
 /**
  * Header plugin
  *

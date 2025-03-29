@@ -19,12 +19,15 @@ import settings from "../modules/settings.js";
  */
 class ColorConfig extends Plugin {
     /**
-     * Set hue and saturation of the dark mode theme as a body style
-     * @param state
+     * Applies the hue and saturation parameters of the dark mode theme
+     * as CSS custom properties to all elements with the `data-sba-theme` attribute.
+     * If no parameters are provided, the currently stored settings will be used.
+     *
+     * @param {{ hue: number, sat: number }} [parameters] - Object containing hue and saturation values.
+     * @returns {this} Returns the current instance for method chaining.
      */
     toggleColorParameters(parameters) {
         parameters = parameters || this.getColorParameters();
-        console.log('toggleColorParameters',settings.get(`options.${this.key}`))
         fn.$$("[data-sba-theme]").forEach((element) => {
             element.style.setProperty("--dhue", parameters.hue);
             element.style.setProperty("--dsat", parameters.sat + "%");
@@ -32,6 +35,11 @@ class ColorConfig extends Plugin {
         return this.setColorParameters(parameters);
     }
 
+    /**
+     * Retrieves the currently stored hue and saturation parameters from settings.
+     *
+     * @returns {{ hue: number, sat: number }} The current color parameters.
+     */
     getColorParameters() {
         return {
             hue: settings.get(`options.${this.key}.hue`) || 0,
@@ -39,15 +47,20 @@ class ColorConfig extends Plugin {
         };
     }
 
+    /**
+     * Stores the provided hue and saturation parameters into the settings.
+     *
+     * @param {{ hue: number, sat: number }} parameters - The color parameters to store.
+     * @returns {this} Returns the current instance for method chaining.
+     */
     setColorParameters(parameters) {
-        settings.set(`options.${this.key}`, parameters);
-        console.log('setColorParameters', settings.set(`options.${this.key}`))
+        const merged = { ...settings.get(`options.${this.key}`), ...parameters };
+        settings.set(`options.${this.key}`, merged);
         return this;
     }
 
     /**
      * Toggle pop-up
-     * @param state
      * @returns {ColorConfig}
      */
     togglePopup() {
@@ -155,11 +168,12 @@ class ColorConfig extends Plugin {
             );
         this.popup.ui.dataset[prefix("theme")] = "dark";
 
-        this.shortcuts = [{
-            combo: "Shift+Alt+K",
-            method: "togglePopup"
-        }]
-
+        this.shortcuts = [
+            {
+                combo: "Shift+Alt+K",
+                method: "togglePopup",
+            },
+        ];
 
         this.toggleColorParameters();
     }
