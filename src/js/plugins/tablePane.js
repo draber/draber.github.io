@@ -96,7 +96,8 @@ class TablePane extends Plugin {
         defaultState = true,
         cssMarkers = {},
         hasHeadRow = true,
-        hasHeadCol = true
+        hasHeadCol = true,
+        cssClassNames = []
     } = {}) {
 
         super(app, title, description, {
@@ -112,7 +113,7 @@ class TablePane extends Plugin {
         this.hasHeadRow = hasHeadRow;
         this.hasHeadCol = hasHeadCol;
         this.pane = fn.table({
-            classNames: ['pane', prefix('dataPane', 'd')]
+            classNames: ['pane', prefix('dataPane', 'd')].concat(cssClassNames)
         });
     }
 }

@@ -5,13 +5,12 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-import TablePane from './tablePane.js';
-import Popup from './popup.js';
-import {
-    prefix
-} from '../modules/string.js';
-import gridIcon from '../assets/grid.svg';
-import fn from 'fancy-node';
+import TablePane from "./tablePane.js";
+import Popup from "./popup.js";
+import { prefix } from "../modules/string.js";
+import gridIcon from "../assets/grid.svg";
+import fn from "fancy-node";
+import shortcutRegistry from "../modules/shortcutRegistry.js";
 
 /**
  * Grid plugin
@@ -20,13 +19,12 @@ import fn from 'fancy-node';
  * @returns {Plugin} Grid
  */
 class ShortcutScreen extends TablePane {
-
     /**
-     * 
-     * 
+     *
+     *
      * For now just a copied version of the Grid plugin
-     * 
-     * 
+     *
+     *
      */
 
     /**
@@ -34,14 +32,11 @@ class ShortcutScreen extends TablePane {
      * @returns {ShortcutScreen}
      */
     togglePopup() {
-        if(this.popup.isOpen) {
+        if (this.popup.isOpen) {
             this.popup.toggle(false);
             return this;
         }
-        this.popup
-            .setContent('subtitle', this.description)
-            .setContent('body', this.getPane())
-            .toggle(true);
+        this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
 
         return this;
     }
@@ -53,21 +48,21 @@ class ShortcutScreen extends TablePane {
      */
     run(evt) {
         super.run(evt);
-        const rows = fn.$$('tr', this.pane);
+        const rows = fn.$$("tr", this.pane);
         const rCnt = rows.length;
         rows.forEach((row, rInd) => {
             if (rCnt === rInd + 1) {
                 return false;
             }
-            const cells = fn.$$('td', row);
+            const cells = fn.$$("td", row);
             const cCnt = cells.length;
             cells.forEach((cell, cInd) => {
-                const cellArr = cell.textContent.trim().split('/');
+                const cellArr = cell.textContent.trim().split("/");
                 if (cInd < cCnt - 1 && cellArr.length === 2 && cellArr[0] === cellArr[1]) {
-                    cell.classList.add(prefix('completed', 'd'));
+                    cell.classList.add(prefix("completed", "d"));
                 }
-            })
-        })
+            });
+        });
 
         return this;
     }
@@ -77,22 +72,11 @@ class ShortcutScreen extends TablePane {
      * @returns {Array}
      */
     getData() {
-        const rows = [
-            ['Plugin', 'Action', 'Shortcut', 'Enabled']
-        ];
-    
-        // for (const [plugin, config] of Object.entries(tmpSettings)) {
-        //     const shortcuts = config.shortcuts || [];
-        //     shortcuts.forEach(({ method, combo, enabled }) => {
-        //         rows.push([
-        //             plugin,
-        //             method,
-        //             combo.replace(/^Alt\+Shift\+/, ''), // for clarity
-        //             enabled ? '✓' : ''
-        //         ]);
-        //     });
-        // }
-    
+        const rows = [["Toggle", "Shortcut", "Enabled"]];
+        shortcutRegistry.getRegistry().forEach((shortcut) => {
+            rows.push([shortcut.label, shortcut.human, shortcut.enabled ? "✔" : ""]);
+        });
+
         return rows;
     }
 
@@ -101,29 +85,31 @@ class ShortcutScreen extends TablePane {
      * @param {App} app
      */
     constructor(app) {
-
-        super(app, 'Shortcuts', 'SBA Shortcut Commands');
-
-        this.popup = new Popup(this.app, this.key)
-            .setContent('title', this.title);
-
-        this.menuAction = 'popup';
-        this.menuIcon = 'null';
-        this.panelBtn = fn.span({
-            classNames: ['sba-tool-btn'],
-            events: {
-                pointerup: () => this.togglePopup()
-            },
-            attributes:{
-                title: `Show ${this.title}`
-            },
-            content: gridIcon
+        super(app, "Shortcuts", "SBA Shortcut Commands", {
+            cssClassNames: ['th-no-upper']
         });
 
-        this.shortcuts = [{
-            combo: "Shift+Alt+S",
-            method: "togglePopup"
-        }];
+        this.popup = new Popup(this.app, this.key).setContent("title", this.title);
+
+        this.menuAction = "popup";
+        this.menuIcon = "null";
+        this.panelBtn = fn.span({
+            classNames: ["sba-tool-btn"],
+            events: {
+                pointerup: () => this.togglePopup(),
+            },
+            attributes: {
+                title: `Show ${this.title}`,
+            },
+            content: gridIcon,
+        });
+
+        this.shortcuts = [
+            {
+                combo: "Shift+Alt+S",
+                method: "togglePopup",
+            },
+        ];
     }
 }
 

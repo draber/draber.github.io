@@ -53,7 +53,7 @@ class ProgressBar extends Plugin {
         })
 
         app.on(prefix('pluginsReady'), evt => {
-            if (this.app.plugins.has('yourProgress')) {
+            if (this.app.plugins.has('milestones')) {
                 this.ui.style.cursor = 'pointer';
             }
         })

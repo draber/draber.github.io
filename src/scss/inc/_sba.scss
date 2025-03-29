@@ -6,7 +6,6 @@
  */
 @use "sass:math";
 
-
 .hive-action {
     &.push-active {
         &.sba-no-feedback {
@@ -166,9 +165,11 @@
     }
 
     .sba-data-pane {
-        margin-left: 5px;
-        max-width: 300px;
-        border: none;
+        tbody {
+            th {
+                text-align: start;
+            }
+        }
 
         tr {
             &.sba-completed {
@@ -178,9 +179,9 @@
             }
 
             td {
-                border: none;
-                text-align: left;
-                line-height: 1.8;
+                // border: none;
+                // text-align: left;
+                // line-height: 1.8;
 
                 &:nth-child(n + 2) {
                     text-align: right;
@@ -188,12 +189,14 @@
                 }
 
                 &:nth-child(2) {
-                    &::after {
-                        content: " pts.";
-                    }
+                    max-width: 100px;
+                    // &::after {
+                    //     content: " pts.";
+                    // }
                 }
 
                 &:last-child {
+                    max-width: 100px;
                     &::after {
                         content: "%";
                     }
@@ -497,13 +500,61 @@
     }
 }
 
+.sb-modal-wrapper {
+    table {
+        border-top: 1px solid var(--border-color);
+    }
+
+    :is(td, th) {
+        padding-inline: 8px;
+    }
+
+    .th-no-upper {
+        th {
+            text-transform: none;
+        }
+    }
+
+    .table-no-forced-width {
+        width: auto;
+        table-layout: auto;
+        :is(td, th) {
+            width: auto;
+        }
+    }
+}
+
+[data-ui="shortcuts"] {
+    thead {
+        th {
+            font-weight: bold;
+            &:first-child {
+                text-align: start;
+            }
+        }
+    }
+    tbody {
+        tr {
+            th {
+                text-align: start;
+            }
+            td {
+                &:last-child {
+                    color: color-mix(in srgb, var(--highlight-bg-color) 90%, black);
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
+
 [data-ui="grid"] {
     table {
         border-top: 1px solid var(--border-color);
         margin-left: -20px;
         width: calc(100% + 40px);
     }
-
     tbody {
         tr {
             &:last-child {

@@ -129,8 +129,8 @@ class App extends Widget {
 
             this.add();
             this.domSet("active", true);
-            this.registerPlugins();
             shortcutRegistry.add(this.shortcut);
+            this.registerPlugins();
             this.trigger(prefix("refreshUi"));
             document.dispatchEvent(new Event(prefix("ready")));
 

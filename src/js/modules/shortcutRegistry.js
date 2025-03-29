@@ -196,6 +196,14 @@ const handleShortcut = (event) => {
     return true;
 };
 
+const saveShortcut = combo => {
+    const shortcut = get(combo);
+    if(!shortcut){
+        return false;
+    }
+    settings.set(`options.${shortcut.module}.shortcuts.${shortcut.combo}`, shortcut);
+}
+
 /**
  * Register a new shortcut
  * @param {Object} shortcut
@@ -207,8 +215,7 @@ const add = (shortcut) => {
     }
 
     shortcut.combo = normalizeCombo(shortcut);
-    const overrides = settings.get(`options.shortcuts.${shortcut.module}.${shortcut.combo}`) || {};
-    console.log(overrides)
+    const overrides = settings.get(`options.${shortcut.module}.shortcuts.${shortcut.combo}`) || {};
     Object.assign(shortcut, { enabled: true }, overrides, {
         human: comboToHuman(shortcut.combo),
     });
@@ -226,6 +233,7 @@ const add = (shortcut) => {
     delete shortcut.origin;
 
     registry.set(shortcut.combo, shortcut);
+    saveShortcut(shortcut.combo);
     return true;
 };
 
@@ -236,10 +244,14 @@ const getRegistry = ()=> {
 /**
  * Retrieve a callback by key combination
  * @param {String|Array|Event} input
- * @returns
+ * @returns {Object|Boolean}
  */
 const get = (input) => {
-    return registry.get(normalizeCombo(input));
+    const combo = normalizeCombo(input);
+    if(!registry.has(combo)){
+        return false;
+    }
+    return registry.get(combo);
 };
 
 export default {

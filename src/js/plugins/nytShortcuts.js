@@ -57,7 +57,7 @@ class NytShortcuts extends Plugin {
         };
 
         this.shortcuts = [
-            { combo: "Shift+Alt+Y", method: "toggleYesterday", label: `Yesterday's answers` },
+            { combo: "Shift+Alt+Y", method: "toggleYesterday", label: `Yesterday's Answers` },
             { combo: "Shift+Alt+I", method: "toggleStats", label: `Statistics` },
         ].map((shortcut) => ({ ...shortcut, origin: "nyt" }));
     }

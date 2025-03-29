@@ -1,0 +1,136 @@
+Spelling Bee Assistant is a handy add-on for the New York Times’ beloved word puzzle, Spelling Bee. Packed with features, it’s designed to enhance your experience without taking away the joy of the game.
+
+Track your progress, uncover what challenges lie ahead, and—if you choose—get a hint or two to keep your momentum going. And when the ideas run dry, you can reveal today’s answers on your schedule—no more waiting for tomorrow!
+
+The Spelling Bee Assistant adds a new layer of fun to this already excellent game, all without spoiling the magic. Promise!
+
+
+
+
+Your "Installation" section is clear and functional, but it could benefit from a touch of polish to align with the engaging, community-focused tone you're aiming for. Here's a revised version:
+
+Installation
+By installing this software, you agree to the terms of the GNU General Public License v3.0.
+
+Browser Extension
+The browser extension integrates the assistant seamlessly with the Spelling Bee website and is available for Chrome and Edge.
+
+Alternatively, you can use a bookmarklet to launch the assistant. To set it up, simply drag the amber badge to your browser's bookmarks bar.
+
+
+Can I install Spelling Bee Assistant on a mobile device?
+Curious about using the Assistant on your phone or tablet? Find out what’s possible here.
+
+Which data does Spelling Bee Assistant access?
+Transparency matters. Here’s everything you need to know about what the Assistant accesses (and what it doesn’t).
+
+
+The Main Panel
+The main panel is where you can track your progress and see how you’re doing at a glance. Each tool in the panel gives you a clear breakdown of your current status:
+
+✓ shows how many items you’ve found so far.
+? reveals how many are still hidden.
+∑ sums it all up for a complete overview.
+Here’s what the panel displays:
+
+Score: Tracks your overall progress, including both words and points.
+Letter Count: Groups words by their length.
+First Letter: Groups words by their first letter.
+First Two Letters: Works similarly but is, of course, a bit more revealing.
+Pangrams: Displays the number of pangrams you’ve discovered.
+Pro tip: Greyed-out lines mean you’ve already found all the words in that row—great job!
+
+On desktop, click the (icon here) to quickly pull up the Grid.
+
+The Assistant Menu
+Show Assistant: Toggle the main panel on or off.
+Score, Letter Count, First Letter, First Two Letters, and Pangrams: Show or hide these specific sections of the panel.
+The Progress Bar: A visual indicator of your overall progress.
+The Grid: A matrix that groups words by their first letter and word length.
+Spill the Beans: Validates your answers as you type.
+Dark Mode and Dark Mode Colors: Customize your experience with a configurable dark color scheme.
+Your Progress: A detailed breakdown of what you’ve accomplished so far.
+Community: Connect with like-minded hiveminds.
+Today’s Answers: Your last resort for when you’re truly stumped.
+Buy Me a Coffee: A simple way to show your appreciation.
+
+The Progress Bar
+The Progress Bar shows your advancement based on the points you’ve earned so far. Click on it to open the more detailed Your Progress screen.
+
+Spill the Beans
+As you type, the Spill the Beans emoji gives instant feedback, letting you know if you’re on the right track or barking up the wrong tree.
+
+Dark Mode
+If you prefer darker interfaces, SBA’s Dark Mode is for you… Want a splash of color instead?
+
+Dark Mode Color Scheme
+The Dark Mode Color Scheme lets you choose from twelve vibrant options to customize your look…
+
+Your Progress
+Get an overview of the different ranks and see how far you’ve come on your journey. You can also access the Your Progress screen by clicking the Progress Bar.
+
+The Grid
+Letter Count and First Letter from the main panel offer a quick overview of your progress. The Grid screen takes it a step further, combining both into a convenient matrix.
+
+Community
+Bingo, Perfect Pangram, GN4L—feeling lost? The New York Times provides a glossary of common terms that Spelling Bee fans use to describe their favorite game. Some refer to game features, while others are fun, unofficial challenges.
+
+So, where’s the community? There’s more than one way to connect with fellow players, and the Assistant will guide you to them.
+
+Today’s Answers
+When you’ve run out of ideas but can’t wait to see the solution, the Today’s Answers screen is here to satisfy your curiosity!
+
+All words are linked to their respective terms in Google—maybe this will spark some inspiration for next time!
+
+Mobile Compatibility
+Spelling Bee Assistant features responsive design and has been tested across various screen sizes. If your system meets the requirements, it should work seamlessly on mobile.
+
+System Requirements
+Spelling Bee Assistant works best with a modern web browser in a recent version. Below is a chart of Browser/OS combinations that have been tested and are known to work in typical setups:
+
+Mobile Installation
+Follow the steps below to install Spelling Bee Assistant on your mobile device.
+
+Android: Use the Extension with Kiwi
+Download the Kiwi Browser from the Google Play Store.
+Open Kiwi and navigate to the Spelling Bee Assistant page on the Chrome Web Store.
+Tap Add to Chrome to install the extension.
+Review the notice that appears; if you agree, confirm by tapping OK.
+The extension will now enhance your gameplay whenever you visit the Spelling Bee game in Kiwi.
+iOS/iPadOS: Use a Shortcut on Safari
+(Special thanks to Alex for contributing and hosting the shortcut!)
+
+Open the Settings app. Navigate to Shortcuts > Advanced and enable Allow Running Scripts.
+Access the shortcut by opening this link. Tap Get Shortcut and then Add.
+Open Spelling Bee in Safari, go to the Share menu, and run SB Assistant.
+The first time you run it, a security warning will appear. If you agree, tap Allow.
+To make it easily accessible, pin SB Assistant to the top of your Share Sheet:
+Tap Edit Actions…
+Select the green plus next to the SB Assistant action.
+
+Doesn’t it spoil the game?
+Not at all! Spelling Bee Assistant is crafted to stay subtle and unobtrusive. User feedback—and plenty of gameplay testing—shows this strikes the right balance.
+
+The challenge and fun of the game remain the same. The Assistant simply gives you a set of helpful tools for those moments when you’re stuck in a corner.
+
+What is a bookmarklet?
+Bookmarklets are clever little tools that work like bookmarks but include small pieces of code to enhance how a website functions. You’ll find them in your browser’s bookmarks menu, just like regular bookmarks.
+
+One drawback: bookmarklets can’t easily be assigned a custom icon, which is why they may appear a bit plain.
+
+I discovered a bug | I’d like to give feedback
+You can report bugs or suggest features on GitHub. Please remember, this is a fun weekend project, and I aim to keep it light. While I address issues occasionally, I can’t make any promises.
+
+You can also connect with me on r/NYTSpellingBee, where I regularly share updates under the handle spellingBeeAssistant.
+
+Is the NYT behind this, or are you affiliated with the NYT?
+No, I have no affiliation with the New York Times. Spelling Bee Assistant is an independent project.
+
+
+Your Privacy
+This website does not use any technology to collect personally identifiable information about its visitors. Both the site and the associated bookmarklet are hosted on GitHub Pages. For details on what data GitHub Pages collects, please refer to their privacy policy. I do not have access to any data collected by GitHub.
+
+Browser Extension Privacy
+When installing the extension from a browser add-on store, you might see a message like, "This extension can read and change your data on www.nytimes.com [...]." This is standard for extensions and ensures functionality. Rest assured, the extension is strictly designed to read data from the Spelling Bee game—it does not access, modify, or submit any personal information.
+
+Most add-on stores provide basic download statistics, such as aggregated numbers by country. These statistics do not include any personally identifiable information.

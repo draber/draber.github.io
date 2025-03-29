@@ -14,7 +14,7 @@
     "oldVersion": "4.4.1",
     "spillTheBeans": false,
     "firstLetter": true,
-    "darkMode": false,
+    "darkMode": true,
     "milestones": true,
     "shortcuts": true
 }
