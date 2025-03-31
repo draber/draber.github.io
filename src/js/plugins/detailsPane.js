@@ -6,6 +6,7 @@
  */
 import TablePane from "./tablePane.js";
 import fn from "fancy-node";
+import { prefix } from "../modules/string.js";
 
 /**
  * DetailsPane plugin
@@ -36,6 +37,7 @@ class DetailsPane extends TablePane {
             hasHeadCol = true,
             hasHeadRow = true,
             cssMarkers = {},
+            classNames = ["th-upper", "table-full-width", "equal-cols", "small-txt"].map((name) => prefix(name, "d")),
             open = false,
         }
     ) {
@@ -43,6 +45,7 @@ class DetailsPane extends TablePane {
             canChangeState,
             defaultState,
             cssMarkers,
+            classNames,
             hasHeadRow,
             hasHeadCol,
         });

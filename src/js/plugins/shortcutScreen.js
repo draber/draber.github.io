@@ -20,14 +20,6 @@ import shortcutRegistry from "../modules/shortcutRegistry.js";
  */
 class ShortcutScreen extends TablePane {
     /**
-     *
-     *
-     * For now just a copied version of the Grid plugin
-     *
-     *
-     */
-
-    /**
      * Toggle pop-up
      * @returns {ShortcutScreen}
      */
@@ -48,20 +40,9 @@ class ShortcutScreen extends TablePane {
      */
     run(evt) {
         super.run(evt);
-        const rows = fn.$$("tr", this.pane);
-        const rCnt = rows.length;
-        rows.forEach((row, rInd) => {
-            if (rCnt === rInd + 1) {
-                return false;
-            }
-            const cells = fn.$$("td", row);
-            const cCnt = cells.length;
-            cells.forEach((cell, cInd) => {
-                const cellArr = cell.textContent.trim().split("/");
-                if (cInd < cCnt - 1 && cellArr.length === 2 && cellArr[0] === cellArr[1]) {
-                    cell.classList.add(prefix("completed", "d"));
-                }
-            });
+
+        fn.$$("tbody tr", this.pane).forEach((row) => {
+            row.lastElementChild.dataset.enabled = row.lastElementChild.textContent.trim() === "✔";
         });
 
         return this;
@@ -72,9 +53,9 @@ class ShortcutScreen extends TablePane {
      * @returns {Array}
      */
     getData() {
-        const rows = [["Toggle", "Shortcut", "Enabled"]];
+        const rows = [["", "Shortcut", "Enabled"]];
         shortcutRegistry.getRegistry().forEach((shortcut) => {
-            rows.push([shortcut.label, shortcut.human, shortcut.enabled ? "✔" : ""]);
+            rows.push([shortcut.label, shortcut.human, shortcut.enabled ? "✔" : "✖"]);
         });
 
         return rows;
@@ -85,9 +66,42 @@ class ShortcutScreen extends TablePane {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Shortcuts", "SBA Shortcut Commands", {
-            cssClassNames: ['th-no-upper']
-        });
+        super(
+            app,
+            "Shortcuts",
+            "This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. If a shortcut conflicts with your system or browser, you can disable it here.",
+            {
+                classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d")),
+                events: {
+                    pointerup: (evt) => {
+                        const cell = evt.target.closest("td");
+                        if (!cell) {
+                            return;
+                        }
+
+                        const row = cell.closest("tr");
+                        if (!row || cell !== row.lastElementChild) {
+                            return;
+                        }
+
+                        const combo = cell.previousElementSibling?.textContent.trim();
+                        if (!combo) {
+                            return;
+                        }
+
+                        const shortcut = shortcutRegistry.get(combo);
+
+                        // now reverse the state
+                        shortcut.enabled = !shortcut.enabled;
+                        cell.textContent = shortcut.enabled ? "✔" : "✖";
+                        cell.dataset.enabled = shortcut.enabled
+
+                        // save new state
+                        shortcutRegistry.set(shortcut.combo, shortcut);
+                    },
+                },
+            }
+        );
 
         this.popup = new Popup(this.app, this.key).setContent("title", this.title);
 

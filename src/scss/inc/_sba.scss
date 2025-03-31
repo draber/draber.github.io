@@ -6,6 +6,11 @@
  */
 @use "sass:math";
 
+:root {
+    --sba-cell-inline-padding: 2px;
+    --sba-cell-block-padding: 3px;
+}
+
 .hive-action {
     &.push-active {
         &.sba-no-feedback {
@@ -59,28 +64,59 @@
     }
 }
 
+details {
+    .sba-data-pane {
+        border-top: none;
+        margin-bottom: 2px;
+    }
+}
+
+.sb-modal-wrapper {
+    //--sba-cell-block-padding:
+    --sba-cell-inline-padding: 7px;
+
+    .sba-data-pane {
+        font-size: 95%;
+    }
+}
+
 .sba-data-pane {
     border: 1px solid var(--border-color);
-    width: 100%;
-    font-size: 85%;
-    margin-bottom: 2px;
     border-collapse: collapse;
-    table-layout: fixed;
-    border-top: none;
 
-    @for $i from 3 through 10 {
-        $width: percentage(math.div(1, $i));
-
-        &[data-cols="#{$i}"] {
-            :is(th, td) {
-                width: $width;
+    &.sba-thead-th-bold {
+        thead {
+            th {
+                font-weight: bold;
             }
         }
     }
 
-    th {
-        text-transform: uppercase;
-        background: var(--head-row-bg-color);
+    &.sba-table-full-width {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    &.sba-small-txt {
+        font-size: 85%;
+    }
+
+    &.sba-th-upper {
+        th {
+            text-transform: uppercase;
+        }
+    }
+
+    &.sba-equal-cols {
+        @for $i from 3 through 10 {
+            $width: percentage(math.div(1, $i));
+
+            &[data-cols="#{$i}"] {
+                :is(th, td) {
+                    width: $width;
+                }
+            }
+        }
     }
 
     .sba-preeminent {
@@ -98,12 +134,19 @@
         display: none;
     }
 
+    caption {
+        text-align: start;
+        padding: var(--sba-cell-block-padding) var(--sba-cell-inline-padding);
+        line-height: 1.75;
+        font-weight: 700;
+    }
+
     :is(th, td) {
         border: 1px solid var(--border-color);
         border-top: none;
+        padding: var(--sba-cell-block-padding) var(--sba-cell-inline-padding);
         white-space: nowrap;
         text-align: center;
-        padding: 3px 2px;
     }
 
     th {
@@ -152,22 +195,68 @@
             }
         }
     }
-
-    .sb-modal-body {
-        margin-top: 0;
-        padding-bottom: 10px;
-    }
 }
 
 [data-ui="milestones"] {
+    $gapV: 12;
+    $gapH: 40;
+
+    .sb-modal-body {
+        margin-top: 0;
+    }
+
+    .sba-milestone-table-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: $gapV * 1px $gapH * 1px;
+    }
+
+    figcaption {
+        padding: 10px var(--sba-cell-inline-padding);
+    }
+
     b {
         font-weight: 700;
     }
 
+    progress {
+        border-width: 0;
+        height: 5px;
+    }
+
+    .sba-col {
+        width: calc(100% / 2 - #{math.div($gapH, 2)}px);
+    }
+
+    .sba-summaries {
+        .sba-data-pane {
+            table-layout: fixed;
+            margin-block-end: #{$gapV}px;
+        }
+        tr {
+            :is(td, th) {
+                text-align: center;
+            }
+        }
+    }
+
+    .sba-tiers {
+        .sba-data-pane {
+            .sba-preeminent {
+                border-bottom: 1px solid var(--border-color) !important;
+            }
+        }
+    }
+
     .sba-data-pane {
-        tbody {
-            th {
-                text-align: start;
+        width: 100%;
+        
+        td {
+            &.sba-progress-box {
+                padding: 0;
             }
         }
 
@@ -177,29 +266,15 @@
                     color: var(--text-color);
                 }
             }
+        }
 
+        tbody {
+            th {
+                text-align: start;
+            }
             td {
-                // border: none;
-                // text-align: left;
-                // line-height: 1.8;
-
                 &:nth-child(n + 2) {
-                    text-align: right;
-                    width: 80px;
-                }
-
-                &:nth-child(2) {
                     max-width: 100px;
-                    // &::after {
-                    //     content: " pts.";
-                    // }
-                }
-
-                &:last-child {
-                    max-width: 100px;
-                    &::after {
-                        content: "%";
-                    }
                 }
             }
         }
@@ -215,18 +290,17 @@
     align-items: center;
 }
 
-[data-ui="progressBar"] {
+progress {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
     border-radius: 0;
     margin: 0;
-    height: 6px;
     padding: 0;
     background: transparent;
     display: block;
-    border: none;
-    border-bottom: 1px var(--border-color) solid;
+    height: 10px;
+    border: 1px var(--border-color) solid;
 
     &::-webkit-progress-bar {
         background-color: transparent;
@@ -240,6 +314,11 @@
     &::-moz-progress-bar {
         background-color: var(--highlight-bg-color);
     }
+}
+
+[data-ui="progressBar"] {
+    border-width: 0 0 1px 0;
+    height: 6px;
 }
 
 [data-ui="spillTheBeans"] {
@@ -500,39 +579,7 @@
     }
 }
 
-.sb-modal-wrapper {
-    table {
-        border-top: 1px solid var(--border-color);
-    }
-
-    :is(td, th) {
-        padding-inline: 8px;
-    }
-
-    .th-no-upper {
-        th {
-            text-transform: none;
-        }
-    }
-
-    .table-no-forced-width {
-        width: auto;
-        table-layout: auto;
-        :is(td, th) {
-            width: auto;
-        }
-    }
-}
-
 [data-ui="shortcuts"] {
-    thead {
-        th {
-            font-weight: bold;
-            &:first-child {
-                text-align: start;
-            }
-        }
-    }
     tbody {
         tr {
             th {
@@ -540,9 +587,18 @@
             }
             td {
                 &:last-child {
-                    color: color-mix(in srgb, var(--highlight-bg-color) 90%, black);
                     font-size: 16px;
                     cursor: pointer;
+                    &::selection {
+                        color: currentColor;
+                        background-color: transparent;
+                    }
+                    &[data-enabled="true"] {
+                        color: var(--sba-success-color);
+                    }
+                    &[data-enabled="false"] {
+                        color: var(--sba-error-color);
+                    }
                 }
             }
         }
@@ -551,7 +607,6 @@
 
 [data-ui="grid"] {
     table {
-        border-top: 1px solid var(--border-color);
         margin-left: -20px;
         width: calc(100% + 40px);
     }

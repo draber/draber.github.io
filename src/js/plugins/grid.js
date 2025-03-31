@@ -114,7 +114,9 @@ class Grid extends TablePane {
      */
     constructor(app) {
 
-        super(app, 'Grid', 'The number of words by length and by first letter.');
+        super(app, 'Grid', 'The number of words by length and by first letter.', {
+            classNames: ['th-upper', 'small-txt'].map((name) => prefix(name, "d"))
+        });
 
         this.popup = new Popup(this.app, this.key)
             .setContent('title', this.title);

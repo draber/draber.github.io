@@ -4,11 +4,9 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import {
-    prefix
-} from '../modules/string.js';
-import Plugin from '../modules/plugin.js';
-import fn from 'fancy-node';
+import { prefix } from "../modules/string.js";
+import Plugin from "../modules/plugin.js";
+import fn from "fancy-node";
 
 /**
  * TablePane plugin
@@ -17,7 +15,6 @@ import fn from 'fancy-node';
  * @returns {Plugin} TablePane
  */
 class TablePane extends Plugin {
-
     /**
      * Build/refresh pane
      * @param evt
@@ -28,6 +25,9 @@ class TablePane extends Plugin {
         this.pane = fn.empty(this.pane);
         const tbody = fn.tbody();
         const data = this.getData();
+        if (this.caption) {
+            this.pane.append(fn.caption({ content: this.caption }));
+        }
         if (this.hasHeadRow) {
             this.pane.append(this.buildHead(data.shift()));
         }
@@ -38,18 +38,20 @@ class TablePane extends Plugin {
             const classNames = [];
             for (const [marker, fn] of Object.entries(this.cssMarkers)) {
                 if (fn(rowData, i, l)) {
-                    classNames.push(prefix(marker, 'd'))
+                    classNames.push(prefix(marker, "d"));
                 }
             }
             const tr = fn.tr({
-                classNames
-            })
+                classNames,
+            });
             rowData.forEach((cellData, rInd) => {
-                const tag = rInd === 0 && this.hasHeadCol ? 'th' : 'td';
-                tr.append(fn[tag]({
-                    content: cellData
-                }))
-            })
+                const tag = rInd === 0 && this.hasHeadCol ? "th" : "td";
+                tr.append(
+                    fn[tag]({
+                        content: cellData,
+                    })
+                );
+            });
             tbody.append(tr);
         });
         this.pane.dataset.cols = colCnt;
@@ -65,10 +67,12 @@ class TablePane extends Plugin {
     buildHead(rowData) {
         return fn.thead({
             content: fn.tr({
-                content: rowData.map(cellData => fn.th({
-                    content: cellData
-                }))
-            })
+                content: rowData.map((cellData) =>
+                    fn.th({
+                        content: cellData,
+                    })
+                ),
+            }),
         });
     }
 
@@ -81,39 +85,54 @@ class TablePane extends Plugin {
     }
 
     /**
-     * @param app
-     * @param title
-     * @param description
-     * @param canChangeState
-     * @param defaultState
-     * @param cssMarkers
-     * @param hasHeadRow
-     * @param hasHeadCol
-     * @param {App} app
+     * @typedef {Object} configObj
+     * @property {boolean} [canChangeState=true]
+     * @property {boolean} [defaultState=true]
+     * @property {Object} [cssMarkers={}]
+     * @property {boolean} [hasHeadRow=true]
+     * @property {boolean} [hasHeadCol=true]
+     * @property {string[]} [classNames=[]]
+     * @property {Object} [events={}]
+     * @property {string} [caption='']
      */
-    constructor(app, title, description, {
-        canChangeState = true,
-        defaultState = true,
-        cssMarkers = {},
-        hasHeadRow = true,
-        hasHeadCol = true,
-        cssClassNames = []
-    } = {}) {
 
+    /**
+     * @param {App} app
+     * @param {string} title
+     * @param {string} description
+     * @param {configObj} [config={}]
+     */
+    constructor(
+        app,
+        title,
+        description,
+        {
+            canChangeState = true,
+            defaultState = true,
+            cssMarkers = {},
+            hasHeadRow = true,
+            hasHeadCol = true,
+            classNames = [],
+            events = {},
+            caption = "",
+        } = {}
+    ) {
         super(app, title, description, {
             canChangeState,
-            defaultState
+            defaultState,
         });
 
-        app.on(prefix('refreshUi'), () => {
+        app.on(prefix("refreshUi"), () => {
             this.run();
         });
 
         this.cssMarkers = cssMarkers;
         this.hasHeadRow = hasHeadRow;
         this.hasHeadCol = hasHeadCol;
+        this.caption = caption;
         this.pane = fn.table({
-            classNames: ['pane', prefix('dataPane', 'd')].concat(cssClassNames)
+            classNames: ["pane", prefix("dataPane", "d")].concat(classNames),
+            events,
         });
     }
 }

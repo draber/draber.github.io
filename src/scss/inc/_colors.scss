@@ -32,7 +32,8 @@ $themeColors: (
         link:        hsl(var(--link-hue), 45%, 38%),
         link-visited:hsl(var(--link-hue), 45%, 53%),
         link-hover:  hsl(var(--link-hue), 45%, 53%),
-        success:     hsl(113, 71%, 38%),
+        sba-success: hsl(112, 93%, 35%),
+        sba-error: hsl(352, 93%, 35%),
     ),
     dark: (
         highlight-bg: hsl(49, 96%, 50%),
@@ -49,7 +50,8 @@ $themeColors: (
         link:          hsl(var(--link-hue), 90%, 64%),
         link-visited:  hsl(var(--link-hue), 90%, 76%),
         link-hover:    hsl(var(--link-hue), 90%, 76%),
-        success:     hsl(113, 90%, 64%),
+        sba-success: hsl(112, 93%, 55%),
+        sba-error: hsl(352, 93%, 41%),
     )
 );
 

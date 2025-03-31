@@ -8,9 +8,9 @@
 import { getPopupCloser, manualDelete } from "./helpers";
 import settings from "./settings";
 
-/** 
+/**
  * Registry of all registered shortcuts.
- * The key is the normalized combo (e.g., "Alt+Shift+KeyO"), 
+ * The key is the normalized combo (e.g., "Alt+Shift+KeyO"),
  * and the value is the shortcut object.
  */
 let registry = new Map();
@@ -37,7 +37,7 @@ const order = Array.from(new Set(Array.from(modifierMap.values()).map((m) => m.c
 
 /**
  * Tracks the single-character keys (A-Z) used in shortcuts,
- * grouped by origin (e.g. "sba" or "nyt"). Used to determine 
+ * grouped by origin (e.g. "sba" or "nyt"). Used to determine
  * if a manual delete is needed after firing the shortcut.
  */
 const characterKeys = { nyt: [], sba: [] };
@@ -46,7 +46,7 @@ const characterKeys = { nyt: [], sba: [] };
  * Extract and register the letter key used in a shortcut,
  * only if it’s a single letter A-Z. Used for deciding
  * whether it needs post-shortcut deletion.
- * 
+ *
  * @param {Object} shortcut - The shortcut object with `.combo` and optional `.origin`
  */
 const registerCharacterKey = (shortcut) => {
@@ -60,7 +60,7 @@ const registerCharacterKey = (shortcut) => {
 /**
  * Extracts the main character key (letter or digit) from a combo string.
  * E.g., "Alt+Shift+KeyA" → "A", "Ctrl+Digit2" → "2"
- * 
+ *
  * @param {String} combo
  * @returns {String} The character part of the combo in uppercase.
  */
@@ -68,7 +68,6 @@ const getCharacterKey = (combo) => {
     const match = combo.match(/(?:^|\+)(?:Key|Digit)?([A-Za-z0-9])(?:\+|$)/i);
     return match ? match[1].toUpperCase() : "";
 };
-
 
 /**
  * Build a more human readable form of combo
@@ -81,7 +80,7 @@ const comboToHuman = (combo) => {
             .split("+")
             // modifierMap = Ctrl => Control etc.
             .map((part) => (modifierMap.has(part) ? modifierMap.get(part).human : part.replace(/^Digit|^Key/, "")))
-            .join("+")
+            .join(" + ")
     );
 };
 
@@ -115,9 +114,7 @@ const requiresDeletion = (combo, app) => {
  * @returns {Boolean} True if the object is a valid shortcut
  */
 const isValidShortcut = (obj) =>
-    obj && typeof obj === "object" &&
-    typeof obj.combo === "string" &&
-    typeof obj.callback === "function";
+    obj && typeof obj === "object" && typeof obj.combo === "string" && typeof obj.callback === "function";
 
 /**
  * Normalize a key combination
@@ -145,6 +142,7 @@ const normalizeCombo = (data) => {
 
     // cast string to array
     if (typeof data === "string") {
+        data = data.replace(/\s+/g, "");
         const charKey = getCharacterKey(data);
         data = data
             .split("+")
@@ -170,7 +168,9 @@ const normalizeCombo = (data) => {
             return modifierMap.get(part).canonical;
         });
     data.sort();
-    if (code) data.push(code);
+    if (code) {
+        data.push(code);
+    }
     return data.join("+");
 };
 
@@ -183,7 +183,7 @@ const getSbaShortcutEntry = (event) => get(normalizeCombo(event));
  */
 const handleShortcut = (event) => {
     const entry = getSbaShortcutEntry(event);
-    if (!entry) {
+    if (!entry || !entry.enabled) {
         return false;
     }
     event.preventDefault();
@@ -196,13 +196,20 @@ const handleShortcut = (event) => {
     return true;
 };
 
-const saveShortcut = combo => {
-    const shortcut = get(combo);
-    if(!shortcut){
+const set = (combo, shortcut) => {
+    combo = normalizeCombo(combo);
+    if (!isValidShortcut(shortcut)) {
         return false;
     }
+    if(!shortcut.human){
+        shortcut.human = comboToHuman(shortcut.combo);
+    }
+    if(typeof shortcut.enabled === 'undefined'){
+        shortcut.enabled = true
+    }
+    registry.set(combo, shortcut);
     settings.set(`options.${shortcut.module}.shortcuts.${shortcut.combo}`, shortcut);
-}
+};
 
 /**
  * Register a new shortcut
@@ -220,10 +227,6 @@ const add = (shortcut) => {
         human: comboToHuman(shortcut.combo),
     });
 
-    if (!shortcut.enabled) {
-        return false;
-    }
-
     if (registry.has(shortcut.combo)) {
         console.warn(`Ignoring ${shortcut.human}, this shortcut is already registered`);
         return false;
@@ -232,14 +235,13 @@ const add = (shortcut) => {
     registerCharacterKey(shortcut);
     delete shortcut.origin;
 
-    registry.set(shortcut.combo, shortcut);
-    saveShortcut(shortcut.combo);
+    set(shortcut.combo, shortcut);
     return true;
 };
 
-const getRegistry = ()=> {
+const getRegistry = () => {
     return registry;
-}
+};
 
 /**
  * Retrieve a callback by key combination
@@ -248,13 +250,14 @@ const getRegistry = ()=> {
  */
 const get = (input) => {
     const combo = normalizeCombo(input);
-    if(!registry.has(combo)){
+    if (!registry.has(combo)) {
         return false;
     }
     return registry.get(combo);
 };
 
 export default {
+    set,
     add,
     get,
     normalizeCombo,
