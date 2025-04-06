@@ -10,6 +10,8 @@ import Plugin from "../modules/plugin.js";
 import { prefix } from "../modules/string.js";
 import fn from "fancy-node";
 import settings from "../modules/settings.js";
+import pluginRegistry from "../modules/pluginRegistry.js";
+import { getToggleButton } from "../modules/helpers.js";
 
 /**
  * Dark Mode plugin
@@ -167,6 +169,20 @@ class ColorConfig extends Plugin {
                 })
             );
         this.popup.ui.dataset[prefix("theme")] = "dark";
+
+        app.on(prefix("pluginsReady"), () => {
+            const darkMode = pluginRegistry.getPluginByKey("darkMode");
+            const darkModeToggle = getToggleButton(
+                prefix(`${this.key}-${darkMode.key}`, "d"),
+                darkMode.isEnabled,
+                (event) => {
+                    darkMode.toggle(event.target.checked);
+                },
+                "Toggle Dark Mode",
+                "before"
+            );
+            fn.$('.sb-modal-body', this.popup.ui).append(darkModeToggle);
+        });
 
         this.shortcuts = [
             {
