@@ -1487,14 +1487,6 @@
     }
 
     class Milestones extends TablePane {
-        togglePopup() {
-            if (this.popup.isOpen) {
-                this.popup.toggle(false);
-                return this;
-            }
-            this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
-            return this;
-        }
         run(evt) {
             super.run(evt);
             const insertionPoint = fn.$("tbody .sba-preeminent", this.pane);

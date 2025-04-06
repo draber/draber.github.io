@@ -19,14 +19,6 @@ import SummaryTable from "./summaryTable.js";
  * @returns {Plugin} Milestones
  */
 class Milestones extends TablePane {
-    togglePopup() {
-        if (this.popup.isOpen) {
-            this.popup.toggle(false);
-            return this;
-        }
-        this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
-        return this;
-    }
 
     /**
      * Run method of the main table, i.e. tiers
