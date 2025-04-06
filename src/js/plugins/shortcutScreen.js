@@ -11,6 +11,7 @@ import { prefix } from "../modules/string.js";
 import gridIcon from "../assets/grid.svg";
 import fn from "fancy-node";
 import shortcutRegistry from "../modules/shortcutRegistry.js";
+import { getToggleButton } from "../modules/helpers.js";
 
 /**
  * Grid plugin
@@ -34,28 +35,19 @@ class ShortcutScreen extends TablePane {
     }
 
     /**
-     * Update table and mark completed cells
-     * @param evt
-     * @returns {ShortcutScreen}
-     */
-    run(evt) {
-        super.run(evt);
-
-        fn.$$("tbody tr", this.pane).forEach((row) => {
-            row.lastElementChild.dataset.enabled = row.lastElementChild.textContent.trim() === "✔";
-        });
-
-        return this;
-    }
-
-    /**
      * Get the data for the table cells
      * @returns {Array}
      */
     getData() {
-        const rows = [["", "Shortcut", "Enabled"]];
+        const rows = [["", "Shortcut", "State"]];
         shortcutRegistry.getRegistry().forEach((shortcut) => {
-            rows.push([shortcut.label, shortcut.human, shortcut.enabled ? "✔" : "✖"]);
+            const toggle = getToggleButton(shortcut.combo, shortcut.enabled, (evt) => {
+                const shortcut = shortcutRegistry.get(evt.target.closest("input").id);
+                shortcut.enabled = !shortcut.enabled;
+                // save new state
+                shortcutRegistry.set(shortcut.combo, shortcut);
+            });
+            rows.push([shortcut.label, shortcut.human, toggle]);
         });
 
         return rows;
@@ -71,35 +63,7 @@ class ShortcutScreen extends TablePane {
             "Shortcuts",
             "This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. If a shortcut conflicts with your system or browser, you can disable it here.",
             {
-                classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d")),
-                events: {
-                    pointerup: (evt) => {
-                        const cell = evt.target.closest("td");
-                        if (!cell) {
-                            return;
-                        }
-
-                        const row = cell.closest("tr");
-                        if (!row || cell !== row.lastElementChild) {
-                            return;
-                        }
-
-                        const combo = cell.previousElementSibling?.textContent.trim();
-                        if (!combo) {
-                            return;
-                        }
-
-                        const shortcut = shortcutRegistry.get(combo);
-
-                        // now reverse the state
-                        shortcut.enabled = !shortcut.enabled;
-                        cell.textContent = shortcut.enabled ? "✔" : "✖";
-                        cell.dataset.enabled = shortcut.enabled
-
-                        // save new state
-                        shortcutRegistry.set(shortcut.combo, shortcut);
-                    },
-                },
+                classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d"))
             }
         );
 

@@ -45,6 +45,12 @@ const migrateToVersion5 = () => {
 
     console.warn(`⚠️ ${state.label} detected legacy settings format. Performing migration to 5.0.0...`);
 
+    // Renamed modules
+    state.options.overview = state.options.score || {};
+    delete state.options.score;
+    state.options.milestones = state.options.yourProgress || {};
+    delete state.options.yourProgress;
+
     const migrated = {};
 
     for (const [key, value] of Object.entries(state.options)) {

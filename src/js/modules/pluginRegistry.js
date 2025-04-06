@@ -28,7 +28,15 @@ const register = (Plugin, app) => {
 
 const getPlugins = () => plugins;
 
+const getPluginByKey = (key) => {
+    if (!plugins.has(key)) {
+        throw new Error(`Plugin with key "${key}" not found.`);
+    }
+    return plugins.get(key);
+};
+
 export default {
     getPlugins,
+    getPluginByKey,
     register,
 };

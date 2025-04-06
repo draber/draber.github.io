@@ -36,8 +36,8 @@ class TablePane extends Plugin {
         data.forEach((rowData, i) => {
             colCnt = rowData.length;
             const classNames = [];
-            for (const [marker, fn] of Object.entries(this.cssMarkers)) {
-                if (fn(rowData, i, l)) {
+            for (const [marker, func] of Object.entries(this.cssMarkers)) {
+                if (func(rowData, i, l)) {
                     classNames.push(prefix(marker, "d"));
                 }
             }

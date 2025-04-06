@@ -114,6 +114,38 @@ const getPoints = type => {
 };
 
 /**
+ * Returns number of found vs. total items for a given type.
+ *
+ * @param {string} type - One of "points", "terms", or "pangrams".
+ * @returns {{found: number, max: number}} Stats object.
+ */
+const getFoundAndTotal = (type) => {
+    switch (type) {
+        case "points":
+            return {
+                found: getPoints("foundTerms"),
+                total: getPoints("answers"),
+            };
+        case "terms":
+            return {
+                found: getCount("foundTerms"),
+                total: getCount("answers"),
+            };
+        case "pangrams":
+            return {
+                found: getCount("foundPangrams"),
+                total: getCount("pangrams"),
+            };
+        default:
+            console.warn(`[data] getFoundAndTotal: Unsupported type "${type}"`);
+            return {
+                found: 0,
+                total: 0,
+            };
+    }
+};
+
+/**
  * Update word lists
  * @param {String} term
  */
@@ -142,5 +174,6 @@ export default {
     getPoints,
     getId,
     getDate,
-    getCenterLetter
+    getCenterLetter,
+    getFoundAndTotal
 }

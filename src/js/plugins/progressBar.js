@@ -52,12 +52,6 @@ class ProgressBar extends Plugin {
             }
         })
 
-        app.on(prefix('pluginsReady'), evt => {
-            if (this.app.plugins.has('milestones')) {
-                this.ui.style.cursor = 'pointer';
-            }
-        })
-
         this.target = fn.$('.sb-wordlist-heading', this.app.gameWrapper);
     }
 }
