@@ -19,6 +19,48 @@
     }
 }
 
+.sba-toggle-switch:where([type="checkbox"][role="switch"]) {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    position: relative;
+    color: var(--border-color);
+    font-size: inherit;
+    width: 2em;
+    height: 1em;
+    box-sizing: content-box;
+    border: 1px solid;
+    border-radius: 1em;
+    vertical-align: text-bottom;
+    margin: auto;
+    cursor: pointer;
+    background: var(--body-bg-color);
+    &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translate(0, -50%);
+        box-sizing: border-box;
+        width: 0.7em;
+        height: 0.7em;
+        margin: 0 0.15em;
+        border: 1px solid;
+        border-radius: 50%;
+        background: var(--text-color);
+    }
+    &:checked {
+        background: var(--toggle-on-bg-color);
+        &::before {
+            left: 1em;
+            background: var(--border-color);
+        }
+    }
+    &:disabled {
+        opacity: 0.4;
+    }
+}
+
 .sba {
     background: var(--body-bg-color);
 
@@ -155,6 +197,10 @@ details {
 }
 
 [data-ui="community"] {
+    .sb-modal-body {
+        margin-block-end: 0;
+    }
+
     h4 {
         font-weight: 700;
         font-family: nyt-franklin;
@@ -200,10 +246,6 @@ details {
 [data-ui="milestones"] {
     $gapV: 12;
     $gapH: 40;
-
-    .sb-modal-body {
-        margin-top: 0;
-    }
 
     .sba-milestone-table-wrapper {
         display: flex;
@@ -253,7 +295,7 @@ details {
 
     .sba-data-pane {
         width: 100%;
-        
+
         td {
             &.sba-progress-box {
                 padding: 0;
@@ -262,8 +304,8 @@ details {
 
         tr {
             &.sba-completed {
-                td {
-                    color: var(--text-color);
+                :is(th, td) {
+                    color: var(--invalid-color);
                 }
             }
         }
@@ -434,6 +476,10 @@ progress {
     .cell-letter {
         font-size: 8px;
         font-weight: 600;
+    }
+
+    .sba-toggle-label {
+        padding-inline-end: 10px;
     }
 }
 
