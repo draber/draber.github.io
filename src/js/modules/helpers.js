@@ -6,7 +6,6 @@
  */
 import fn from "fancy-node";
 import { prefix } from "./string.js";
-import data from "./data.js";
 
 /**
  * Get the close button of the various pop-up formats

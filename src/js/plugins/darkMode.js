@@ -6,7 +6,6 @@
  */
 import fn from "fancy-node";
 import settings from "../modules/settings.js";
-import pluginRegistry from "../modules/pluginRegistry.js";
 import Plugin from "../modules/plugin.js";
 import Popup from "./popup.js";
 import { getToggleButton, getHive } from "../modules/helpers.js";
@@ -85,45 +84,6 @@ class DarkMode extends Plugin {
     }
 
     /**
-     * Creates an SVG element representing a hive cell.
-     * This is used as a visual element in the dark mode popup.
-     * @returns {HTMLElement}
-     */
-    getHive() {
-        return fn.div({
-            classNames: ["hive"],
-            content: [
-                fn.svg({
-                    classNames: ["hive-cell", "outer"],
-                    attributes: {
-                        viewBox: `0 0 24 21`,
-                    },
-                    isSvg: true,
-                    content: [
-                        fn.path({
-                            classNames: ["cell-fill"],
-                            isSvg: true,
-                            attributes: {
-                                d: "M18 21H6L0 10.5 6 0h12l6 10.5z",
-                            },
-                        }),
-                        fn.text({
-                            classNames: ["cell-letter"],
-                            attributes: {
-                                x: "50%",
-                                y: "50%",
-                                dy: "0.35em",
-                            },
-                            isSvg: true,
-                            content: "s",
-                        }),
-                    ],
-                }),
-            ],
-        });
-    }
-
-    /**
      * Applies the hue and saturation parameters of the dark mode theme
      * as CSS custom properties to all elements with the `data-sba-theme` attribute.
      * If no parameters are provided, the currently stored settings will be used.
@@ -173,8 +133,8 @@ class DarkMode extends Plugin {
             this.popup.toggle(false);
             return this;
         }
-        this.popup.toggle(true);   
-        fn.$('.sba-color-selector .hive', this.popup.ui).dataset[prefix("theme")] = "dark";
+        this.popup.toggle(true);
+        fn.$(".sba-color-selector .hive", this.popup.ui).dataset[prefix("theme")] = "dark";
         fn.$("input:checked", this.popup.ui).focus();
     }
     /**
@@ -214,7 +174,7 @@ class DarkMode extends Plugin {
                     content: [this.getSwatches(), getHive()],
                 })
             );
-            
+
         const header = fn.$(".sb-modal-header", this.popup.ui);
         const wrap = fn.div({
             classNames: [prefix("header-wrap", "d")],
