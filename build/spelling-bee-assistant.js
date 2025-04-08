@@ -225,115 +225,6 @@
         getFoundAndTotal
     };
 
-    class Widget {
-        getState() {
-            const stored = settings.get(`options.${this.key}.enabled`);
-            return typeof stored !== 'undefined' ? stored : this.defaultState;
-        }
-        setState(state) {
-            if (this.canChangeState) {
-                settings.set(`options.${this.key}.enabled`, state);
-            }
-            return this;
-        }
-        toggle(state) {
-            if (!this.canChangeState) {
-                return this;
-            }
-            this.setState(state);
-            if (this.hasUi()) {
-                this.ui.classList.toggle('inactive', !state);
-            }
-            return this;
-        }
-        hasUi() {
-            return this.ui instanceof HTMLElement;
-        }
-        on(type, action) {
-            if (this.hasUi()) {
-                this.ui.addEventListener(type, action);
-            }
-            return this;
-        }
-        trigger(type, data) {
-            if (this.hasUi()) {
-                this.ui.dispatchEvent(data ? new CustomEvent(type, {
-                    detail: data
-                }) : new Event(type));
-            }
-            return this;
-        }
-        constructor(title, {
-            key,
-            canChangeState,
-            defaultState
-        } = {}) {
-            if (!title) {
-                throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
-            }
-            this.title = title;
-            this.key = key || camel(title);
-            this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
-            this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
-            this.setState(this.getState());
-            this.ui = null;
-        }
-    }
-
-    class Plugin extends Widget {
-        attach() {
-            if (!this.hasUi()) {
-                return this;
-            }
-            this.ui.dataset.ui = this.key;
-            (this.target || this.app.ui)[this.addMethod](this.ui);
-            return this;
-        }
-        add() {
-            return this.attach();
-        }
-        run(evt) {
-            return this;
-        }
-        constructor(app, title, description, { key, canChangeState, defaultState, menuIcon, runEvt, addMethod } = {}) {
-            super(title, {
-                key,
-                canChangeState,
-                defaultState,
-            });
-            this.target;
-            this.description = description || "";
-            this.app = app;
-            this.addMethod = addMethod || "append";
-            this.menuIcon = menuIcon || "checkbox";
-            this.shortcuts = [];
-            if (runEvt) {
-                this.app.on(runEvt, (evt) => {
-                    this.run(evt);
-                });
-            }
-        }
-    }
-
-    class DarkMode extends Plugin {
-        toggle(state) {
-            super.toggle(state);
-            document.body.dataset[prefix("theme")] = state ? "dark" : "light";
-            return this;
-        }
-        constructor(app) {
-            super(app, "Dark Mode", "Applies a dark theme to this page", {
-                canChangeState: true,
-                defaultState: false
-            });
-            this.shortcuts = [{
-                combo: "Shift+Alt+D",
-                method: "toggle"
-            }];
-            this.toggle(this.getState());
-        }
-    }
-
     function getDefaultExportFromCjs (x) {
     	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
     }
@@ -584,134 +475,75 @@
                 });
         }
     };
-
-    class Popup {
-        enableKeyClose() {
-            document.addEventListener('keyup', evt => {
-                this.app.popupCloser = getPopupCloser(this.app);
-                if (this.app.popupCloser && evt.code === 'Escape') {
-                    this.app.popupCloser.click();
-                }
-                delete (this.app.popupCloser);
-            });
-            return this;
-        }
-        getTarget() {
-            const dataUi = prefix('popup-container', 'd');
-            let container = fn.$(`[data-ui="${dataUi}"]`);
-            if (!container) {
-                container = fn.template({
-                    data: {
-                        ui: dataUi
-                    }
-                });
-                fn.$('body').append(container);
-            }
-            return container;
-        }
-        create() {
-            return fn.div({
-                classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
-                aria: {
-                    role: 'button'
+    const getHive = () => {
+        const translate = ({ x, y }) => `translate(${x} ${y})`;
+        const canonicalOrder = ["c", "nw", "n", "ne", "se", "s", "sw"];
+        const hiveLayout = {
+            c:  { x: 19.2,  y: 22.01 },
+            nw: { x: 0,     y: 11.01 },
+            n:  { x: 19.2,  y: 0.01 },
+            ne: { x: 38.4,  y: 11.01 },
+            se: { x: 38.4,  y: 33.01 },
+            s:  { x: 19.2,  y: 44.01 },
+            sw: { x: 0,     y: 33.01 },
+        };
+        const symbol = fn.symbol({
+            isSvg: true,
+            attributes: {
+                id: "hive-cell"
+            },
+            content: fn.polygon({
+                isSvg: true,
+                attributes: {
+                    points : "18,0 24,10.39 18,20.78 6,20.78 0,10.39 6,0",
+                    fill: "peru"
                 },
-                data: {
-                    ui: this.key
+                classNames: [prefix("hive-cell", "d")],
+            }),
+        });
+        const style = fn.style({
+            isSvg: true,
+            content: `text {font-family:sans-serif;font-size:12px;dominant-baseline:middle;text-anchor:middle}`,
+        });
+        const defs = fn.defs({
+            isSvg: true,
+            content: [style, symbol],
+        });
+        const elements = [defs];
+        fn.$$(".sb-hive .hive-cell").forEach((cell, i) => {
+            const orientation = canonicalOrder[i];
+            elements.push(fn.g({
+                isSvg: true,
+                attributes: {
+                    transform: translate(hiveLayout[orientation]),
                 },
-                events: {
-                    click: e => {
-                        e.stopPropagation();
-                    }
-                },
+                classNames: cell.classList,
                 content: [
-                    fn.div({
-                        classNames: ['sb-modal-top'],
-                        content: fn.div({
-                            aria: {
-                                role: 'button'
-                            },
-                            classNames: ['sb-modal-close'],
-                            content: '×',
-                            events: {
-                                click: () => {
-                                    this.toggle(false);
-                                }
-                            }
-                        })
+                    fn.use({
+                        isSvg: true,
+                        attributes: {
+                            href: `#hive-cell`,
+                        }
                     }),
-                    fn.div({
-                        classNames: ['sb-modal-content'],
-                        content: [
-                            fn.div({
-                                classNames: ['sb-modal-header'],
-                                content: [this.parts.title, this.parts.subtitle]
-                            }),
-                            this.parts.body,
-                            this.parts.footer
-                        ]
-                    })
-                ]
-            });
-        }
-        setContent(part, content) {
-            if (!this.parts[part]) {
-                console.error(`Unknown target ${part}`);
-                return this;
-            }
-            this.parts[part] = fn.empty(this.parts[part]);
-            this.parts[part].append(fn.toNode(content));
-            return this;
-        }
-        toggle(state) {
-            const closer = getPopupCloser(this.app);
-            if (!state && closer) {
-                closer.click();
-            }
-            if (state) {
-                this.app.modalWrapper.append(this.ui);
-                this.modalSystem.classList.add('sb-modal-open');
-                this.isOpen = true;
-            } else {
-                this.getTarget().append(this.ui);
-                this.modalSystem.classList.remove('sb-modal-open');
-                this.isOpen = false;
-            }
-            return this;
-        }
-        constructor(app, key) {
-            this.key = key;
-            this.app = app;
-            this.state = false;
-            this.isOpen = false;
-            this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
-            this.parts = {
-                title: fn.h3({
-                    classNames: ['sb-modal-title']
-                }),
-                subtitle: fn.p({
-                    classNames: ['sb-modal-message']
-                }),
-                body: fn.div({
-                    classNames: ['sb-modal-body']
-                }),
-                footer: fn.div({
-                    classNames: ['sb-modal-message', 'sba-modal-footer'],
-                    content: [
-                        fn.a({
-                            content: settings.get('label'),
-                            attributes: {
-                                href: settings.get('url'),
-                                target: prefix()
-                            }
-                        })
-                    ]
-                })
-            };
-            this.ui = this.create();
-            this.enableKeyClose();
-            this.getTarget().append(this.ui);
-        }
-    }
+                    fn.text({
+                        isSvg: true,
+                        attributes: {
+                            x: 0,
+                            y: 0,
+                        },
+                        content: cell.textContent.trim(),
+                    }),
+                ],
+            }));
+        });
+        return fn.svg({
+            isSvg: true,
+            attributes: {
+                viewBox: "0 0 62.4 64.8"
+            },
+            content: elements,
+        });
+    };
 
     let registry = new Map();
     const modifierMap = new Map([
@@ -891,40 +723,226 @@
         register,
     };
 
-    class ColorConfig extends Plugin {
-        toggleColorParameters(parameters) {
-            parameters = parameters || this.getColorParameters();
-            fn.$$("[data-sba-theme]").forEach((element) => {
-                element.style.setProperty("--dhue", parameters.hue);
-                element.style.setProperty("--dsat", parameters.sat + "%");
-            });
-            return this.setColorParameters(parameters);
+    class Widget {
+        getState() {
+            const stored = settings.get(`options.${this.key}.enabled`);
+            return typeof stored !== 'undefined' ? stored : this.defaultState;
         }
-        getColorParameters() {
-            return {
-                hue: settings.get(`options.${this.key}.hue`) || 0,
-                sat: settings.get(`options.${this.key}.sat`) || 0,
-            };
-        }
-        setColorParameters(parameters) {
-            const merged = { ...settings.get(`options.${this.key}`), ...parameters };
-            settings.set(`options.${this.key}`, merged);
+        setState(state) {
+            if (this.canChangeState) {
+                settings.set(`options.${this.key}.enabled`, state);
+            }
             return this;
         }
-        togglePopup() {
-            if (this.popup.isOpen) {
-                this.popup.toggle(false);
+        toggle(state) {
+            if (!this.canChangeState) {
                 return this;
             }
-            this.popup.toggle(true);
-            fn.$("input:checked", this.popup.ui).focus();
+            this.setState(state);
+            if (this.hasUi()) {
+                this.ui.classList.toggle('inactive', !state);
+            }
+            return this;
         }
-        constructor(app) {
-            super(app, "Dark Mode Colors", "Select your favorite color scheme for the Dark Mode.", {
-                canChangeState: true,
+        hasUi() {
+            return this.ui instanceof HTMLElement;
+        }
+        on(type, action) {
+            if (this.hasUi()) {
+                this.ui.addEventListener(type, action);
+            }
+            return this;
+        }
+        trigger(type, data) {
+            if (this.hasUi()) {
+                this.ui.dispatchEvent(data ? new CustomEvent(type, {
+                    detail: data
+                }) : new Event(type));
+            }
+            return this;
+        }
+        constructor(title, {
+            key,
+            canChangeState,
+            defaultState
+        } = {}) {
+            if (!title) {
+                throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
+            }
+            this.title = title;
+            this.key = key || camel(title);
+            this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
+            this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
+            this.setState(this.getState());
+            this.ui = null;
+        }
+    }
+
+    class Plugin extends Widget {
+        attach() {
+            if (!this.hasUi()) {
+                return this;
+            }
+            this.ui.dataset.ui = this.key;
+            (this.target || this.app.ui)[this.addMethod](this.ui);
+            return this;
+        }
+        add() {
+            return this.attach();
+        }
+        run(evt) {
+            return this;
+        }
+        constructor(app, title, description, { key, canChangeState, defaultState, menuIcon, runEvt, addMethod } = {}) {
+            super(title, {
+                key,
+                canChangeState,
+                defaultState,
             });
-            this.menuAction = "popup";
-            this.menuIcon = "null";
+            this.target;
+            this.description = description || "";
+            this.app = app;
+            this.addMethod = addMethod || "append";
+            this.menuIcon = menuIcon || "checkbox";
+            this.shortcuts = [];
+            if (runEvt) {
+                this.app.on(runEvt, (evt) => {
+                    this.run(evt);
+                });
+            }
+        }
+    }
+
+    class Popup {
+        enableKeyClose() {
+            document.addEventListener('keyup', evt => {
+                this.app.popupCloser = getPopupCloser(this.app);
+                if (this.app.popupCloser && evt.code === 'Escape') {
+                    this.app.popupCloser.click();
+                }
+                delete (this.app.popupCloser);
+            });
+            return this;
+        }
+        getTarget() {
+            const dataUi = prefix('popup-container', 'd');
+            let container = fn.$(`[data-ui="${dataUi}"]`);
+            if (!container) {
+                container = fn.template({
+                    data: {
+                        ui: dataUi
+                    }
+                });
+                fn.$('body').append(container);
+            }
+            return container;
+        }
+        create() {
+            return fn.div({
+                classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
+                aria: {
+                    role: 'button'
+                },
+                data: {
+                    ui: this.key
+                },
+                events: {
+                    click: e => {
+                        e.stopPropagation();
+                    }
+                },
+                content: [
+                    fn.div({
+                        classNames: ['sb-modal-top'],
+                        content: fn.div({
+                            aria: {
+                                role: 'button'
+                            },
+                            classNames: ['sb-modal-close'],
+                            content: '×',
+                            events: {
+                                click: () => {
+                                    this.toggle(false);
+                                }
+                            }
+                        })
+                    }),
+                    fn.div({
+                        classNames: ['sb-modal-content'],
+                        content: [
+                            fn.div({
+                                classNames: ['sb-modal-header'],
+                                content: [this.parts.title, this.parts.subtitle]
+                            }),
+                            this.parts.body,
+                            this.parts.footer
+                        ]
+                    })
+                ]
+            });
+        }
+        setContent(part, content) {
+            if (!this.parts[part]) {
+                console.error(`Unknown target ${part}`);
+                return this;
+            }
+            this.parts[part] = fn.empty(this.parts[part]);
+            this.parts[part].append(fn.toNode(content));
+            return this;
+        }
+        toggle(state) {
+            const closer = getPopupCloser(this.app);
+            if (!state && closer) {
+                closer.click();
+            }
+            if (state) {
+                this.app.modalWrapper.append(this.ui);
+                this.modalSystem.classList.add('sb-modal-open');
+                this.isOpen = true;
+            } else {
+                this.getTarget().append(this.ui);
+                this.modalSystem.classList.remove('sb-modal-open');
+                this.isOpen = false;
+            }
+            return this;
+        }
+        constructor(app, key) {
+            this.key = key;
+            this.app = app;
+            this.state = false;
+            this.isOpen = false;
+            this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
+            this.parts = {
+                title: fn.h3({
+                    classNames: ['sb-modal-title']
+                }),
+                subtitle: fn.p({
+                    classNames: ['sb-modal-message']
+                }),
+                body: fn.div({
+                    classNames: ['sb-modal-body']
+                }),
+                footer: fn.div({
+                    classNames: ['sb-modal-message', 'sba-modal-footer'],
+                    content: [
+                        fn.a({
+                            content: settings.get('label'),
+                            attributes: {
+                                href: settings.get('url'),
+                                target: prefix()
+                            }
+                        })
+                    ]
+                })
+            };
+            this.ui = this.create();
+            this.enableKeyClose();
+            this.getTarget().append(this.ui);
+        }
+    }
+
+    class DarkMode extends Plugin {
+        getSwatches() {
             const swatches = fn.ul({
                 classNames: [prefix("swatches", "d")],
             });
@@ -962,6 +980,97 @@
                     })
                 );
             }
+            return swatches;
+        }
+        getToggleButton() {
+            const labelAction = () => (this.getState() ? "Disable" : "Enable");
+            return getToggleButton(
+                prefix(`${this.key}-toggle`, "d"),
+                this.getState(),
+                (event) => {
+                    this.toggle(event.target.checked);
+                    const label = fn.$("label", event.target.parentElement);
+                    label.textContent = labelAction();
+                },
+                labelAction(),
+                "before"
+            );
+        }
+        getHive() {
+            return fn.div({
+                classNames: ["hive"],
+                content: [
+                    fn.svg({
+                        classNames: ["hive-cell", "outer"],
+                        attributes: {
+                            viewBox: `0 0 24 21`,
+                        },
+                        isSvg: true,
+                        content: [
+                            fn.path({
+                                classNames: ["cell-fill"],
+                                isSvg: true,
+                                attributes: {
+                                    d: "M18 21H6L0 10.5 6 0h12l6 10.5z",
+                                },
+                            }),
+                            fn.text({
+                                classNames: ["cell-letter"],
+                                attributes: {
+                                    x: "50%",
+                                    y: "50%",
+                                    dy: "0.35em",
+                                },
+                                isSvg: true,
+                                content: "s",
+                            }),
+                        ],
+                    }),
+                ],
+            });
+        }
+        toggleColorParameters(parameters) {
+            parameters = parameters || this.getColorParameters();
+            fn.$$("[data-sba-theme]").forEach((element) => {
+                element.style.setProperty("--dhue", parameters.hue);
+                element.style.setProperty("--dsat", parameters.sat + "%");
+            });
+            return this.setColorParameters(parameters);
+        }
+        getColorParameters() {
+            return {
+                hue: settings.get(`options.${this.key}.hue`) || 0,
+                sat: settings.get(`options.${this.key}.sat`) || 0,
+            };
+        }
+        setColorParameters(parameters) {
+            const merged = { ...settings.get(`options.${this.key}`), ...parameters };
+            settings.set(`options.${this.key}`, merged);
+            return this;
+        }
+        togglePopup() {
+            if (this.popup.isOpen) {
+                this.popup.toggle(false);
+                return this;
+            }
+            this.popup.toggle(true);
+            fn.$('.sba-color-selector .hive', this.popup.ui).dataset[prefix("theme")] = "dark";
+            fn.$("input:checked", this.popup.ui).focus();
+        }
+        toggle(state) {
+            super.toggle(state);
+            document.body.dataset[prefix("theme")] = state ? "dark" : "light";
+            return this;
+        }
+        constructor(app) {
+            super(app, "Dark Mode", "Apply a dark theme of your choice", {
+                canChangeState: true,
+                defaultState: false,
+            });
+            this.toggle(this.getState());
+            this.toggleColorParameters();
+            this.menuAction = "popup";
+            this.menuIcon = "null";
             this.popup = new Popup(this.app, this.key)
                 .setContent("title", this.title)
                 .setContent("subtitle", this.description)
@@ -969,63 +1078,27 @@
                     "body",
                     fn.div({
                         classNames: [prefix("color-selector", "d")],
-                        content: [
-                            swatches,
-                            fn.div({
-                                classNames: ["hive"],
-                                content: [
-                                    fn.svg({
-                                        classNames: ["hive-cell", "outer"],
-                                        attributes: {
-                                            viewBox: `0 0 24 21`,
-                                        },
-                                        isSvg: true,
-                                        content: [
-                                            fn.path({
-                                                classNames: ["cell-fill"],
-                                                isSvg: true,
-                                                attributes: {
-                                                    d: "M18 21H6L0 10.5 6 0h12l6 10.5z",
-                                                },
-                                            }),
-                                            fn.text({
-                                                classNames: ["cell-letter"],
-                                                attributes: {
-                                                    x: "50%",
-                                                    y: "50%",
-                                                    dy: "0.35em",
-                                                },
-                                                isSvg: true,
-                                                content: "s",
-                                            }),
-                                        ],
-                                    }),
-                                ],
-                            }),
-                        ],
+                        content: [this.getSwatches(), getHive()],
                     })
                 );
-            this.popup.ui.dataset[prefix("theme")] = "dark";
-            app.on(prefix("pluginsReady"), () => {
-                const darkMode = pluginRegistry.getPluginByKey("darkMode");
-                const darkModeToggle = getToggleButton(
-                    prefix(`${this.key}-${darkMode.key}`, "d"),
-                    darkMode.isEnabled,
-                    (event) => {
-                        darkMode.toggle(event.target.checked);
-                    },
-                    "Toggle Dark Mode",
-                    "before"
-                );
-                fn.$('.sb-modal-body', this.popup.ui).append(darkModeToggle);
+            const header = fn.$(".sb-modal-header", this.popup.ui);
+            const wrap = fn.div({
+                classNames: [prefix("header-wrap", "d")],
+                content: [fn.$(".sb-modal-title", header), this.getToggleButton()],
             });
+            header.prepend(wrap);
             this.shortcuts = [
+                {
+                    combo: "Shift+Alt+D",
+                    method: "toggle",
+                    label: "Dark Mode",
+                },
                 {
                     combo: "Shift+Alt+K",
                     method: "togglePopup",
+                    label: "Dark Mode Colors",
                 },
             ];
-            this.toggleColorParameters();
         }
     }
 
@@ -1898,7 +1971,7 @@
         }
     }
 
-    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--highlight-bg-color:hsl(52,93%,55%);--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:hsla(0,0%,100%,.85);--border-color:hsl(0,0%,86%);--area-bg-color:hsl(0,0%,90%);--invalid-color:hsl(0,0%,53%);--menu-hover-color:hsl(0,0%,96%);--head-row-bg-color:hsl(0,0%,96%);--card-color:hsla(52,93%,55%,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--sba-success-color:hsl(112,93%,35%);--sba-error-color:hsl(352,93%,35%);--toggle-on-bg-color:hsl(90,60%,40%);--toggle-off-bg-color:hsl(90,0%,50%)}[data-sba-theme=dark]{--highlight-bg-color:hsl(49,96%,50%);--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), 7%);--modal-bg-color:hsl(var(--dhue), var(--dsat), 7%, 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 50%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--head-row-bg-color:hsl(var(--dhue), var(--dsat), 13%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--sba-success-color:hsl(112,93%,55%);--sba-error-color:hsl(352,93%,41%);--toggle-on-bg-color:hsl(90,60%,50%);--toggle-off-bg-color:#ccc}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-game-wrapper,body[data-sba-theme=dark] #js-hook-pz-moment__loading{background:var(--body-bg-color) !important;color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--highlight-bg-color);fill:var(--highlight-bg-color);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-letter{fill:var(--text-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .pangram-message .sb-message{background:var(--highlight-bg-color);color:var(--highlight-text-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .pz-icon-close{filter:invert(1)}body[data-sba-theme=dark].pz-mobile .pz-toolbar-button,body[data-sba-theme=dark].pz-mobile .pz-dropdown__button,body[data-sba-theme=dark].pz-desktop .pz-toolbar-button,body[data-sba-theme=dark].pz-desktop .pz-dropdown__button{background-color:rgba(0,0,0,0) !important}body[data-sba-theme=dark] .pz-moment__frame.pz-moment__welcome *{color:var(--text-color)}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.pz-modal__button.white,.pz-footer,.pz-moment,.sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}.pz-modal__button.white .pz-moment__button.secondary,.pz-footer .pz-moment__button.secondary,.pz-moment .pz-moment__button.secondary,.sb-modal-scrim .pz-moment__button.secondary{color:#fff}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary{color:var(--text-color)}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary:hover{color:var(--body-bg-color)}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-moment__close_text{color:currentColor}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--highlight-bg-color)}.hive-cell .cell-fill{stroke:var(--body-bg-color)}.hive-cell .cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highhlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}[data-sba-theme] .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist,.hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}:root{--sba-cell-inline-padding: 2px;--sba-cell-block-padding: 3px}.hive-action.push-active.sba-no-feedback{background:var(--body-bg-color) !important}.sba-toggle-switch:where([type=checkbox][role=switch]){-webkit-appearance:none;-moz-appearance:none;appearance:none;position:relative;color:var(--border-color);font-size:inherit;width:2em;height:1em;box-sizing:content-box;border:1px solid;border-radius:1em;vertical-align:text-bottom;margin:auto;cursor:pointer;background:var(--body-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch])::before{content:\"\";position:absolute;top:50%;left:0;transform:translate(0, -50%);box-sizing:border-box;width:.7em;height:.7em;margin:0 .15em;border:1px solid;border-radius:50%;background:var(--text-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked{background:var(--toggle-on-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked::before{left:1em;background:var(--border-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):disabled{opacity:.4}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:rgba(0,0,0,0)}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--border-color)}[data-ui].inactive{display:none}details .sba-data-pane{border-top:none;margin-bottom:2px}.sb-modal-wrapper{--sba-cell-inline-padding: 7px}.sb-modal-wrapper .sba-data-pane{font-size:95%}.sba-data-pane{border:1px solid var(--border-color);border-collapse:collapse}.sba-data-pane.sba-thead-th-bold thead th{font-weight:bold}.sba-data-pane.sba-table-full-width{width:100%;table-layout:fixed}.sba-data-pane.sba-small-txt{font-size:85%}.sba-data-pane.sba-th-upper th{text-transform:uppercase}.sba-data-pane.sba-equal-cols[data-cols=\"3\"] :is(th,td){width:33.3333333333%}.sba-data-pane.sba-equal-cols[data-cols=\"4\"] :is(th,td){width:25%}.sba-data-pane.sba-equal-cols[data-cols=\"5\"] :is(th,td){width:20%}.sba-data-pane.sba-equal-cols[data-cols=\"6\"] :is(th,td){width:16.6666666667%}.sba-data-pane.sba-equal-cols[data-cols=\"7\"] :is(th,td){width:14.2857142857%}.sba-data-pane.sba-equal-cols[data-cols=\"8\"] :is(th,td){width:12.5%}.sba-data-pane.sba-equal-cols[data-cols=\"9\"] :is(th,td){width:11.1111111111%}.sba-data-pane.sba-equal-cols[data-cols=\"10\"] :is(th,td){width:10%}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-bg-color) !important}.sba-data-pane .sba-completed td,.sba-data-pane td.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane caption{text-align:start;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);line-height:1.75;font-weight:700}.sba-data-pane :is(th,td){border:1px solid var(--border-color);border-top:none;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);white-space:nowrap;text-align:center}.sba-data-pane th{background-color:var(--head-row-bg-color)}[data-ui=community] .sb-modal-body{margin-block-end:0}[data-ui=community] h4{font-weight:700;font-family:nyt-franklin;font-size:18px;margin:0 0 1px 0}[data-ui=community] p{margin:0 0 2px 0;font-size:16px}[data-ui=community] em{display:block;font-weight:normal;font-weight:500;font-size:14px;font-family:nyt-franklin}[data-ui=community] li{margin:0 0 12px 0}[data-ui=community] li ul{padding-left:20px;list-style:disc}[data-ui=community] li ul li{margin:0}[data-ui=community] li ul li a{color:var(--link-color)}[data-ui=community] li ul li a:hover{color:var(--link-hover-color)}[data-ui=milestones] .sba-milestone-table-wrapper{display:flex;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;justify-content:flex-start;gap:12px 40px}[data-ui=milestones] figcaption{padding:10px var(--sba-cell-inline-padding)}[data-ui=milestones] b{font-weight:700}[data-ui=milestones] progress{border-width:0;height:5px}[data-ui=milestones] .sba-col{width:calc(50% - 20px)}[data-ui=milestones] .sba-summaries .sba-data-pane{table-layout:fixed;margin-block-end:12px}[data-ui=milestones] .sba-summaries tr :is(td,th){text-align:center}[data-ui=milestones] .sba-tiers .sba-data-pane .sba-preeminent{border-bottom:1px solid var(--border-color) !important}[data-ui=milestones] .sba-data-pane{width:100%}[data-ui=milestones] .sba-data-pane td.sba-progress-box{padding:0}[data-ui=milestones] .sba-data-pane tr.sba-completed :is(th,td){color:var(--invalid-color)}[data-ui=milestones] .sba-data-pane tbody th{text-align:start}[data-ui=milestones] .sba-data-pane tbody td:nth-child(n+2){max-width:100px}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px;justify-content:space-between;align-items:center}progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;padding:0;background:rgba(0,0,0,0);display:block;height:10px;border:1px var(--border-color) solid}progress::-webkit-progress-bar{background-color:rgba(0,0,0,0)}progress::-webkit-progress-value{background-color:var(--highlight-bg-color);height:4px}progress::-moz-progress-bar{background-color:var(--highlight-bg-color)}[data-ui=progressBar]{border-width:0 0 1px 0;height:6px}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px;width:179px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 36px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-bg-color);top:3px;left:14px;font-size:16px}[data-ui=menu] li[data-target=darkModeColors],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}[data-ui=menu] li svg{display:inline-block;width:20px;height:20px;position:absolute;left:7px;top:6px}[data-ui=menu] li svg .shape{fill:var(--text-color)}[data-ui=menu] li svg .content{fill:var(--highlight-bg-color)}.sba-color-selector{display:flex;justify-content:space-between;gap:10px}.sba-color-selector svg{width:120px;height:120px;display:block}[data-ui=darkModeColors] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkModeColors] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkModeColors] .cell-letter{font-size:8px;font-weight:600}[data-ui=darkModeColors] .sba-toggle-label{padding-inline-end:10px}.sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:220px}.sba-swatches li{position:relative;overflow:hidden;margin-bottom:5px}.sba-swatches label{border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer}.sba-swatches input{position:absolute;left:-100px}.sba-swatches input:checked~label{border-color:var(--highlight-bg-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *{color:var(--text-color);border-color:var(--border-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *::selection{background-color:var(--body-bg-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) .pz-dropdown__arrow{border-top-color:var(--text-color);border-bottom-color:var(--text-color);border-right-color:rgba(0,0,0,0);border-left-color:rgba(0,0,0,0)}.pz-mobile .pz-toolbar-button__sba{color:var(--text-color)}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]){background-color:var(--body-bg-color) !important}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]):hover{background:var(--menu-hover-color)}[data-sba-theme=dark] #portal-game-toolbar i,[data-sba-theme=dark] #js-mobile-toolbar i{filter:invert(1);background-color:rgba(0,0,0,0)}[data-sba-theme=dark] .conversion-banner__icon{filter:invert(1)}[data-sba-theme=dark] :is(.sb-stats-bar-rank__word-count,.sb-stats-bar-rank__text){filter:contrast(99%);color:#999}[data-sba-theme] .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--highlight-bg-color);top:4px;font-size:16px}[data-sba-theme] .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:rgba(0,0,0,0)}[data-sba-submenu=true] [data-ui=menu]{background:var(--menu-hover-color);color:var(--text-color)}[data-ui=shortcuts] tbody tr th{text-align:start}[data-ui=shortcuts] tbody tr td:last-child{font-size:16px;cursor:pointer}[data-ui=shortcuts] tbody tr td:last-child::selection{color:currentColor;background-color:rgba(0,0,0,0)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=true]{color:var(--sba-success-color)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=false]{color:var(--sba-error-color)}[data-ui=grid] table{margin-left:-20px;width:calc(100% + 40px)}[data-ui=grid] tbody tr:last-child td{background-color:var(--head-row-bg-color)}[data-ui=grid] tbody tr td{padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type{background-color:var(--head-row-bg-color)}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba summary{list-style:none;padding:1px 15px 0 21px}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li{position:relative}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li.sba-pangram{font-weight:700;border-bottom:2px var(--highlight-bg-color) solid}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks{position:absolute;right:0;bottom:3px}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks mark{display:none}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-s-active .sba-mark-s{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-p-active .sba-mark-p{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-d-active .sba-mark-d{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-c-active .sba-mark-c{display:inline-block}[data-sba-theme] mark{background:rgba(0,0,0,0);font-size:11px;pointer-events:none;text-transform:uppercase}[data-sba-theme] mark::after{content:\" \"}[data-sba-theme] mark:last-of-type::after{content:normal}[data-sba-theme] mark::selection{background-color:rgba(0,0,0,0)}[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}.sb-modal-frame .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{display:none}.pz-mobile [data-ui=menu]{display:flex;align-items:center;height:100%;padding:0 6px}[data-sba-submenu=true]{overflow-y:hidden}[data-sba-submenu=true] .sba{position:relative;left:-167px;top:-175px}[data-sba-submenu=true] .pz-mobile-dropdown.show .pz-dropdown__list{display:none}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{display:block;position:absolute;right:-16px;top:45px}[data-sba-submenu=true] .sba{left:-167px;top:0px}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:rgba(0,0,0,0)}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true][data-sba-submenu=true] .sba-container{top:0;height:0;z-index:4}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}}@media(max-width: 450px){[data-ui=grid] table{table-layout:auto}[data-ui=grid] table.sba-data-pane tbody th{width:28px !important}[data-ui=grid] table.sba-data-pane thead th:first-of-type{width:28px !important}[data-ui=grid] table.sba-data-pane :is(thead,tbody) tr :is(th,td){width:auto;font-size:90%}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}[data-ui=overview] .sba-data-pane tbody th{text-transform:none;width:31%}[data-ui=overview] .sba-data-pane tbody td{width:23%}[data-ui=overview] .sba-data-pane tbody tr:nth-child(1) th::after{content:\"ords\"}[data-ui=overview] .sba-data-pane tbody tr:nth-child(2) th::after{content:\"oints\"}[data-ui=overview] .sba-data-pane thead th{width:23%}[data-ui=overview] .sba-data-pane thead th:first-of-type{width:31%}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:flex}}@media(min-width: 900px){[data-sba-submenu=true].pz-desktop [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 66px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba{top:-66px}[data-sba-active=true].pz-desktop .sba{left:-191px}}@media(min-width: 1298px){[data-sba-active=true][data-sba-submenu=true] .sba{left:-179px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}\n";
+    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--highlight-bg-color:hsl(52,93%,55%);--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:hsla(0,0%,100%,.85);--border-color:hsl(0,0%,86%);--area-bg-color:hsl(0,0%,90%);--invalid-color:hsl(0,0%,53%);--menu-hover-color:hsl(0,0%,96%);--head-row-bg-color:hsl(0,0%,96%);--card-color:hsla(52,93%,55%,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--sba-success-color:hsl(112,93%,35%);--sba-error-color:hsl(352,93%,35%);--toggle-on-bg-color:hsl(90,60%,40%);--toggle-off-bg-color:hsl(90,0%,50%)}[data-sba-theme=dark]{--highlight-bg-color:hsl(49,96%,50%);--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), 7%);--modal-bg-color:hsl(var(--dhue), var(--dsat), 7%, 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 50%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--head-row-bg-color:hsl(var(--dhue), var(--dsat), 13%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--sba-success-color:hsl(112,93%,55%);--sba-error-color:hsl(352,93%,41%);--toggle-on-bg-color:hsl(90,60%,50%);--toggle-off-bg-color:#ccc}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-game-wrapper,body[data-sba-theme=dark] #js-hook-pz-moment__loading{background:var(--body-bg-color) !important;color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--highlight-bg-color);fill:var(--highlight-bg-color);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-letter{fill:var(--text-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .pangram-message .sb-message{background:var(--highlight-bg-color);color:var(--highlight-text-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .pz-icon-close{filter:invert(1)}body[data-sba-theme=dark].pz-mobile .pz-toolbar-button,body[data-sba-theme=dark].pz-mobile .pz-dropdown__button,body[data-sba-theme=dark].pz-desktop .pz-toolbar-button,body[data-sba-theme=dark].pz-desktop .pz-dropdown__button{background-color:rgba(0,0,0,0) !important}body[data-sba-theme=dark] .pz-moment__frame.pz-moment__welcome *{color:var(--text-color)}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.pz-modal__button.white,.pz-footer,.pz-moment,.sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}.pz-modal__button.white .pz-moment__button.secondary,.pz-footer .pz-moment__button.secondary,.pz-moment .pz-moment__button.secondary,.sb-modal-scrim .pz-moment__button.secondary{color:#fff}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary{color:var(--text-color)}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary:hover{color:var(--body-bg-color)}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-moment__close_text{color:currentColor}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--highlight-bg-color)}.hive-cell .cell-fill{stroke:var(--body-bg-color)}.hive-cell .cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highhlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}[data-sba-theme] .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist,.hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}:root{--sba-cell-inline-padding: 2px;--sba-cell-block-padding: 3px}.hive-action.push-active.sba-no-feedback{background:var(--body-bg-color) !important}.sba-toggle-switch:where([type=checkbox][role=switch]){-webkit-appearance:none;-moz-appearance:none;appearance:none;position:relative;color:var(--border-color);font-size:inherit;width:2em;height:1em;box-sizing:content-box;border:1px solid;border-radius:1em;vertical-align:text-bottom;margin:auto;cursor:pointer;background:var(--body-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch])::before{content:\"\";position:absolute;top:50%;left:0;transform:translate(0, -50%);box-sizing:border-box;width:.7em;height:.7em;margin:0 .15em;border:1px solid;border-radius:50%;background:var(--text-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked{background:var(--toggle-on-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked::before{left:1em;background:var(--border-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):disabled{opacity:.4}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:rgba(0,0,0,0)}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--border-color)}[data-ui].inactive{display:none}details .sba-data-pane{border-top:none;margin-bottom:2px}.sb-modal-wrapper{--sba-cell-inline-padding: 7px}.sb-modal-wrapper .sba-data-pane{font-size:95%}.sba-data-pane{border:1px solid var(--border-color);border-collapse:collapse}.sba-data-pane.sba-thead-th-bold thead th{font-weight:bold}.sba-data-pane.sba-table-full-width{width:100%;table-layout:fixed}.sba-data-pane.sba-small-txt{font-size:85%}.sba-data-pane.sba-th-upper th{text-transform:uppercase}.sba-data-pane.sba-equal-cols[data-cols=\"3\"] :is(th,td){width:33.3333333333%}.sba-data-pane.sba-equal-cols[data-cols=\"4\"] :is(th,td){width:25%}.sba-data-pane.sba-equal-cols[data-cols=\"5\"] :is(th,td){width:20%}.sba-data-pane.sba-equal-cols[data-cols=\"6\"] :is(th,td){width:16.6666666667%}.sba-data-pane.sba-equal-cols[data-cols=\"7\"] :is(th,td){width:14.2857142857%}.sba-data-pane.sba-equal-cols[data-cols=\"8\"] :is(th,td){width:12.5%}.sba-data-pane.sba-equal-cols[data-cols=\"9\"] :is(th,td){width:11.1111111111%}.sba-data-pane.sba-equal-cols[data-cols=\"10\"] :is(th,td){width:10%}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-bg-color) !important}.sba-data-pane .sba-completed td,.sba-data-pane td.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane caption{text-align:start;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);line-height:1.75;font-weight:700}.sba-data-pane :is(th,td){border:1px solid var(--border-color);border-top:none;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);white-space:nowrap;text-align:center}.sba-data-pane th{background-color:var(--head-row-bg-color)}[data-ui=community] .sb-modal-body{margin-block-end:0}[data-ui=community] h4{font-weight:700;font-family:nyt-franklin;font-size:18px;margin:0 0 1px 0}[data-ui=community] p{margin:0 0 2px 0;font-size:16px}[data-ui=community] em{display:block;font-weight:normal;font-weight:500;font-size:14px;font-family:nyt-franklin}[data-ui=community] li{margin:0 0 12px 0}[data-ui=community] li ul{padding-left:20px;list-style:disc}[data-ui=community] li ul li{margin:0}[data-ui=community] li ul li a{color:var(--link-color)}[data-ui=community] li ul li a:hover{color:var(--link-hover-color)}[data-ui=milestones] .sba-milestone-table-wrapper{display:flex;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;justify-content:flex-start;gap:12px 40px}[data-ui=milestones] figcaption{padding:10px var(--sba-cell-inline-padding)}[data-ui=milestones] b{font-weight:700}[data-ui=milestones] progress{border-width:0;height:5px}[data-ui=milestones] .sba-col{width:calc(50% - 20px)}[data-ui=milestones] .sba-summaries .sba-data-pane{table-layout:fixed;margin-block-end:12px}[data-ui=milestones] .sba-summaries tr :is(td,th){text-align:center}[data-ui=milestones] .sba-tiers .sba-data-pane .sba-preeminent{border-bottom:1px solid var(--border-color) !important}[data-ui=milestones] .sba-data-pane{width:100%}[data-ui=milestones] .sba-data-pane td.sba-progress-box{padding:0}[data-ui=milestones] .sba-data-pane tr.sba-completed :is(th,td){color:var(--invalid-color)}[data-ui=milestones] .sba-data-pane tbody th{text-align:start}[data-ui=milestones] .sba-data-pane tbody td:nth-child(n+2){max-width:100px}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px;justify-content:space-between;align-items:center}progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;padding:0;background:rgba(0,0,0,0);display:block;height:10px;border:1px var(--border-color) solid}progress::-webkit-progress-bar{background-color:rgba(0,0,0,0)}progress::-webkit-progress-value{background-color:var(--highlight-bg-color);height:4px}progress::-moz-progress-bar{background-color:var(--highlight-bg-color)}[data-ui=progressBar]{border-width:0 0 1px 0;height:6px}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px;width:179px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 36px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-bg-color);top:3px;left:14px;font-size:16px}[data-ui=menu] li[data-target=darkMode],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}[data-ui=menu] li svg{display:inline-block;width:20px;height:20px;position:absolute;left:7px;top:6px}[data-ui=menu] li svg .shape{fill:var(--text-color)}[data-ui=menu] li svg .content{fill:var(--highlight-bg-color)}.sba-color-selector{display:flex;justify-content:space-between;gap:10px}.sba-color-selector svg{width:120px;height:120px;display:block}[data-ui=darkMode] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkMode] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkMode] .cell-letter{font-size:8px;font-weight:600}[data-ui=darkMode] .sba-toggle-label{padding-inline-end:10px}[data-ui=darkMode] .sba-header-wrap{display:flex;justify-content:space-between}.sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:220px}.sba-swatches li{position:relative;overflow:hidden;margin-bottom:5px}.sba-swatches label{border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer}.sba-swatches input{position:absolute;left:-100px}.sba-swatches input:checked~label{border-color:var(--highlight-bg-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *{color:var(--text-color);border-color:var(--border-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *::selection{background-color:var(--body-bg-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) .pz-dropdown__arrow{border-top-color:var(--text-color);border-bottom-color:var(--text-color);border-right-color:rgba(0,0,0,0);border-left-color:rgba(0,0,0,0)}.pz-mobile .pz-toolbar-button__sba{color:var(--text-color)}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]){background-color:var(--body-bg-color) !important}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]):hover{background:var(--menu-hover-color)}[data-sba-theme=dark] #portal-game-toolbar i,[data-sba-theme=dark] #js-mobile-toolbar i{filter:invert(1);background-color:rgba(0,0,0,0)}[data-sba-theme=dark] .conversion-banner__icon{filter:invert(1)}[data-sba-theme=dark] :is(.sb-stats-bar-rank__word-count,.sb-stats-bar-rank__text){filter:contrast(99%);color:#999}[data-sba-theme] .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--highlight-bg-color);top:4px;font-size:16px}[data-sba-theme] .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:rgba(0,0,0,0)}[data-sba-submenu=true] [data-ui=menu]{background:var(--menu-hover-color);color:var(--text-color)}[data-ui=shortcuts] tbody tr th{text-align:start}[data-ui=shortcuts] tbody tr td:last-child{font-size:16px;cursor:pointer}[data-ui=shortcuts] tbody tr td:last-child::selection{color:currentColor;background-color:rgba(0,0,0,0)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=true]{color:var(--sba-success-color)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=false]{color:var(--sba-error-color)}[data-ui=grid] table{margin-left:-20px;width:calc(100% + 40px)}[data-ui=grid] tbody tr:last-child td{background-color:var(--head-row-bg-color)}[data-ui=grid] tbody tr td{padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type{background-color:var(--head-row-bg-color)}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba summary{list-style:none;padding:1px 15px 0 21px}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li{position:relative}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li.sba-pangram{font-weight:700;border-bottom:2px var(--highlight-bg-color) solid}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks{position:absolute;right:0;bottom:3px}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks mark{display:none}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-s-active .sba-mark-s{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-p-active .sba-mark-p{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-d-active .sba-mark-d{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-c-active .sba-mark-c{display:inline-block}[data-sba-theme] mark{background:rgba(0,0,0,0);font-size:11px;pointer-events:none;text-transform:uppercase}[data-sba-theme] mark::after{content:\" \"}[data-sba-theme] mark:last-of-type::after{content:normal}[data-sba-theme] mark::selection{background-color:rgba(0,0,0,0)}[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}.sb-modal-frame .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{display:none}.pz-mobile [data-ui=menu]{display:flex;align-items:center;height:100%;padding:0 6px}[data-sba-submenu=true]{overflow-y:hidden}[data-sba-submenu=true] .sba{position:relative;left:-167px;top:-175px}[data-sba-submenu=true] .pz-mobile-dropdown.show .pz-dropdown__list{display:none}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{display:block;position:absolute;right:-16px;top:45px}[data-sba-submenu=true] .sba{left:-167px;top:0px}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:rgba(0,0,0,0)}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true][data-sba-submenu=true] .sba-container{top:0;height:0;z-index:4}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}}@media(max-width: 450px){[data-ui=grid] table{table-layout:auto}[data-ui=grid] table.sba-data-pane tbody th{width:28px !important}[data-ui=grid] table.sba-data-pane thead th:first-of-type{width:28px !important}[data-ui=grid] table.sba-data-pane :is(thead,tbody) tr :is(th,td){width:auto;font-size:90%}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}[data-ui=overview] .sba-data-pane tbody th{text-transform:none;width:31%}[data-ui=overview] .sba-data-pane tbody td{width:23%}[data-ui=overview] .sba-data-pane tbody tr:nth-child(1) th::after{content:\"ords\"}[data-ui=overview] .sba-data-pane tbody tr:nth-child(2) th::after{content:\"oints\"}[data-ui=overview] .sba-data-pane thead th{width:23%}[data-ui=overview] .sba-data-pane thead th:first-of-type{width:31%}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:flex}}@media(min-width: 900px){[data-sba-submenu=true].pz-desktop [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 66px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba{top:-66px}[data-sba-active=true].pz-desktop .sba{left:-191px}}@media(min-width: 1298px){[data-sba-active=true][data-sba-submenu=true] .sba{left:-179px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}\n";
 
     class Styles extends Plugin {
         constructor(app) {
@@ -2279,7 +2352,6 @@
             Grid,
             SpillTheBeans,
             DarkMode,
-            ColorConfig,
             PangramHl,
             Googlify,
             Styles,

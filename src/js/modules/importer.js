@@ -5,7 +5,6 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import DarkMode from '../plugins/darkMode.js';
-import ColorConfig from '../plugins/colorConfig.js';
 import Header from '../plugins/header.js';
 import ProgressBar from '../plugins/ProgressBar.js';
 import Overview from '../plugins/overview.js';
@@ -42,7 +41,6 @@ const getPlugins = () => {
         Grid,
         SpillTheBeans,
         DarkMode,
-        ColorConfig,
         PangramHl,
         Googlify,
         Styles,

@@ -1,0 +1,36 @@
+<svg viewBox="0 0 62.4 64.8" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">>
+    <defs>
+        <style>
+            text {
+                font-family: sans-serif;
+                font-size: 12px;
+                dominant-baseline: middle;
+                text-anchor: middle
+            }
+        </style>
+        <symbol id="hive-cell">
+            <polygon points="18,0 24,10.39 18,20.78 6,20.78 0,10.39 6,0" class="sba-hive-cell" fill="peru"></polygon>
+        </symbol>
+    </defs>
+    <g transform="translate(19.2 22.01)" class="hive-cell center">
+        <use href="#hive-cell"></use><text x="0" y="0">u</text>
+    </g>
+    <g transform="translate(0 11.01)" class="hive-cell outer">
+        <use href="#hive-cell"></use><text x="0" y="0">g</text>
+    </g>
+    <g transform="translate(19.2 0.01)" class="hive-cell outer">
+        <use href="#hive-cell"></use><text x="0" y="0">e</text>
+    </g>
+    <g transform="translate(38.4 11.01)" class="hive-cell outer">
+        <use href="#hive-cell"></use><text x="0" y="0">a</text>
+    </g>
+    <g transform="translate(38.4 33.01)" class="hive-cell outer">
+        <use href="#hive-cell"></use><text x="0" y="0">h</text>
+    </g>
+    <g transform="translate(19.2 44.01)" class="hive-cell outer">
+        <use href="#hive-cell"></use><text x="0" y="0">l</text>
+    </g>
+    <g transform="translate(0 33.01)" class="hive-cell outer">
+        <use href="#hive-cell"></use><text x="0" y="0">d</text>
+    </g>
+</svg>

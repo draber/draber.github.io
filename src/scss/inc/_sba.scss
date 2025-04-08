@@ -410,7 +410,7 @@ progress {
             }
         }
 
-        &[data-target="darkModeColors"],
+        &[data-target="darkMode"],
         &[data-icon="sba"] {
             border-top: 1px solid var(--border-color);
         }
@@ -455,7 +455,7 @@ progress {
     }
 }
 
-[data-ui="darkModeColors"] {
+[data-ui="darkMode"] {
     .hive {
         width: auto;
         padding: 0;
@@ -480,6 +480,11 @@ progress {
 
     .sba-toggle-label {
         padding-inline-end: 10px;
+    }
+    
+    .sba-header-wrap {
+        display: flex;
+        justify-content: space-between;
     }
 }
 
