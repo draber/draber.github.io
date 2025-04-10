@@ -869,7 +869,7 @@
             fn.$("input:checked", this.popup.ui).focus();
         }
         toggleColorScheme(hslObj = {}) {
-            let newMode = "dark";
+            let newMode;
             if (!hslObj) {
                 const oldMode = document.body.dataset[prefix("theme")] || "light";
                 newMode = oldMode === "dark" ? "light" : "dark";
@@ -1134,6 +1134,7 @@
             if(typeof state === 'undefined') {
                 state = !this.getState();
             }
+            this.super.toggle(state);
             return this;
         }
         constructor(app) {

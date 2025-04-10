@@ -39,7 +39,7 @@ class DarkMode extends Plugin {
      * @returns {DarkMode}
      */
     toggleColorScheme(hslObj = {}) {
-        let newMode = "dark";
+        let newMode;
         if (!hslObj) {
             const oldMode = document.body.dataset[prefix("theme")] || "light";
             newMode = oldMode === "dark" ? "light" : "dark";

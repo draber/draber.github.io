@@ -38,6 +38,8 @@ class SpillTheBeans extends Plugin {
         if(typeof state === 'undefined') {
             state = !this.getState();
         }
+
+        this.super.toggle(state);
         return this;
     }
 
