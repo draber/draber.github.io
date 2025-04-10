@@ -58,7 +58,7 @@ export const getProgressBar = (value, max) => {
 };
 
 export const getToggleButton = (id, checked, callback, labelText = "", labelPosition = "before") => {
-    const toggle = fn.input({
+    const toggleBtn = fn.input({
         attributes: {
             type: "checkbox",
             id,
@@ -75,7 +75,7 @@ export const getToggleButton = (id, checked, callback, labelText = "", labelPosi
     });
 
     if (!labelText) {
-        return toggle;
+        return toggleBtn;
     }
 
     const label = fn.label({
@@ -88,103 +88,20 @@ export const getToggleButton = (id, checked, callback, labelText = "", labelPosi
 
     switch (labelPosition) {
         case "wrap":
-            label.append(toggle);
+            label.append(toggleBtn);
             label.classList.add(prefix("toggle-container", "d"));
             return label;
         case "before":
             return fn.span({
                 classNames: [prefix("toggle-container", "d")],
-                content: [label, toggle],
+                content: [label, toggleBtn],
             });
         case "after":
             return fn.span({
                 classNames: [prefix("toggle-container", "d")],
-                content: [toggle, label],
+                content: [toggleBtn, label],
             });
     }
 };
 
-/**
- * Build a static SVG representation of the spelling bee hive.
- * Center letter is always in the yellow hex.
- *
- * @returns {HTMLElement} SVG element containing the hive.
- */
-export const getHive = () => {
-    const translate = ({ x, y }) => `translate(${x} ${y})`;
 
-    // The order of the cells in the DOM of the actual game is:
-    const canonicalOrder = ["c", "nw", "n", "ne", "se", "s", "sw"];
-
-    const hiveLayout = {
-        c:  { x: 19.2,  y: 22.01 }, 
-        nw: { x: 0,     y: 11.01 }, 
-        n:  { x: 19.2,  y: 0.01 },
-        ne: { x: 38.4,  y: 11.01 },
-        se: { x: 38.4,  y: 33.01 },
-        s:  { x: 19.2,  y: 44.01 },
-        sw: { x: 0,     y: 33.01 },
-    };
-
-    const symbol = fn.symbol({
-        isSvg: true,
-        attributes: {
-            id: "hive-cell"
-        },
-        content: fn.polygon({
-            isSvg: true,
-            attributes: {
-                points : "18,0 24,10.39 18,20.78 6,20.78 0,10.39 6,0",
-                fill: "peru"
-            },
-            classNames: [prefix("hive-cell", "d")],
-        }),
-    });
-
-    const style = fn.style({
-        isSvg: true,
-        content: `text {font-family:sans-serif;font-size:12px;dominant-baseline:middle;text-anchor:middle}`,
-    });
-
-    const defs = fn.defs({
-        isSvg: true,
-        content: [style, symbol],
-    });
-
-    const elements = [defs];
-
-    fn.$$(".sb-hive .hive-cell").forEach((cell, i) => {
-        const orientation = canonicalOrder[i];
-        elements.push(fn.g({
-            isSvg: true,
-            attributes: {
-                transform: translate(hiveLayout[orientation]),
-            },
-            classNames: cell.classList,
-            content: [
-                fn.use({
-                    isSvg: true,
-                    attributes: {
-                        href: `#hive-cell`,
-                    }
-                }),
-                fn.text({
-                    isSvg: true,
-                    attributes: {
-                        x: 0,
-                        y: 0,
-                    },
-                    content: cell.textContent.trim(),
-                }),
-            ],
-        }));
-    });
-
-    return fn.svg({
-        isSvg: true,
-        attributes: {
-            viewBox: "0 0 62.4 64.8"
-        },
-        content: elements,
-    });
-};

@@ -8,8 +8,9 @@ import fn from "fancy-node";
 import settings from "../modules/settings.js";
 import Plugin from "../modules/plugin.js";
 import Popup from "./popup.js";
-import { getToggleButton, getHive } from "../modules/helpers.js";
 import { prefix } from "../modules/string.js";
+import { utils } from "../utils/darkMode.utils.js";
+import { ui } from "../utils/darkMode.ui.js";
 
 /**
  * Dark Mode plugin
@@ -19,114 +20,8 @@ import { prefix } from "../modules/string.js";
  */
 class DarkMode extends Plugin {
     /**
-     * Build the swatches widget
-     * @returns {HTMLElement}
-     */
-    getSwatches() {
-        const swatches = fn.ul({
-            classNames: [prefix("swatches", "d")],
-        });
-
-        for (let hue = 0; hue < 360; hue += 30) {
-            const sat = hue === 0 ? 0 : 25;
-            swatches.append(
-                fn.li({
-                    content: [
-                        fn.input({
-                            attributes: {
-                                name: "color-picker",
-                                type: "radio",
-                                value: hue,
-                                checked: hue === this.getColorParameters().hue,
-                                id: prefix("h" + hue),
-                            },
-                            events: {
-                                change: () => {
-                                    this.toggleColorParameters({
-                                        hue,
-                                        sat,
-                                    });
-                                },
-                            },
-                        }),
-                        fn.label({
-                            attributes: {
-                                htmlFor: prefix("h" + hue),
-                            },
-                            style: {
-                                background: `hsl(${hue}, ${sat}%, 22%)`,
-                            },
-                        }),
-                    ],
-                })
-            );
-        }
-        return swatches;
-    }
-
-    /**
-     * Creates a toggle button for dark mode.
-     * @returns {HTMLElement}
-     */
-    getToggleButton() {
-        const labelAction = () => (this.getState() ? "Disable" : "Enable");
-        return getToggleButton(
-            prefix(`${this.key}-toggle`, "d"),
-            this.getState(),
-            (event) => {
-                this.toggle(event.target.checked);
-                const label = fn.$("label", event.target.parentElement);
-                label.textContent = labelAction();
-            },
-            labelAction(),
-            "before"
-        );
-    }
-
-    /**
-     * Applies the hue and saturation parameters of the dark mode theme
-     * as CSS custom properties to all elements with the `data-sba-theme` attribute.
-     * If no parameters are provided, the currently stored settings will be used.
-     *
-     * @param {{ hue: number, sat: number }} [parameters] - Object containing hue and saturation values.
-     * @returns {this} Returns the current instance for method chaining.
-     */
-    toggleColorParameters(parameters) {
-        parameters = parameters || this.getColorParameters();
-        fn.$$("[data-sba-theme]").forEach((element) => {
-            element.style.setProperty("--dhue", parameters.hue);
-            element.style.setProperty("--dsat", parameters.sat + "%");
-        });
-        return this.setColorParameters(parameters);
-    }
-
-    /**
-     * Retrieves the currently stored hue and saturation parameters from settings.
-     *
-     * @returns {{ hue: number, sat: number }} The current color parameters.
-     */
-    getColorParameters() {
-        return {
-            hue: settings.get(`options.${this.key}.hue`) || 0,
-            sat: settings.get(`options.${this.key}.sat`) || 0,
-        };
-    }
-
-    /**
-     * Stores the provided hue and saturation parameters into the settings.
-     *
-     * @param {{ hue: number, sat: number }} parameters - The color parameters to store.
-     * @returns {this} Returns the current instance for method chaining.
-     */
-    setColorParameters(parameters) {
-        const merged = { ...settings.get(`options.${this.key}`), ...parameters };
-        settings.set(`options.${this.key}`, merged);
-        return this;
-    }
-
-    /**
      * Toggle pop-up
-     * @returns {ColorConfig}
+     * @returns {DarkMode}
      */
     togglePopup() {
         if (this.popup.isOpen) {
@@ -134,17 +29,29 @@ class DarkMode extends Plugin {
             return this;
         }
         this.popup.toggle(true);
-        fn.$(".sba-color-selector .hive", this.popup.ui).dataset[prefix("theme")] = "dark";
+        // fn.$(".sba-color-selector .hive", this.popup.ui).dataset[prefix("theme")] = "dark";
         fn.$("input:checked", this.popup.ui).focus();
     }
+
     /**
      * Toggle dark mode
-     * @param state
+     * @param {Object} {{ hue: number, sat: number, lig: number }} hslObj
      * @returns {DarkMode}
      */
-    toggle(state) {
-        super.toggle(state);
-        document.body.dataset[prefix("theme")] = state ? "dark" : "light";
+    toggleColorScheme(hslObj = {}) {
+        let newMode = "dark";
+        if (!hslObj) {
+            const oldMode = document.body.dataset[prefix("theme")] || "light";
+            newMode = oldMode === "dark" ? "light" : "dark";
+            hslObj = this.getColorParameters(newMode);
+        } else {
+            newMode = this.getModeFromHsl(hslObj);
+        }
+        document.body.dataset[prefix("theme")] = newMode;
+        document.body.style.setProperty("--dhue", hslObj.hue);
+        document.body.style.setProperty("--dsat", hslObj.sat + "%");
+        document.body.style.setProperty("--dlig", hslObj.lig + "%");
+        settings.set(`options.${self.key}`, hslObj);
         return this;
     }
 
@@ -153,13 +60,25 @@ class DarkMode extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Dark Mode", "Apply a dark theme of your choice", {
+        super(app, "Dark Mode Themes", "Choose your vibe: shades for morning people and night owls.", {
             canChangeState: true,
             defaultState: false,
         });
 
-        this.toggle(this.getState());
-        this.toggleColorParameters();
+        Object.assign(this, utils(this), ui(this));
+
+        if (this.usesNonSbaDarkMode()) {
+            this.toggleColorScheme(this.getColorParameters("light"));
+            return;
+        } else if (this.usesSbaDarkMode()) {
+            // sba colors
+            this.toggleColorScheme(this.getColorParameters("dark"));
+        } else if (this.usesSystemDarkMode()) {
+            // default sba colors
+            this.toggleColorScheme(this.getColorParameters("dark"));
+        } else {
+            this.toggleColorScheme(this.getColorParameters("light"));
+        }
 
         this.menuAction = "popup";
         this.menuIcon = "null";
@@ -171,21 +90,14 @@ class DarkMode extends Plugin {
                 "body",
                 fn.div({
                     classNames: [prefix("color-selector", "d")],
-                    content: [this.getSwatches(), getHive()],
+                    content: [this.getSwatches(), this.getHive()],
                 })
             );
-
-        const header = fn.$(".sb-modal-header", this.popup.ui);
-        const wrap = fn.div({
-            classNames: [prefix("header-wrap", "d")],
-            content: [fn.$(".sb-modal-title", header), this.getToggleButton()],
-        });
-        header.prepend(wrap);
 
         this.shortcuts = [
             {
                 combo: "Shift+Alt+D",
-                method: "toggle",
+                method: "toggleColorScheme",
                 label: "Dark Mode",
             },
             {

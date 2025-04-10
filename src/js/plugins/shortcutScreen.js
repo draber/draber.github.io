@@ -41,13 +41,13 @@ class ShortcutScreen extends TablePane {
     getData() {
         const rows = [["", "Shortcut", "State"]];
         shortcutRegistry.getRegistry().forEach((shortcut) => {
-            const toggle = getToggleButton(shortcut.combo, shortcut.enabled, (evt) => {
+            const toggleBtn = getToggleButton(shortcut.combo, shortcut.enabled, (evt) => {
                 const shortcut = shortcutRegistry.get(evt.target.closest("input").id);
                 shortcut.enabled = !shortcut.enabled;
                 // save new state
                 shortcutRegistry.set(shortcut.combo, shortcut);
             });
-            rows.push([shortcut.label, shortcut.human, toggle]);
+            rows.push([shortcut.label, shortcut.human, toggleBtn]);
         });
 
         return rows;

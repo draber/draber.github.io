@@ -31,14 +31,14 @@ class SpillTheBeans extends Plugin {
         return this;
     }
 
-    toggle(state) {
+    toggleMode(state) {
         if (state) {
             this.app.domSet("submenu", false);
         }
         if(typeof state === 'undefined') {
             state = !this.getState();
         }
-        return super.toggle(state);
+        return this;
     }
 
     /**
@@ -61,7 +61,7 @@ class SpillTheBeans extends Plugin {
 
         this.target = fn.$(".sb-controls", this.app.gameWrapper);
 
-        this.toggle(false);
+        this.toggleMode(false);
 
         this.shortcuts = [
             {

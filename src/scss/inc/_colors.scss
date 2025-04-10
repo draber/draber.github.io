@@ -7,6 +7,7 @@
 [data-sba-theme] {
     --dhue: 0;
     --dsat: 0%;
+    --dlig: 0%;
     --link-hue: 206;
     --shadow-light-color: hsl(49, 96%, 50%, 0.35);
     --shadow-dark-color: hsl(49, 96%, 50%, 0.7);
@@ -47,7 +48,7 @@ $themeColors: (
         area-bg:       hsl(var(--dhue), var(--dsat), 22%),
         invalid:       hsl(var(--dhue), var(--dsat), 50%),
         menu-hover:    hsl(var(--dhue), var(--dsat), 22%),
-        head-row-bg:  hsl(var(--dhue), var(--dsat), 13%),
+        head-row-bg:   hsl(var(--dhue), var(--dsat), 13%),
         card:          hsl(var(--dhue), var(--dsat), 22%),
         link:          hsl(var(--link-hue), 90%, 64%),
         link-visited:  hsl(var(--link-hue), 90%, 76%),

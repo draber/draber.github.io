@@ -447,12 +447,6 @@ progress {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-
-    svg {
-        width: 120px;
-        height: 120px;
-        display: block;
-    }
 }
 
 [data-ui="darkMode"] {
@@ -481,10 +475,47 @@ progress {
     .sba-toggle-label {
         padding-inline-end: 10px;
     }
-    
+
     .sba-header-wrap {
         display: flex;
         justify-content: space-between;
+    }
+}
+
+.sba-dark-mode-preview {
+    width: 200px;
+    aspect-ratio: 62.4 / 64.8;
+
+    & svg {
+        width: 100%;
+        aspect-ratio: inherit;
+        display: block;
+    }
+
+    & .sba-cell {
+        fill: var(--area-bg-color);
+
+        & text {
+            fill: var(--text-color);
+        }
+    }
+
+    & .sba-center-cell {
+        fill: var(--highlight-bg-color);
+
+        & text {
+            fill: var(--highlight-text-color);
+        }
+    }
+
+    & text {
+        font-family: nyt-franklin;
+        font-weight: 700;
+        font-size: 7px;
+        text-transform: uppercase;
+        dominant-baseline: middle;
+        text-anchor: middle;
+        pointer-events: none;
     }
 }
 
@@ -509,13 +540,20 @@ progress {
         height: 50px;
         overflow: hidden;
         cursor: pointer;
+        text-align: center;
+        
+        &[for="sbaH360"] {
+            width: 213px;
+            line-height: 50px;
+            color: var(--highlight-text-color)
+        }
     }
 
     input {
         position: absolute;
         left: -100px;
 
-        &:checked ~ label {
+        &:checked ~ label:not([for="sbaH360"]) {
             border-color: var(--highlight-bg-color);
         }
     }

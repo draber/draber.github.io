@@ -18,15 +18,15 @@ import Plugin from '../modules/plugin.js';
  */
 class Googlify extends Plugin {
 
-    /**
-     * Toggle state
-     * @param {Boolean} state
-     * @returns {Googlify}
-     */
-    toggle(state) {
-        super.toggle(state);
-        return this.run();
-    }
+    // /**
+    //  * Toggle state
+    //  * @param {Boolean} state
+    //  * @returns {Googlify}
+    //  */
+    // toggle(state) {
+    //     super.toggle(state);
+    //     return this.run();
+    // }
 
     /**
      * Search for term in Google
