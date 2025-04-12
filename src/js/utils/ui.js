@@ -7,37 +7,6 @@
 import fn from "fancy-node";
 import { prefix } from "./string.js";
 
-/**
- * Get the close button of the various pop-up formats
- * @returns {HTMLElement|Boolean}
- */
-export const getPopupCloser = (app) => {
-    for (let selector of [
-        ".pz-moment__frame.on-stage .pz-moment__close",
-        ".pz-moment__frame.on-stage .pz-moment__close_text",
-        ".sb-modal-close",
-    ]) {
-        const closer = fn.$(selector, app.gameWrapper);
-        if (closer) {
-            return closer;
-        }
-    }
-    return false;
-};
-
-export const manualDelete = () => {
-    const el = document.querySelector(".hive-action__delete");
-    if (!el) return;
-
-    el.classList.add("sba-no-feedback");
-    const evtOpts = { bubbles: true, cancelable: true };
-
-    el.dispatchEvent(new Event("touchstart", evtOpts));
-    setTimeout(() => {
-        el.dispatchEvent(new Event("touchend", evtOpts));
-        el.classList.remove("sba-no-feedback");
-    }, 50);
-};
 
 /**
  * Create a visual progress bar element for a given value/max.
@@ -103,5 +72,3 @@ export const getToggleButton = (id, checked, callback, labelText = "", labelPosi
             });
     }
 };
-
-

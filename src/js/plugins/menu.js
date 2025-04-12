@@ -7,7 +7,7 @@
 import settings from '../modules/settings.js';
 import {
     prefix
-} from '../modules/string.js';
+} from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
 import iconWarning from '../assets/warning.svg';
 import iconCoffee from '../assets/kofi.svg';

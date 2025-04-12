@@ -8,7 +8,7 @@ import settings from "./settings.js";
 import data from "./data.js";
 import getPlugins from "./importer.js";
 import Widget from "./widget.js";
-import { prefix } from "./string.js";
+import { prefix } from "../utils/string.js";
 import fn from "fancy-node";
 import pluginRegistry from "./pluginRegistry.js";
 import shortcutRegistry from "./shortcutRegistry.js";

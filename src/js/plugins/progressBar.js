@@ -1,6 +1,6 @@
 import {
     prefix
-} from '../modules/string.js';
+} from '../utils/string.js';
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
  *

@@ -33,8 +33,6 @@ const saveOptions = () => {
 /**
  * Perform one-time migration from legacy settings structure to 5.0.0 format.
  * 
- * - Converts top-level boolean values like "darkMode": true
- *   into structured objects: "darkMode": { enabled: true }
  * - Preserves objects like "darkModeColors" as-is
  * - Records oldVersion and updates to new version
  * 
@@ -45,31 +43,52 @@ const migrateToVersion5 = () => {
 
     console.warn(`⚠️ ${state.label} detected legacy settings format. Performing migration to 5.0.0...`);
 
-    // Renamed modules
-    state.options.overview = state.options.score || {};
-    delete state.options.score;
-    state.options.milestones = state.options.yourProgress || {};
-    delete state.options.yourProgress;
-
     const migrated = {};
-
+    const obsoleteKeys = ["darkModeColors", "yourProgress", "version", "oldVersion", "score", "community"];
+    const removeSubkeys = ["enabled", "shortcuts"];
+    
     for (const [key, value] of Object.entries(state.options)) {
-        if (["version", "oldVersion"].includes(key)) continue;
-
+        if (obsoleteKeys.includes(key)) continue;
+    
+        // darkMode comes later
+        if (key === "darkMode") continue;
+    
         if (typeof value === "object") {
-            migrated[key] = value;
-        } else if (typeof value === "boolean") {
-            migrated[key] = { enabled: value };
+            const cleaned = { ...value };
+            removeSubkeys.forEach(k => delete cleaned[k]);
+            migrated[key] = cleaned;
         }
     }
-
+    
+    // special case darkMode
+    if ("darkMode" in state.options) {        
+        const scheme = {
+            mode: !!state.options.darkMode ? "dark" : "light",
+            // @see _colors.scss [data-sba-theme] --dhue, --dsat and --dlig
+            hsl: {
+                hue: 0,
+                sat: 0,
+                lig: 7,
+            },
+        };
+    
+        if (typeof state.options.darkModeColors === "object") {
+            scheme.hsl = Object.assign(scheme.hsl, state.options.darkModeColors)
+        }
+    
+        migrated.darkMode = scheme;
+    }
+    
     state.options = {
         ...migrated,
-        version: state.version,
+        version: "5.0.0",
         oldVersion: state.options.version || null
     };
 
+    //console.info(`Migration completed with the following data:`, state.options);
+    //throw new Error("Migration to version 5.0.0 complete. Please reload the page.");
     saveOptions();
+    
 };
 
 // Trigger version-aware migration
@@ -78,7 +97,7 @@ migrateToVersion5();
 /**
  * Retrieve a value from the settings object using dot notation.
  *
- * @param {string} path - Dot-notated path (e.g. "options.darkMode.enabled").
+ * @param {string} path - Dot-notated path (e.g. "options.darkMode.hsl").
  * @returns {*} - The corresponding value or `undefined` if not found.
  */
 const get = (path) => {
@@ -97,7 +116,7 @@ const get = (path) => {
  * Set a value within the settings object using dot notation.
  * Creates intermediate objects if they do not exist.
  *
- * @param {string} path - Dot-notated path (e.g. "options.darkMode.enabled").
+ * @param {string} path - Dot-notated path (e.g. "options.darkMode.hsl").
  * @param {*} value - The value to assign.
  * @returns {boolean} - True if the value was set, false if an error occurred.
  */

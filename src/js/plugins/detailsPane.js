@@ -6,7 +6,7 @@
  */
 import TablePane from "./tablePane.js";
 import fn from "fancy-node";
-import { prefix } from "../modules/string.js";
+import { prefix } from "../utils/string.js";
 
 /**
  * DetailsPane plugin

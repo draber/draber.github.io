@@ -5,8 +5,9 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-import { getPopupCloser, manualDelete } from "./helpers";
-import settings from "./settings";
+import { deleteLastLetter } from "../utils/shortcuts.utils.js";
+import { findCloseButton } from "../utils/popup.ui.js";
+import settings from "./settings.js";
 
 /**
  * Registry of all registered shortcuts.
@@ -99,7 +100,7 @@ const comboToHuman = (combo) => {
  */
 const requiresDeletion = (combo, app) => {
     const key = getCharacterKey(normalizeCombo(combo));
-    let pool = getPopupCloser(app) ? characterKeys.sba : characterKeys.sba.join(characterKeys.nyt);
+    let pool = findCloseButton(app) ? characterKeys.sba : characterKeys.sba.join(characterKeys.nyt);
     return key && pool.includes(key);
 };
 
@@ -191,7 +192,7 @@ const handleShortcut = (event) => {
         entry.callback();
         return true;
     }
-    manualDelete();
+    deleteLastLetter();
     entry.callback();
     return true;
 };

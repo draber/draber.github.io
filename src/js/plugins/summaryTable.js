@@ -6,8 +6,8 @@
  */
 import TablePane from "./tablePane.js";
 import fn from "fancy-node";
-import { prefix } from "../modules/string.js";
-import { getProgressBar } from "../modules/helpers.js";
+import { prefix } from "../utils/string.js";
+import { getProgressBar } from "../utils/ui.js";
 import data from "../modules/data.js";
 
 /**

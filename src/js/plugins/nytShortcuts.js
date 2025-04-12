@@ -5,7 +5,8 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  */
-import { getPopupCloser, manualDelete } from "../modules/helpers.js";
+import { deleteLastLetter } from "../utils/shortcuts.utils.js";
+import { findCloseButton } from "../utils/popup.ui.js";
 import Plugin from "../modules/plugin.js";
 import fn from "fancy-node";
 /**
@@ -36,12 +37,12 @@ class NytShortcuts extends Plugin {
      *
      * @param {string} selector - A CSS selector string pointing to the element to click after closing the modal.
      *
-     * @todo Replace `setTimeout(manualDelete, 50)` with a more robust event-driven solution or DOM observer.
+     * @todo Replace `setTimeout(deleteLastLetter, 50)` with a more robust event-driven solution or DOM observer.
      */
     triggerPopup(selector) {
-        let popupCloser = getPopupCloser(this.app);
+        let popupCloser = findCloseButton(this.app);
         if (popupCloser) {
-            setTimeout(manualDelete, 50);
+            setTimeout(deleteLastLetter, 50);
             popupCloser.click();
         } else {
             fn.$(selector)?.click();

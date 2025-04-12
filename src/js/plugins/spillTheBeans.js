@@ -5,7 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import data from "../modules/data.js";
-import { prefix } from "../modules/string.js";
+import { prefix } from "../utils/string.js";
 import Plugin from "../modules/plugin.js";
 import fn from "fancy-node";
 
@@ -31,15 +31,15 @@ class SpillTheBeans extends Plugin {
         return this;
     }
 
-    toggleMode(state) {
-        if (state) {
-            this.app.domSet("submenu", false);
+    toggle(nextState) {
+        // if (state) {
+        //     this.app.domSet("submenu", false);
+        // }
+        if(typeof nextState === 'undefined') {
+            nextState = !this.ui.classList.contains('inactive');
         }
-        if(typeof state === 'undefined') {
-            state = !this.getState();
-        }
-
-        this.super.toggle(state);
+        
+        this.ui.classList.toggle('inactive', !nextState);
         return this;
     }
 
@@ -63,7 +63,7 @@ class SpillTheBeans extends Plugin {
 
         this.target = fn.$(".sb-controls", this.app.gameWrapper);
 
-        this.toggleMode(false);
+        this.toggle(false);
 
         this.shortcuts = [
             {

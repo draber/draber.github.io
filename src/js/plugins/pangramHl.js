@@ -6,7 +6,7 @@
  */
 import {
     prefix
-} from '../modules/string.js';
+} from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
 import data from '../modules/data.js';
 import fn from 'fancy-node';

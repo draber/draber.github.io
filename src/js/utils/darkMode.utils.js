@@ -6,6 +6,7 @@
  */
 
 import settings from "../modules/settings.js";
+import { isEmptyObject } from "../utils/utils.js";
 
 export const utils = (self) => ({
     /**
@@ -33,12 +34,10 @@ export const utils = (self) => ({
 
     /**
      * This function checks if the dark mode is enabled by SBA.
-     * The default hsl values for black and white are 0, 0, 0 and 0, 0, 100 respectively.
-     * Any lightness value below 50 indicates a dark mode.
      * @returns {boolean} - True if the dark mode is enabled, false otherwise.
      */
     usesSbaDarkMode() {
-        return self.getModeFromHsl(self.getColorParameters()) === "dark";
+        return self.getStoredColorScheme().mode === "dark";
     },
 
     /**
@@ -51,56 +50,56 @@ export const utils = (self) => ({
     },
 
     /**
-     * Compare two HSL objects for equality.
-     * @param {Object} {{ hue: number, sat: number, lig: number }} hslObj1 
-     * @param {Object} {{ hue: number, sat: number, lig: number }} hslObj2 
+     * Compares two color config objects for equality.
+     *
+     * @param {Object} {{mode: 'light' | 'dark', hsl: {hue: number, sat: number, lig: number}}} a
+     * @param {Object} {{mode: 'light' | 'dark', hsl: {hue: number, sat: number, lig: number}}} b
+     * @returns {boolean} True if both objects are equal, false otherwise.
+     */
+    colorObjectsAreEqual(a, b) {
+        return a.mode === b.mode && a.hsl.hue === b.hsl.hue && a.hsl.sat === b.hsl.sat && a.hsl.lig === b.hsl.lig;
+    },
+
+    /**
+     * Retrieve the current configuration of the color mode
+     * @returns {Object} {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
+     */
+    getStoredColorScheme() {
+        let scheme = settings.get(`options.${self.key}`);
+        if (self.isInvalidScheme(scheme)) {
+            return {
+                mode: "light",
+                // @see _colors.scss [data-sba-theme] --dhue, --dsat and --dlig
+                hsl: {
+                    hue: 0,
+                    sat: 0,
+                    lig: 7,
+                },
+            };
+        } else {
+            // ignore keys such as shortcuts
+            return {
+                mode: scheme.mode,
+                hsl: scheme.hsl,
+            };
+        }
+    },
+
+    /**
+     * Turn scheme into a hsl string for CSS
+     * @param {Object} scheme 
+     * @returns {String}
+     */
+    cssHslFromColorScheme(scheme) {
+        return `hsl(${scheme.hsl.hue}, ${scheme.hsl.sat}%, ${scheme.hsl.lig}%)`;
+    },
+
+    /**
+     * Check if a scheme is what it's meant to be
+     * @param {{mode: string, hsl: Object}|null} scheme
      * @returns 
      */
-    hslObjsAreEqual(hslObj1, hslObj2) {
-        return (
-            hslObj1.hue === hslObj2.hue &&
-            hslObj1.sat === hslObj2.sat &&
-            hslObj1.lig === hslObj2.lig
-        );
-    },
-
-    /**
-     * Get the defaults for the HSL color model based on the mode.
-     * @param {string} mode
-     * @returns
-     */
-    getHslDefaults(mode) {
-        return {
-            hue: 0,
-            sat: 0,
-            lig: mode === "dark" ? 0 : 100,
-        };
-    },
-
-    /**
-     * Get the mode based on the lightness value of the HSL object.
-     * @param {Object} hslObj
-     * @returns
-     */
-    getModeFromHsl(hslObj) {
-        return hslObj.lig < 50 ? "dark" : "light";
-    },
-
-    /**
-     * Retrieves the currently stored hue and saturation parameters from settings.
-     * @param {string} mode - The mode for which to get the defaults (default is "light").
-     * @returns {{ hue: number, sat: number, lig: number }} The current color parameters as hslObj.
-     */
-    getColorParameters(mode="light") {
-        const defaults = self.getHslDefaults(mode);
-        if(mode === "light") {
-            return defaults;
-        }
-        const {
-            hue = defaults.hue,
-            sat = defaults.sat,
-            lig = defaults.lig,
-        } = settings.get(`options.${self.key}`) || {};
-        return { hue, sat, lig };
+    isInvalidScheme(scheme = null) {
+        return !scheme || isEmptyObject(scheme) || !scheme.hsl || isEmptyObject(scheme.hsl) || !scheme.mode;
     },
 });

@@ -7,7 +7,7 @@
 
 import {
     camel
-} from './string.js';
+} from '../utils/string.js';
 import settings from './settings.js';
 
 /**
@@ -30,9 +30,9 @@ class Widget {
      * @returns {Widget}
      */
     setState(state) {
-        if (this.canChangeState) {
-            settings.set(`options.${this.key}.enabled`, state);
-        }
+        // if (this.canChangeState) {
+        //     settings.set(`options.${this.key}.enabled`, state);
+        // }
         return this;
     }
 
@@ -42,13 +42,13 @@ class Widget {
      * @returns {Widget}
      */
     toggle(state) {
-        if (!this.canChangeState) {
-            return this;
-        }
-        this.setState(state);
-        if (this.hasUi()) {
-            this.ui.classList.toggle('inactive', !state);
-        }
+        // if (!this.canChangeState) {
+        //     return this;
+        // }
+        // this.setState(state);
+        // if (this.hasUi()) {
+        //     this.ui.classList.toggle('inactive', !state);
+        // }
         return this;
     }
 
@@ -128,11 +128,11 @@ class Widget {
          */
         this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
 
-        /**
-         * `getState()` returns an actual value and not `undefined`
-         * This ensures that `localStorage` stores proper values
-         */
-        this.setState(this.getState());
+        // /**
+        //  * `getState()` returns an actual value and not `undefined`
+        //  * This ensures that `localStorage` stores proper values
+        //  */
+        // this.setState(this.getState());
 
         /**
          * Null by default, most plugins will overwrite this

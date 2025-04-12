@@ -8,8 +8,8 @@ import data from "../modules/data.js";
 import TablePane from "./tablePane.js";
 import Popup from "./popup.js";
 import fn from "fancy-node";
-import { prefix } from "../modules/string.js";
-import { getProgressBar } from "../modules/helpers.js";
+import { prefix } from "../utils/string.js";
+import { getProgressBar } from "../utils/ui.js";
 import SummaryTable from "./summaryTable.js";
 
 /**

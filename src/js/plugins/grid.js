@@ -9,7 +9,7 @@ import TablePane from './tablePane.js';
 import Popup from './popup.js';
 import {
     prefix
-} from '../modules/string.js';
+} from '../utils/string.js';
 import gridIcon from '../assets/grid.svg';
 import fn from 'fancy-node';
 

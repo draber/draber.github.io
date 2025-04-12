@@ -6,7 +6,7 @@
  */
 import {
     prefix
-} from './string.js';
+} from '../utils/string.js';
 
 /**
  * Word lists

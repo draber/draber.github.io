@@ -7,7 +7,7 @@
 import data from '../modules/data.js';
 import {
     prefix
-} from '../modules/string.js';
+} from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
 import Popup from './popup.js';
 import fn from 'fancy-node';

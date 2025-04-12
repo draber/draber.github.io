@@ -6,42 +6,63 @@
  */
 
 import fn from "fancy-node";
-import { prefix } from "../modules/string.js";
+import { prefix } from "./string.js";
 
 export const ui = (self) => ({
-
     /**
      * Build a single swatch
-     * @param {Object} {{ hue: number, sat: number, lig: number }} hslObj
-     * @param {String} text
+     * @param {Object} scheme {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
+     * @param {String} content
      * @returns
      */
-    getSwatch(hslObj, text = "") {
-        const mode = self.getModeFromHsl(hslObj);
+    getSwatch(scheme, content = "") {
+        let isCurrent = self.colorObjectsAreEqual(scheme, self.getStoredColorScheme());
+        // The color for the reset swatch are always white, it stores, however, the dark mode colors along with mode = light
+        let btnConfig = structuredClone(scheme);
+        let background;
+        if (scheme.mode === "light") {
+            btnConfig.hsl = {
+                hue: 360,
+                sat: 100,
+                lig: 100,
+            };
+            background = self.cssHslFromColorScheme(btnConfig);
+        }
+        else {
+            // Here we override it with lig: 22, which is standard for hive cells,
+            // to avoid overly dark tiles and improve visibility.
+            background = self.cssHslFromColorScheme({
+                ...scheme,
+                hsl: {
+                  ...scheme.hsl,
+                  lig: 22,
+                },
+              });
+        }
         return fn.li({
             content: [
                 fn.input({
                     attributes: {
                         name: "color-picker",
                         type: "radio",
-                        value: hslObj.hue,
-                        checked: self.hslObjsAreEqual(hslObj, self.getColorParameters(mode)),
-                        id: prefix("h" + hslObj.hue),
+                        value: btnConfig.hsl.hue,
+                        checked: isCurrent,
+                        id: prefix("h" + btnConfig.hsl.hue),
                     },
                     events: {
                         change: () => {
-                            self.toggleColorScheme(hslObj);
+                            self.applyColorScheme(scheme);
                         },
                     },
                 }),
                 fn.label({
                     attributes: {
-                        htmlFor: prefix("h" + hslObj.hue),
+                        htmlFor: prefix("h" + btnConfig.hsl.hue),
                     },
                     style: {
-                        background: `hsl(${hslObj.hue}, ${hslObj.sat}%, ${hslObj.lig}%)`,
+                        background
                     },
-                    content: text,
+                    content,
                 }),
             ],
         });
@@ -55,12 +76,18 @@ export const ui = (self) => ({
         const swatches = fn.ul({
             classNames: [prefix("swatches", "d")],
         });
+        // @see _colors.scss [data-sba-theme] --dlig
+        const lig = 7;
 
         for (let hue = 0; hue < 360; hue += 30) {
             const sat = hue === 0 ? 0 : 25;
-            swatches.append(self.getSwatch({hue, sat, lig: 22}));
+            swatches.append(self.getSwatch({ mode: "dark", hsl: { hue, sat, lig } }));
         }
-        swatches.append(self.getSwatch(this.getHslDefaults("light"), "Return to Light Mode"));
+        // reset button
+        // keeps the last color scheme but switches to 'light', i.e. disables dark mode
+        const scheme = self.getStoredColorScheme(true);
+        scheme.mode = "light";
+        swatches.append(self.getSwatch(scheme, "Return to Light Mode"));
         return swatches;
     },
 

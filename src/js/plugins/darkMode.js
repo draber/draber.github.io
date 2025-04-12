@@ -8,9 +8,10 @@ import fn from "fancy-node";
 import settings from "../modules/settings.js";
 import Plugin from "../modules/plugin.js";
 import Popup from "./popup.js";
-import { prefix } from "../modules/string.js";
+import { prefix } from "../utils/string.js";
 import { utils } from "../utils/darkMode.utils.js";
 import { ui } from "../utils/darkMode.ui.js";
+import { isEmptyObject } from "../utils/utils.js";
 
 /**
  * Dark Mode plugin
@@ -29,30 +30,37 @@ class DarkMode extends Plugin {
             return this;
         }
         this.popup.toggle(true);
-        // fn.$(".sba-color-selector .hive", this.popup.ui).dataset[prefix("theme")] = "dark";
         fn.$("input:checked", this.popup.ui).focus();
     }
 
     /**
      * Toggle dark mode
-     * @param {Object} {{ hue: number, sat: number, lig: number }} hslObj
+     * @param {Object} scheme {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
      * @returns {DarkMode}
      */
-    toggleColorScheme(hslObj = {}) {
-        let newMode;
-        if (!hslObj) {
-            const oldMode = document.body.dataset[prefix("theme")] || "light";
-            newMode = oldMode === "dark" ? "light" : "dark";
-            hslObj = this.getColorParameters(newMode);
-        } else {
-            newMode = this.getModeFromHsl(hslObj);
+    applyColorScheme(scheme) {        
+        if (!scheme.hsl || isEmptyObject(scheme.hsl)) {
+            scheme.hsl = this.getStoredColorScheme().hsl;
         }
-        document.body.dataset[prefix("theme")] = newMode;
-        document.body.style.setProperty("--dhue", hslObj.hue);
-        document.body.style.setProperty("--dsat", hslObj.sat + "%");
-        document.body.style.setProperty("--dlig", hslObj.lig + "%");
-        settings.set(`options.${self.key}`, hslObj);
+
+        document.body.dataset[prefix("theme")] = scheme.mode;
+        document.body.style.setProperty("--dhue", scheme.hsl.hue);
+        document.body.style.setProperty("--dsat", scheme.hsl.sat + "%");
+        document.body.style.setProperty("--dlig", scheme.hsl.lig + "%");
+        // don't override other keys such as shortcuts
+        settings.set(`options.${this.key}.hsl`, scheme.hsl);
+        settings.set(`options.${this.key}.mode`, scheme.mode);
         return this;
+    }
+
+    /**
+     * Toggle between dark and light mode
+     * @returns DarkMode
+     */
+    toggleColorScheme(){
+        const scheme = this.getStoredColorScheme();
+        scheme.mode = scheme.mode === 'dark' ? 'light' : 'dark';
+        return this.applyColorScheme(scheme);
     }
 
     /**
@@ -60,7 +68,7 @@ class DarkMode extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Dark Mode Themes", "Choose your vibe: shades for morning people and night owls.", {
+        super(app, "Dark Mode", "Choose your vibe: shades for morning people and night owls.", {
             canChangeState: true,
             defaultState: false,
         });
@@ -68,16 +76,16 @@ class DarkMode extends Plugin {
         Object.assign(this, utils(this), ui(this));
 
         if (this.usesNonSbaDarkMode()) {
-            this.toggleColorScheme(this.getColorParameters("light"));
+            this.applyColorScheme({mode:"light"});
             return;
         } else if (this.usesSbaDarkMode()) {
             // sba colors
-            this.toggleColorScheme(this.getColorParameters("dark"));
+            this.applyColorScheme({mode:"dark"});
         } else if (this.usesSystemDarkMode()) {
             // default sba colors
-            this.toggleColorScheme(this.getColorParameters("dark"));
+            this.applyColorScheme({mode:"dark"});
         } else {
-            this.toggleColorScheme(this.getColorParameters("light"));
+            this.applyColorScheme({mode:"light"});
         }
 
         this.menuAction = "popup";

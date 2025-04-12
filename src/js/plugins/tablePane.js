@@ -4,7 +4,7 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import { prefix } from "../modules/string.js";
+import { prefix } from "../utils/string.js";
 import Plugin from "../modules/plugin.js";
 import fn from "fancy-node";
 

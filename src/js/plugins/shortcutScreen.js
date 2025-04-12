@@ -7,11 +7,11 @@
 
 import TablePane from "./tablePane.js";
 import Popup from "./popup.js";
-import { prefix } from "../modules/string.js";
+import { prefix } from "../utils/string.js";
 import gridIcon from "../assets/grid.svg";
 import fn from "fancy-node";
 import shortcutRegistry from "../modules/shortcutRegistry.js";
-import { getToggleButton } from "../modules/helpers.js";
+import { getToggleButton } from "../utils/ui.js";
 
 /**
  * Grid plugin
