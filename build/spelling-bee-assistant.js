@@ -30,22 +30,35 @@
     const migrateToVersion5 = () => {
         if (typeof state.options.darkMode !== "boolean") return;
         console.warn(`⚠️ ${state.label} detected legacy settings format. Performing migration to 5.0.0...`);
-        state.options.overview = state.options.score || {};
-        delete state.options.score;
-        state.options.milestones = state.options.yourProgress || {};
-        delete state.options.yourProgress;
         const migrated = {};
+        const obsoleteKeys = ["darkModeColors", "yourProgress", "version", "oldVersion", "score", "community"];
+        const removeSubkeys = ["enabled", "shortcuts"];
         for (const [key, value] of Object.entries(state.options)) {
-            if (["version", "oldVersion"].includes(key)) continue;
+            if (obsoleteKeys.includes(key)) continue;
+            if (key === "darkMode") continue;
             if (typeof value === "object") {
-                migrated[key] = value;
-            } else if (typeof value === "boolean") {
-                migrated[key] = { enabled: value };
+                const cleaned = { ...value };
+                removeSubkeys.forEach(k => delete cleaned[k]);
+                migrated[key] = cleaned;
             }
+        }
+        if ("darkMode" in state.options) {
+            const scheme = {
+                mode: !!state.options.darkMode ? "dark" : "light",
+                hsl: {
+                    hue: 0,
+                    sat: 0,
+                    lig: 7,
+                },
+            };
+            if (typeof state.options.darkModeColors === "object") {
+                scheme.hsl = Object.assign(scheme.hsl, state.options.darkModeColors);
+            }
+            migrated.darkMode = scheme;
         }
         state.options = {
             ...migrated,
-            version: state.version,
+            version: "5.0.0",
             oldVersion: state.options.version || null
         };
         saveOptions();
@@ -404,19 +417,9 @@
             return typeof stored !== 'undefined' ? stored : this.defaultState;
         }
         setState(state) {
-            if (this.canChangeState) {
-                settings.set(`options.${this.key}.enabled`, state);
-            }
             return this;
         }
         toggle(state) {
-            if (!this.canChangeState) {
-                return this;
-            }
-            this.setState(state);
-            if (this.hasUi()) {
-                this.ui.classList.toggle('inactive', !state);
-            }
             return this;
         }
         hasUi() {
@@ -448,7 +451,6 @@
             this.key = key || camel(title);
             this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
             this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
-            this.setState(this.getState());
             this.ui = null;
         }
     }
@@ -488,7 +490,7 @@
         }
     }
 
-    const getPopupCloser = (app) => {
+    const findCloseButton = (app) => {
         for (let selector of [
             ".pz-moment__frame.on-stage .pz-moment__close",
             ".pz-moment__frame.on-stage .pz-moment__close_text",
@@ -501,137 +503,73 @@
         }
         return false;
     };
-    const manualDelete = () => {
-        const el = document.querySelector(".hive-action__delete");
-        if (!el) return;
-        el.classList.add("sba-no-feedback");
-        const evtOpts = { bubbles: true, cancelable: true };
-        el.dispatchEvent(new Event("touchstart", evtOpts));
-        setTimeout(() => {
-            el.dispatchEvent(new Event("touchend", evtOpts));
-            el.classList.remove("sba-no-feedback");
-        }, 50);
-    };
-    const getProgressBar = (value, max) => {
-        value = Math.min(Math.round((value * 100) / max), 100);
-        return fn.progress({
-            attributes: {
-                max: 100,
-                value,
-                title: `Progress: ${value}%`,
-            },
-        });
-    };
-    const getToggleButton = (id, checked, callback, labelText = "", labelPosition = "before") => {
-        const toggleBtn = fn.input({
-            attributes: {
-                type: "checkbox",
-                id,
-                role: "switch",
-                checked,
-            },
-            classNames: [prefix("toggle-switch", "d")],
-            aria: {
-                role: "switch",
-            },
-            events: {
-                change: (event) => callback(event),
-            },
-        });
-        if (!labelText) {
-            return toggleBtn;
-        }
-        const label = fn.label({
-            attributes: {
-                htmlFor: id,
-            },
-            content: labelText,
-            classNames: [prefix("toggle-label", "d")],
-        });
-        switch (labelPosition) {
-            case "wrap":
-                label.append(toggleBtn);
-                label.classList.add(prefix("toggle-container", "d"));
-                return label;
-            case "before":
-                return fn.span({
-                    classNames: [prefix("toggle-container", "d")],
-                    content: [label, toggleBtn],
-                });
-            case "after":
-                return fn.span({
-                    classNames: [prefix("toggle-container", "d")],
-                    content: [toggleBtn, label],
-                });
-        }
-    };
 
     class Popup {
         enableKeyClose() {
-            document.addEventListener('keyup', evt => {
-                this.app.popupCloser = getPopupCloser(this.app);
-                if (this.app.popupCloser && evt.code === 'Escape') {
+            document.addEventListener("keyup", (evt) => {
+                this.app.popupCloser = findCloseButton(this.app);
+                if (this.app.popupCloser && evt.code === "Escape") {
                     this.app.popupCloser.click();
                 }
-                delete (this.app.popupCloser);
+                delete this.app.popupCloser;
             });
             return this;
         }
         getTarget() {
-            const dataUi = prefix('popup-container', 'd');
+            const dataUi = prefix("popup-container", "d");
             let container = fn.$(`[data-ui="${dataUi}"]`);
             if (!container) {
                 container = fn.template({
                     data: {
-                        ui: dataUi
-                    }
+                        ui: dataUi,
+                    },
                 });
-                fn.$('body').append(container);
+                fn.$("body").append(container);
             }
             return container;
         }
         create() {
             return fn.div({
-                classNames: ['sb-modal-frame', prefix('pop-up', 'd')],
+                classNames: ["sb-modal-frame", prefix("pop-up", "d")],
                 aria: {
-                    role: 'button'
+                    role: "button",
                 },
                 data: {
-                    ui: this.key
+                    ui: this.key,
                 },
                 events: {
-                    click: e => {
+                    click: (e) => {
                         e.stopPropagation();
-                    }
+                    },
                 },
                 content: [
                     fn.div({
-                        classNames: ['sb-modal-top'],
+                        classNames: ["sb-modal-top"],
                         content: fn.div({
                             aria: {
-                                role: 'button'
+                                role: "button",
                             },
-                            classNames: ['sb-modal-close'],
-                            content: '×',
+                            classNames: ["sb-modal-close"],
+                            content: "×",
                             events: {
                                 click: () => {
                                     this.toggle(false);
-                                }
-                            }
-                        })
+                                },
+                            },
+                        }),
                     }),
                     fn.div({
-                        classNames: ['sb-modal-content'],
+                        classNames: ["sb-modal-content"],
                         content: [
                             fn.div({
-                                classNames: ['sb-modal-header'],
-                                content: [this.parts.title, this.parts.subtitle]
+                                classNames: ["sb-modal-header"],
+                                content: [this.parts.title, this.parts.subtitle],
                             }),
                             this.parts.body,
-                            this.parts.footer
-                        ]
-                    })
-                ]
+                            this.parts.footer,
+                        ],
+                    }),
+                ],
             });
         }
         setContent(part, content) {
@@ -644,17 +582,17 @@
             return this;
         }
         toggle(state) {
-            const closer = getPopupCloser(this.app);
+            const closer = findCloseButton(this.app);
             if (!state && closer) {
                 closer.click();
             }
             if (state) {
                 this.app.modalWrapper.append(this.ui);
-                this.modalSystem.classList.add('sb-modal-open');
+                this.modalSystem.classList.add("sb-modal-open");
                 this.isOpen = true;
             } else {
                 this.getTarget().append(this.ui);
-                this.modalSystem.classList.remove('sb-modal-open');
+                this.modalSystem.classList.remove("sb-modal-open");
                 this.isOpen = false;
             }
             return this;
@@ -664,35 +602,39 @@
             this.app = app;
             this.state = false;
             this.isOpen = false;
-            this.modalSystem = this.app.modalWrapper.closest('.sb-modal-system');
+            this.modalSystem = this.app.modalWrapper.closest(".sb-modal-system");
             this.parts = {
                 title: fn.h3({
-                    classNames: ['sb-modal-title']
+                    classNames: ["sb-modal-title"],
                 }),
                 subtitle: fn.p({
-                    classNames: ['sb-modal-message']
+                    classNames: ["sb-modal-message"],
                 }),
                 body: fn.div({
-                    classNames: ['sb-modal-body']
+                    classNames: ["sb-modal-body"],
                 }),
                 footer: fn.div({
-                    classNames: ['sb-modal-message', 'sba-modal-footer'],
+                    classNames: ["sb-modal-message", "sba-modal-footer"],
                     content: [
                         fn.a({
-                            content: settings.get('label'),
+                            content: settings.get("label"),
                             attributes: {
-                                href: settings.get('url'),
-                                target: prefix()
-                            }
-                        })
-                    ]
-                })
+                                href: settings.get("url"),
+                                target: prefix(),
+                            },
+                        }),
+                    ],
+                }),
             };
             this.ui = this.create();
             this.enableKeyClose();
             this.getTarget().append(this.ui);
         }
     }
+
+    const isEmptyObject = (obj) => {
+        return Object.keys(obj).length === 0 && obj.constructor === Object;
+    };
 
     const utils = (self) => ({
         usesNonSbaDarkMode() {
@@ -710,70 +652,87 @@
             return luminance < 0.5;
         },
         usesSbaDarkMode() {
-            return self.getModeFromHsl(self.getColorParameters()) === "dark";
+            return self.getStoredColorScheme().mode === "dark";
         },
         usesSystemDarkMode() {
             const darkMode = window.matchMedia("(prefers-color-scheme: dark)");
             return !!darkMode.matches;
         },
-        hslObjsAreEqual(hslObj1, hslObj2) {
-            return (
-                hslObj1.hue === hslObj2.hue &&
-                hslObj1.sat === hslObj2.sat &&
-                hslObj1.lig === hslObj2.lig
-            );
+        colorObjectsAreEqual(a, b) {
+            return a.mode === b.mode && a.hsl.hue === b.hsl.hue && a.hsl.sat === b.hsl.sat && a.hsl.lig === b.hsl.lig;
         },
-        getHslDefaults(mode) {
-            return {
-                hue: 0,
-                sat: 0,
-                lig: mode === "dark" ? 0 : 100,
-            };
-        },
-        getModeFromHsl(hslObj) {
-            return hslObj.lig < 50 ? "dark" : "light";
-        },
-        getColorParameters(mode="light") {
-            const defaults = self.getHslDefaults(mode);
-            if(mode === "light") {
-                return defaults;
+        getStoredColorScheme() {
+            let scheme = settings.get(`options.${self.key}`);
+            if (self.isInvalidScheme(scheme)) {
+                return {
+                    mode: "light",
+                    hsl: {
+                        hue: 0,
+                        sat: 0,
+                        lig: 7,
+                    },
+                };
+            } else {
+                return {
+                    mode: scheme.mode,
+                    hsl: scheme.hsl,
+                };
             }
-            const {
-                hue = defaults.hue,
-                sat = defaults.sat,
-                lig = defaults.lig,
-            } = settings.get(`options.${self.key}`) || {};
-            return { hue, sat, lig };
+        },
+        cssHslFromColorScheme(scheme) {
+            return `hsl(${scheme.hsl.hue}, ${scheme.hsl.sat}%, ${scheme.hsl.lig}%)`;
+        },
+        isInvalidScheme(scheme = null) {
+            return !scheme || isEmptyObject(scheme) || !scheme.hsl || isEmptyObject(scheme.hsl) || !scheme.mode;
         },
     });
 
     const ui = (self) => ({
-        getSwatch(hslObj, text = "") {
-            const mode = self.getModeFromHsl(hslObj);
+        getSwatch(scheme, content = "") {
+            let isCurrent = self.colorObjectsAreEqual(scheme, self.getStoredColorScheme());
+            let btnConfig = structuredClone(scheme);
+            let background;
+            if (scheme.mode === "light") {
+                btnConfig.hsl = {
+                    hue: 360,
+                    sat: 100,
+                    lig: 100,
+                };
+                background = self.cssHslFromColorScheme(btnConfig);
+            }
+            else {
+                background = self.cssHslFromColorScheme({
+                    ...scheme,
+                    hsl: {
+                      ...scheme.hsl,
+                      lig: 22,
+                    },
+                  });
+            }
             return fn.li({
                 content: [
                     fn.input({
                         attributes: {
                             name: "color-picker",
                             type: "radio",
-                            value: hslObj.hue,
-                            checked: self.hslObjsAreEqual(hslObj, self.getColorParameters(mode)),
-                            id: prefix("h" + hslObj.hue),
+                            value: btnConfig.hsl.hue,
+                            checked: isCurrent,
+                            id: prefix("h" + btnConfig.hsl.hue),
                         },
                         events: {
                             change: () => {
-                                self.toggleColorScheme(hslObj);
+                                self.applyColorScheme(scheme);
                             },
                         },
                     }),
                     fn.label({
                         attributes: {
-                            htmlFor: prefix("h" + hslObj.hue),
+                            htmlFor: prefix("h" + btnConfig.hsl.hue),
                         },
                         style: {
-                            background: `hsl(${hslObj.hue}, ${hslObj.sat}%, ${hslObj.lig}%)`,
+                            background
                         },
-                        content: text,
+                        content,
                     }),
                 ],
             });
@@ -782,11 +741,14 @@
             const swatches = fn.ul({
                 classNames: [prefix("swatches", "d")],
             });
+            const lig = 7;
             for (let hue = 0; hue < 360; hue += 30) {
                 const sat = hue === 0 ? 0 : 25;
-                swatches.append(self.getSwatch({hue, sat, lig: 22}));
+                swatches.append(self.getSwatch({ mode: "dark", hsl: { hue, sat, lig } }));
             }
-            swatches.append(self.getSwatch(this.getHslDefaults("light"), "Return to Light Mode"));
+            const scheme = self.getStoredColorScheme(true);
+            scheme.mode = "light";
+            swatches.append(self.getSwatch(scheme, "Return to Light Mode"));
             return swatches;
         },
         getHive() {
@@ -866,52 +828,55 @@
                 return this;
             }
             this.popup.toggle(true);
-            fn.$("input:checked", this.popup.ui).focus();
-        }
-        toggleColorScheme(hslObj = {}) {
-            let newMode;
-            if (!hslObj) {
-                const oldMode = document.body.dataset[prefix("theme")] || "light";
-                newMode = oldMode === "dark" ? "light" : "dark";
-                hslObj = this.getColorParameters(newMode);
-            } else {
-                newMode = this.getModeFromHsl(hslObj);
+            if(this.found3rdPartyDm){
+                return this;
             }
-            document.body.dataset[prefix("theme")] = newMode;
-            document.body.style.setProperty("--dhue", hslObj.hue);
-            document.body.style.setProperty("--dsat", hslObj.sat + "%");
-            document.body.style.setProperty("--dlig", hslObj.lig + "%");
-            settings.set(`options.${self.key}`, hslObj);
+            fn.$("input:checked", this.popup.ui).focus();
             return this;
         }
+        applyColorScheme(scheme) {
+            if (!scheme.hsl || isEmptyObject(scheme.hsl)) {
+                scheme.hsl = this.getStoredColorScheme().hsl;
+            }
+            if(this.found3rdPartyDm){
+                scheme.mode = 'light';
+            }
+            document.body.dataset[prefix("theme")] = scheme.mode;
+            document.body.style.setProperty("--dhue", scheme.hsl.hue);
+            document.body.style.setProperty("--dsat", scheme.hsl.sat + "%");
+            document.body.style.setProperty("--dlig", scheme.hsl.lig + "%");
+            settings.set(`options.${this.key}.hsl`, scheme.hsl);
+            settings.set(`options.${this.key}.mode`, scheme.mode);
+            return this;
+        }
+        toggleColorScheme() {
+            if(this.found3rdPartyDm){
+                return this;
+            }
+            const scheme = this.getStoredColorScheme();
+            scheme.mode = scheme.mode === "dark" ? "light" : "dark";
+            return this.applyColorScheme(scheme);
+        }
         constructor(app) {
-            super(app, "Dark Mode Themes", "Choose your vibe: shades for morning people and night owls.", {
+            super(app, "Dark Mode", "Choose your vibe: shades for morning people and night owls.", {
                 canChangeState: true,
                 defaultState: false,
             });
             Object.assign(this, utils(this), ui(this));
+            this.found3rdPartyDm = false;
             if (this.usesNonSbaDarkMode()) {
-                this.toggleColorScheme(this.getColorParameters("light"));
+                this.applyColorScheme({ mode: "light" });
+                this.found3rdPartyDm = true;
                 return;
             } else if (this.usesSbaDarkMode()) {
-                this.toggleColorScheme(this.getColorParameters("dark"));
+                this.applyColorScheme({ mode: "dark" });
             } else if (this.usesSystemDarkMode()) {
-                this.toggleColorScheme(this.getColorParameters("dark"));
+                this.applyColorScheme({ mode: "dark" });
             } else {
-                this.toggleColorScheme(this.getColorParameters("light"));
+                this.applyColorScheme({ mode: "light" });
             }
             this.menuAction = "popup";
             this.menuIcon = "null";
-            this.popup = new Popup(this.app, this.key)
-                .setContent("title", this.title)
-                .setContent("subtitle", this.description)
-                .setContent(
-                    "body",
-                    fn.div({
-                        classNames: [prefix("color-selector", "d")],
-                        content: [this.getSwatches(), this.getHive()],
-                    })
-                );
             this.shortcuts = [
                 {
                     combo: "Shift+Alt+D",
@@ -924,876 +889,36 @@
                     label: "Dark Mode Colors",
                 },
             ];
-        }
-    }
-
-    class Header extends Plugin {
-        constructor(app) {
-            super(app, settings.get("title"), "", {
-                key: "header",
-            });
-            this.ui = fn.div({
-                content: [
-                    fn.div({
-                        classNames: ["sba-title"],
-                        content: this.title,
-                    })
-                ],
-            });
-        }
-    }
-
-    class ProgressBar extends Plugin {
-        run(evt) {
-            let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
-            progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
-            this.ui.value = progress;
-            this.ui.textContent = progress + '%';
-            this.ui.title = `Progress: ${progress}%`;
-            return this;
-        }
-        constructor(app) {
-            super(app, 'Progress Bar', 'Displays your progress as a yellow bar', {
-                canChangeState: false,
-                runEvt: prefix('refreshUi'),
-                addMethod: 'before'
-            });
-            this.ui = fn.progress({
-                attributes: {
-                    max: 100
-                }
-            });
-            this.target = fn.$('.sb-wordlist-heading', this.app.gameWrapper);
-        }
-    }
-
-    class TablePane extends Plugin {
-        run(evt) {
-            this.pane = fn.empty(this.pane);
-            const tbody = fn.tbody();
-            const data = this.getData();
-            if (this.caption) {
-                this.pane.append(fn.caption({ content: this.caption }));
-            }
-            if (this.hasHeadRow) {
-                this.pane.append(this.buildHead(data.shift()));
-            }
-            const l = data.length;
-            let colCnt = 0;
-            data.forEach((rowData, i) => {
-                colCnt = rowData.length;
-                const classNames = [];
-                for (const [marker, func] of Object.entries(this.cssMarkers)) {
-                    if (func(rowData, i, l)) {
-                        classNames.push(prefix(marker, "d"));
-                    }
-                }
-                const tr = fn.tr({
-                    classNames,
-                });
-                rowData.forEach((cellData, rInd) => {
-                    const tag = rInd === 0 && this.hasHeadCol ? "th" : "td";
-                    tr.append(
-                        fn[tag]({
-                            content: cellData,
+            this.popup = new Popup(this.app, this.key);
+            if (!this.found3rdPartyDm) {
+                this.popup
+                    .setContent("title", this.title)
+                    .setContent("subtitle", this.description)
+                    .setContent(
+                        "body",
+                        fn.div({
+                            classNames: [prefix("color-selector", "d")],
+                            content: [this.getSwatches(), this.getHive()],
                         })
                     );
-                });
-                tbody.append(tr);
-            });
-            this.pane.dataset.cols = colCnt;
-            this.pane.append(tbody);
-            return this;
-        }
-        buildHead(rowData) {
-            return fn.thead({
-                content: fn.tr({
-                    content: rowData.map((cellData) =>
-                        fn.th({
-                            content: cellData,
-                        })
-                    ),
-                }),
-            });
-        }
-        getPane() {
-            return this.pane;
-        }
-        constructor(
-            app,
-            title,
-            description,
-            {
-                canChangeState = true,
-                defaultState = true,
-                cssMarkers = {},
-                hasHeadRow = true,
-                hasHeadCol = true,
-                classNames = [],
-                events = {},
-                caption = "",
-            } = {}
-        ) {
-            super(app, title, description, {
-                canChangeState,
-                defaultState,
-            });
-            app.on(prefix("refreshUi"), () => {
-                this.run();
-            });
-            this.cssMarkers = cssMarkers;
-            this.hasHeadRow = hasHeadRow;
-            this.hasHeadCol = hasHeadCol;
-            this.caption = caption;
-            this.pane = fn.table({
-                classNames: ["pane", prefix("dataPane", "d")].concat(classNames),
-                events,
-            });
+            } else {
+                this.popup.setContent("title", "Dark Mode disabled").setContent(
+                    "subtitle",
+                    fn.toNode([
+                        fn.p({
+                            content: `Spelling Bee Assistant’s dark mode has been turned off because 
+                    another dark theme (likely from the NYT) was detected.`,
+                        }),
+                        fn.p({
+                            content: `If you prefer SBA’s dark mode, consider disabling the other one.`,
+                        }),
+                    ])
+                );
+            }
         }
     }
 
-    class DetailsPane extends TablePane {
-        constructor(
-            app,
-            {
-                title,
-                description,
-                shortcuts = [],
-                canChangeState = false,
-                defaultState = true,
-                hasHeadCol = true,
-                hasHeadRow = true,
-                cssMarkers = {},
-                classNames = ["th-upper", "table-full-width", "equal-cols", "small-txt"].map((name) => prefix(name, "d")),
-                open = false,
-            }
-        ) {
-            super(app, title, description, {
-                canChangeState,
-                defaultState,
-                cssMarkers,
-                classNames,
-                hasHeadRow,
-                hasHeadCol,
-            });
-            this.shortcuts = shortcuts;
-            this.ui = fn.details({
-                content: [
-                    fn.summary({
-                        content: title,
-                    }),
-                    this.getPane(),
-                ],
-                attributes: {
-                    open,
-                },
-            });
-            this.togglePane = () => (this.ui.open = !this.ui.open);
-        }
-    }
-
-    class Overview extends DetailsPane {
-        getData() {
-            const keys = ["foundTerms", "remainders", "answers"];
-            return [
-                ["", "✓", "?", "∑"],
-                ["W"].concat(keys.map((key) => data.getCount(key))),
-                ["P"].concat(keys.map((key) => data.getPoints(key))),
-            ];
-        }
-        constructor(app) {
-            super(app, {
-                title: "Overview",
-                description: "The number of words and points and how many have been found",
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+O",
-                        method: "togglePane",
-                    },
-                ],
-                open: true,
-            });
-        }
-    }
-
-    class SpillTheBeans extends Plugin {
-        run(evt) {
-            let emoji = "🙂";
-            if (!evt.detail) {
-                emoji = "😐";
-            } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail.textContent.trim())).length) {
-                emoji = "🙁";
-            }
-            this.ui.textContent = emoji;
-            return this;
-        }
-        toggleMode(state) {
-            if (state) {
-                this.app.domSet("submenu", false);
-            }
-            if(typeof state === 'undefined') {
-                state = !this.getState();
-            }
-            this.super.toggle(state);
-            return this;
-        }
-        constructor(app) {
-            super(app, "Spill the beans", "An emoji that shows if the last letter was right or wrong", {
-                canChangeState: true,
-                runEvt: prefix("newInput"),
-                addMethod: "prepend",
-            });
-            this.ui = fn.div({
-                content: "😐",
-            });
-            this.target = fn.$(".sb-controls", this.app.gameWrapper);
-            this.toggleMode(false);
-            this.shortcuts = [
-                {
-                    combo: "Shift+Alt+E",
-                    method: 'toggle',
-                },
-            ];
-        }
-    }
-
-    class LetterCount extends DetailsPane {
-        getData() {
-            const counts = {};
-            const cellData = [["", "✓", "?", "∑"]];
-            data.getList("answers").forEach((term) => {
-                counts[term.length] = counts[term.length] || {
-                    found: 0,
-                    missing: 0,
-                    total: 0,
-                };
-                if (data.getList("foundTerms").includes(term)) {
-                    counts[term.length].found++;
-                } else {
-                    counts[term.length].missing++;
-                }
-                counts[term.length].total++;
-            });
-            let keys = Object.keys(counts);
-            keys.sort((a, b) => a - b);
-            keys.forEach((count) => {
-                cellData.push([count, counts[count].found, counts[count].missing, counts[count].total]);
-            });
-            return cellData;
-        }
-        constructor(app) {
-            super(app, {
-                title: "Letter count",
-                description: "The number of words by length",
-                cssMarkers: {
-                    completed: (rowData, i) => rowData[2] === 0,
-                },
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+L",
-                        method: "togglePane",
-                    },
-                ]
-            });
-        }
-    }
-
-    let FirstLetter$1 = class FirstLetter extends DetailsPane {
-        getData() {
-            const letters = {};
-            const answers = data.getList("answers").sort();
-            const remainders = data.getList("remainders");
-            const tpl = {
-                foundTerms: 0,
-                remainders: 0,
-                total: 0,
-            };
-            answers.forEach((term) => {
-                const letter = term.charAt(0);
-                if (typeof letters[letter] === "undefined") {
-                    letters[letter] = {
-                        ...tpl,
-                    };
-                }
-                if (remainders.includes(term)) {
-                    letters[letter].remainders++;
-                } else {
-                    letters[letter].foundTerms++;
-                }
-                letters[letter].total++;
-            });
-            const cellData = [["", "✓", "?", "∑"]];
-            for (let [letter, values] of Object.entries(letters)) {
-                values = Object.values(values);
-                values.unshift(letter);
-                cellData.push(values);
-            }
-            return cellData;
-        }
-        constructor(app) {
-            super(app, {
-                title: "First letter",
-                description: "The number of words by first letter",
-                cssMarkers: {
-                    completed: (rowData, i) => rowData[2] === 0,
-                    preeminent: (rowData, i) => rowData[0] === data.getCenterLetter(),
-                },
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+F",
-                        method: "togglePane",
-                    },
-                ]
-            });
-        }
-    };
-
-    class FirstLetter extends DetailsPane {
-        getData() {
-            const letters = {};
-            const answers = data.getList('answers').sort();
-            const remainders = data.getList('remainders');
-            const tpl = {
-                foundTerms: 0,
-                remainders: 0,
-                total: 0
-            };
-            answers.forEach(term => {
-                const bigram = term.slice(0, 2);
-                if (typeof letters[bigram] === 'undefined') {
-                    letters[bigram] = {
-                        ...tpl
-                    };
-                }
-                if (remainders.includes(term)) {
-                    letters[bigram].remainders++;
-                } else {
-                    letters[bigram].foundTerms++;
-                }
-                letters[bigram].total++;
-            });
-            const cellData = [
-                ['', '✓', '?', '∑']
-            ];
-            for (let [letter, values] of Object.entries(letters)) {
-                values = Object.values(values);
-                values.unshift(letter);
-                cellData.push(values);
-            }
-            return cellData;
-        }
-        constructor(app) {
-            super(app, {
-                title: "First two letters",
-                description: "The number of words by the first two letters",
-                cssMarkers: {
-                    completed: (rowData, i) => rowData[2] === 0
-                },
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+2",
-                        method: "togglePane",
-                    },
-                ]
-            });
-        }
-    }
-
-    class Pangrams extends DetailsPane {
-        getData() {
-            const pangramCount = data.getCount("pangrams");
-            const foundPangramCount = data.getCount("foundPangrams");
-            return [
-                ["✓", "?", "∑"],
-                [foundPangramCount, pangramCount - foundPangramCount, pangramCount],
-            ];
-        }
-        constructor(app) {
-            super(app, {
-                title: "Pangrams",
-                description: "The number of pangrams",
-                cssMarkers: {
-                    completed: (rowData, i) => rowData[1] === 0,
-                },
-                hasHeadCol: false,
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+P",
-                        method: "togglePane",
-                    },
-                ],
-            });
-        }
-    }
-
-    class SummaryTable extends TablePane {
-        run(evt) {
-            super.run(evt);
-            const achievements = data.getFoundAndTotal(this.fieldName);
-            const tFoot = fn.tfoot({
-                content: [
-                    fn.tr({
-                        content: [
-                            fn.td({
-                                attributes: {
-                                    colSpan: fn.$("thead tr", this.getPane()).children.length,
-                                },
-                                classNames: [prefix("progress-box", "d")],
-                                content: getProgressBar(achievements.found, achievements.total),
-                            }),
-                        ],
-                    }),
-                ],
-            });
-            this.getPane().append(tFoot);
-            return this;
-        }
-        getData() {
-            const achievements = data.getFoundAndTotal(this.fieldName);
-            return [
-                ["✓", "?", "∑"],
-                [achievements.found, achievements.total - achievements.found, achievements.total],
-            ];
-        }
-        constructor(
-            app,
-            title,
-            description,
-            fieldName,
-            {
-                canChangeState = true,
-                defaultState = true,
-                cssMarkers = {},
-                hasHeadRow = true,
-                hasHeadCol = true,
-                classNames = [],
-                events = {},
-                caption = "",
-            } = {}
-        ) {
-            super(app, title, description, {
-                canChangeState,
-                defaultState,
-                cssMarkers,
-                hasHeadRow,
-                hasHeadCol,
-                classNames,
-                events,
-                caption,
-            });
-            this.fieldName = fieldName;
-        }
-    }
-
-    class Milestones extends TablePane {
-        run(evt) {
-            super.run(evt);
-            const insertionPoint = fn.$("tbody .sba-preeminent", this.pane);
-            const pointObj = data.getFoundAndTotal("points");
-            const currentTier = this.getCurrentTier(pointObj);
-            const nextTier = this.getNextTier(pointObj);
-            if (!insertionPoint || !nextTier.value) {
-                return this;
-            }
-            insertionPoint.after(
-                fn.tr({
-                    content: fn.td({
-                        attributes: {
-                            colSpan: fn.$("thead tr", this.pane).children.length,
-                        },
-                        classNames: [prefix("progress-box", "d")],
-                        content: getProgressBar(currentTier.additionalPoints, nextTier.value - currentTier.value),
-                    }),
-                })
-            );
-            return this;
-        }
-        getDescription() {
-            const pointObj = data.getFoundAndTotal("points");
-            const currentTier = this.getCurrentTier(pointObj);
-            const nextTier = this.getNextTier(pointObj);
-            const description =
-                nextTier.name && pointObj.found < pointObj.total
-                    ? [
-                          `You’re at "`,
-                          fn.b({ content: currentTier.name }),
-                          `" and just `,
-                          fn.b({ content: nextTier.missingPoints }),
-                          ` ${nextTier.missingPoints !== 1 ? "points" : "point"} away from "`,
-                          fn.b({ content: nextTier.name }),
-                          `".`,
-                      ]
-                    : `You’ve completed today’s puzzle. Here’s a recap.`;
-            return description;
-        }
-        togglePopup() {
-            if (this.popup.isOpen) {
-                this.popup.toggle(false);
-                return this;
-            }
-            this.description = this.getDescription();
-            const summaryElements = [];
-            Object.values(this.summaryTblObjects).forEach((tblObj) => {
-                summaryElements.push(tblObj.getPane());
-            });
-            const body = fn.div({
-                classNames: [prefix("milestone-table-wrapper", "d")],
-                content: [
-                    fn.figure({
-                        content: summaryElements,
-                        classNames: ["col", "summaries"].map((name) => prefix(name, "d")),
-                    }),
-                    fn.figure({
-                        content: this.getPane(),
-                        classNames: ["col", "tiers"].map((name) => prefix(name, "d")),
-                    }),
-                ],
-            });
-            this.popup.setContent("subtitle", this.getDescription()).setContent("body", body).toggle(true);
-            return this;
-        }
-        getData(reversed = true) {
-            const pointObj = data.getFoundAndTotal("points");
-            const rows = [["", "To reach"]];
-            const tiers = reversed ? this.tiers.toReversed() : this.tiers;
-            tiers.forEach((entry) => {
-                rows.push([entry[0], Math.round((entry[1] / 100) * pointObj.total)]);
-            });
-            return rows;
-        }
-        getCurrentTier(pointObj) {
-            const tier = this.getData(false)
-                .filter((entry) => !isNaN(entry[1]) && entry[1] <= pointObj.found)
-                .pop();
-            return {
-                name: tier[0],
-                value: tier[1],
-                additionalPoints: pointObj.found - tier[1],
-            };
-        }
-        getNextTier(pointObj) {
-            const nextTier = this.getData(false)
-                .filter((entry) => !isNaN(entry[1]) && entry[1] > pointObj.found)
-                .shift();
-            return nextTier && nextTier.length
-                ? {
-                      name: nextTier[0],
-                      value: nextTier[1],
-                      missingPoints: nextTier[1] - pointObj.found,
-                  }
-                : {
-                      name: null,
-                      value: null,
-                      missingPoints: 0,
-                  };
-        }
-        constructor(app) {
-            super(app, "Milestones", "The number of points required for each level", {
-                classNames: ["thead-th-bold"].map((name) => prefix(name, "d")),
-                caption: "Tiers",
-            });
-            this.tiers = [
-                ["Beginner", 0],
-                ["Good Start", 2],
-                ["Moving Up", 5],
-                ["Good", 8],
-                ["Solid", 15],
-                ["Nice", 25],
-                ["Great", 40],
-                ["Amazing", 50],
-                ["Genius", 70],
-                ["Queen Bee", 100],
-            ];
-            this.cssMarkers = {
-                completed: (rowData) => {
-                    const pointObj = data.getFoundAndTotal("points");
-                    const currentTier = this.getCurrentTier(pointObj);
-                    return rowData[1] < pointObj.found && rowData[1] !== currentTier.value;
-                },
-                preeminent: (rowData) => rowData[1] === this.getCurrentTier(data.getFoundAndTotal("points")).value,
-            };
-            this.popup = new Popup(this.app, this.key).setContent("title", this.title);
-            this.summaryTblObjects = {};
-            const summaryFields = {
-                points: "Points",
-                terms: "Words",
-                pangrams: "Pangrams",
-            };
-            for (const [fieldName, title] of Object.entries(summaryFields)) {
-                this.summaryTblObjects[fieldName] = new SummaryTable(app, title, "", fieldName, {
-                    classNames: ["thead-th-bold"].map((name) => prefix(name, "d")),
-                    caption: title,
-                    hasHeadCol: false,
-                });
-            }
-            this.menuAction = "popup";
-            this.menuIcon = "null";
-            this.shortcuts = [
-                {
-                    combo: "Shift+Alt+M",
-                    method: "togglePopup",
-                },
-            ];
-        }
-    }
-
-    class Community extends Plugin {
-        hasGeniusNo4Letters() {
-            const maxPoints = data.getPoints("answers");
-            const no4LetterPoints = maxPoints - data.getList("answers").filter((term) => term.length === 4).length;
-            return no4LetterPoints >= Math.round((70 / 100) * maxPoints);
-        }
-        getPerfectPangramCount() {
-            return data.getList("pangrams").filter((term) => term.length === 7).length;
-        }
-        hasBingo() {
-            return Array.from(new Set(data.getList("answers").map((term) => term.charAt(0)))).length === 7;
-        }
-        nytCommunity() {
-            const date = data.getDate().print;
-            const href = `https://www.nytimes.com/${date.replace(
-            /-/g,
-            "/"
-        )}/crosswords/spelling-bee-forum.html#commentsContainer`;
-            return fn.a({
-                content: "NYT Spelling Bee Forum for today’s game",
-                attributes: {
-                    href,
-                    target: prefix(),
-                },
-            });
-        }
-        bluesky() {
-            const hashtags = ["hivemind", "nytspellingbee", "nytbee", "nytsb"].map((tag) =>
-                fn.a({
-                    content: `#${tag}`,
-                    attributes: {
-                        href: `https://bsky.app/hashtag/${tag}`,
-                        target: prefix(),
-                    },
-                })
-            );
-            return fn.toNode(["Bluesky hashtags: ", ...hashtags.flatMap((tag, i, arr) =>
-                i < arr.length - 1 ? [tag, ", "] : [tag]
-            )]);
-        }
-        nytSpotlight() {
-            const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
-            return fn.a({
-                content: "NYT Spelling Bee Forums",
-                attributes: {
-                    href,
-                    target: prefix(),
-                },
-            });
-        }
-        togglePopup() {
-            if (this.popup.isOpen) {
-                this.popup.toggle(false);
-                return this;
-            }
-            this.popup.toggle(true);
-            return this;
-        }
-        constructor(app) {
-            super(app, "Community", "A collection of resources and trivia suggested by the community.", {
-                canChangeState: true,
-            });
-            this.shortcuts = [
-                {
-                    combo: "Shift+Alt+C",
-                    method: "togglePopup",
-                },
-            ];
-            this.menuAction = "popup";
-            this.menuIcon = "null";
-            const features = fn.ul({
-                content: [
-                    fn.li({
-                        content: [
-                            fn.h4({
-                                content: "Is there a perfect pangram today?",
-                            }),
-                            fn.p({
-                                content: (() => {
-                                    const pp = this.getPerfectPangramCount();
-                                    switch (pp) {
-                                        case 0:
-                                            return `No, not today.`;
-                                        case 1:
-                                            return `Yes - there's one perfect pangram today.`;
-                                        default:
-                                            return `Yes - there are ${pp} perfect pangrams today.`;
-                                    }
-                                })(),
-                            }),
-                            fn.em({
-                                content: "A “perfect” pangram uses all seven letters exactly once.",
-                            }),
-                        ],
-                    }),
-                    fn.li({
-                        content: [
-                            fn.h4({
-                                content: 'Is today a Bingo day?',
-                            }),
-                            fn.p({
-                                content: this.hasBingo() ? "Yes - today is a Bingo day!" : "No - not today.",
-                            }),
-                            fn.em({
-                                content:
-                                    '"Bingo" means each puzzle letter starts at least one word in the list.',
-                            }),
-                        ],
-                    }),
-                    fn.li({
-                        content: [
-                            fn.h4({
-                                content: "Can you reach Genius without using any 4-letter words?",
-                            }),
-                            fn.p({
-                                content: this.hasGeniusNo4Letters() ? "Yes - today you can!" : "No - not today.",
-                            }),
-                        ],
-                    }),
-                    fn.li({
-                        content: [
-                            fn.h4({
-                                content: "Forums and Hashtags",
-                            }),
-                            fn.ul({
-                                content: [
-                                    fn.li({
-                                        content: this.nytCommunity(),
-                                    }),
-                                    fn.li({
-                                        content: this.nytSpotlight(),
-                                    }),
-                                    fn.li({
-                                        content: this.bluesky(),
-                                    }),
-                                ],
-                            }),
-                        ],
-                    }),
-                ],
-            });
-            this.popup = new Popup(this.app, this.key)
-                .setContent("title", this.title)
-                .setContent("subtitle", this.description)
-                .setContent("body", features);
-        }
-    }
-
-    class TodaysAnswers extends Plugin {
-        togglePopup() {
-            if(this.popup.isOpen) {
-                this.popup.toggle(false);
-                return this;
-            }
-            const foundTerms = data.getList('foundTerms');
-            const pangrams = data.getList('pangrams');
-            const pane = fn.ul({
-                classNames: ['sb-modal-wordlist-items']
-            });
-            data.getList('answers').forEach(term => {
-                pane.append(fn.li({
-                    content: [
-                        fn.span({
-                            classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
-                        }), fn.span({
-                            classNames: pangrams.includes(term) ? ['sb-anagram', 'pangram'] : ['sb-anagram'],
-                            content: term
-                        })
-                    ]
-                }));
-            });
-            this.popup
-                .setContent('body', [
-                    fn.div({
-                        content: data.getList('letters').join(''),
-                        classNames: ['sb-modal-letters']
-                    }),
-                    pane
-                ])
-                .toggle(true);
-            return this;
-        }
-        constructor(app) {
-            super(app, 'Today’s Answers', 'Reveals the solution of the game', {
-                canChangeState: true,
-                defaultState: false,
-                key: 'todaysAnswers'
-            });
-            this.marker = prefix('resolved', 'd');
-            this.popup = new Popup(this.app, this.key)
-                .setContent('title', this.title)
-                .setContent('subtitle', data.getDate().display);
-            this.menuAction = 'popup';
-            this.menuIcon = 'warning';
-            this.shortcuts = [{
-                combo: "Shift+Alt+T",
-                method: "togglePopup"
-            }];
-        }
-    }
-
-    class PangramHl extends Plugin {
-        toggle(state) {
-            super.toggle(state);
-            return this.run();
-        }
-        run(evt) {
-            const pangrams = data.getList('pangrams');
-            const container = evt && evt.detail ? evt.detail : this.app.resultList;
-            fn.$$('li', container).forEach(node => {
-                const term = node.textContent;
-                if (pangrams.includes(term) || fn.$('.pangram', node)) {
-                    node.classList.toggle(this.marker, this.getState());
-                }
-            });
-            return this;
-        }
-        constructor(app) {
-            super(app, 'Highlight PangramHl', '', {
-                canChangeState: false,
-                runEvt: prefix('refreshUi')
-            });
-            this.marker = prefix('pangram', 'd');
-            this.app.on(prefix('yesterday'), evt => {
-                this.run(evt);
-            });
-            this.run();
-        }
-    }
-
-    class Googlify extends Plugin {
-        listener(evt) {
-            if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
-                return false;
-            }
-            if (evt.button === 0) {
-                window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
-                return true;
-            }
-        }
-        run(evt = null) {
-            const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
-            [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
-                container[method]('pointerup', this.listener);
-                container.classList.toggle(prefix('googlified', 'd'), this.getState());
-            });
-            return this;
-        }
-        constructor(app) {
-            super(app, 'Googlify', 'Link all result terms to Google', {
-                canChangeState: false
-            });
-            this.run();
-        }
-    }
-
-    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--dlig: 0%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--highlight-bg-color:hsl(52,93%,55%);--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:hsla(0,0%,100%,.85);--border-color:hsl(0,0%,86%);--area-bg-color:hsl(0,0%,90%);--invalid-color:hsl(0,0%,53%);--menu-hover-color:hsl(0,0%,96%);--head-row-bg-color:hsl(0,0%,96%);--card-color:hsla(52,93%,55%,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--sba-success-color:hsl(112,93%,35%);--sba-error-color:hsl(352,93%,35%);--toggle-on-bg-color:hsl(90,60%,40%);--toggle-off-bg-color:hsl(90,0%,50%)}[data-sba-theme=dark]{--highlight-bg-color:hsl(49,96%,50%);--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), 7%);--modal-bg-color:hsl(var(--dhue), var(--dsat), 7%, 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 50%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--head-row-bg-color:hsl(var(--dhue), var(--dsat), 13%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--sba-success-color:hsl(112,93%,55%);--sba-error-color:hsl(352,93%,41%);--toggle-on-bg-color:hsl(90,60%,50%);--toggle-off-bg-color:#ccc}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-game-wrapper,body[data-sba-theme=dark] #js-hook-pz-moment__loading{background:var(--body-bg-color) !important;color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--highlight-bg-color);fill:var(--highlight-bg-color);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-letter{fill:var(--text-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .pangram-message .sb-message{background:var(--highlight-bg-color);color:var(--highlight-text-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .pz-icon-close{filter:invert(1)}body[data-sba-theme=dark].pz-mobile .pz-toolbar-button,body[data-sba-theme=dark].pz-mobile .pz-dropdown__button,body[data-sba-theme=dark].pz-desktop .pz-toolbar-button,body[data-sba-theme=dark].pz-desktop .pz-dropdown__button{background-color:rgba(0,0,0,0) !important}body[data-sba-theme=dark] .pz-moment__frame.pz-moment__welcome *{color:var(--text-color)}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.pz-modal__button.white,.pz-footer,.pz-moment,.sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}.pz-modal__button.white .pz-moment__button.secondary,.pz-footer .pz-moment__button.secondary,.pz-moment .pz-moment__button.secondary,.sb-modal-scrim .pz-moment__button.secondary{color:#fff}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary{color:var(--text-color)}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary:hover{color:var(--body-bg-color)}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-moment__close_text{color:currentColor}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--highlight-bg-color)}.hive-cell .cell-fill{stroke:var(--body-bg-color)}.hive-cell .cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}[data-sba-theme] .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist,.hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}:root{--sba-cell-inline-padding: 2px;--sba-cell-block-padding: 3px}.hive-action.push-active.sba-no-feedback{background:var(--body-bg-color) !important}.sba-toggle-switch:where([type=checkbox][role=switch]){-webkit-appearance:none;-moz-appearance:none;appearance:none;position:relative;color:var(--border-color);font-size:inherit;width:2em;height:1em;box-sizing:content-box;border:1px solid;border-radius:1em;vertical-align:text-bottom;margin:auto;cursor:pointer;background:var(--body-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch])::before{content:\"\";position:absolute;top:50%;left:0;transform:translate(0, -50%);box-sizing:border-box;width:.7em;height:.7em;margin:0 .15em;border:1px solid;border-radius:50%;background:var(--text-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked{background:var(--toggle-on-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked::before{left:1em;background:var(--border-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):disabled{opacity:.4}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:rgba(0,0,0,0)}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--border-color)}[data-ui].inactive{display:none}details .sba-data-pane{border-top:none;margin-bottom:2px}.sb-modal-wrapper{--sba-cell-inline-padding: 7px}.sb-modal-wrapper .sba-data-pane{font-size:95%}.sba-data-pane{border:1px solid var(--border-color);border-collapse:collapse}.sba-data-pane.sba-thead-th-bold thead th{font-weight:bold}.sba-data-pane.sba-table-full-width{width:100%;table-layout:fixed}.sba-data-pane.sba-small-txt{font-size:85%}.sba-data-pane.sba-th-upper th{text-transform:uppercase}.sba-data-pane.sba-equal-cols[data-cols=\"3\"] :is(th,td){width:33.3333333333%}.sba-data-pane.sba-equal-cols[data-cols=\"4\"] :is(th,td){width:25%}.sba-data-pane.sba-equal-cols[data-cols=\"5\"] :is(th,td){width:20%}.sba-data-pane.sba-equal-cols[data-cols=\"6\"] :is(th,td){width:16.6666666667%}.sba-data-pane.sba-equal-cols[data-cols=\"7\"] :is(th,td){width:14.2857142857%}.sba-data-pane.sba-equal-cols[data-cols=\"8\"] :is(th,td){width:12.5%}.sba-data-pane.sba-equal-cols[data-cols=\"9\"] :is(th,td){width:11.1111111111%}.sba-data-pane.sba-equal-cols[data-cols=\"10\"] :is(th,td){width:10%}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-bg-color) !important}.sba-data-pane .sba-completed td,.sba-data-pane td.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane caption{text-align:start;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);line-height:1.75;font-weight:700}.sba-data-pane :is(th,td){border:1px solid var(--border-color);border-top:none;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);white-space:nowrap;text-align:center}.sba-data-pane th{background-color:var(--head-row-bg-color)}[data-ui=community] .sb-modal-body{margin-block-end:0}[data-ui=community] h4{font-weight:700;font-family:nyt-franklin;font-size:18px;margin:0 0 1px 0}[data-ui=community] p{margin:0 0 2px 0;font-size:16px}[data-ui=community] em{display:block;font-weight:normal;font-weight:500;font-size:14px;font-family:nyt-franklin}[data-ui=community] li{margin:0 0 12px 0}[data-ui=community] li ul{padding-left:20px;list-style:disc}[data-ui=community] li ul li{margin:0}[data-ui=community] li ul li a{color:var(--link-color)}[data-ui=community] li ul li a:hover{color:var(--link-hover-color)}[data-ui=milestones] .sba-milestone-table-wrapper{display:flex;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;justify-content:flex-start;gap:12px 40px}[data-ui=milestones] figcaption{padding:10px var(--sba-cell-inline-padding)}[data-ui=milestones] b{font-weight:700}[data-ui=milestones] progress{border-width:0;height:5px}[data-ui=milestones] .sba-col{width:calc(50% - 20px)}[data-ui=milestones] .sba-summaries .sba-data-pane{table-layout:fixed;margin-block-end:12px}[data-ui=milestones] .sba-summaries tr :is(td,th){text-align:center}[data-ui=milestones] .sba-tiers .sba-data-pane .sba-preeminent{border-bottom:1px solid var(--border-color) !important}[data-ui=milestones] .sba-data-pane{width:100%}[data-ui=milestones] .sba-data-pane td.sba-progress-box{padding:0}[data-ui=milestones] .sba-data-pane tr.sba-completed :is(th,td){color:var(--invalid-color)}[data-ui=milestones] .sba-data-pane tbody th{text-align:start}[data-ui=milestones] .sba-data-pane tbody td:nth-child(n+2){max-width:100px}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px;justify-content:space-between;align-items:center}progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;padding:0;background:rgba(0,0,0,0);display:block;height:10px;border:1px var(--border-color) solid}progress::-webkit-progress-bar{background-color:rgba(0,0,0,0)}progress::-webkit-progress-value{background-color:var(--highlight-bg-color);height:4px}progress::-moz-progress-bar{background-color:var(--highlight-bg-color)}[data-ui=progressBar]{border-width:0 0 1px 0;height:6px}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px;width:179px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 36px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-bg-color);top:3px;left:14px;font-size:16px}[data-ui=menu] li[data-target=darkMode],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}[data-ui=menu] li svg{display:inline-block;width:20px;height:20px;position:absolute;left:7px;top:6px}[data-ui=menu] li svg .shape{fill:var(--text-color)}[data-ui=menu] li svg .content{fill:var(--highlight-bg-color)}.sba-color-selector{display:flex;justify-content:space-between;gap:10px}[data-ui=darkMode] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkMode] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkMode] .cell-letter{font-size:8px;font-weight:600}[data-ui=darkMode] .sba-toggle-label{padding-inline-end:10px}[data-ui=darkMode] .sba-header-wrap{display:flex;justify-content:space-between}.sba-dark-mode-preview{width:200px;aspect-ratio:62.4/64.8}.sba-dark-mode-preview svg{width:100%;aspect-ratio:inherit;display:block}.sba-dark-mode-preview .sba-cell{fill:var(--area-bg-color)}.sba-dark-mode-preview .sba-cell text{fill:var(--text-color)}.sba-dark-mode-preview .sba-center-cell{fill:var(--highlight-bg-color)}.sba-dark-mode-preview .sba-center-cell text{fill:var(--highlight-text-color)}.sba-dark-mode-preview text{font-family:nyt-franklin;font-weight:700;font-size:7px;text-transform:uppercase;dominant-baseline:middle;text-anchor:middle;pointer-events:none}.sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:220px}.sba-swatches li{position:relative;overflow:hidden;margin-bottom:5px}.sba-swatches label{border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer;text-align:center}.sba-swatches label[for=sbaH360]{width:213px;line-height:50px;color:var(--highlight-text-color)}.sba-swatches input{position:absolute;left:-100px}.sba-swatches input:checked~label:not([for=sbaH360]){border-color:var(--highlight-bg-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *{color:var(--text-color);border-color:var(--border-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *::selection{background-color:var(--body-bg-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) .pz-dropdown__arrow{border-top-color:var(--text-color);border-bottom-color:var(--text-color);border-right-color:rgba(0,0,0,0);border-left-color:rgba(0,0,0,0)}.pz-mobile .pz-toolbar-button__sba{color:var(--text-color)}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]){background-color:var(--body-bg-color) !important}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]):hover{background:var(--menu-hover-color)}[data-sba-theme=dark] #portal-game-toolbar i,[data-sba-theme=dark] #js-mobile-toolbar i{filter:invert(1);background-color:rgba(0,0,0,0)}[data-sba-theme=dark] .conversion-banner__icon{filter:invert(1)}[data-sba-theme=dark] :is(.sb-stats-bar-rank__word-count,.sb-stats-bar-rank__text){filter:contrast(99%);color:#999}[data-sba-theme] .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--highlight-bg-color);top:4px;font-size:16px}[data-sba-theme] .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:rgba(0,0,0,0)}[data-sba-submenu=true] [data-ui=menu]{background:var(--menu-hover-color);color:var(--text-color)}[data-ui=shortcuts] tbody tr th{text-align:start}[data-ui=shortcuts] tbody tr td:last-child{font-size:16px;cursor:pointer}[data-ui=shortcuts] tbody tr td:last-child::selection{color:currentColor;background-color:rgba(0,0,0,0)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=true]{color:var(--sba-success-color)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=false]{color:var(--sba-error-color)}[data-ui=grid] table{margin-left:-20px;width:calc(100% + 40px)}[data-ui=grid] tbody tr:last-child td{background-color:var(--head-row-bg-color)}[data-ui=grid] tbody tr td{padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type{background-color:var(--head-row-bg-color)}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba summary{list-style:none;padding:1px 15px 0 21px}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li{position:relative}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li.sba-pangram{font-weight:700;border-bottom:2px var(--highlight-bg-color) solid}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks{position:absolute;right:0;bottom:3px}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks mark{display:none}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-s-active .sba-mark-s{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-p-active .sba-mark-p{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-d-active .sba-mark-d{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-c-active .sba-mark-c{display:inline-block}[data-sba-theme] mark{background:rgba(0,0,0,0);font-size:11px;pointer-events:none;text-transform:uppercase}[data-sba-theme] mark::after{content:\" \"}[data-sba-theme] mark:last-of-type::after{content:normal}[data-sba-theme] mark::selection{background-color:rgba(0,0,0,0)}[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}.sb-modal-frame .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{display:none}.pz-mobile [data-ui=menu]{display:flex;align-items:center;height:100%;padding:0 6px}[data-sba-submenu=true]{overflow-y:hidden}[data-sba-submenu=true] .sba{position:relative;left:-167px;top:-175px}[data-sba-submenu=true] .pz-mobile-dropdown.show .pz-dropdown__list{display:none}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{display:block;position:absolute;right:-16px;top:45px}[data-sba-submenu=true] .sba{left:-167px;top:0px}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:rgba(0,0,0,0)}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true][data-sba-submenu=true] .sba-container{top:0;height:0;z-index:4}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}}@media(max-width: 450px){[data-ui=grid] table{table-layout:auto}[data-ui=grid] table.sba-data-pane tbody th{width:28px !important}[data-ui=grid] table.sba-data-pane thead th:first-of-type{width:28px !important}[data-ui=grid] table.sba-data-pane :is(thead,tbody) tr :is(th,td){width:auto;font-size:90%}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}[data-ui=overview] .sba-data-pane tbody th{text-transform:none;width:31%}[data-ui=overview] .sba-data-pane tbody td{width:23%}[data-ui=overview] .sba-data-pane tbody tr:nth-child(1) th::after{content:\"ords\"}[data-ui=overview] .sba-data-pane tbody tr:nth-child(2) th::after{content:\"oints\"}[data-ui=overview] .sba-data-pane thead th{width:23%}[data-ui=overview] .sba-data-pane thead th:first-of-type{width:31%}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:flex}}@media(min-width: 900px){[data-sba-submenu=true].pz-desktop [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 66px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba{top:-66px}[data-sba-active=true].pz-desktop .sba{left:-191px}}@media(min-width: 1298px){[data-sba-active=true][data-sba-submenu=true] .sba{left:-179px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}\n";
+    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--dlig: 7%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--highlight-bg-color:hsl(52,93%,55%);--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:hsla(0,0%,100%,.85);--border-color:hsl(0,0%,86%);--area-bg-color:hsl(0,0%,90%);--invalid-color:hsl(0,0%,53%);--menu-hover-color:hsl(0,0%,96%);--head-row-bg-color:hsl(0,0%,96%);--card-color:hsla(52,93%,55%,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--sba-success-color:hsl(112,93%,35%);--sba-error-color:hsl(352,93%,35%);--toggle-on-bg-color:hsl(90,60%,40%);--toggle-off-bg-color:hsl(90,0%,50%)}[data-sba-theme=dark]{--highlight-bg-color:hsl(49,96%,50%);--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), var(--dlig));--modal-bg-color:hsl(var(--dhue), var(--dsat), var(--dlig), 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 50%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--head-row-bg-color:hsl(var(--dhue), var(--dsat), 13%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--sba-success-color:hsl(112,93%,55%);--sba-error-color:hsl(352,93%,41%);--toggle-on-bg-color:hsl(90,60%,50%);--toggle-off-bg-color:#ccc}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-game-wrapper,body[data-sba-theme=dark] #js-hook-pz-moment__loading{background:var(--body-bg-color) !important;color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--highlight-bg-color);fill:var(--highlight-bg-color);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-letter{fill:var(--text-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .pangram-message .sb-message{background:var(--highlight-bg-color);color:var(--highlight-text-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .pz-icon-close{filter:invert(1)}body[data-sba-theme=dark].pz-mobile .pz-toolbar-button,body[data-sba-theme=dark].pz-mobile .pz-dropdown__button,body[data-sba-theme=dark].pz-desktop .pz-toolbar-button,body[data-sba-theme=dark].pz-desktop .pz-dropdown__button{background-color:rgba(0,0,0,0) !important}body[data-sba-theme=dark] .pz-moment__frame.pz-moment__welcome *{color:var(--text-color)}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.pz-modal__button.white,.pz-footer,.pz-moment,.sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}.pz-modal__button.white .pz-moment__button.secondary,.pz-footer .pz-moment__button.secondary,.pz-moment .pz-moment__button.secondary,.sb-modal-scrim .pz-moment__button.secondary{color:#fff}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary{color:var(--text-color)}.pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary:hover{color:var(--body-bg-color)}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-moment__close_text{color:currentColor}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--highlight-bg-color)}.hive-cell .cell-fill{stroke:var(--body-bg-color)}.hive-cell .cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}[data-sba-theme] .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist,.hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}:root{--sba-cell-inline-padding: 2px;--sba-cell-block-padding: 3px}.hive-action.push-active.sba-no-feedback{background:var(--body-bg-color) !important}.sba-toggle-switch:where([type=checkbox][role=switch]){-webkit-appearance:none;-moz-appearance:none;appearance:none;position:relative;color:var(--border-color);font-size:inherit;width:2em;height:1em;box-sizing:content-box;border:1px solid;border-radius:1em;vertical-align:text-bottom;margin:auto;cursor:pointer;background:var(--body-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch])::before{content:\"\";position:absolute;top:50%;left:0;transform:translate(0, -50%);box-sizing:border-box;width:.7em;height:.7em;margin:0 .15em;border:1px solid;border-radius:50%;background:var(--text-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked{background:var(--toggle-on-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked::before{left:1em;background:var(--border-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):disabled{opacity:.4}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:rgba(0,0,0,0)}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--border-color)}[data-ui].inactive{display:none}details .sba-data-pane{border-top:none;margin-bottom:2px}.sb-modal-wrapper{--sba-cell-inline-padding: 7px}.sb-modal-wrapper .sba-data-pane{font-size:95%}.sba-data-pane{border:1px solid var(--border-color);border-collapse:collapse}.sba-data-pane.sba-thead-th-bold thead th{font-weight:bold}.sba-data-pane.sba-table-full-width{width:100%;table-layout:fixed}.sba-data-pane.sba-small-txt{font-size:85%}.sba-data-pane.sba-th-upper th{text-transform:uppercase}.sba-data-pane.sba-equal-cols[data-cols=\"3\"] :is(th,td){width:33.3333333333%}.sba-data-pane.sba-equal-cols[data-cols=\"4\"] :is(th,td){width:25%}.sba-data-pane.sba-equal-cols[data-cols=\"5\"] :is(th,td){width:20%}.sba-data-pane.sba-equal-cols[data-cols=\"6\"] :is(th,td){width:16.6666666667%}.sba-data-pane.sba-equal-cols[data-cols=\"7\"] :is(th,td){width:14.2857142857%}.sba-data-pane.sba-equal-cols[data-cols=\"8\"] :is(th,td){width:12.5%}.sba-data-pane.sba-equal-cols[data-cols=\"9\"] :is(th,td){width:11.1111111111%}.sba-data-pane.sba-equal-cols[data-cols=\"10\"] :is(th,td){width:10%}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--highlight-bg-color) !important}.sba-data-pane .sba-completed td,.sba-data-pane td.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane caption{text-align:start;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);line-height:1.75;font-weight:700}.sba-data-pane :is(th,td){border:1px solid var(--border-color);border-top:none;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);white-space:nowrap;text-align:center}.sba-data-pane th{background-color:var(--head-row-bg-color)}[data-ui=community] .sb-modal-body{margin-block-end:0}[data-ui=community] h4{font-weight:700;font-family:nyt-franklin;font-size:18px;margin:0 0 1px 0}[data-ui=community] p{margin:0 0 2px 0;font-size:16px}[data-ui=community] em{display:block;font-weight:normal;font-weight:500;font-size:14px;font-family:nyt-franklin}[data-ui=community] li{margin:0 0 12px 0}[data-ui=community] li ul{padding-left:20px;list-style:disc}[data-ui=community] li ul li{margin:0}[data-ui=community] li ul li a{color:var(--link-color)}[data-ui=community] li ul li a:hover{color:var(--link-hover-color)}[data-ui=milestones] .sba-milestone-table-wrapper{display:flex;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;justify-content:flex-start;gap:12px 40px}[data-ui=milestones] figcaption{padding:10px var(--sba-cell-inline-padding)}[data-ui=milestones] b{font-weight:700}[data-ui=milestones] progress{border-width:0;height:5px}[data-ui=milestones] .sba-col{width:calc(50% - 20px)}[data-ui=milestones] .sba-summaries .sba-data-pane{table-layout:fixed;margin-block-end:12px}[data-ui=milestones] .sba-summaries tr :is(td,th){text-align:center}[data-ui=milestones] .sba-tiers .sba-data-pane .sba-preeminent{border-bottom:1px solid var(--border-color) !important}[data-ui=milestones] .sba-data-pane{width:100%}[data-ui=milestones] .sba-data-pane td.sba-progress-box{padding:0}[data-ui=milestones] .sba-data-pane tr.sba-completed :is(th,td){color:var(--invalid-color)}[data-ui=milestones] .sba-data-pane tbody th{text-align:start}[data-ui=milestones] .sba-data-pane tbody td:nth-child(n+2){max-width:100px}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px;justify-content:space-between;align-items:center}progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;padding:0;background:rgba(0,0,0,0);display:block;height:10px;border:1px var(--border-color) solid}progress::-webkit-progress-bar{background-color:rgba(0,0,0,0)}progress::-webkit-progress-value{background-color:var(--highlight-bg-color);height:4px}progress::-moz-progress-bar{background-color:var(--highlight-bg-color)}[data-ui=progressBar]{border-width:0 0 1px 0;height:6px}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px;width:179px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 36px;font-size:14px}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--highlight-bg-color);top:3px;left:14px;font-size:16px}[data-ui=menu] li[data-target=darkMode],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}[data-ui=menu] li svg{display:inline-block;width:20px;height:20px;position:absolute;left:7px;top:6px}[data-ui=menu] li svg .shape{fill:var(--text-color)}[data-ui=menu] li svg .content{fill:var(--highlight-bg-color)}[data-ui=darkMode] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkMode] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkMode] .cell-letter{font-size:8px;font-weight:600}[data-ui=darkMode] .sba-toggle-label{padding-inline-end:10px}[data-ui=darkMode] .sba-header-wrap{display:flex;justify-content:space-between}.sba-color-selector{display:flex;justify-content:space-around;gap:10px}.sba-color-selector .sba-dark-mode-preview{width:200px;aspect-ratio:62.4/64.8}.sba-color-selector .sba-dark-mode-preview svg{width:100%;aspect-ratio:inherit;display:block}.sba-color-selector .sba-dark-mode-preview .sba-cell{fill:var(--area-bg-color)}.sba-color-selector .sba-dark-mode-preview .sba-cell text{fill:var(--text-color)}.sba-color-selector .sba-dark-mode-preview .sba-center-cell{fill:var(--highlight-bg-color)}.sba-color-selector .sba-dark-mode-preview .sba-center-cell text{fill:var(--highlight-text-color)}.sba-color-selector .sba-dark-mode-preview text{font-family:nyt-franklin;font-weight:700;font-size:6px;text-transform:uppercase;dominant-baseline:middle;text-anchor:middle;pointer-events:none}.sba-color-selector .sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:220px}.sba-color-selector .sba-swatches li{position:relative;overflow:hidden;margin-bottom:5px}.sba-color-selector .sba-swatches label{border:1px var(--border-color) solid;display:block;width:50px;height:50px;overflow:hidden;cursor:pointer;text-align:center}.sba-color-selector .sba-swatches label[for=sbaH360]{width:213px;line-height:50px;color:var(--highlight-text-color)}.sba-color-selector .sba-swatches input{position:absolute;left:-100px}.sba-color-selector .sba-swatches input:checked~label:not([for=sbaH360]){border-color:var(--highlight-bg-color)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *{color:var(--text-color);border-color:var(--border-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *::selection{background-color:var(--body-bg-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) .pz-dropdown__arrow{border-top-color:var(--text-color);border-bottom-color:var(--text-color);border-right-color:rgba(0,0,0,0);border-left-color:rgba(0,0,0,0)}.pz-mobile .pz-toolbar-button__sba{color:var(--text-color)}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]){background-color:var(--body-bg-color) !important}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]):hover{background:var(--menu-hover-color)}[data-sba-theme=dark] #portal-game-toolbar i,[data-sba-theme=dark] #js-mobile-toolbar i{filter:invert(1);background-color:rgba(0,0,0,0)}[data-sba-theme=dark] .conversion-banner__icon{filter:invert(1)}[data-sba-theme=dark] :is(.sb-stats-bar-rank__word-count,.sb-stats-bar-rank__text){filter:contrast(99%);color:#999}[data-sba-theme] .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--highlight-bg-color);top:4px;font-size:16px}[data-sba-theme] .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:rgba(0,0,0,0)}[data-sba-submenu=true] [data-ui=menu]{background:var(--menu-hover-color);color:var(--text-color)}[data-ui=shortcuts] tbody tr th{text-align:start}[data-ui=shortcuts] tbody tr td:last-child{font-size:16px;cursor:pointer}[data-ui=shortcuts] tbody tr td:last-child::selection{color:currentColor;background-color:rgba(0,0,0,0)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=true]{color:var(--sba-success-color)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=false]{color:var(--sba-error-color)}[data-ui=grid] table{margin-left:-20px;width:calc(100% + 40px)}[data-ui=grid] tbody tr:last-child td{background-color:var(--head-row-bg-color)}[data-ui=grid] tbody tr td{padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type{background-color:var(--head-row-bg-color)}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba summary{list-style:none;padding:1px 15px 0 21px}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li{position:relative}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li.sba-pangram{font-weight:700;border-bottom:2px var(--highlight-bg-color) solid}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks{position:absolute;right:0;bottom:3px}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks mark{display:none}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-s-active .sba-mark-s{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-p-active .sba-mark-p{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-d-active .sba-mark-d{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-c-active .sba-mark-c{display:inline-block}[data-sba-theme] mark{background:rgba(0,0,0,0);font-size:11px;pointer-events:none;text-transform:uppercase}[data-sba-theme] mark::after{content:\" \"}[data-sba-theme] mark:last-of-type::after{content:normal}[data-sba-theme] mark::selection{background-color:rgba(0,0,0,0)}[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}.sb-modal-frame .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{display:none}.pz-mobile [data-ui=menu]{display:flex;align-items:center;height:100%;padding:0 6px}[data-sba-submenu=true]{overflow-y:hidden}[data-sba-submenu=true] .sba{position:relative;left:-167px;top:-175px}[data-sba-submenu=true] .pz-mobile-dropdown.show .pz-dropdown__list{display:none}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{display:block;position:absolute;right:-16px;top:45px}[data-sba-submenu=true] .sba{left:-167px;top:0px}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:rgba(0,0,0,0)}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true][data-sba-submenu=true] .sba-container{top:0;height:0;z-index:4}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}}@media(max-width: 450px){[data-ui=grid] table{table-layout:auto}[data-ui=grid] table.sba-data-pane tbody th{width:28px !important}[data-ui=grid] table.sba-data-pane thead th:first-of-type{width:28px !important}[data-ui=grid] table.sba-data-pane :is(thead,tbody) tr :is(th,td){width:auto;font-size:90%}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}[data-ui=overview] .sba-data-pane tbody th{text-transform:none;width:31%}[data-ui=overview] .sba-data-pane tbody td{width:23%}[data-ui=overview] .sba-data-pane tbody tr:nth-child(1) th::after{content:\"ords\"}[data-ui=overview] .sba-data-pane tbody tr:nth-child(2) th::after{content:\"oints\"}[data-ui=overview] .sba-data-pane thead th{width:23%}[data-ui=overview] .sba-data-pane thead th:first-of-type{width:31%}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:flex}}@media(min-width: 900px){[data-sba-submenu=true].pz-desktop [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 66px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true][data-sba-submenu=true] .sba{top:-66px}[data-sba-active=true].pz-desktop .sba{left:-191px}}@media(min-width: 1298px){[data-sba-active=true][data-sba-submenu=true] .sba{left:-179px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}\n";
 
     class Styles extends Plugin {
         constructor(app) {
@@ -1987,128 +1112,17 @@
         }
     }
 
-    var gridIcon = "<svg version=\"1.1\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n <path d=\"m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z\" stroke-dasharray=\"0.5, 0.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>\n</svg>\n";
-
-    class Grid extends TablePane {
-        togglePopup() {
-            if(this.popup.isOpen) {
-                this.popup.toggle(false);
-                return this;
-            }
-            this.popup
-                .setContent('subtitle', this.description)
-                .setContent('body', this.getPane())
-                .toggle(true);
-            return this;
-        }
-        run(evt) {
-            super.run(evt);
-            const rows = fn.$$('tr', this.pane);
-            const rCnt = rows.length;
-            rows.forEach((row, rInd) => {
-                if (rCnt === rInd + 1) {
-                    return false;
-                }
-                const cells = fn.$$('td', row);
-                const cCnt = cells.length;
-                cells.forEach((cell, cInd) => {
-                    const cellArr = cell.textContent.trim().split('/');
-                    if (cInd < cCnt - 1 && cellArr.length === 2 && cellArr[0] === cellArr[1]) {
-                        cell.classList.add(prefix('completed', 'd'));
-                    }
-                });
-            });
-            return this;
-        }
-        getData() {
-            const foundTerms = data.getList('foundTerms');
-            const allTerms = data.getList('answers');
-            const allLetters = Array.from(new Set(allTerms.map(entry => entry.charAt(0)))).concat(['∑']);
-            const allDigits = Array.from(new Set(allTerms.map(term => term.length))).concat(['∑']);
-            allDigits.sort((a, b) => a - b);
-            allLetters.sort();
-            const cellData = [[''].concat(allLetters)];
-            let letterTpl = Object.fromEntries(allLetters.map(letter => [letter, {
-                fnd: 0,
-                all: 0
-            }]));
-            let rows = Object.fromEntries(allDigits.map(digit => [digit, JSON.parse(JSON.stringify(letterTpl))]));
-            allTerms.forEach(term => {
-                const letter = term.charAt(0);
-                const digit = term.length;
-                rows[digit][letter].all++;
-                rows[digit]['∑'].all++;
-                rows['∑'][letter].all++;
-                rows['∑']['∑'].all++;
-                if (foundTerms.includes(term)) {
-                    rows[digit][letter].fnd++;
-                    rows[digit]['∑'].fnd++;
-                    rows['∑'][letter].fnd++;
-                    rows['∑']['∑'].fnd++;
-                }
-            });
-            for (let [digit, cols] of Object.entries(rows)) {
-                const cellVals = [digit];
-                Object.values(cols).forEach(colVals => {
-                    cellVals.push(colVals.all > 0 ? `${colVals.fnd}/${colVals.all}` : '-');
-                });
-                cellData.push(cellVals);
-            }
-            return cellData;
-        }
-        constructor(app) {
-            super(app, 'Grid', 'The number of words by length and by first letter.', {
-                classNames: ['th-upper', 'small-txt'].map((name) => prefix(name, "d"))
-            });
-            this.popup = new Popup(this.app, this.key)
-                .setContent('title', this.title);
-            this.menuAction = 'popup';
-            this.menuIcon = 'null';
-            this.panelBtn = fn.span({
-                classNames: ['sba-tool-btn'],
-                events: {
-                    pointerup: () => this.togglePopup()
-                },
-                attributes:{
-                    title: `Show ${this.title}`
-                },
-                content: gridIcon
-            });
-            this.shortcuts = [{
-                combo: "Shift+Alt+G",
-                method: "togglePopup"
-            }];
-        }
-    }
-
-    class NytShortcuts extends Plugin {
-        toggleYesterday() {
-            this.triggerPopup(".pz-toolbar-button__yesterday");
-        }
-        toggleStats() {
-            this.triggerPopup(".pz-toolbar-button__stats");
-        }
-        triggerPopup(selector) {
-            let popupCloser = getPopupCloser(this.app);
-            if (popupCloser) {
-                setTimeout(manualDelete, 50);
-                popupCloser.click();
-            } else {
-                fn.$(selector)?.click();
-            }
-        }
-        constructor(app) {
-            super(app, "NYT Shortcuts", "Adds keyboard shortcuts to native NYT popups", { key: "nytShortcuts" });
-            this.selectors = {
-                yesterdaysAnswers: ".pz-toolbar-button__yesterday",
-                statistics: ".pz-toolbar-button__stats",
-            };
-            this.shortcuts = [
-                { combo: "Shift+Alt+Y", method: "toggleYesterday", label: `Yesterday's Answers` },
-                { combo: "Shift+Alt+I", method: "toggleStats", label: `Statistics` },
-            ].map((shortcut) => ({ ...shortcut, origin: "nyt" }));
-        }
-    }
+    const deleteLastLetter = () => {
+        const el = fn.$(".hive-action__delete");
+        if (!el) return;
+        el.classList.add("sba-no-feedback");
+        const evtOpts = { bubbles: true, cancelable: true };
+        el.dispatchEvent(new Event("touchstart", evtOpts));
+        setTimeout(() => {
+            el.dispatchEvent(new Event("touchend", evtOpts));
+            el.classList.remove("sba-no-feedback");
+        }, 50);
+    };
 
     let registry = new Map();
     const modifierMap = new Map([
@@ -2143,7 +1157,7 @@
     };
     const requiresDeletion = (combo, app) => {
         const key = getCharacterKey(normalizeCombo(combo));
-        let pool = getPopupCloser(app) ? characterKeys.sba : characterKeys.sba.join(characterKeys.nyt);
+        let pool = findCloseButton(app) ? characterKeys.sba : characterKeys.sba.join(characterKeys.nyt);
         return key && pool.includes(key);
     };
     const isValidShortcut = (obj) =>
@@ -2201,7 +1215,7 @@
             entry.callback();
             return true;
         }
-        manualDelete();
+        deleteLastLetter();
         entry.callback();
         return true;
     };
@@ -2259,79 +1273,11 @@
         getRegistry,
     };
 
-    class ShortcutScreen extends TablePane {
-        togglePopup() {
-            if (this.popup.isOpen) {
-                this.popup.toggle(false);
-                return this;
-            }
-            this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
-            return this;
-        }
-        getData() {
-            const rows = [["", "Shortcut", "State"]];
-            shortcutRegistry.getRegistry().forEach((shortcut) => {
-                const toggleBtn = getToggleButton(shortcut.combo, shortcut.enabled, (evt) => {
-                    const shortcut = shortcutRegistry.get(evt.target.closest("input").id);
-                    shortcut.enabled = !shortcut.enabled;
-                    shortcutRegistry.set(shortcut.combo, shortcut);
-                });
-                rows.push([shortcut.label, shortcut.human, toggleBtn]);
-            });
-            return rows;
-        }
-        constructor(app) {
-            super(
-                app,
-                "Shortcuts",
-                "This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. If a shortcut conflicts with your system or browser, you can disable it here.",
-                {
-                    classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d"))
-                }
-            );
-            this.popup = new Popup(this.app, this.key).setContent("title", this.title);
-            this.menuAction = "popup";
-            this.menuIcon = "null";
-            this.panelBtn = fn.span({
-                classNames: ["sba-tool-btn"],
-                events: {
-                    pointerup: () => this.togglePopup(),
-                },
-                attributes: {
-                    title: `Show ${this.title}`,
-                },
-                content: gridIcon,
-            });
-            this.shortcuts = [
-                {
-                    combo: "Shift+Alt+S",
-                    method: "togglePopup",
-                },
-            ];
-        }
-    }
-
     const getPlugins$1 = () => {
         return {
-            Header,
-            Overview,
-            LetterCount,
-            FirstLetter: FirstLetter$1,
-            FirstTwoLetters: FirstLetter,
-            Pangrams,
-            ProgressBar,
-            Grid,
-            SpillTheBeans,
             DarkMode,
-            PangramHl,
-            Googlify,
-            Styles,
-            Menu,
-            Milestones,
-            Community,
-            ShortcutScreen,
-            TodaysAnswers,
-            NytShortcuts
+             Styles,
+             Menu,
         }
     };
 

@@ -30,7 +30,11 @@ class DarkMode extends Plugin {
             return this;
         }
         this.popup.toggle(true);
+        if(this.found3rdPartyDm){
+            return this;
+        }
         fn.$("input:checked", this.popup.ui).focus();
+        return this;
     }
 
     /**
@@ -38,9 +42,12 @@ class DarkMode extends Plugin {
      * @param {Object} scheme {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
      * @returns {DarkMode}
      */
-    applyColorScheme(scheme) {        
+    applyColorScheme(scheme) {
         if (!scheme.hsl || isEmptyObject(scheme.hsl)) {
             scheme.hsl = this.getStoredColorScheme().hsl;
+        }
+        if(this.found3rdPartyDm){
+            scheme.mode = 'light';
         }
 
         document.body.dataset[prefix("theme")] = scheme.mode;
@@ -57,9 +64,12 @@ class DarkMode extends Plugin {
      * Toggle between dark and light mode
      * @returns DarkMode
      */
-    toggleColorScheme(){
+    toggleColorScheme() {
+        if(this.found3rdPartyDm){
+            return this;
+        }
         const scheme = this.getStoredColorScheme();
-        scheme.mode = scheme.mode === 'dark' ? 'light' : 'dark';
+        scheme.mode = scheme.mode === "dark" ? "light" : "dark";
         return this.applyColorScheme(scheme);
     }
 
@@ -75,32 +85,24 @@ class DarkMode extends Plugin {
 
         Object.assign(this, utils(this), ui(this));
 
+        this.found3rdPartyDm = false;
+
         if (this.usesNonSbaDarkMode()) {
-            this.applyColorScheme({mode:"light"});
+            this.applyColorScheme({ mode: "light" });
+            this.found3rdPartyDm = true;
             return;
         } else if (this.usesSbaDarkMode()) {
             // sba colors
-            this.applyColorScheme({mode:"dark"});
+            this.applyColorScheme({ mode: "dark" });
         } else if (this.usesSystemDarkMode()) {
             // default sba colors
-            this.applyColorScheme({mode:"dark"});
+            this.applyColorScheme({ mode: "dark" });
         } else {
-            this.applyColorScheme({mode:"light"});
+            this.applyColorScheme({ mode: "light" });
         }
 
         this.menuAction = "popup";
-        this.menuIcon = "null";
-
-        this.popup = new Popup(this.app, this.key)
-            .setContent("title", this.title)
-            .setContent("subtitle", this.description)
-            .setContent(
-                "body",
-                fn.div({
-                    classNames: [prefix("color-selector", "d")],
-                    content: [this.getSwatches(), this.getHive()],
-                })
-            );
+        this.menuIcon = "null";        
 
         this.shortcuts = [
             {
@@ -114,6 +116,34 @@ class DarkMode extends Plugin {
                 label: "Dark Mode Colors",
             },
         ];
+
+        this.popup = new Popup(this.app, this.key);
+
+        if (!this.found3rdPartyDm) {            
+            this.popup
+                .setContent("title", this.title)
+                .setContent("subtitle", this.description)
+                .setContent(
+                    "body",
+                    fn.div({
+                        classNames: [prefix("color-selector", "d")],
+                        content: [this.getSwatches(), this.getHive()],
+                    })
+                );
+        } else {
+            this.popup.setContent("title", "Dark Mode disabled").setContent(
+                "subtitle",
+                fn.toNode([
+                    fn.p({
+                        content: `Spelling Bee Assistant’s dark mode has been turned off because 
+                    another dark theme (likely from the NYT) was detected.`,
+                    }),
+                    fn.p({
+                        content: `If you prefer SBA’s dark mode, consider disabling the other one.`,
+                    }),
+                ])
+            );
+        }
     }
 }
 
