@@ -223,8 +223,9 @@ class Milestones extends TablePane {
             });
         }
 
-        this.menuAction = "popup";
-        this.menuIcon = "null";
+        this.menu = {
+            action: 'popup'
+        }
 
         this.shortcuts = [
             {

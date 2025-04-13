@@ -44,16 +44,15 @@ class Googlify extends Plugin {
     }
 
     /**
-     * Add or remove pangram underlines
+     * Add pangram underlines
      * @param evt
      * @returns {Googlify}
      */
     // eslint-disable-next-line no-unused-vars
     run(evt = null) {
-        const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
         [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
-            container[method]('pointerup', this.listener);
-            container.classList.toggle(prefix('googlified', 'd'), this.getState());
+            container.addEventListener('pointerup', this.listener);
+            container.classList.add(prefix('googlified', 'd'));
         });
         return this;
     }
@@ -65,9 +64,7 @@ class Googlify extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Googlify', 'Link all result terms to Google', {
-            canChangeState: false
-        });
+        super(app, 'Googlify', 'Link all result terms to Google');
 
         this.run();
     }

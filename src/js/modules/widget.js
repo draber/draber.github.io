@@ -8,49 +8,11 @@
 import {
     camel
 } from '../utils/string.js';
-import settings from './settings.js';
 
 /**
  * Plugin base class
  */
 class Widget {
-
-    /**
-     * Tells if the user has deactivated a plugin, falls back on default setting
-     * @returns {*}
-     */
-    getState() {
-        const stored = settings.get(`options.${this.key}.enabled`);
-        return typeof stored !== 'undefined' ? stored : this.defaultState;
-    }
-
-    /**
-     * Write new state to memory
-     * @param {Boolean|Object} state
-     * @returns {Widget}
-     */
-    setState(state) {
-        // if (this.canChangeState) {
-        //     settings.set(`options.${this.key}.enabled`, state);
-        // }
-        return this;
-    }
-
-    /**
-     * Switches plugins on and off
-     * @param {Boolean} state
-     * @returns {Widget}
-     */
-    toggle(state) {
-        // if (!this.canChangeState) {
-        //     return this;
-        // }
-        // this.setState(state);
-        // if (this.hasUi()) {
-        //     this.ui.classList.toggle('inactive', !state);
-        // }
-        return this;
-    }
 
     /**
      * Some plugins have no UI
@@ -92,13 +54,9 @@ class Widget {
      * Build an instance of the widget
      * @param {String} title
      * @param {String} key
-     * @param {Boolean} canChangeState
-     * @param {Boolean} defaultState
      */
     constructor(title, {
-        key,
-        canChangeState,
-        defaultState
+        key
     } = {}) {
         if (!title) {
             throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
@@ -115,24 +73,6 @@ class Widget {
          * @type {String}
          */
         this.key = key || camel(title);
-
-        /**
-         * Can be deactivated
-         * @type {Boolean}
-         */
-        this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
-
-        /**
-         * Cannot be hidden or otherwise disabled by user, default state
-         * @type {Boolean}
-         */
-        this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
-
-        // /**
-        //  * `getState()` returns an actual value and not `undefined`
-        //  * This ensures that `localStorage` stores proper values
-        //  */
-        // this.setState(this.getState());
 
         /**
          * Null by default, most plugins will overwrite this

@@ -78,10 +78,7 @@ class DarkMode extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Dark Mode", "Choose your vibe: shades for morning people and night owls.", {
-            canChangeState: true,
-            defaultState: false,
-        });
+        super(app, "Dark Mode", "Choose your vibe: shades for morning people and night owls.");
 
         Object.assign(this, utils(this), ui(this));
 
@@ -101,8 +98,9 @@ class DarkMode extends Plugin {
             this.applyColorScheme({ mode: "light" });
         }
 
-        this.menuAction = "popup";
-        this.menuIcon = "null";        
+        this.menu = {
+            action: "popup",
+        };
 
         this.shortcuts = [
             {

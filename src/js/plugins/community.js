@@ -63,6 +63,33 @@ class Community extends Plugin {
     }
 
     /**
+     * Link to the Reddit forum
+     * @returns {*}
+     */
+    redditCommunity() {
+        return fn.a({
+            content: "NYT Spelling Bee Puzzle on Reddit",
+            attributes: {
+                href: "https://www.reddit.com/r/NYTSpellingBee/",
+                target: prefix(),
+            },
+        });
+    }
+    /**
+     * Link to Tomtit & Baobab: A Bee-Inspired Podcast
+     * @returns {*}
+     */
+    tomtitBaobab() {
+        return fn.a({
+            content: "Tomtit & Baobab: A Bee-Inspired Podcast",
+            attributes: {
+                href: "https://pod.link/1614136488",
+                target: prefix(),
+            },
+        });
+    }
+
+    /**
      * Links to popular Bluesky hashtags
      * @returns {Node}
      */
@@ -76,9 +103,10 @@ class Community extends Plugin {
                 },
             })
         );
-        return fn.toNode(["Bluesky hashtags: ", ...hashtags.flatMap((tag, i, arr) =>
-            i < arr.length - 1 ? [tag, ", "] : [tag]
-        )]);
+        return fn.toNode([
+            "Bluesky hashtags: ",
+            ...hashtags.flatMap((tag, i, arr) => (i < arr.length - 1 ? [tag, ", "] : [tag])),
+        ]);
     }
 
     /**
@@ -115,9 +143,7 @@ class Community extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Community", "A collection of resources and trivia suggested by the community.", {
-            canChangeState: true,
-        });
+        super(app, "Community", "A collection of resources and trivia suggested by the community.");
 
         this.shortcuts = [
             {
@@ -126,8 +152,9 @@ class Community extends Plugin {
             },
         ];
 
-        this.menuAction = "popup";
-        this.menuIcon = "null";
+        this.menu = {
+            action: "popup",
+        };
 
         const features = fn.ul({
             content: [
@@ -158,14 +185,13 @@ class Community extends Plugin {
                 fn.li({
                     content: [
                         fn.h4({
-                            content: 'Is today a Bingo day?',
+                            content: "Is today a Bingo day?",
                         }),
                         fn.p({
                             content: this.hasBingo() ? "Yes - today is a Bingo day!" : "No - not today.",
                         }),
                         fn.em({
-                            content:
-                                '"Bingo" means each puzzle letter starts at least one word in the list.',
+                            content: '"Bingo" means each puzzle letter starts at least one word in the list.',
                         }),
                     ],
                 }),
@@ -182,7 +208,7 @@ class Community extends Plugin {
                 fn.li({
                     content: [
                         fn.h4({
-                            content: "Forums and Hashtags",
+                            content: "Social Media",
                         }),
                         fn.ul({
                             content: [
@@ -191,6 +217,12 @@ class Community extends Plugin {
                                 }),
                                 fn.li({
                                     content: this.nytSpotlight(),
+                                }),
+                                fn.li({
+                                    content: this.redditCommunity(),
+                                }),
+                                fn.li({
+                                    content: this.tomtitBaobab(),
                                 }),
                                 fn.li({
                                     content: this.bluesky(),

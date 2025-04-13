@@ -412,16 +412,6 @@
     var fn = /*@__PURE__*/getDefaultExportFromCjs(srcExports);
 
     class Widget {
-        getState() {
-            const stored = settings.get(`options.${this.key}.enabled`);
-            return typeof stored !== 'undefined' ? stored : this.defaultState;
-        }
-        setState(state) {
-            return this;
-        }
-        toggle(state) {
-            return this;
-        }
         hasUi() {
             return this.ui instanceof HTMLElement;
         }
@@ -440,17 +430,13 @@
             return this;
         }
         constructor(title, {
-            key,
-            canChangeState,
-            defaultState
+            key
         } = {}) {
             if (!title) {
                 throw new TypeError(`Missing 'title' from ${this.constructor.name}`);
             }
             this.title = title;
             this.key = key || camel(title);
-            this.canChangeState = typeof canChangeState !== 'undefined' ? canChangeState : false;
-            this.defaultState = typeof defaultState !== 'undefined' ? defaultState : true;
             this.ui = null;
         }
     }
@@ -470,11 +456,9 @@
         run(evt) {
             return this;
         }
-        constructor(app, title, description, { key, canChangeState, defaultState, menuIcon, runEvt, addMethod } = {}) {
+        constructor(app, title, description, { key, menuIcon, runEvt, addMethod } = {}) {
             super(title, {
-                key,
-                canChangeState,
-                defaultState,
+                key
             });
             this.target;
             this.description = description || "";
@@ -858,10 +842,7 @@
             return this.applyColorScheme(scheme);
         }
         constructor(app) {
-            super(app, "Dark Mode", "Choose your vibe: shades for morning people and night owls.", {
-                canChangeState: true,
-                defaultState: false,
-            });
+            super(app, "Dark Mode", "Choose your vibe: shades for morning people and night owls.");
             Object.assign(this, utils(this), ui(this));
             this.found3rdPartyDm = false;
             if (this.usesNonSbaDarkMode()) {
@@ -875,8 +856,9 @@
             } else {
                 this.applyColorScheme({ mode: "light" });
             }
-            this.menuAction = "popup";
-            this.menuIcon = "null";
+            this.menu = {
+                action: "popup",
+            };
             this.shortcuts = [
                 {
                     combo: "Shift+Alt+D",
@@ -915,6 +897,931 @@
                     ])
                 );
             }
+        }
+    }
+
+    class Header extends Plugin {
+        constructor(app) {
+            super(app, settings.get("title"), "", {
+                key: "header",
+            });
+            this.ui = fn.div({
+                content: [
+                    fn.div({
+                        classNames: ["sba-title"],
+                        content: this.title,
+                    })
+                ],
+            });
+        }
+    }
+
+    class ProgressBar extends Plugin {
+        run(evt) {
+            let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
+            progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
+            this.ui.value = progress;
+            this.ui.textContent = progress + '%';
+            this.ui.title = `Progress: ${progress}%`;
+            return this;
+        }
+        constructor(app) {
+            super(app, 'Progress Bar', 'Displays your progress as a yellow bar', {
+                runEvt: prefix('refreshUi'),
+                addMethod: 'before'
+            });
+            this.ui = fn.progress({
+                attributes: {
+                    max: 100
+                }
+            });
+            this.target = fn.$('.sb-wordlist-heading', this.app.gameWrapper);
+        }
+    }
+
+    class TablePane extends Plugin {
+        run(evt) {
+            this.pane = fn.empty(this.pane);
+            const tbody = fn.tbody();
+            const data = this.getData();
+            if (this.caption) {
+                this.pane.append(fn.caption({ content: this.caption }));
+            }
+            if (this.hasHeadRow) {
+                this.pane.append(this.buildHead(data.shift()));
+            }
+            const l = data.length;
+            let colCnt = 0;
+            data.forEach((rowData, i) => {
+                colCnt = rowData.length;
+                const classNames = [];
+                for (const [marker, func] of Object.entries(this.cssMarkers)) {
+                    if (func(rowData, i, l)) {
+                        classNames.push(prefix(marker, "d"));
+                    }
+                }
+                const tr = fn.tr({
+                    classNames,
+                });
+                rowData.forEach((cellData, rInd) => {
+                    const tag = rInd === 0 && this.hasHeadCol ? "th" : "td";
+                    tr.append(
+                        fn[tag]({
+                            content: cellData,
+                        })
+                    );
+                });
+                tbody.append(tr);
+            });
+            this.pane.dataset.cols = colCnt;
+            this.pane.append(tbody);
+            return this;
+        }
+        buildHead(rowData) {
+            return fn.thead({
+                content: fn.tr({
+                    content: rowData.map((cellData) =>
+                        fn.th({
+                            content: cellData,
+                        })
+                    ),
+                }),
+            });
+        }
+        getPane() {
+            return this.pane;
+        }
+        constructor(
+            app,
+            title,
+            description,
+            {
+                cssMarkers = {},
+                hasHeadRow = true,
+                hasHeadCol = true,
+                classNames = [],
+                events = {},
+                caption = "",
+            } = {}
+        ) {
+            super(app, title, description);
+            app.on(prefix("refreshUi"), () => {
+                this.run();
+            });
+            this.cssMarkers = cssMarkers;
+            this.hasHeadRow = hasHeadRow;
+            this.hasHeadCol = hasHeadCol;
+            this.caption = caption;
+            this.pane = fn.table({
+                classNames: ["pane", prefix("dataPane", "d")].concat(classNames),
+                events,
+            });
+        }
+    }
+
+    class DetailsPane extends TablePane {
+        constructor(
+            app,
+            {
+                title,
+                description,
+                shortcuts = [],
+                hasHeadCol = true,
+                hasHeadRow = true,
+                cssMarkers = {},
+                classNames = ["th-upper", "table-full-width", "equal-cols", "small-txt"].map((name) => prefix(name, "d")),
+                open = false,
+            }
+        ) {
+            super(app, title, description, {
+                cssMarkers,
+                classNames,
+                hasHeadRow,
+                hasHeadCol,
+            });
+            this.shortcuts = shortcuts;
+            this.ui = fn.details({
+                content: [
+                    fn.summary({
+                        content: title,
+                    }),
+                    this.getPane(),
+                ],
+                attributes: {
+                    open,
+                },
+            });
+            this.togglePane = () => (this.ui.open = !this.ui.open);
+        }
+    }
+
+    class Overview extends DetailsPane {
+        getData() {
+            const keys = ["foundTerms", "remainders", "answers"];
+            return [
+                ["", "✓", "?", "∑"],
+                ["W"].concat(keys.map((key) => data.getCount(key))),
+                ["P"].concat(keys.map((key) => data.getPoints(key))),
+            ];
+        }
+        constructor(app) {
+            super(app, {
+                title: "Overview",
+                description: "The number of words and points and how many have been found",
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+O",
+                        method: "togglePane",
+                    },
+                ],
+                open: true,
+            });
+        }
+    }
+
+    class SpillTheBeans extends Plugin {
+        run(evt) {
+            let emoji = "🙂";
+            if (!evt.detail) {
+                emoji = "😐";
+            } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail.textContent.trim())).length) {
+                emoji = "🙁";
+            }
+            this.ui.textContent = emoji;
+            return this;
+        }
+        getState() {
+            return !this.ui.classList.contains('inactive')
+        }
+        toggle() {
+            this.ui.classList.toggle('inactive', this.getState());
+            return this;
+        }
+        constructor(app) {
+            super(app, "Spill the beans", "An emoji that shows if the last letter was right or wrong", {
+                runEvt: prefix("newInput"),
+                addMethod: "prepend",
+            });
+            this.menu = {
+                action: "boolean",
+            };
+            this.ui = fn.div({
+                content: "😐",
+                classNames: ['inactive']
+            });
+            this.target = fn.$(".sb-controls", this.app.gameWrapper);
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+E",
+                    method: 'toggle',
+                },
+            ];
+        }
+    }
+
+    class LetterCount extends DetailsPane {
+        getData() {
+            const counts = {};
+            const cellData = [["", "✓", "?", "∑"]];
+            data.getList("answers").forEach((term) => {
+                counts[term.length] = counts[term.length] || {
+                    found: 0,
+                    missing: 0,
+                    total: 0,
+                };
+                if (data.getList("foundTerms").includes(term)) {
+                    counts[term.length].found++;
+                } else {
+                    counts[term.length].missing++;
+                }
+                counts[term.length].total++;
+            });
+            let keys = Object.keys(counts);
+            keys.sort((a, b) => a - b);
+            keys.forEach((count) => {
+                cellData.push([count, counts[count].found, counts[count].missing, counts[count].total]);
+            });
+            return cellData;
+        }
+        constructor(app) {
+            super(app, {
+                title: "Letter count",
+                description: "The number of words by length",
+                cssMarkers: {
+                    completed: (rowData, i) => rowData[2] === 0,
+                },
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+L",
+                        method: "togglePane",
+                    },
+                ]
+            });
+        }
+    }
+
+    let FirstLetter$1 = class FirstLetter extends DetailsPane {
+        getData() {
+            const letters = {};
+            const answers = data.getList("answers").sort();
+            const remainders = data.getList("remainders");
+            const tpl = {
+                foundTerms: 0,
+                remainders: 0,
+                total: 0,
+            };
+            answers.forEach((term) => {
+                const letter = term.charAt(0);
+                if (typeof letters[letter] === "undefined") {
+                    letters[letter] = {
+                        ...tpl,
+                    };
+                }
+                if (remainders.includes(term)) {
+                    letters[letter].remainders++;
+                } else {
+                    letters[letter].foundTerms++;
+                }
+                letters[letter].total++;
+            });
+            const cellData = [["", "✓", "?", "∑"]];
+            for (let [letter, values] of Object.entries(letters)) {
+                values = Object.values(values);
+                values.unshift(letter);
+                cellData.push(values);
+            }
+            return cellData;
+        }
+        constructor(app) {
+            super(app, {
+                title: "First letter",
+                description: "The number of words by first letter",
+                cssMarkers: {
+                    completed: (rowData, i) => rowData[2] === 0,
+                    preeminent: (rowData, i) => rowData[0] === data.getCenterLetter(),
+                },
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+F",
+                        method: "togglePane",
+                    },
+                ]
+            });
+        }
+    };
+
+    class FirstLetter extends DetailsPane {
+        getData() {
+            const letters = {};
+            const answers = data.getList('answers').sort();
+            const remainders = data.getList('remainders');
+            const tpl = {
+                foundTerms: 0,
+                remainders: 0,
+                total: 0
+            };
+            answers.forEach(term => {
+                const bigram = term.slice(0, 2);
+                if (typeof letters[bigram] === 'undefined') {
+                    letters[bigram] = {
+                        ...tpl
+                    };
+                }
+                if (remainders.includes(term)) {
+                    letters[bigram].remainders++;
+                } else {
+                    letters[bigram].foundTerms++;
+                }
+                letters[bigram].total++;
+            });
+            const cellData = [
+                ['', '✓', '?', '∑']
+            ];
+            for (let [letter, values] of Object.entries(letters)) {
+                values = Object.values(values);
+                values.unshift(letter);
+                cellData.push(values);
+            }
+            return cellData;
+        }
+        constructor(app) {
+            super(app, {
+                title: "First two letters",
+                description: "The number of words by the first two letters",
+                cssMarkers: {
+                    completed: (rowData, i) => rowData[2] === 0
+                },
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+2",
+                        method: "togglePane",
+                    },
+                ]
+            });
+        }
+    }
+
+    class Pangrams extends DetailsPane {
+        getData() {
+            const pangramCount = data.getCount("pangrams");
+            const foundPangramCount = data.getCount("foundPangrams");
+            return [
+                ["✓", "?", "∑"],
+                [foundPangramCount, pangramCount - foundPangramCount, pangramCount],
+            ];
+        }
+        constructor(app) {
+            super(app, {
+                title: "Pangrams",
+                description: "The number of pangrams",
+                cssMarkers: {
+                    completed: (rowData, i) => rowData[1] === 0,
+                },
+                hasHeadCol: false,
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+P",
+                        method: "togglePane",
+                    },
+                ],
+            });
+        }
+    }
+
+    const getProgressBar = (value, max) => {
+        value = Math.min(Math.round((value * 100) / max), 100);
+        return fn.progress({
+            attributes: {
+                max: 100,
+                value,
+                title: `Progress: ${value}%`,
+            },
+        });
+    };
+    const getToggleButton = (id, checked, callback, labelText = "", labelPosition = "before") => {
+        const toggleBtn = fn.input({
+            attributes: {
+                type: "checkbox",
+                id,
+                role: "switch",
+                checked,
+            },
+            classNames: [prefix("toggle-switch", "d")],
+            aria: {
+                role: "switch",
+            },
+            events: {
+                change: (event) => callback(event),
+            },
+        });
+        if (!labelText) {
+            return toggleBtn;
+        }
+        const label = fn.label({
+            attributes: {
+                htmlFor: id,
+            },
+            content: labelText,
+            classNames: [prefix("toggle-label", "d")],
+        });
+        switch (labelPosition) {
+            case "wrap":
+                label.append(toggleBtn);
+                label.classList.add(prefix("toggle-container", "d"));
+                return label;
+            case "before":
+                return fn.span({
+                    classNames: [prefix("toggle-container", "d")],
+                    content: [label, toggleBtn],
+                });
+            case "after":
+                return fn.span({
+                    classNames: [prefix("toggle-container", "d")],
+                    content: [toggleBtn, label],
+                });
+        }
+    };
+
+    class SummaryTable extends TablePane {
+        run(evt) {
+            super.run(evt);
+            const achievements = data.getFoundAndTotal(this.fieldName);
+            const tFoot = fn.tfoot({
+                content: [
+                    fn.tr({
+                        content: [
+                            fn.td({
+                                attributes: {
+                                    colSpan: fn.$("thead tr", this.getPane()).children.length,
+                                },
+                                classNames: [prefix("progress-box", "d")],
+                                content: getProgressBar(achievements.found, achievements.total),
+                            }),
+                        ],
+                    }),
+                ],
+            });
+            this.getPane().append(tFoot);
+            return this;
+        }
+        getData() {
+            const achievements = data.getFoundAndTotal(this.fieldName);
+            return [
+                ["✓", "?", "∑"],
+                [achievements.found, achievements.total - achievements.found, achievements.total],
+            ];
+        }
+        constructor(
+            app,
+            title,
+            description,
+            fieldName,
+            {
+                cssMarkers = {},
+                hasHeadRow = true,
+                hasHeadCol = true,
+                classNames = [],
+                events = {},
+                caption = "",
+            } = {}
+        ) {
+            super(app, title, description, {
+                cssMarkers,
+                hasHeadRow,
+                hasHeadCol,
+                classNames,
+                events,
+                caption,
+            });
+            this.fieldName = fieldName;
+        }
+    }
+
+    class Milestones extends TablePane {
+        run(evt) {
+            super.run(evt);
+            const insertionPoint = fn.$("tbody .sba-preeminent", this.pane);
+            const pointObj = data.getFoundAndTotal("points");
+            const currentTier = this.getCurrentTier(pointObj);
+            const nextTier = this.getNextTier(pointObj);
+            if (!insertionPoint || !nextTier.value) {
+                return this;
+            }
+            insertionPoint.after(
+                fn.tr({
+                    content: fn.td({
+                        attributes: {
+                            colSpan: fn.$("thead tr", this.pane).children.length,
+                        },
+                        classNames: [prefix("progress-box", "d")],
+                        content: getProgressBar(currentTier.additionalPoints, nextTier.value - currentTier.value),
+                    }),
+                })
+            );
+            return this;
+        }
+        getDescription() {
+            const pointObj = data.getFoundAndTotal("points");
+            const currentTier = this.getCurrentTier(pointObj);
+            const nextTier = this.getNextTier(pointObj);
+            const description =
+                nextTier.name && pointObj.found < pointObj.total
+                    ? [
+                          `You’re at "`,
+                          fn.b({ content: currentTier.name }),
+                          `" and just `,
+                          fn.b({ content: nextTier.missingPoints }),
+                          ` ${nextTier.missingPoints !== 1 ? "points" : "point"} away from "`,
+                          fn.b({ content: nextTier.name }),
+                          `".`,
+                      ]
+                    : `You’ve completed today’s puzzle. Here’s a recap.`;
+            return description;
+        }
+        togglePopup() {
+            if (this.popup.isOpen) {
+                this.popup.toggle(false);
+                return this;
+            }
+            this.description = this.getDescription();
+            const summaryElements = [];
+            Object.values(this.summaryTblObjects).forEach((tblObj) => {
+                summaryElements.push(tblObj.getPane());
+            });
+            const body = fn.div({
+                classNames: [prefix("milestone-table-wrapper", "d")],
+                content: [
+                    fn.figure({
+                        content: summaryElements,
+                        classNames: ["col", "summaries"].map((name) => prefix(name, "d")),
+                    }),
+                    fn.figure({
+                        content: this.getPane(),
+                        classNames: ["col", "tiers"].map((name) => prefix(name, "d")),
+                    }),
+                ],
+            });
+            this.popup.setContent("subtitle", this.getDescription()).setContent("body", body).toggle(true);
+            return this;
+        }
+        getData(reversed = true) {
+            const pointObj = data.getFoundAndTotal("points");
+            const rows = [["", "To reach"]];
+            const tiers = reversed ? this.tiers.toReversed() : this.tiers;
+            tiers.forEach((entry) => {
+                rows.push([entry[0], Math.round((entry[1] / 100) * pointObj.total)]);
+            });
+            return rows;
+        }
+        getCurrentTier(pointObj) {
+            const tier = this.getData(false)
+                .filter((entry) => !isNaN(entry[1]) && entry[1] <= pointObj.found)
+                .pop();
+            return {
+                name: tier[0],
+                value: tier[1],
+                additionalPoints: pointObj.found - tier[1],
+            };
+        }
+        getNextTier(pointObj) {
+            const nextTier = this.getData(false)
+                .filter((entry) => !isNaN(entry[1]) && entry[1] > pointObj.found)
+                .shift();
+            return nextTier && nextTier.length
+                ? {
+                      name: nextTier[0],
+                      value: nextTier[1],
+                      missingPoints: nextTier[1] - pointObj.found,
+                  }
+                : {
+                      name: null,
+                      value: null,
+                      missingPoints: 0,
+                  };
+        }
+        constructor(app) {
+            super(app, "Milestones", "The number of points required for each level", {
+                classNames: ["thead-th-bold"].map((name) => prefix(name, "d")),
+                caption: "Tiers",
+            });
+            this.tiers = [
+                ["Beginner", 0],
+                ["Good Start", 2],
+                ["Moving Up", 5],
+                ["Good", 8],
+                ["Solid", 15],
+                ["Nice", 25],
+                ["Great", 40],
+                ["Amazing", 50],
+                ["Genius", 70],
+                ["Queen Bee", 100],
+            ];
+            this.cssMarkers = {
+                completed: (rowData) => {
+                    const pointObj = data.getFoundAndTotal("points");
+                    const currentTier = this.getCurrentTier(pointObj);
+                    return rowData[1] < pointObj.found && rowData[1] !== currentTier.value;
+                },
+                preeminent: (rowData) => rowData[1] === this.getCurrentTier(data.getFoundAndTotal("points")).value,
+            };
+            this.popup = new Popup(this.app, this.key).setContent("title", this.title);
+            this.summaryTblObjects = {};
+            const summaryFields = {
+                points: "Points",
+                terms: "Words",
+                pangrams: "Pangrams",
+            };
+            for (const [fieldName, title] of Object.entries(summaryFields)) {
+                this.summaryTblObjects[fieldName] = new SummaryTable(app, title, "", fieldName, {
+                    classNames: ["thead-th-bold"].map((name) => prefix(name, "d")),
+                    caption: title,
+                    hasHeadCol: false,
+                });
+            }
+            this.menu = {
+                action: 'popup'
+            };
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+M",
+                    method: "togglePopup",
+                },
+            ];
+        }
+    }
+
+    class Community extends Plugin {
+        hasGeniusNo4Letters() {
+            const maxPoints = data.getPoints("answers");
+            const no4LetterPoints = maxPoints - data.getList("answers").filter((term) => term.length === 4).length;
+            return no4LetterPoints >= Math.round((70 / 100) * maxPoints);
+        }
+        getPerfectPangramCount() {
+            return data.getList("pangrams").filter((term) => term.length === 7).length;
+        }
+        hasBingo() {
+            return Array.from(new Set(data.getList("answers").map((term) => term.charAt(0)))).length === 7;
+        }
+        nytCommunity() {
+            const date = data.getDate().print;
+            const href = `https://www.nytimes.com/${date.replace(
+            /-/g,
+            "/"
+        )}/crosswords/spelling-bee-forum.html#commentsContainer`;
+            return fn.a({
+                content: "NYT Spelling Bee Forum for today’s game",
+                attributes: {
+                    href,
+                    target: prefix(),
+                },
+            });
+        }
+        redditCommunity() {
+            return fn.a({
+                content: "NYT Spelling Bee Puzzle on Reddit",
+                attributes: {
+                    href: "https://www.reddit.com/r/NYTSpellingBee/",
+                    target: prefix(),
+                },
+            });
+        }
+        tomtitBaobab() {
+            return fn.a({
+                content: "Tomtit & Baobab: A Bee-Inspired Podcast",
+                attributes: {
+                    href: "https://pod.link/1614136488",
+                    target: prefix(),
+                },
+            });
+        }
+        bluesky() {
+            const hashtags = ["hivemind", "nytspellingbee", "nytbee", "nytsb"].map((tag) =>
+                fn.a({
+                    content: `#${tag}`,
+                    attributes: {
+                        href: `https://bsky.app/hashtag/${tag}`,
+                        target: prefix(),
+                    },
+                })
+            );
+            return fn.toNode([
+                "Bluesky hashtags: ",
+                ...hashtags.flatMap((tag, i, arr) => (i < arr.length - 1 ? [tag, ", "] : [tag])),
+            ]);
+        }
+        nytSpotlight() {
+            const href = `https://www.nytimes.com/spotlight/spelling-bee-forum`;
+            return fn.a({
+                content: "NYT Spelling Bee Forums",
+                attributes: {
+                    href,
+                    target: prefix(),
+                },
+            });
+        }
+        togglePopup() {
+            if (this.popup.isOpen) {
+                this.popup.toggle(false);
+                return this;
+            }
+            this.popup.toggle(true);
+            return this;
+        }
+        constructor(app) {
+            super(app, "Community", "A collection of resources and trivia suggested by the community.");
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+C",
+                    method: "togglePopup",
+                },
+            ];
+            this.menu = {
+                action: "popup",
+            };
+            const features = fn.ul({
+                content: [
+                    fn.li({
+                        content: [
+                            fn.h4({
+                                content: "Is there a perfect pangram today?",
+                            }),
+                            fn.p({
+                                content: (() => {
+                                    const pp = this.getPerfectPangramCount();
+                                    switch (pp) {
+                                        case 0:
+                                            return `No, not today.`;
+                                        case 1:
+                                            return `Yes - there's one perfect pangram today.`;
+                                        default:
+                                            return `Yes - there are ${pp} perfect pangrams today.`;
+                                    }
+                                })(),
+                            }),
+                            fn.em({
+                                content: "A “perfect” pangram uses all seven letters exactly once.",
+                            }),
+                        ],
+                    }),
+                    fn.li({
+                        content: [
+                            fn.h4({
+                                content: "Is today a Bingo day?",
+                            }),
+                            fn.p({
+                                content: this.hasBingo() ? "Yes - today is a Bingo day!" : "No - not today.",
+                            }),
+                            fn.em({
+                                content: '"Bingo" means each puzzle letter starts at least one word in the list.',
+                            }),
+                        ],
+                    }),
+                    fn.li({
+                        content: [
+                            fn.h4({
+                                content: "Can you reach Genius without using any 4-letter words?",
+                            }),
+                            fn.p({
+                                content: this.hasGeniusNo4Letters() ? "Yes - today you can!" : "No - not today.",
+                            }),
+                        ],
+                    }),
+                    fn.li({
+                        content: [
+                            fn.h4({
+                                content: "Social Media",
+                            }),
+                            fn.ul({
+                                content: [
+                                    fn.li({
+                                        content: this.nytCommunity(),
+                                    }),
+                                    fn.li({
+                                        content: this.nytSpotlight(),
+                                    }),
+                                    fn.li({
+                                        content: this.redditCommunity(),
+                                    }),
+                                    fn.li({
+                                        content: this.tomtitBaobab(),
+                                    }),
+                                    fn.li({
+                                        content: this.bluesky(),
+                                    }),
+                                ],
+                            }),
+                        ],
+                    }),
+                ],
+            });
+            this.popup = new Popup(this.app, this.key)
+                .setContent("title", this.title)
+                .setContent("subtitle", this.description)
+                .setContent("body", features);
+        }
+    }
+
+    class TodaysAnswers extends Plugin {
+        togglePopup() {
+            if(this.popup.isOpen) {
+                this.popup.toggle(false);
+                return this;
+            }
+            const foundTerms = data.getList('foundTerms');
+            const pangrams = data.getList('pangrams');
+            const pane = fn.ul({
+                classNames: ['sb-modal-wordlist-items']
+            });
+            data.getList('answers').forEach(term => {
+                pane.append(fn.li({
+                    content: [
+                        fn.span({
+                            classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
+                        }), fn.span({
+                            classNames: pangrams.includes(term) ? ['sb-anagram', 'pangram'] : ['sb-anagram'],
+                            content: term
+                        })
+                    ]
+                }));
+            });
+            this.popup
+                .setContent('body', [
+                    fn.div({
+                        content: data.getList('letters').join(''),
+                        classNames: ['sb-modal-letters']
+                    }),
+                    pane
+                ])
+                .toggle(true);
+            return this;
+        }
+        constructor(app) {
+            super(app, 'Today’s Answers', 'Reveals the solution of the game', {
+                key: 'todaysAnswers'
+            });
+            this.marker = prefix('resolved', 'd');
+            this.popup = new Popup(this.app, this.key)
+                .setContent('title', this.title)
+                .setContent('subtitle', data.getDate().display);
+            this.menu = {
+                action: 'popup',
+                icon: 'warning'
+            };
+            this.shortcuts = [{
+                combo: "Shift+Alt+T",
+                method: "togglePopup"
+            }];
+        }
+    }
+
+    class PangramHl extends Plugin {
+        toggle(state) {
+            super.toggle(state);
+            return this.run();
+        }
+        run(evt) {
+            const pangrams = data.getList("pangrams");
+            const container = evt?.detail ?? this.app.resultList;
+            fn.$$("li", container).forEach((node) => {
+                const term = node.textContent;
+                if (pangrams.includes(term) || fn.$(".pangram", node)) {
+                    node.classList.add(this.marker);
+                }
+            });
+            return this;
+        }
+        constructor(app) {
+            super(app, "Highlight PangramHl", "", {
+                runEvt: prefix("refreshUi"),
+            });
+            this.marker = prefix("pangram", "d");
+            this.app.on(prefix("yesterday"), (evt) => {
+                this.run(evt);
+            });
+            this.run();
+        }
+    }
+
+    class Googlify extends Plugin {
+        listener(evt) {
+            if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
+                return false;
+            }
+            if (evt.button === 0) {
+                window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
+                return true;
+            }
+        }
+        run(evt = null) {
+            [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
+                container.addEventListener('pointerup', this.listener);
+                container.classList.add(prefix('googlified', 'd'));
+            });
+            return this;
+        }
+        constructor(app) {
+            super(app, 'Googlify', 'Link all result terms to Google');
+            this.run();
         }
     }
 
@@ -1007,12 +1914,8 @@
                         const component = this.getComponent(entry);
                         switch (entry.dataset.action) {
                             case 'boolean': {
-                                let nextState = !component.getState();
-                                component.toggle(nextState);
-                                entry.classList.toggle('checked', nextState);
-                                if (component === this.app) {
-                                    this.app.toggle(nextState);
-                                }
+                                component.toggle();
+                                entry.classList.toggle('checked', component.getState());
                                 break;
                             }
                             case 'popup':
@@ -1069,22 +1972,31 @@
             });
             app.on(prefix('pluginsReady'), evt => {
                 evt.detail.forEach((plugin, key) => {
-                    if (!plugin.canChangeState || plugin === this) {
+                    if (!plugin.menu || !plugin.menu.action) {
                         return false;
                     }
-                    const action = plugin.menuAction || 'boolean';
-                    const icon = plugin.menuIcon || null;
+                    let icon = plugin.menu.icon || null;
+                    const data = {
+                        component: key,
+                        action: plugin.menu.action
+                    };
+                    let classNames = [];
+                    if(plugin.menu.action === 'boolean'){
+                        data.icon = 'checkmark';
+                        if(plugin.getState()) {
+                            classNames = ['checked'];
+                        }
+                    }
+                    else if(icon){
+                        data.icon = icon;
+                    }
                     pane.append(fn.li({
-                        classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
+                        classNames,
                         attributes: {
                             title: plugin.description
                         },
-                        data: {
-                            component: key,
-                            icon: action === 'boolean' ? 'checkmark' : icon,
-                            action
-                        },
-                        content: svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
+                        data,
+                        content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
                     }));
                 });
                 pane.append(fn.li({
@@ -1112,6 +2024,104 @@
         }
     }
 
+    var gridIcon = "<svg version=\"1.1\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n <path d=\"m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z\" stroke-dasharray=\"0.5, 0.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>\n</svg>\n";
+
+    class Grid extends TablePane {
+        togglePopup() {
+            if (this.popup.isOpen) {
+                this.popup.toggle(false);
+                return this;
+            }
+            this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
+            return this;
+        }
+        run(evt) {
+            super.run(evt);
+            const rows = fn.$$("tr", this.pane);
+            const rCnt = rows.length;
+            rows.forEach((row, rInd) => {
+                if (rCnt === rInd + 1) {
+                    return false;
+                }
+                const cells = fn.$$("td", row);
+                const cCnt = cells.length;
+                cells.forEach((cell, cInd) => {
+                    const cellArr = cell.textContent.trim().split("/");
+                    if (cInd < cCnt - 1 && cellArr.length === 2 && cellArr[0] === cellArr[1]) {
+                        cell.classList.add(prefix("completed", "d"));
+                    }
+                });
+            });
+            return this;
+        }
+        getData() {
+            const foundTerms = data.getList("foundTerms");
+            const allTerms = data.getList("answers");
+            const allLetters = Array.from(new Set(allTerms.map((entry) => entry.charAt(0)))).concat(["∑"]);
+            const allDigits = Array.from(new Set(allTerms.map((term) => term.length))).concat(["∑"]);
+            allDigits.sort((a, b) => a - b);
+            allLetters.sort();
+            const cellData = [[""].concat(allLetters)];
+            let letterTpl = Object.fromEntries(
+                allLetters.map((letter) => [
+                    letter,
+                    {
+                        fnd: 0,
+                        all: 0,
+                    },
+                ])
+            );
+            let rows = Object.fromEntries(allDigits.map((digit) => [digit, JSON.parse(JSON.stringify(letterTpl))]));
+            allTerms.forEach((term) => {
+                const letter = term.charAt(0);
+                const digit = term.length;
+                rows[digit][letter].all++;
+                rows[digit]["∑"].all++;
+                rows["∑"][letter].all++;
+                rows["∑"]["∑"].all++;
+                if (foundTerms.includes(term)) {
+                    rows[digit][letter].fnd++;
+                    rows[digit]["∑"].fnd++;
+                    rows["∑"][letter].fnd++;
+                    rows["∑"]["∑"].fnd++;
+                }
+            });
+            for (let [digit, cols] of Object.entries(rows)) {
+                const cellVals = [digit];
+                Object.values(cols).forEach((colVals) => {
+                    cellVals.push(colVals.all > 0 ? `${colVals.fnd}/${colVals.all}` : "-");
+                });
+                cellData.push(cellVals);
+            }
+            return cellData;
+        }
+        constructor(app) {
+            super(app, "Grid", "The number of words by length and by first letter.", {
+                classNames: ["th-upper", "small-txt"].map((name) => prefix(name, "d")),
+            });
+            this.popup = new Popup(this.app, this.key).setContent("title", this.title);
+            this.menu = {
+                action: "popup",
+            };
+            this.panelBtn = fn.span({
+                classNames: ["sba-tool-btn"],
+                events: {
+                    pointerup: () => this.togglePopup(),
+                },
+                attributes: {
+                    title: `Show ${this.title}`,
+                },
+                content: gridIcon,
+            });
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+G",
+                    method: "togglePopup",
+                },
+            ];
+        }
+    }
+
     const deleteLastLetter = () => {
         const el = fn.$(".hive-action__delete");
         if (!el) return;
@@ -1123,6 +2133,35 @@
             el.classList.remove("sba-no-feedback");
         }, 50);
     };
+
+    class NytShortcuts extends Plugin {
+        toggleYesterday() {
+            this.triggerPopup(".pz-toolbar-button__yesterday");
+        }
+        toggleStats() {
+            this.triggerPopup(".pz-toolbar-button__stats");
+        }
+        triggerPopup(selector) {
+            let popupCloser = findCloseButton(this.app);
+            if (popupCloser) {
+                setTimeout(deleteLastLetter, 50);
+                popupCloser.click();
+            } else {
+                fn.$(selector)?.click();
+            }
+        }
+        constructor(app) {
+            super(app, "NYT Shortcuts", "Adds keyboard shortcuts to native NYT popups", { key: "nytShortcuts" });
+            this.selectors = {
+                yesterdaysAnswers: ".pz-toolbar-button__yesterday",
+                statistics: ".pz-toolbar-button__stats",
+            };
+            this.shortcuts = [
+                { combo: "Shift+Alt+Y", method: "toggleYesterday", label: `Yesterday's Answers` },
+                { combo: "Shift+Alt+I", method: "toggleStats", label: `Statistics` },
+            ].map((shortcut) => ({ ...shortcut, origin: "nyt" }));
+        }
+    }
 
     let registry = new Map();
     const modifierMap = new Map([
@@ -1273,12 +2312,81 @@
         getRegistry,
     };
 
+    class ShortcutScreen extends TablePane {
+        togglePopup() {
+            if (this.popup.isOpen) {
+                this.popup.toggle(false);
+                return this;
+            }
+            this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
+            return this;
+        }
+        getData() {
+            const rows = [["", "Shortcut", "State"]];
+            shortcutRegistry.getRegistry().forEach((shortcut) => {
+                const toggleBtn = getToggleButton(shortcut.combo, shortcut.enabled, (evt) => {
+                    const shortcut = shortcutRegistry.get(evt.target.closest("input").id);
+                    shortcut.enabled = !shortcut.enabled;
+                    shortcutRegistry.set(shortcut.combo, shortcut);
+                });
+                rows.push([shortcut.label, shortcut.human, toggleBtn]);
+            });
+            return rows;
+        }
+        constructor(app) {
+            super(
+                app,
+                "Shortcuts",
+                "This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. If a shortcut conflicts with your system or browser, you can disable it here.",
+                {
+                    classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d"))
+                }
+            );
+            this.popup = new Popup(this.app, this.key).setContent("title", this.title);
+            this.menu = {
+                action: 'popup'
+            };
+            this.panelBtn = fn.span({
+                classNames: ["sba-tool-btn"],
+                events: {
+                    pointerup: () => this.togglePopup(),
+                },
+                attributes: {
+                    title: `Show ${this.title}`,
+                },
+                content: gridIcon,
+            });
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+S",
+                    method: "togglePopup",
+                },
+            ];
+        }
+    }
+
     const getPlugins$1 = () => {
         return {
+            Header,
+            Overview,
+            LetterCount,
+            FirstLetter: FirstLetter$1,
+            FirstTwoLetters: FirstLetter,
+            Pangrams,
+            ProgressBar,
+            SpillTheBeans,
+            Grid,
             DarkMode,
-             Styles,
-             Menu,
-        }
+            PangramHl,
+            Googlify,
+            Styles,
+            Menu,
+            Milestones,
+            Community,
+            ShortcutScreen,
+            TodaysAnswers,
+            NytShortcuts
+        };
     };
 
     const plugins = new Map();
@@ -1397,12 +2505,9 @@
         getState() {
             return this.domGet("active");
         }
-        toggle(state) {
-            this.domSet("active", state);
+        toggle() {
+            this.domSet("active", !this.getState());
             return this;
-        }
-        toggleDisplay() {
-            this.toggle(!this.getState());
         }
         buildObserver() {
             const observer = new MutationObserver((mutationList) => {
@@ -1471,7 +2576,6 @@
         }
         constructor(gameWrapper) {
             super(settings.get("label"), {
-                canChangeState: true,
                 key: prefix("app"),
             });
             const oldInstance = fn.$(`[data-id="${this.key}"]`);
@@ -1487,7 +2591,7 @@
                 combo: "Shift+Alt+A",
                 label: "Assistant Panel",
                 module: this.key,
-                callback: () => this.toggleDisplay(),
+                callback: () => this.toggle(),
             };
             this.load();
         }

@@ -67,8 +67,6 @@ class SummaryTable extends TablePane {
         description,
         fieldName,
         {
-            canChangeState = true,
-            defaultState = true,
             cssMarkers = {},
             hasHeadRow = true,
             hasHeadCol = true,
@@ -78,8 +76,6 @@ class SummaryTable extends TablePane {
         } = {}
     ) {
         super(app, title, description, {
-            canChangeState,
-            defaultState,
             cssMarkers,
             hasHeadRow,
             hasHeadCol,

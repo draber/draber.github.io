@@ -69,8 +69,10 @@ class ShortcutScreen extends TablePane {
 
         this.popup = new Popup(this.app, this.key).setContent("title", this.title);
 
-        this.menuAction = "popup";
-        this.menuIcon = "null";
+        this.menu = {
+            action: 'popup'
+        }
+        
         this.panelBtn = fn.span({
             classNames: ["sba-tool-btn"],
             events: {

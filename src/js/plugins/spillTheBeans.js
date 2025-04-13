@@ -31,15 +31,20 @@ class SpillTheBeans extends Plugin {
         return this;
     }
 
-    toggle(nextState) {
-        // if (state) {
-        //     this.app.domSet("submenu", false);
-        // }
-        if(typeof nextState === 'undefined') {
-            nextState = !this.ui.classList.contains('inactive');
-        }
-        
-        this.ui.classList.toggle('inactive', !nextState);
+    /**
+     * True if the widget is active, false otherwise
+     * @returns {Boolean}
+     */
+    getState() {
+        return !this.ui.classList.contains('inactive')
+    }
+
+    /**
+     * Toggle the display of the widget
+     * @returns {Plugin} SpillTheBeans
+     */
+    toggle() {        
+        this.ui.classList.toggle('inactive', this.getState());
         return this;
     }
 
@@ -49,21 +54,23 @@ class SpillTheBeans extends Plugin {
      */
     constructor(app) {
         super(app, "Spill the beans", "An emoji that shows if the last letter was right or wrong", {
-            canChangeState: true,
             runEvt: prefix("newInput"),
             addMethod: "prepend",
         });
+        
+        this.menu = {
+            action: "boolean",
+        };
 
         /**
          * Emoji area
          */
         this.ui = fn.div({
             content: "😐",
+            classNames: ['inactive']
         });
 
         this.target = fn.$(".sb-controls", this.app.gameWrapper);
-
-        this.toggle(false);
 
         this.shortcuts = [
             {

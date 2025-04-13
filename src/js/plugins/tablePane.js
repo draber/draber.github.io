@@ -86,8 +86,6 @@ class TablePane extends Plugin {
 
     /**
      * @typedef {Object} configObj
-     * @property {boolean} [canChangeState=true]
-     * @property {boolean} [defaultState=true]
      * @property {Object} [cssMarkers={}]
      * @property {boolean} [hasHeadRow=true]
      * @property {boolean} [hasHeadCol=true]
@@ -107,8 +105,6 @@ class TablePane extends Plugin {
         title,
         description,
         {
-            canChangeState = true,
-            defaultState = true,
             cssMarkers = {},
             hasHeadRow = true,
             hasHeadCol = true,
@@ -117,10 +113,7 @@ class TablePane extends Plugin {
             caption = "",
         } = {}
     ) {
-        super(app, title, description, {
-            canChangeState,
-            defaultState,
-        });
+        super(app, title, description);
 
         app.on(prefix("refreshUi"), () => {
             this.run();

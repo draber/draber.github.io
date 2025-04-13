@@ -32,8 +32,6 @@ class DetailsPane extends TablePane {
             title,
             description,
             shortcuts = [],
-            canChangeState = false,
-            defaultState = true,
             hasHeadCol = true,
             hasHeadRow = true,
             cssMarkers = {},
@@ -42,8 +40,6 @@ class DetailsPane extends TablePane {
         }
     ) {
         super(app, title, description, {
-            canChangeState,
-            defaultState,
             cssMarkers,
             classNames,
             hasHeadRow,

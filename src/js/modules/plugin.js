@@ -46,13 +46,11 @@ class Plugin extends Widget {
      * @param {App} app
      * @param {String} title
      * @param {String} description
-     * @param {{key: String, canChangeState: Boolean, defaultState: *}}
+     * @param {{key: String, *}}
      */
-    constructor(app, title, description, { key, canChangeState, defaultState, menuIcon, runEvt, addMethod } = {}) {
+    constructor(app, title, description, { key, menuIcon, runEvt, addMethod } = {}) {
         super(title, {
-            key,
-            canChangeState,
-            defaultState,
+            key
         });
 
         /**

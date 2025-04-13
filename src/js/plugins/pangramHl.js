@@ -4,12 +4,10 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import {
-    prefix
-} from '../utils/string.js';
-import Plugin from '../modules/plugin.js';
-import data from '../modules/data.js';
-import fn from 'fancy-node';
+import { prefix } from "../utils/string.js";
+import Plugin from "../modules/plugin.js";
+import data from "../modules/data.js";
+import fn from "fancy-node";
 
 /**
  * Pangram Highlight plugin
@@ -18,7 +16,6 @@ import fn from 'fancy-node';
  * @returns {Plugin} PangramHl
  */
 class PangramHl extends Plugin {
-
     /**
      * Toggle state
      * @param state
@@ -30,20 +27,22 @@ class PangramHl extends Plugin {
     }
 
     /**
-     * Add or remove pangram underlines
+     * Add pangram underlines
      * @param {Event} evt
      * @returns {PangramHl}
      */
     // eslint-disable-next-line no-unused-vars
     run(evt) {
-        const pangrams = data.getList('pangrams');
-        const container = evt && evt.detail ? evt.detail : this.app.resultList;
-        fn.$$('li', container).forEach(node => {
+        const pangrams = data.getList("pangrams");
+        const container = evt?.detail ?? this.app.resultList;
+
+        fn.$$("li", container).forEach((node) => {
             const term = node.textContent;
-            if (pangrams.includes(term) || fn.$('.pangram', node)) {
-                node.classList.toggle(this.marker, this.getState());
+            if (pangrams.includes(term) || fn.$(".pangram", node)) {
+                node.classList.add(this.marker);
             }
         });
+
         return this;
     }
 
@@ -52,17 +51,15 @@ class PangramHl extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-
-        super(app, 'Highlight PangramHl', '', {
-            canChangeState: false,
-            runEvt: prefix('refreshUi')
+        super(app, "Highlight PangramHl", "", {
+            runEvt: prefix("refreshUi"),
         });
 
-        this.marker = prefix('pangram', 'd');
+        this.marker = prefix("pangram", "d");
 
-        this.app.on(prefix('yesterday'), evt => {
+        this.app.on(prefix("yesterday"), (evt) => {
             this.run(evt);
-        })
+        });
 
         this.run();
     }

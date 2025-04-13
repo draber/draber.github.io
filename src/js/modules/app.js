@@ -170,13 +170,9 @@ class App extends Widget {
      * @param state
      * @returns {App}
      */
-    toggle(state) {
-        this.domSet("active", state);
+    toggle() {
+        this.domSet("active", !this.getState());
         return this;
-    }
-
-    toggleDisplay() {
-        this.toggle(!this.getState());
     }
 
     /**
@@ -277,7 +273,6 @@ class App extends Widget {
      */
     constructor(gameWrapper) {
         super(settings.get("label"), {
-            canChangeState: true,
             key: prefix("app"),
         });
 
@@ -303,7 +298,7 @@ class App extends Widget {
             combo: "Shift+Alt+A",
             label: "Assistant Panel",
             module: this.key,
-            callback: () => this.toggleDisplay(),
+            callback: () => this.toggle(),
         };
 
         this.load();

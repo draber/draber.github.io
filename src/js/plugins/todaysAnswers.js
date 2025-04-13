@@ -70,8 +70,6 @@ class TodaysAnswers extends Plugin {
     constructor(app) {
 
         super(app, 'Today’s Answers', 'Reveals the solution of the game', {
-            canChangeState: true,
-            defaultState: false,
             key: 'todaysAnswers'
         });
 
@@ -80,8 +78,10 @@ class TodaysAnswers extends Plugin {
             .setContent('title', this.title)
             .setContent('subtitle', data.getDate().display);
 
-        this.menuAction = 'popup';
-        this.menuIcon = 'warning';
+        this.menu = {
+            action: 'popup',
+            icon: 'warning'
+        }
 
         this.shortcuts = [{
             combo: "Shift+Alt+T",

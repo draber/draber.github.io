@@ -122,12 +122,8 @@ class Menu extends Plugin {
                     const component = this.getComponent(entry);
                     switch (entry.dataset.action) {
                         case 'boolean': {
-                            let nextState = !component.getState();
-                            component.toggle(nextState);
-                            entry.classList.toggle('checked', nextState);
-                            if (component === this.app) {
-                                this.app.toggle(nextState);
-                            }
+                            component.toggle();
+                            entry.classList.toggle('checked', component.getState());
                             break;
                         }
                         case 'popup':
@@ -188,22 +184,31 @@ class Menu extends Plugin {
 
         app.on(prefix('pluginsReady'), evt => {
             evt.detail.forEach((plugin, key) => {
-                if (!plugin.canChangeState || plugin === this) {
+                if (!plugin.menu || !plugin.menu.action) {
                     return false;
                 }
-                const action = plugin.menuAction || 'boolean';
-                const icon = plugin.menuIcon || null;
+                let icon = plugin.menu.icon || null;
+                const data = {
+                    component: key,
+                    action: plugin.menu.action
+                }
+                let classNames = [];
+                if(plugin.menu.action === 'boolean'){
+                    data.icon = 'checkmark';
+                    if(plugin.getState()) {
+                        classNames = ['checked'];
+                    }
+                }
+                else if(icon){
+                    data.icon = icon;
+                }
                 pane.append(fn.li({
-                    classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
+                    classNames,
                     attributes: {
                         title: plugin.description
                     },
-                    data: {
-                        component: key,
-                        icon: action === 'boolean' ? 'checkmark' : icon,
-                        action
-                    },
-                    content: svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
+                    data,
+                    content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
                 }));
             })
             pane.append(fn.li({
