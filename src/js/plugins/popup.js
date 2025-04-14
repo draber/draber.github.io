@@ -131,6 +131,7 @@ class Popup {
             this.modalSystem.classList.remove("sb-modal-open");
             this.isOpen = false;
         }
+        console.log(this.app.modalWrapper.outerHTML);
 
         return this;
     }

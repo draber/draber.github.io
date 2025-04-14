@@ -35,8 +35,10 @@ $themeColors: (
         link-hover:  hsl(var(--link-hue), 45%, 53%),
         sba-success: hsl(112, 93%, 35%),
         sba-error: hsl(352, 93%, 35%),
-        toggle-on-bg: hsl(90, 60%, 40%),
-        toggle-off-bg: hsl(90, 0%, 50%),
+        toggle-on-bg: hsl(90, 62%, 40%),
+        toggle-off-bg: hsl(0, 0%, 65%),
+        toggle-handle: hsl(0, 100%, 100%),
+        toggle-border: hsl(0, 0%, 90%),
     ),
     dark: (
         highlight-bg: hsl(49, 96%, 50%),
@@ -55,8 +57,10 @@ $themeColors: (
         link-hover:    hsl(var(--link-hue), 90%, 76%),
         sba-success: hsl(112, 93%, 55%),
         sba-error: hsl(352, 93%, 41%),
-        toggle-on-bg: hsl(90, 60%, 50%),
+        toggle-on-bg: hsl(90, 62%, 50%),
         toggle-off-bg: hsl(90, 0%, 80%),
+        toggle-handle: hsl(var(--dhue), var(--dsat), 22%),
+        toggle-border: hsl(var(--dhue), var(--dsat), 22%),
     )
 );
 

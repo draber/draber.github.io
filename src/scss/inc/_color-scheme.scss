@@ -83,6 +83,16 @@ body {
             }
         }
 
+        .pz-dropdown {
+            .pz-dropdown__show {
+                & + .pz-dropdown__list {
+                    .pz-dropdown__menu-item {
+                        background-color: var(--body-bg-color);
+                    }
+                }
+            }
+        }
+
         .pz-moment__frame {
             &.pz-moment__welcome {
                 * {
@@ -159,11 +169,22 @@ body {
 
 .pz-moment__frame {
     &:is(.pz-moment__congrats, .pz-moment__welcome) {
+        & .pz-moment__content {
+            color: var(--text-color);
+        }
         .pz-moment__button {
-            &.secondary {
+            &.primary {
+                background: var(--area-bg-color);
                 color: var(--text-color);
                 &:hover {
-                    color: var(--body-bg-color);
+                    background: var(--invalid-color);
+                }
+            }
+            &.secondary {
+                color: var(--text-color);
+                background: var(--head-row-bg-color);
+                &:hover {
+                    background: var(--area-bg-color);
                 }
             }
         }
@@ -175,11 +196,44 @@ body {
         border: 1px solid var(--border-color);
         background: var(--body-bg-color);
         color: var(--text-color);
+        &.stats {
+            & .sb-modal-header {
+                background: var(--body-bg-color);
+            }
+
+            & .sb-stats-bar {
+                background: var(--body-bg-color);
+                color: var(--text-color);
+            }
+            & .sb-stats-bar__text {
+                color: #333;
+            }
+        }
     }
 
     .pz-modal__title,
     .sb-modal-close {
         color: var(--text-color);
+    }
+    .sb-modal-body {
+        .sb-modal-buttons-container {
+            button {
+                &.button-primary {
+                    background: var(--area-bg-color);
+                    color: var(--text-color);
+                    &:hover {
+                        background: var(--invalid-color);
+                    }
+                }
+                &.button-secondary {
+                    color: var(--text-color);
+                    background: var(--head-row-bg-color);
+                    &:hover {
+                        background: var(--area-bg-color);
+                    }
+                }
+            }
+        }
     }
 }
 

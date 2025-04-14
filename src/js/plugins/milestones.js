@@ -80,13 +80,14 @@ class Milestones extends TablePane {
      * @returns {Milestones}
      */
     togglePopup() {
+        console.log(this.popup.key, this.popup.isOpen)
         if (this.popup.isOpen) {
             this.popup.toggle(false);
             return this;
         }
 
         this.description = this.getDescription();
-
+        
         const summaryElements = [];
         Object.values(this.summaryTblObjects).forEach((tblObj) => {
             summaryElements.push(tblObj.getPane());
@@ -107,6 +108,9 @@ class Milestones extends TablePane {
         });
 
         this.popup.setContent("subtitle", this.getDescription()).setContent("body", body).toggle(true);
+
+        
+        console.log(this.popup.key, this.popup.isOpen)
 
         return this;
     }

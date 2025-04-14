@@ -67,6 +67,10 @@ class ShortcutScreen extends TablePane {
             }
         );
 
+        if(app.envIs('mobile')){
+            return;
+        }
+
         this.popup = new Popup(this.app, this.key).setContent("title", this.title);
 
         this.menu = {

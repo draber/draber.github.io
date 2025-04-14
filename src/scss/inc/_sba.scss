@@ -18,13 +18,14 @@
         }
     }
 }
-
+// toggle body, not checked
 .sba-toggle-switch:where([type="checkbox"][role="switch"]) {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     position: relative;
-    color: var(--border-color);
+    // both borders
+    color: var(--toggle-border-color);
     font-size: inherit;
     width: 2em;
     height: 1em;
@@ -34,7 +35,8 @@
     vertical-align: text-bottom;
     margin: auto;
     cursor: pointer;
-    background: var(--body-bg-color);
+    background: var(--toggle-off-bg-color);
+    // handle
     &::before {
         content: "";
         position: absolute;
@@ -47,13 +49,14 @@
         margin: 0 0.15em;
         border: 1px solid;
         border-radius: 50%;
-        background: var(--text-color);
+        background: var(--toggle-handle-color);
     }
     &:checked {
+        // body when checked
         background: var(--toggle-on-bg-color);
         &::before {
             left: 1em;
-            background: var(--border-color);
+            background: var(--toggle-handle-color);
         }
     }
     &:disabled {
@@ -151,7 +154,7 @@ details {
 
     &.sba-equal-cols {
         @for $i from 3 through 10 {
-            $width: percentage(math.div(1, $i));
+            $width: math.percentage(math.div(1, $i));
 
             &[data-cols="#{$i}"] {
                 :is(th, td) {
