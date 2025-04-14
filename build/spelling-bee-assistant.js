@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "4.4.1";
+    var version = "4.4.2";
 
     const settings = {
         version: version,
@@ -278,29 +278,27 @@
     function requireSrc () {
     	if (hasRequiredSrc) return src;
     	hasRequiredSrc = 1;
-    	const cast = content => {
-    	    if (typeof content === 'undefined') {
+    	const cast = (content) => {
+    	    if (typeof content === "undefined") {
     	        return document.createDocumentFragment();
     	    }
-    	    if (content instanceof Element || content instanceof DocumentFragment) {
+    	    if (content instanceof Node) {
     	        return content;
     	    }
-    	    if (typeof content === 'number') {
+    	    if (typeof content === "number") {
     	        content = content.toString();
     	    }
-    	    if (typeof content === 'string' ||
-    	        content instanceof String
-    	    ) {
-    	        if (!(/<(.*)>/.test(content))) {
+    	    if (typeof content === "string" || content instanceof String) {
+    	        if (!/<(.*)>/.test(content)) {
     	            return document.createTextNode(content);
     	        }
     	        let node;
-    	        const mime = content.includes('<svg') ? 'image/svg+xml' : 'text/html';
-    	        const doc = (new DOMParser()).parseFromString(content, mime);
+    	        const mime = content.includes("<svg") ? "image/svg+xml" : "text/html";
+    	        const doc = new DOMParser().parseFromString(content, mime);
     	        if (doc.body) {
     	            node = document.createDocumentFragment();
     	            const children = Array.from(doc.body.childNodes);
-    	            children.forEach(elem => {
+    	            children.forEach((elem) => {
     	                node.append(elem);
     	            });
     	            return node;
@@ -309,17 +307,17 @@
     	            return doc.documentElement;
     	        }
     	    }
-    	    console.error('Expected Element|DocumentFragment|String|HTMLCode|SVGCode, got', content);
+    	    console.error("Expected Element|DocumentFragment|String|HTMLCode|SVGCode, got", content);
     	};
     	const obj = {
     	    $: (selector, container = null) => {
-    	        return typeof selector === 'string' ? (container || document).querySelector(selector) : selector || null;
+    	        return typeof selector === "string" ? (container || document).querySelector(selector) : selector || null;
     	    },
     	    $$: (selector, container = null) => {
     	        return [].slice.call((container || document).querySelectorAll(selector));
     	    },
     	    waitFor: function (selector, container = null) {
-    	        return new Promise(resolve => {
+    	        return new Promise((resolve) => {
     	            const getElement = () => {
     	                const element = obj.$(selector, container);
     	                if (element) {
@@ -329,30 +327,30 @@
     	                }
     	            };
     	            getElement();
-    	        })
+    	        });
     	    },
-    	    toNode: content => {
-    	        if (!content.forEach || typeof content.forEach !== 'function') {
+    	    toNode: (content) => {
+    	        if (!content.forEach || typeof content.forEach !== "function") {
     	            content = [content];
     	        }
-    	        content = content.map(entry => cast(entry));
+    	        content = content.map((entry) => cast(entry));
     	        if (content.length === 1) {
-    	            return content[0]
+    	            return content[0];
     	        } else {
     	            const fragment = document.createDocumentFragment();
-    	            content.forEach(entry => {
+    	            content.forEach((entry) => {
     	                fragment.append(entry);
     	            });
     	            return fragment;
     	        }
     	    },
-    	    empty: element => {
+    	    empty: (element) => {
     	        while (element.lastChild) {
     	            element.lastChild.remove();
     	        }
-    	        element.textContent = '';
+    	        element.textContent = "";
     	        return element;
-    	    }
+    	    },
     	};
     	const create = function ({
     	    tag,
@@ -363,43 +361,36 @@
     	    aria = {},
     	    events = {},
     	    classNames = [],
-    	    isSvg = false
+    	    isSvg = false,
     	} = {}) {
-    	    const el = isSvg ? document.createElementNS('http://www.w3.org/2000/svg', tag) : document.createElement(tag);
-    	    new Map([
-    	        ['class', 'className'],
-    	        ['for', 'htmlFor'],
-    	        ['tabindex', 'tabIndex'],
-    	        ['nomodule', 'noModule'],
-    	        ['contenteditable', 'contentEditable'],
-    	        ['accesskey', 'accessKey']
-    	    ]).forEach((right, wrong) => {
-    	        if (typeof attributes[right] === 'undefined' && attributes[wrong]) {
-    	            attributes[right] = attributes[wrong];
-    	        }
-    	        delete attributes[wrong];
-    	    });
+    	    const el = isSvg ? document.createElementNS("http://www.w3.org/2000/svg", tag) : document.createElement(tag);
+    	    const fixes = {
+    	        htmlFor: "for",
+    	        className: "class"
+    	    };
+    	    const propToAttr = (prop) => Object.keys(fixes).includes(prop) ? fixes[prop] : prop;
     	    if (attributes.style) {
     	        const styleAttr = {};
-    	        attributes.style.split(';').forEach(rule => {
-    	            const parts = rule.split(':').map(entry => entry.trim());
+    	        attributes.style.split(";").forEach((rule) => {
+    	            const parts = rule.split(":").map((entry) => entry.trim());
     	            styleAttr[parts[0]] = parts[1];
     	        });
     	        style = {
     	            ...styleAttr,
-    	            ...style
+    	            ...style,
     	        };
     	        delete attributes.style;
     	    }
+    	    Object.assign(el.style, style);
     	    for (let [key, value] of Object.entries(attributes)) {
     	        if (isSvg) {
     	            el.setAttributeNS(null, key, value.toString());
     	        } else if (value !== false) {
-    	            el[key] = value;
+    	            el.setAttribute(propToAttr(key), value.toString());
     	        }
     	    }
     	    for (let [key, value] of Object.entries(aria)) {
-    	        key = key === 'role' ? key : 'aria-' + key;
+    	        key = key === "role" ? key : "aria-" + key;
     	        el.setAttribute(key.toLowerCase(), value);
     	    }
     	    for (let [key, value] of Object.entries(data)) {
@@ -409,15 +400,15 @@
     	    for (const [event, fn] of Object.entries(events)) {
     	        el.addEventListener(event, fn, false);
     	    }
-    	    Object.assign(el.style, style);
     	    if (classNames.length) {
-    	        el.classList.add(...classNames);
+    	        el.classList.add(...Array.from(classNames));
     	    }
-    	    if (typeof content !== 'undefined') {
+    	    if (typeof content !== "undefined") {
     	        el.append(obj.toNode(content));
     	    }
     	    return el;
     	};
+    	obj.create = create;
     	src = new Proxy(obj, {
     	    get(target, prop) {
     	        return function () {
@@ -428,12 +419,12 @@
     	            }
     	            return create({
     	                ...{
-    	                    tag: prop
+    	                    tag: prop,
     	                },
-    	                ...args.shift()
+    	                ...args.shift(),
     	            });
-    	        }
-    	    }
+    	        };
+    	    },
     	});
     	return src;
     }
@@ -1582,7 +1573,7 @@
         }
     }
 
-    var gridIcon = "<svg version=\"1.1\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n <path d=\"m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z\" stroke-dasharray=\"0.5, 0.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>\n</svg>\n";
+    var gridIcon = "<svg version=\"1.1\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\r\n <path d=\"m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z\" stroke-dasharray=\"0.5, 0.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>\r\n</svg>\r\n";
 
     class Grid extends TablePane {
         display() {
@@ -1743,7 +1734,7 @@
             fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
                 this.observer = this.buildObserver();
                 data.init(this, this.getSyncData());
-                this.modalWrapper = fn.$(".sb-modal-wrapper", this.gameWrapper);
+                this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
                 this.resultList = resultList;
                 this.add();
                 this.domSet("active", true);

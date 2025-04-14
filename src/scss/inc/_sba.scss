@@ -61,7 +61,7 @@
     border-top: none;
 
     @for $i from 3 through 10 {
-        $width: percentage(math.div(1, $i));
+        $width: math.percentage(math.div(1, $i));
 
         &[data-cols="#{$i}"] {
             :is(th, td) {

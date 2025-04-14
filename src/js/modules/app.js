@@ -118,7 +118,7 @@ class App extends Widget {
             // Observe game for various changes
             this.observer = this.buildObserver();
             data.init(this, this.getSyncData());
-            this.modalWrapper = fn.$(".sb-modal-wrapper", this.gameWrapper);
+            this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
             this.resultList = resultList;
 
             this.add();
