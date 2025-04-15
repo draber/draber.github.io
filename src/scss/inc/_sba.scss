@@ -166,7 +166,7 @@ details {
 
     .sba-preeminent {
         font-weight: bold;
-        border-bottom: 2px solid var(--highlight-bg-color) !important;
+        border-bottom: 2px solid var(--sb-yellow) !important;
     }
 
     .sba-completed td,
@@ -352,12 +352,12 @@ progress {
     }
 
     &::-webkit-progress-value {
-        background-color: var(--highlight-bg-color);
+        background-color: var(--sb-yellow);
         height: 4px;
     }
 
     &::-moz-progress-bar {
-        background-color: var(--highlight-bg-color);
+        background-color: var(--sb-yellow);
     }
 }
 
@@ -393,7 +393,7 @@ progress {
         overflow: hidden;
         display: block;
         padding: 5px 9px 5px 36px;
-        font-size: 14px;
+        font-size: 18px;
 
         &::before,
         &::after {
@@ -405,10 +405,10 @@ progress {
             &.checked {
                 &::after {
                     content: "✔";
-                    color: var(--highlight-bg-color);
+                    color: var(--sb-yellow);
                     top: 3px;
-                    left: 14px;
-                    font-size: 16px;
+                    left: 10px;
+                    font-size: 20px;
                 }
             }
         }
@@ -433,14 +433,14 @@ progress {
             height: 20px;
             position: absolute;
             left: 7px;
-            top: 6px;
+            top: 10px;
 
             .shape {
                 fill: var(--text-color);
             }
 
             .content {
-                fill: var(--highlight-bg-color);
+                fill: var(--sb-yellow);
             }
         }
     }
@@ -503,7 +503,7 @@ progress {
         }
 
         & .sba-center-cell {
-            fill: var(--highlight-bg-color);
+            fill: var(--sb-yellow);
 
             & text {
                 fill: var(--highlight-text-color);
@@ -556,7 +556,7 @@ progress {
             left: -100px;
 
             &:checked ~ label:not([for="sbaH360"]) {
-                border-color: var(--highlight-bg-color);
+                border-color: var(--sb-yellow);
             }
         }
     }
@@ -634,7 +634,7 @@ progress {
                     &::after {
                         position: relative;
                         content: "✔";
-                        color: var(--highlight-bg-color);
+                        color: var(--sb-yellow);
                         top: 4px;
                         font-size: 16px;
                     }
@@ -669,6 +669,7 @@ progress {
         color: var(--text-color);
     }
 }
+
 
 [data-ui="shortcuts"] {
     tbody {
@@ -761,7 +762,7 @@ progress {
 
             &.sba-pangram {
                 font-weight: 700;
-                border-bottom: 2px var(--highlight-bg-color) solid;
+                border-bottom: 2px var(--sb-yellow) solid;
             }
 
             .sba-marks {
@@ -837,6 +838,7 @@ progress {
 
 .sb-modal-frame {
     .sb-modal-content {
+        scrollbar-color: var(--invalid-color) var(--body-bg-color);
         &::after {
             background: linear-gradient(
                 180deg,

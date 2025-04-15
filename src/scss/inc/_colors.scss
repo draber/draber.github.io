@@ -19,7 +19,6 @@
 // CSS variables will be '--' + key name + 'color' => foo becomes --foo-color
 $themeColors: (
     light: (
-        highlight-bg: hsl(52, 93%, 55%),
         text:        hsl(0, 0%, 0%),
         site-text:   hsl(0, 0%, 0%, 0.9),
         body-bg:     hsl(0, 0%, 100%),
@@ -41,7 +40,6 @@ $themeColors: (
         toggle-border: hsl(0, 0%, 90%),
     ),
     dark: (
-        highlight-bg: hsl(49, 96%, 50%),
         text:          hsl(var(--dhue), var(--dsat), 85%),
         site-text:     hsl(var(--dhue), var(--dsat), 100%, 0.9),
         body-bg:       hsl(var(--dhue), var(--dsat), var(--dlig)),

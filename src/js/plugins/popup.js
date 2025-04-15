@@ -19,11 +19,24 @@ class Popup {
      */
     enableKeyClose() {
         document.addEventListener("keyup", (evt) => {
-            this.app.popupCloser = findCloseButton(this.app);
-            if (this.app.popupCloser && evt.code === "Escape") {
-                this.app.popupCloser.click();
+            const popupCloser = findCloseButton(this.app);
+            if (popupCloser && evt.code === "Escape") {
+                popupCloser.click();
             }
-            delete this.app.popupCloser;
+        });
+        return this;
+    }
+
+    /**
+     * Enable closing the popup by clicking on the x button
+     * @returns {Popup}
+     */
+    enableCanvasClose() {
+        this.app.modalWrapper.addEventListener("pointerup", (evt) => {
+            const inner = fn.$(".sb-modal-frame", this.app.modalWrapper);
+            if (inner && !inner.contains(evt.target)) {
+                findCloseButton(this.app).click();
+            }
         });
         return this;
     }
@@ -131,7 +144,6 @@ class Popup {
             this.modalSystem.classList.remove("sb-modal-open");
             this.isOpen = false;
         }
-        console.log(this.app.modalWrapper.outerHTML);
 
         return this;
     }
@@ -181,7 +193,7 @@ class Popup {
 
         this.ui = this.create();
 
-        this.enableKeyClose();
+        this.enableKeyClose().enableCanvasClose();
 
         this.getTarget().append(this.ui);
     }

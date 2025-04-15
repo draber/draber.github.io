@@ -4,6 +4,10 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
+
+ 
+@use './_mixins.scss' as *;
+
 body {
     background: var(--body-bg-color);
     color: var(--text-color);
@@ -11,14 +15,6 @@ body {
     .pz-game-field {
         background: var(--body-bg-color);
         color: var(--text-color);
-    }
-
-    &[data-sba-theme="dark"] {
-        .pz-game-wrapper,
-        #js-hook-pz-moment__loading {
-            background: var(--body-bg-color) !important;
-            color: var(--text-color);
-        }
     }
 
     .pz-game-wrapper {
@@ -38,8 +34,8 @@ body {
 
         .sb-progress-marker .sb-progress-value,
         .hive-cell:first-child .cell-fill {
-            background: var(--highlight-bg-color);
-            fill: var(--highlight-bg-color);
+            background: var(--sb-yellow);
+            fill: var(--sb-yellow);
             color: var(--highlight-text-color);
         }
 
@@ -54,13 +50,52 @@ body {
     }
 
     &[data-sba-theme="dark"] {
+
+        .pz-moment__frame {
+            &:is(.pz-moment__congrats, .pz-moment__welcome) {
+                & .pz-moment__content {
+                    color: var(--text-color);
+                }
+                .pz-moment__button {
+                    &.primary {
+                        @include button-style(primary);
+                    }
+                    &.secondary {
+                        @include button-style(secondary);
+                    }
+                }
+            }
+        }
+        
+        .pz-game-wrapper,
+        #js-hook-pz-moment__loading {
+            background: var(--body-bg-color) !important;
+            color: var(--text-color);
+        }
         .sb-message {
             background: var(--area-bg-color);
         }
         .pangram-message {
             .sb-message {
-                background: var(--highlight-bg-color);
+                background: var(--sb-yellow);
                 color: var(--highlight-text-color);
+            }
+        }
+
+        .pz-modal__button.white,
+        .pz-footer,
+        .pz-moment,
+        .sb-modal-scrim {
+            background: var(--modal-bg-color) !important;
+            color: var(--text-color) !important;
+
+            .pz-moment__button {
+                &.primary {
+                    @include button-style(primary);
+                }
+                &.secondary {
+                    @include button-style(secondary);
+                }
             }
         }
 
@@ -153,43 +188,7 @@ body {
     background: var(--body-bg-color);
 }
 
-.pz-modal__button.white,
-.pz-footer,
-.pz-moment,
-.sb-modal-scrim {
-    background: var(--modal-bg-color) !important;
-    color: var(--text-color) !important;
 
-    .pz-moment__button {
-        &.secondary {
-            color: white;
-        }
-    }
-}
-
-.pz-moment__frame {
-    &:is(.pz-moment__congrats, .pz-moment__welcome) {
-        & .pz-moment__content {
-            color: var(--text-color);
-        }
-        .pz-moment__button {
-            &.primary {
-                background: var(--area-bg-color);
-                color: var(--text-color);
-                &:hover {
-                    background: var(--invalid-color);
-                }
-            }
-            &.secondary {
-                color: var(--text-color);
-                background: var(--head-row-bg-color);
-                &:hover {
-                    background: var(--area-bg-color);
-                }
-            }
-        }
-    }
-}
 
 .sb-modal-wrapper {
     .sb-modal-frame {
@@ -211,6 +210,12 @@ body {
         }
     }
 
+    .sb-modal-ranks__list {
+        tr:not(.sb-modal-ranks__current) {
+            color: var(--text-color);
+        }
+    }
+
     .pz-modal__title,
     .sb-modal-close {
         color: var(--text-color);
@@ -219,18 +224,10 @@ body {
         .sb-modal-buttons-container {
             button {
                 &.button-primary {
-                    background: var(--area-bg-color);
-                    color: var(--text-color);
-                    &:hover {
-                        background: var(--invalid-color);
-                    }
+                    @include button-style(primary);
                 }
                 &.button-secondary {
-                    color: var(--text-color);
-                    background: var(--head-row-bg-color);
-                    &:hover {
-                        background: var(--area-bg-color);
-                    }
+                    @include button-style(secondary);
                 }
             }
         }
@@ -262,7 +259,7 @@ body {
 
 .sb-input-bright,
 .sb-progress-dot.completed::after {
-    color: var(--highlight-bg-color);
+    color: var(--sb-yellow);
 }
 
 .hive-cell {
