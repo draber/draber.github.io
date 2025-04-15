@@ -153,7 +153,7 @@ export const ui = (self) => ({
                             isSvg: true,
                             attributes: {
                                 x: 12,
-                                y: 12,
+                                y: 11,
                             },
                             content: cell.textContent.trim(),
                         }),

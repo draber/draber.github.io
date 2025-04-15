@@ -41,7 +41,7 @@ $gameWidth: 1280;
 }
 
 [data-sba-submenu="true"] {
-    overflow-y: hidden;
+    //overflow-y: hidden;
     .pz-mobile-dropdown {
         &.show {
             .pz-dropdown__list {

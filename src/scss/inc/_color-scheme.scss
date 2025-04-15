@@ -50,6 +50,11 @@ body {
     }
 
     &[data-sba-theme="dark"] {
+        scrollbar-color: var(--invalid-color) var(--body-bg-color);
+
+        .sb-message {
+            color: var(--text-color);
+          }
 
         .pz-moment__frame {
             &:is(.pz-moment__congrats, .pz-moment__welcome) {

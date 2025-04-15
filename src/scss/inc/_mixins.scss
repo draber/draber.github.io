@@ -15,6 +15,7 @@
         color: var(--text-color);
         &:hover {
             background: var(--invalid-color);
+            color: var(--body-bg-color)
         }
     } @else if $type == secondary {
         background: var(--head-row-bg-color);
