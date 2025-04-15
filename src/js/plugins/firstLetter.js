@@ -6,6 +6,12 @@
  */
 import data from "../modules/data.js";
 import DetailsPane from "./detailsPane.js";
+/*
+import tableUtils from "../utils/table.utils.js";
+
+import { render } from "../utils/render.fn.js";
+import { getProgressBar } from "../utils/ui.js";
+*/
 
 /**
  * FirstLetter plugin
@@ -68,8 +74,46 @@ class FirstLetter extends DetailsPane {
                     combo: "Shift+Alt+F",
                     method: "togglePane",
                 },
-            ]
+            ],
         });
+
+        /*
+
+        const rowCallbacks = [
+            (rowData, rowIdx, rowObj, skeleton) => {
+                if (rowData[2] === 0) {
+                    rowObj.classNames.push("completed");
+                }
+                if (rowData[0] === data.getCenterLetter()) {
+                    rowObj.classNames.push("preeminent");
+                }
+
+                if (rowData[0] === data.getCenterLetter()) {
+                    const progressRow = {
+                        tag: "tr",
+                        classNames: ["progressbar"],
+                        content: [
+                            {
+                                tag: "td",
+                                attributes: { colspan: rowData.length },
+                                content: getProgressBar(rowData[1], rowData[3]),
+                            },
+                        ],
+                    };
+                    tableUtils.insertAfterCurrentRow(skeleton, rowObj, progressRow, "tbody");
+                }
+            },
+        ];
+
+        const dataObj = tableUtils.dataToObj(this.getData(), {
+            hasHeadRow: true,
+            hasHeadCol: true,
+            rowCallbacks,
+            caption: "Example",
+        });
+
+        console.log(render(dataObj));
+        */
     }
 }
 
