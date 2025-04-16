@@ -58,25 +58,27 @@ class ShortcutScreen extends TablePane {
      * @param {App} app
      */
     constructor(app) {
-        super(
-            app,
-            "Shortcuts",
-            "This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. If a shortcut conflicts with your system or browser, you can disable it here.",
-            {
-                classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d"))
-            }
-        );
-
-        if(app.envIs('mobile')){
-            return;
+        let msg = [
+            `This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. 
+            If a shortcut conflicts with your system or browser, you can disable it here.`,
+        ];
+        if (app.envIs("mobile")) {
+            msg.push(
+                fn.i({
+                    content: `Note: On mobile devices, keyboard shortcuts may be limited or unavailable, depending on your setup.`,
+                })
+            );
         }
+        super(app, "Shortcuts", msg.map((part) => fn.p({ content: part })), {
+            classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d")),
+        });
 
         this.popup = new Popup(this.app, this.key).setContent("title", this.title);
 
         this.menu = {
-            action: 'popup'
-        }
-        
+            action: "popup",
+        };
+
         this.panelBtn = fn.span({
             classNames: ["sba-tool-btn"],
             events: {

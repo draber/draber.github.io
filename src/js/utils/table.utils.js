@@ -5,6 +5,8 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
+import data from "../modules/data.js";
+
 /**
  * Converts raw table data into a structured object representation.
  *
@@ -14,9 +16,10 @@
  * @param {boolean} [options.hasHeadCol=true] - Whether the first column of each row should be <th>.
  * @param {Array<Function>} [options.rowCallbacks=[]] - Functions applied to each row object. Signature: (rowData, rowIdx, currentRow, skeleton) => void
  * @param {string|Node} [options.caption=""] - Optional table caption.
+ * @param {Array<String>} [options.tableClassNames=[]] - CSS class names to be used on <table>
  * @returns {{tag: string, content: Array}} A complete table object.
  */
-const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = [], caption = "" } = {}) => {
+const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = [], caption = "", tableClassNames=[] } = {}) => {
     const skeleton = getTableSkeleton();
 
     if (caption) {
@@ -27,7 +30,7 @@ const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = 
         const rowObj = {
             tag: "tr",
             content: [],
-            classNames: [],
+            classNames: [], // not to be mixed up with tableClassNames
             attributes: {},
         };
 
@@ -51,7 +54,7 @@ const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = 
         rowCallbacks.forEach((cb) => cb(rowData, rowIdx, rowObj, skeleton));
     });
 
-    return finalizeSkeleton(skeleton);
+    return finalizeSkeleton(skeleton, tableClassNames);
 };
 
 /**
@@ -76,15 +79,17 @@ const getTableSkeleton = () => {
  * Finalizes the table structure by removing empty parts and wrapping content in a table object.
  *
  * @param {Object<string, {tag: string, content: Array}>} skeleton - The intermediate structure.
+ * @param {Array<String>} [options.classNames=[]] - CSS class names to be used on <table>
  * @returns {{tag: string, content: Array}} A finalized table object ready for further processing.
  */
-const finalizeSkeleton = (skeleton) => {
+const finalizeSkeleton = (skeleton, classNames = []) => {
     const content = Object.values(skeleton).filter((part) => {
         return Array.isArray(part.content) && part.content.length > 0;
     });
     return {
         tag: "table",
         content,
+        classNames
     };
 };
 
@@ -110,7 +115,42 @@ const insertAfterCurrentRow = (skeleton, currentRow, newRow, section = "tbody") 
     }
 };
 
+/**
+ * Builds table-friendly data grouped by the first N letters of each answer.
+ *
+ * Returns a 2D array suitable for use with `DynamicTable`, with rows like:
+ *   ["cha", 2, 1, 3]  → first 3 letters, 2 found, 1 remaining, 3 total
+ *
+ * @param {number} n - Number of initial letters to group by (e.g. 1, 2, 3).
+ * @returns {Array<Array<string|number>>} 2D table data with header.
+ */
+const buildFirstLetterTableData = (n) => {
+    const answers = data.getList("answers").sort();
+    const remainders = data.getList("remainders");
+    const stats = {};
+    const tpl = { found: 0, missing: 0, total: 0 };
+
+    for (const word of answers) {
+        const key = word.slice(0, n);
+        if (!stats[key]) stats[key] = { ...tpl };
+        if (remainders.includes(word)) {
+            stats[key].missing++;
+        } else {
+            stats[key].found++;
+        }
+        stats[key].total++;
+    }
+
+    const rows = [["", "✓", "?", "∑"]];
+    for (const [key, { found, missing, total }] of Object.entries(stats)) {
+        rows.push([key, found, missing, total]);
+    }
+
+    return rows;
+}
+
 export default {
     dataToObj,
     insertAfterCurrentRow,
+    buildFirstLetterTableData
 };

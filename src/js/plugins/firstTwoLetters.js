@@ -13,7 +13,7 @@ import DetailsPane from './detailsPane.js';
  * @param {App} app
  * @returns {Plugin} FirstLetter
  */
-class FirstLetter extends DetailsPane {
+class FirstTwoLetters extends DetailsPane {
 
     /**
      * Get the data for the table cells
@@ -75,4 +75,4 @@ class FirstLetter extends DetailsPane {
     }
 }
 
-export default FirstLetter;
+export default FirstTwoLetters;
