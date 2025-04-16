@@ -11,6 +11,11 @@
     --sba-cell-block-padding: 3px;
 }
 
+
+body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
+    display: none;
+}
+
 .hive-action {
     &.push-active {
         &.sba-no-feedback {
@@ -122,6 +127,9 @@ details {
 
     .sba-data-pane {
         font-size: 95%;
+    }
+    i {
+        font-style: italic
     }
 }
 
