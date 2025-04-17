@@ -6,7 +6,7 @@
  */
 import Plugin from "../modules/plugin.js";
 import tableUtils from "../utils/table.utils.js";
-import TableBuilder from "../widgets/tableBuilder.js";
+import {buildStandardTable} from '../widgets/tableBuilder.js'
 import {prefix} from "../utils/string.js";
 import DetailsBuilder from "../widgets/detailsBuilder.js";
 import data from "../modules/data.js";
@@ -17,7 +17,7 @@ export default class StartSequence extends Plugin {
     }
 
     run(evt) {
-        this.detailsBuilder.update(this.createTable().ui);
+        this.detailsBuilder.update(this.createTable());
         return this;
     }
 
@@ -36,26 +36,15 @@ export default class StartSequence extends Plugin {
     }
 
     createTable() {
-        return new TableBuilder(this.getData(), {
-            hasHeadRow: true,
-            hasHeadCol: true,
-            classNames: ["data-pane", "th-upper", "table-full-width", "equal-cols", "small-txt"]
-                .map((name) => prefix(name, "d"))
-                .concat(["pane"]),
-
-            rowCallbacks: [
-                (rowData, rowIdx, rowObj) => {
-                    if (rowIdx === 0) {
-                        return;
-                    }
-                    if (rowData[2] === 0) {
-                        rowObj.classNames.push(prefix("completed", "d"));
-                    }
-                    if (rowData[0] === data.getCenterLetter()) {
-                        rowObj.classNames.push(prefix("preeminent", "d"));
-                    }
-                },
-            ],
-        });
+        return buildStandardTable(this.getData(),[
+            (rowData, rowIdx, rowObj) => {
+                if (rowData[2] === 0) {
+                    rowObj.classNames.push(prefix("completed", "d"));
+                }
+                if (rowData[0] === data.getCenterLetter()) {
+                    rowObj.classNames.push(prefix("preeminent", "d"));
+                }
+            },
+        ]);
     }
 }

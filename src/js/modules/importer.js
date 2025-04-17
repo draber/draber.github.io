@@ -12,6 +12,7 @@ import SpillTheBeans from "../plugins/spillTheBeans.js";
 import LetterCount from "../plugins/letterCount.js";
 import FirstLetter from "../plugins/firstLetter.js";
 import FirstTwoLetters from "../plugins/firstTwoLetters.js";
+// import FirstThreeLetters from "../plugins/firstThreeLetters.js";
 import Pangrams from "../plugins/pangrams.js";
 import Milestones from "../plugins/milestones.js";
 import Community from "../plugins/community.js";
@@ -26,7 +27,6 @@ import ShortcutScreen from "../plugins/shortcutScreen.js";
 
 /**
  * Plugins
- * @param app
  * @returns {Object}
  */
 const getPlugins = () => {
@@ -36,6 +36,7 @@ const getPlugins = () => {
         LetterCount,
         FirstLetter,
         FirstTwoLetters,
+       // FirstThreeLetters,
         Pangrams,
         ProgressBar,
         SpillTheBeans,

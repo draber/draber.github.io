@@ -1,66 +1,50 @@
 /**
  *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
  *
- *  Copyright (C) 2020  Dieter Raber
+ *  Copyright (C) 2020 Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import data from "../modules/data.js";
-import DetailsPane from "./detailsPane.js";
+import Plugin from "../modules/plugin.js";
+import tableUtils from "../utils/table.utils.js";
+import {prefix} from "../utils/string.js";
+import DetailsBuilder from "../widgets/detailsBuilder.js";
+import {buildStandardTable} from '../widgets/tableBuilder.js'
 
-/**
- * LetterCount plugin
- *
- * @param {App} app
- * @returns {Plugin} LetterCount
- */
-class LetterCount extends DetailsPane {
-    /**
-     * Get the data for the table cells
-     * @returns {Array}
-     */
-    getData() {
-        const counts = {};
-        const cellData = [["", "✓", "?", "∑"]];
-        data.getList("answers").forEach((term) => {
-            counts[term.length] = counts[term.length] || {
-                found: 0,
-                missing: 0,
-                total: 0,
-            };
-            if (data.getList("foundTerms").includes(term)) {
-                counts[term.length].found++;
-            } else {
-                counts[term.length].missing++;
-            }
-            counts[term.length].total++;
-        });
-        let keys = Object.keys(counts);
-        keys.sort((a, b) => a - b);
-        keys.forEach((count) => {
-            cellData.push([count, counts[count].found, counts[count].missing, counts[count].total]);
-        });
-        return cellData;
+export default class LetterCount extends Plugin {
+    togglePane() {
+        return this.detailsBuilder.togglePane();
     }
 
-    /**
-     * LetterCount constructor
-     * @param {App} app
-     */
+    run(evt) {
+        this.detailsBuilder.update(this.createTable());
+        return this;
+    }
+
     constructor(app) {
-        super(app, {
-            title: "Letter count",
-            description: "The number of words by length",
-            cssMarkers: {
-                completed: (rowData, i) => rowData[2] === 0,
+        super(app, "Letter count", "The number of words by length", {runEvt: prefix("refreshUi")});
+
+        this.detailsBuilder = new DetailsBuilder(this.title, false);
+        this.ui = this.detailsBuilder.ui;
+
+        this.shortcuts = [
+            {
+                combo: "Shift+Alt+L",
+                method: "togglePane",
             },
-            shortcuts: [
-                {
-                    combo: "Shift+Alt+L",
-                    method: "togglePane",
-                },
-            ]
-        });
+        ];
+    }
+
+    getData() {
+        return tableUtils.buildWordLengthTableData();
+    }
+
+    createTable() {
+        return buildStandardTable(this.getData(),[
+            (rowData, rowIdx, rowObj) => {
+                if (rowData[2] === 0) {
+                    rowObj.classNames.push(prefix("completed", "d"));
+                }
+            },
+        ]);
     }
 }
-
-export default LetterCount;

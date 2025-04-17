@@ -6,6 +6,7 @@
  */
 import TableUtils from "../utils/table.utils.js";
 import { render } from "../utils/render.fn.js";
+import {prefix} from "../utils/string.js";
 
 /**
  * DynamicTable is a lightweight utility to generate an HTML table
@@ -22,6 +23,7 @@ export default class TableBuilder {
      * @param {boolean} [options.hasHeadRow=true] - Whether the first row is a header row.
      * @param {boolean} [options.hasHeadCol=true] - Whether the first column is a header column.
      * @param {Array<Function>} [options.rowCallbacks=[]] - Optional callbacks for customizing rows.
+     * @param {Array<Function>} [options.cellCallbacks=[]] - Optional callbacks for customizing cells.
      */
     constructor(
         data,
@@ -30,6 +32,7 @@ export default class TableBuilder {
             hasHeadRow = true,
             hasHeadCol = true,
             rowCallbacks = [],
+            cellCallbacks = [],
             classNames = []
         } = {}
     ) {
@@ -38,6 +41,7 @@ export default class TableBuilder {
         this.hasHeadRow = hasHeadRow;
         this.hasHeadCol = hasHeadCol;
         this.rowCallbacks = rowCallbacks;
+        this.cellCallbacks = cellCallbacks;
         this.classNames = classNames;
         this.element = null;
     }
@@ -53,6 +57,7 @@ export default class TableBuilder {
             hasHeadRow: this.hasHeadRow,
             hasHeadCol: this.hasHeadCol,
             rowCallbacks: this.rowCallbacks,
+            cellCallbacks: this.cellCallbacks,
             classNames: this.classNames
         });
 
@@ -67,4 +72,29 @@ export default class TableBuilder {
     get ui() {
         return this.element || this.render();
     }
+}
+
+
+/**
+ * Builds a standardized DynamicTable with SBA-style classnames and layout.
+ *
+ * @param {Array<Array<any>>} data - 2D table data
+ * @param {Array<Function>} [rowCallbacks=[]]
+ * @param {Array<Function>} [cellCallbacks=[]]
+ * @returns {TableBuilder}
+ */
+export function buildStandardTable(data, rowCallbacks = [], cellCallbacks=[]) {
+    return (new TableBuilder(data, {
+        hasHeadRow: true,
+        hasHeadCol: true,
+        classNames: [
+            "data-pane",
+            "th-upper",
+            "table-full-width",
+            "equal-cols",
+            "small-txt"
+        ].map((name) => prefix(name, "d")).concat(["pane"]),
+        rowCallbacks,
+        cellCallbacks
+    })).ui;
 }

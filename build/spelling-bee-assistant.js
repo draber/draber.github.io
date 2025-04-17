@@ -479,7 +479,7 @@
         return false;
     };
 
-    class Popup {
+    class PopupBuilder {
         enableKeyClose() {
             document.addEventListener("keyup", (evt) => {
                 const popupCloser = findCloseButton(this.app);
@@ -583,7 +583,6 @@
         constructor(app, key) {
             this.key = key;
             this.app = app;
-            this.state = false;
             this.isOpen = false;
             this.modalSystem = this.app.modalWrapper.closest(".sb-modal-system");
             this.parts = {
@@ -870,7 +869,7 @@
                     label: "Dark Mode Colors",
                 },
             ];
-            this.popup = new Popup(this.app, this.key);
+            this.popup = new PopupBuilder(this.app, this.key);
             if (!this.found3rdPartyDm) {
                 this.popup
                     .setContent("title", this.title)
@@ -937,6 +936,529 @@
             this.target = fn.$('.sb-wordlist-heading', this.app.gameWrapper);
         }
     }
+
+    const dataToObj = (
+        data,
+        { hasHeadRow = true, hasHeadCol = true, rowCallbacks = [], cellCallbacks = [], caption = "", classNames = [] } = {}
+    ) => {
+        const skeleton = getTableSkeleton();
+        if (caption) {
+            skeleton.caption.content.push(caption);
+        }
+        let cellCnt = 0;
+        data.forEach((rowData, rowIdx) => {
+            if(rowIdx === 0) {
+                cellCnt = rowData.length;
+            }
+            const rowObj = {
+                tag: "tr",
+                content: [],
+                classNames: [],
+                attributes: {},
+            };
+            const trTarget = hasHeadRow && rowIdx === 0 ? "thead" : "tbody";
+            rowData.forEach((cellData, cellIdx) => {
+                let cellTag = "td";
+                if (hasHeadRow && rowIdx === 0) {
+                    cellTag = "th";
+                } else if (hasHeadCol && cellIdx === 0) {
+                    cellTag = "th";
+                }
+                const cellObj = {
+                    tag: cellTag,
+                    content: cellData,
+                    classNames: [],
+                };
+                cellCallbacks.forEach((cb) => {
+                    cb({
+                        cellData,
+                        rowIdx,
+                        cellIdx,
+                        rowData,
+                        rowObj,
+                        cellObj,
+                        tableData: data,
+                    });
+                });
+                rowObj.content.push(cellObj);
+            });
+            skeleton[trTarget].content.push(rowObj);
+            rowCallbacks.forEach((cb) => cb(rowData, rowIdx, rowObj, skeleton));
+        });
+        return finalizeSkeleton(skeleton, cellCnt, classNames);
+    };
+    const getTableSkeleton = () => {
+        const skeleton = {};
+        ["caption", "thead", "tbody", "tfoot"].forEach((tag) => {
+            skeleton[tag] = {
+                tag,
+                content: [],
+            };
+        });
+        return skeleton;
+    };
+    const finalizeSkeleton = (skeleton, cellCnt, classNames = []) => {
+        const content = Object.values(skeleton).filter((part) => {
+            return Array.isArray(part.content) && part.content.length > 0;
+        });
+        return {
+            tag: "table",
+            content,
+            classNames,
+            data: {
+                cols: cellCnt,
+            }
+        };
+    };
+    const insertAfterCurrentRow = (skeleton, currentRow, newRow, section = "tbody") => {
+        const target = skeleton[section]?.content;
+        if (!target) return;
+        const index = target.indexOf(currentRow);
+        if (index === -1) {
+            target.push(newRow);
+        } else {
+            target.splice(index + 1, 0, newRow);
+        }
+    };
+    const buildFirstLetterTableData = (n) => {
+        const answers = data.getList("answers").sort();
+        const remainders = data.getList("remainders");
+        const stats = {};
+        const tpl = { found: 0, missing: 0, total: 0 };
+        for (const word of answers) {
+            const key = word.slice(0, n);
+            if (!stats[key]) stats[key] = { ...tpl };
+            if (remainders.includes(word)) {
+                stats[key].missing++;
+            } else {
+                stats[key].found++;
+            }
+            stats[key].total++;
+        }
+        const rows = [["", "✓", "?", "∑"]];
+        for (const [key, { found, missing, total }] of Object.entries(stats)) {
+            rows.push([key, found, missing, total]);
+        }
+        return rows;
+    };
+    const buildWordLengthTableData = () => {
+        const counts = {};
+        const header = ["", "✓", "?", "∑"];
+        const rows = [];
+        const answers = data.getList("answers");
+        const found = new Set(data.getList("foundTerms"));
+        for (const term of answers) {
+            const len = term.length;
+            if (!counts[len]) {
+                counts[len] = { found: 0, missing: 0, total: 0 };
+            }
+            if (found.has(term)) {
+                counts[len].found++;
+            } else {
+                counts[len].missing++;
+            }
+            counts[len].total++;
+        }
+        Object.keys(counts)
+            .sort((a, b) => a - b)
+            .forEach((len) => {
+                const { found, missing, total } = counts[len];
+                rows.push([len, found, missing, total]);
+            });
+        return [header, ...rows];
+    };
+    var tableUtils = {
+        dataToObj,
+        insertAfterCurrentRow,
+        buildFirstLetterTableData,
+        buildWordLengthTableData,
+    };
+
+    const render = (obj) => {
+        const defaults = {
+            tag: "div",
+            content: [],
+            attributes: {},
+            style: {},
+            data: {},
+            aria: {},
+            events: {},
+            classNames: [],
+            isSvg: false,
+        };
+        const merged = {
+            ...defaults,
+            ...obj,
+            content: castToArray(obj.content).map((item) =>
+                typeof item === "string" || !isNaN(item) || item instanceof Node ? item : render(item)
+            ),
+        };
+        return srcExports.create(merged);
+    };
+    const castToArray = (content) => {
+        if (typeof content === "undefined" || content === null) {
+            return [];
+        }
+        if (Array.isArray(content)) {
+            return content;
+        }
+        return [content];
+    };
+
+    class TableBuilder {
+        constructor(
+            data,
+            {
+                caption = "",
+                hasHeadRow = true,
+                hasHeadCol = true,
+                rowCallbacks = [],
+                cellCallbacks = [],
+                classNames = []
+            } = {}
+        ) {
+            this.data = data;
+            this.caption = caption;
+            this.hasHeadRow = hasHeadRow;
+            this.hasHeadCol = hasHeadCol;
+            this.rowCallbacks = rowCallbacks;
+            this.cellCallbacks = cellCallbacks;
+            this.classNames = classNames;
+            this.element = null;
+        }
+        render() {
+            const obj = tableUtils.dataToObj(this.data, {
+                caption: this.caption,
+                hasHeadRow: this.hasHeadRow,
+                hasHeadCol: this.hasHeadCol,
+                rowCallbacks: this.rowCallbacks,
+                cellCallbacks: this.cellCallbacks,
+                classNames: this.classNames
+            });
+            this.element = render(obj);
+            return this.element;
+        }
+        get ui() {
+            return this.element || this.render();
+        }
+    }
+    function buildStandardTable(data, rowCallbacks = [], cellCallbacks=[]) {
+        return (new TableBuilder(data, {
+            hasHeadRow: true,
+            hasHeadCol: true,
+            classNames: [
+                "data-pane",
+                "th-upper",
+                "table-full-width",
+                "equal-cols",
+                "small-txt"
+            ].map((name) => prefix(name, "d")).concat(["pane"]),
+            rowCallbacks,
+            cellCallbacks
+        })).ui;
+    }
+
+    class DetailsBuilder {
+        update(newContent) {
+            if (!this.element) {
+                this.render();
+            }
+            this.content.replaceWith(newContent);
+            this.content = newContent;
+            return this;
+        }
+        render() {
+            this.element = fn.details({
+                content: [
+                    fn.summary({
+                        content: this.title,
+                    }),
+                    this.content,
+                ],
+                attributes: {
+                    open: this.open,
+                },
+            });
+            return this.element;
+        }
+        togglePane() {
+            this.element.open = !this.element.open;
+            return this;
+        }
+        get ui() {
+            return this.element || this.render();
+        }
+        constructor(title, open = false) {
+            this.title = title;
+            this.open = open;
+            this.content = fn.div();
+            this.element = null;
+        }
+    }
+
+    class Overview extends Plugin {
+        togglePane() {
+            return this.detailsBuilder.togglePane();
+        }
+        run(evt) {
+            this.detailsBuilder.update(this.createTable());
+            return this;
+        }
+        getData() {
+            const keys = ["foundTerms", "remainders", "answers"];
+            return [
+                ["", "✓", "?", "∑"],
+                ["W"].concat(keys.map((key) => data.getCount(key))),
+                ["P"].concat(keys.map((key) => data.getPoints(key))),
+            ];
+        }
+        createTable() {
+            return buildStandardTable(this.getData());
+        }
+        constructor(app) {
+            super(app, "Overview", "The number of words and points and how many have been found", {runEvt: prefix("refreshUi")});
+            this.detailsBuilder = new DetailsBuilder(this.title, true);
+            this.ui = this.detailsBuilder.ui;
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+O",
+                    method: "togglePane",
+                },
+            ];
+        }
+    }
+
+    class SpillTheBeans extends Plugin {
+        run(evt) {
+            let emoji = "🙂";
+            if (!evt.detail) {
+                emoji = "😐";
+            } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail.textContent.trim())).length) {
+                emoji = "🙁";
+            }
+            this.ui.textContent = emoji;
+            return this;
+        }
+        getState() {
+            return !this.ui.classList.contains('inactive')
+        }
+        toggle() {
+            this.ui.classList.toggle('inactive', this.getState());
+            return this;
+        }
+        constructor(app) {
+            super(app, "Spill the beans", "An emoji that shows if the last letter was right or wrong", {
+                runEvt: prefix("newInput"),
+                addMethod: "prepend",
+            });
+            this.menu = {
+                action: "boolean",
+            };
+            this.ui = fn.div({
+                content: "😐",
+                classNames: ['inactive']
+            });
+            this.target = fn.$(".sb-controls", this.app.gameWrapper);
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+E",
+                    method: 'toggle',
+                },
+            ];
+        }
+    }
+
+    class LetterCount extends Plugin {
+        togglePane() {
+            return this.detailsBuilder.togglePane();
+        }
+        run(evt) {
+            this.detailsBuilder.update(this.createTable());
+            return this;
+        }
+        constructor(app) {
+            super(app, "Letter count", "The number of words by length", {runEvt: prefix("refreshUi")});
+            this.detailsBuilder = new DetailsBuilder(this.title, false);
+            this.ui = this.detailsBuilder.ui;
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+L",
+                    method: "togglePane",
+                },
+            ];
+        }
+        getData() {
+            return tableUtils.buildWordLengthTableData();
+        }
+        createTable() {
+            return buildStandardTable(this.getData(),[
+                (rowData, rowIdx, rowObj) => {
+                    if (rowData[2] === 0) {
+                        rowObj.classNames.push(prefix("completed", "d"));
+                    }
+                },
+            ]);
+        }
+    }
+
+    class StartSequence extends Plugin {
+        togglePane() {
+            return this.detailsBuilder.togglePane();
+        }
+        run(evt) {
+            this.detailsBuilder.update(this.createTable());
+            return this;
+        }
+        constructor(app, title, description, {letterCnt, shortcuts} = {}) {
+            super(app, title, description, {runEvt: prefix("refreshUi")});
+            this.detailsBuilder = new DetailsBuilder(this.title, false);
+            this.ui = this.detailsBuilder.ui;
+            this.shortcuts = shortcuts;
+            this.letterCnt = letterCnt;
+        }
+        getData() {
+            return tableUtils.buildFirstLetterTableData(this.letterCnt);
+        }
+        createTable() {
+            return buildStandardTable(this.getData(),[
+                (rowData, rowIdx, rowObj) => {
+                    if (rowData[2] === 0) {
+                        rowObj.classNames.push(prefix("completed", "d"));
+                    }
+                    if (rowData[0] === data.getCenterLetter()) {
+                        rowObj.classNames.push(prefix("preeminent", "d"));
+                    }
+                },
+            ]);
+        }
+    }
+
+    class FirstLetter extends StartSequence {
+        constructor(app) {
+            super(app, "First letter", "The number of words by first letter", {
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+F",
+                        method: "togglePane",
+                    },
+                ],
+                letterCnt: 1
+            });
+        }
+    }
+
+    class FirstTwoLetters extends StartSequence {
+        constructor(app) {
+            super(app, "First two letters", "The number of words by the first two letters", {
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+2",
+                        method: "togglePane",
+                    },
+                ],
+                letterCnt: 2
+            });
+        }
+    }
+
+    class Pangrams extends Plugin {
+        togglePane() {
+            return this.detailsBuilder.togglePane();
+        }
+        run(evt) {
+            this.detailsBuilder.update(this.createTable());
+            return this;
+        }
+        getData() {
+            const pangramCount = data.getCount("pangrams");
+            const foundPangramCount = data.getCount("foundPangrams");
+            return [
+                ["✓", "?", "∑"],
+                [foundPangramCount, pangramCount - foundPangramCount, pangramCount],
+            ];
+        }
+        createTable() {
+            return (new TableBuilder(this.getData(), {
+                hasHeadRow: true,
+                hasHeadCol: false,
+                classNames: ["data-pane", "th-upper", "table-full-width", "equal-cols", "small-txt"]
+                    .map((name) => prefix(name, "d"))
+                    .concat(["pane"]),
+                rowCallbacks: [
+                    (rowData, rowIdx, rowObj) => {
+                        if (rowData[2] === 0) {
+                            rowObj.classNames.push(prefix("completed", "d"));
+                        }
+                    },
+                ],
+            })).ui;
+        }
+        constructor(app) {
+            super(app, "Pangrams", "The number of pangrams", { runEvt: prefix("refreshUi") });
+            this.detailsBuilder = new DetailsBuilder(this.title, false);
+            this.ui = this.detailsBuilder.ui;
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+P",
+                    method: "togglePane",
+                },
+            ];
+        }
+    }
+
+    const getProgressBar = (value, max) => {
+        value = Math.min(Math.round((value * 100) / max), 100);
+        return fn.progress({
+            attributes: {
+                max: 100,
+                value,
+                title: `Progress: ${value}%`,
+            },
+        });
+    };
+    const getToggleButton = (id, checked, callback, labelText = "", labelPosition = "before") => {
+        const toggleBtn = fn.input({
+            attributes: {
+                type: "checkbox",
+                id,
+                role: "switch",
+                checked,
+            },
+            classNames: [prefix("toggle-switch", "d")],
+            aria: {
+                role: "switch",
+            },
+            events: {
+                change: (event) => callback(event),
+            },
+        });
+        if (!labelText) {
+            return toggleBtn;
+        }
+        const label = fn.label({
+            attributes: {
+                htmlFor: id,
+            },
+            content: labelText,
+            classNames: [prefix("toggle-label", "d")],
+        });
+        switch (labelPosition) {
+            case "wrap":
+                label.append(toggleBtn);
+                label.classList.add(prefix("toggle-container", "d"));
+                return label;
+            case "before":
+                return fn.span({
+                    classNames: [prefix("toggle-container", "d")],
+                    content: [label, toggleBtn],
+                });
+            case "after":
+                return fn.span({
+                    classNames: [prefix("toggle-container", "d")],
+                    content: [toggleBtn, label],
+                });
+        }
+    };
 
     class TablePane extends Plugin {
         run(evt) {
@@ -1018,489 +1540,6 @@
         }
     }
 
-    class DetailsPane extends TablePane {
-        constructor(
-            app,
-            {
-                title,
-                description,
-                shortcuts = [],
-                hasHeadCol = true,
-                hasHeadRow = true,
-                cssMarkers = {},
-                classNames = ["th-upper", "table-full-width", "equal-cols", "small-txt"].map((name) => prefix(name, "d")),
-                open = false,
-            }
-        ) {
-            super(app, title, description, {
-                cssMarkers,
-                classNames,
-                hasHeadRow,
-                hasHeadCol,
-            });
-            this.shortcuts = shortcuts;
-            this.ui = fn.details({
-                content: [
-                    fn.summary({
-                        content: title,
-                    }),
-                    this.getPane(),
-                ],
-                attributes: {
-                    open,
-                },
-            });
-            this.togglePane = () => (this.ui.open = !this.ui.open);
-        }
-    }
-
-    class Overview extends DetailsPane {
-        getData() {
-            const keys = ["foundTerms", "remainders", "answers"];
-            return [
-                ["", "✓", "?", "∑"],
-                ["W"].concat(keys.map((key) => data.getCount(key))),
-                ["P"].concat(keys.map((key) => data.getPoints(key))),
-            ];
-        }
-        constructor(app) {
-            super(app, {
-                title: "Overview",
-                description: "The number of words and points and how many have been found",
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+O",
-                        method: "togglePane",
-                    },
-                ],
-                open: true,
-            });
-        }
-    }
-
-    class SpillTheBeans extends Plugin {
-        run(evt) {
-            let emoji = "🙂";
-            if (!evt.detail) {
-                emoji = "😐";
-            } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail.textContent.trim())).length) {
-                emoji = "🙁";
-            }
-            this.ui.textContent = emoji;
-            return this;
-        }
-        getState() {
-            return !this.ui.classList.contains('inactive')
-        }
-        toggle() {
-            this.ui.classList.toggle('inactive', this.getState());
-            return this;
-        }
-        constructor(app) {
-            super(app, "Spill the beans", "An emoji that shows if the last letter was right or wrong", {
-                runEvt: prefix("newInput"),
-                addMethod: "prepend",
-            });
-            this.menu = {
-                action: "boolean",
-            };
-            this.ui = fn.div({
-                content: "😐",
-                classNames: ['inactive']
-            });
-            this.target = fn.$(".sb-controls", this.app.gameWrapper);
-            this.shortcuts = [
-                {
-                    combo: "Shift+Alt+E",
-                    method: 'toggle',
-                },
-            ];
-        }
-    }
-
-    class LetterCount extends DetailsPane {
-        getData() {
-            const counts = {};
-            const cellData = [["", "✓", "?", "∑"]];
-            data.getList("answers").forEach((term) => {
-                counts[term.length] = counts[term.length] || {
-                    found: 0,
-                    missing: 0,
-                    total: 0,
-                };
-                if (data.getList("foundTerms").includes(term)) {
-                    counts[term.length].found++;
-                } else {
-                    counts[term.length].missing++;
-                }
-                counts[term.length].total++;
-            });
-            let keys = Object.keys(counts);
-            keys.sort((a, b) => a - b);
-            keys.forEach((count) => {
-                cellData.push([count, counts[count].found, counts[count].missing, counts[count].total]);
-            });
-            return cellData;
-        }
-        constructor(app) {
-            super(app, {
-                title: "Letter count",
-                description: "The number of words by length",
-                cssMarkers: {
-                    completed: (rowData, i) => rowData[2] === 0,
-                },
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+L",
-                        method: "togglePane",
-                    },
-                ]
-            });
-        }
-    }
-
-    const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = [], caption = "", classNames=[] } = {}) => {
-        const skeleton = getTableSkeleton();
-        if (caption) {
-            skeleton.caption.content.push(caption);
-        }
-        data.forEach((rowData, rowIdx) => {
-            const rowObj = {
-                tag: "tr",
-                content: [],
-                classNames: [],
-                attributes: {},
-            };
-            const trTarget = hasHeadRow && rowIdx === 0 ? "thead" : "tbody";
-            rowData.forEach((cellData, cellIdx) => {
-                let cellTag = "td";
-                if (hasHeadRow && rowIdx === 0) {
-                    cellTag = "th";
-                } else if (hasHeadCol && cellIdx === 0) {
-                    cellTag = "th";
-                }
-                rowObj.content.push({
-                    tag: cellTag,
-                    content: cellData,
-                });
-            });
-            skeleton[trTarget].content.push(rowObj);
-            rowCallbacks.forEach((cb) => cb(rowData, rowIdx, rowObj, skeleton));
-        });
-        return finalizeSkeleton(skeleton, classNames);
-    };
-    const getTableSkeleton = () => {
-        const skeleton = {};
-        ["caption", "thead", "tbody", "tfoot"].forEach((tag) => {
-            skeleton[tag] = {
-                tag,
-                content: [],
-            };
-        });
-        return skeleton;
-    };
-    const finalizeSkeleton = (skeleton, classNames = []) => {
-        const content = Object.values(skeleton).filter((part) => {
-            return Array.isArray(part.content) && part.content.length > 0;
-        });
-        return {
-            tag: "table",
-            content,
-            classNames
-        };
-    };
-    const insertAfterCurrentRow = (skeleton, currentRow, newRow, section = "tbody") => {
-        const target = skeleton[section]?.content;
-        if (!target) return;
-        const index = target.indexOf(currentRow);
-        if (index === -1) {
-            target.push(newRow);
-        } else {
-            target.splice(index + 1, 0, newRow);
-        }
-    };
-    const buildFirstLetterTableData = (n) => {
-        const answers = data.getList("answers").sort();
-        const remainders = data.getList("remainders");
-        const stats = {};
-        const tpl = { found: 0, missing: 0, total: 0 };
-        for (const word of answers) {
-            const key = word.slice(0, n);
-            if (!stats[key]) stats[key] = { ...tpl };
-            if (remainders.includes(word)) {
-                stats[key].missing++;
-            } else {
-                stats[key].found++;
-            }
-            stats[key].total++;
-        }
-        const rows = [["", "✓", "?", "∑"]];
-        for (const [key, { found, missing, total }] of Object.entries(stats)) {
-            rows.push([key, found, missing, total]);
-        }
-        return rows;
-    };
-    var tableUtils = {
-        dataToObj,
-        insertAfterCurrentRow,
-        buildFirstLetterTableData
-    };
-
-    const render = (obj) => {
-        const defaults = {
-            tag: "div",
-            content: [],
-            attributes: {},
-            style: {},
-            data: {},
-            aria: {},
-            events: {},
-            classNames: [],
-            isSvg: false,
-        };
-        const merged = {
-            ...defaults,
-            ...obj,
-            content: castToArray(obj.content).map((item) =>
-                typeof item === "string" || !isNaN(item) || item instanceof Node ? item : render(item)
-            ),
-        };
-        return srcExports.create(merged);
-    };
-    const castToArray = (content) => {
-        if (typeof content === "undefined" || content === null) {
-            return [];
-        }
-        if (Array.isArray(content)) {
-            return content;
-        }
-        return [content];
-    };
-
-    class TableBuilder {
-        constructor(
-            data,
-            {
-                caption = "",
-                hasHeadRow = true,
-                hasHeadCol = true,
-                rowCallbacks = [],
-                classNames = []
-            } = {}
-        ) {
-            this.data = data;
-            this.caption = caption;
-            this.hasHeadRow = hasHeadRow;
-            this.hasHeadCol = hasHeadCol;
-            this.rowCallbacks = rowCallbacks;
-            this.classNames = classNames;
-            this.element = null;
-        }
-        render() {
-            const obj = tableUtils.dataToObj(this.data, {
-                caption: this.caption,
-                hasHeadRow: this.hasHeadRow,
-                hasHeadCol: this.hasHeadCol,
-                rowCallbacks: this.rowCallbacks,
-                classNames: this.classNames
-            });
-            this.element = render(obj);
-            return this.element;
-        }
-        get ui() {
-            return this.element || this.render();
-        }
-    }
-
-    class DetailsBuilder {
-        update(newContent) {
-            if (!this.element) {
-                this.render();
-            }
-            this.content.replaceWith(newContent);
-            this.content = newContent;
-            return this;
-        }
-        render() {
-            this.element = fn.details({
-                content: [
-                    fn.summary({
-                        content: this.title,
-                    }),
-                    this.content,
-                ],
-                attributes: {
-                    open: this.open,
-                },
-            });
-            return this.element;
-        }
-        togglePane() {
-            this.element.open = !this.element.open;
-            return this;
-        }
-        get ui() {
-            return this.element || this.render();
-        }
-        constructor(title, open = false) {
-            this.title = title;
-            this.open = open;
-            this.content = fn.div();
-            this.element = null;
-        }
-    }
-
-    class StartSequence extends Plugin {
-        togglePane() {
-            return this.detailsBuilder.togglePane();
-        }
-        run(evt) {
-            this.detailsBuilder.update(this.createTable().ui);
-            return this;
-        }
-        constructor(app, title, description, {letterCnt, shortcuts} = {}) {
-            super(app, title, description, {runEvt: prefix("refreshUi")});
-            this.detailsBuilder = new DetailsBuilder(this.title, false);
-            this.ui = this.detailsBuilder.ui;
-            this.shortcuts = shortcuts;
-            this.letterCnt = letterCnt;
-        }
-        getData() {
-            return tableUtils.buildFirstLetterTableData(this.letterCnt);
-        }
-        createTable() {
-            return new TableBuilder(this.getData(), {
-                hasHeadRow: true,
-                hasHeadCol: true,
-                classNames: ["data-pane", "th-upper", "table-full-width", "equal-cols", "small-txt"]
-                    .map((name) => prefix(name, "d"))
-                    .concat(["pane"]),
-                rowCallbacks: [
-                    (rowData, rowIdx, rowObj) => {
-                        if (rowIdx === 0) {
-                            return;
-                        }
-                        if (rowData[2] === 0) {
-                            rowObj.classNames.push(prefix("completed", "d"));
-                        }
-                        if (rowData[0] === data.getCenterLetter()) {
-                            rowObj.classNames.push(prefix("preeminent", "d"));
-                        }
-                    },
-                ],
-            });
-        }
-    }
-
-    class FirstLetter extends StartSequence {
-        constructor(app) {
-            super(app, "First letter", "The number of words by first letter", {
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+F",
-                        method: "togglePane",
-                    },
-                ],
-                letterCnt: 1
-            });
-        }
-    }
-
-    class FirstTwoLetters extends StartSequence {
-        constructor(app) {
-            super(app, "First two letters", "The number of words by the first two letters", {
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+2",
-                        method: "togglePane",
-                    },
-                ],
-                letterCnt: 2
-            });
-        }
-    }
-
-    class Pangrams extends DetailsPane {
-        getData() {
-            const pangramCount = data.getCount("pangrams");
-            const foundPangramCount = data.getCount("foundPangrams");
-            return [
-                ["✓", "?", "∑"],
-                [foundPangramCount, pangramCount - foundPangramCount, pangramCount],
-            ];
-        }
-        constructor(app) {
-            super(app, {
-                title: "Pangrams",
-                description: "The number of pangrams",
-                cssMarkers: {
-                    completed: (rowData, i) => rowData[1] === 0,
-                },
-                hasHeadCol: false,
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+P",
-                        method: "togglePane",
-                    },
-                ],
-            });
-        }
-    }
-
-    const getProgressBar = (value, max) => {
-        value = Math.min(Math.round((value * 100) / max), 100);
-        return fn.progress({
-            attributes: {
-                max: 100,
-                value,
-                title: `Progress: ${value}%`,
-            },
-        });
-    };
-    const getToggleButton = (id, checked, callback, labelText = "", labelPosition = "before") => {
-        const toggleBtn = fn.input({
-            attributes: {
-                type: "checkbox",
-                id,
-                role: "switch",
-                checked,
-            },
-            classNames: [prefix("toggle-switch", "d")],
-            aria: {
-                role: "switch",
-            },
-            events: {
-                change: (event) => callback(event),
-            },
-        });
-        if (!labelText) {
-            return toggleBtn;
-        }
-        const label = fn.label({
-            attributes: {
-                htmlFor: id,
-            },
-            content: labelText,
-            classNames: [prefix("toggle-label", "d")],
-        });
-        switch (labelPosition) {
-            case "wrap":
-                label.append(toggleBtn);
-                label.classList.add(prefix("toggle-container", "d"));
-                return label;
-            case "before":
-                return fn.span({
-                    classNames: [prefix("toggle-container", "d")],
-                    content: [label, toggleBtn],
-                });
-            case "after":
-                return fn.span({
-                    classNames: [prefix("toggle-container", "d")],
-                    content: [toggleBtn, label],
-                });
-        }
-    };
-
     class SummaryTable extends TablePane {
         run(evt) {
             super.run(evt);
@@ -1556,13 +1595,90 @@
         }
     }
 
-    class Milestones extends TablePane {
+    const tiers = [
+        ["Beginner", 0],
+        ["Good Start", 2],
+        ["Moving Up", 5],
+        ["Good", 8],
+        ["Solid", 15],
+        ["Nice", 25],
+        ["Great", 40],
+        ["Amazing", 50],
+        ["Genius", 70],
+        ["Queen Bee", 100]
+    ];
+    const getDataArray = (reversed = true) => {
+        const pointObj = data.getFoundAndTotal("points");
+        const rows = [["", "To reach"]];
+        const tierData = reversed ? tiers.toReversed() : tiers;
+        tierData.forEach((entry) => {
+            rows.push([entry[0], Math.round((entry[1] / 100) * pointObj.total)]);
+        });
+        return rows;
+    };
+    const getCurrentTier = (pointObj) => {
+        const tier = getDataArray(false)
+            .filter((entry) => !isNaN(entry[1]) && entry[1] <= pointObj.found)
+            .pop();
+        return {
+            name: tier[0],
+            value: tier[1],
+            additionalPoints: pointObj.found - tier[1],
+        };
+    };
+    const getNextTier = (pointObj) => {
+        const nextTier = getDataArray(false)
+            .filter((entry) => !isNaN(entry[1]) && entry[1] > pointObj.found)
+            .shift();
+        return nextTier && nextTier.length
+            ? {
+                name: nextTier[0],
+                value: nextTier[1],
+                missingPoints: nextTier[1] - pointObj.found,
+            }
+            : {
+                name: null,
+                value: null,
+                missingPoints: 0,
+            };
+    };
+    const getDescription = () => {
+        const pointObj = data.getFoundAndTotal("points");
+        const currentTier = getCurrentTier(pointObj);
+        const nextTier = getNextTier(pointObj);
+        return nextTier.name && pointObj.found < pointObj.total
+            ? [
+                `You’re at "`,
+                fn.b({content: currentTier.name}),
+                `" and just `,
+                fn.b({content: nextTier.missingPoints}),
+                ` ${nextTier.missingPoints !== 1 ? "points" : "point"} away from "`,
+                fn.b({content: nextTier.name}),
+                `".`,
+            ]
+            : `You’ve completed today’s puzzle. Here’s a recap.`;
+    };
+    const getRowCallbacks = () => {
+        return [
+            (rowData, rowIdx, rowObj) => {
+                const pointObj = data.getFoundAndTotal("points");
+                const currentTier = getCurrentTier(pointObj);
+                if (rowData[1] < pointObj.found && rowData[1] !== currentTier.value) {
+                    rowObj.classNames.push(prefix("completed", "d"));
+                }
+                if(rowData[1] === currentTier.value){
+                    rowObj.classNames.push(prefix("completed", "d"));
+                }
+            }
+        ];
+    };
+
+    class Milestones extends Plugin {
         run(evt) {
-            super.run(evt);
             const insertionPoint = fn.$("tbody .sba-preeminent", this.pane);
             const pointObj = data.getFoundAndTotal("points");
-            const currentTier = this.getCurrentTier(pointObj);
-            const nextTier = this.getNextTier(pointObj);
+            const currentTier = getCurrentTier(pointObj);
+            const nextTier = getNextTier(pointObj);
             if (!insertionPoint || !nextTier.value) {
                 return this;
             }
@@ -1579,30 +1695,22 @@
             );
             return this;
         }
-        getDescription() {
-            const pointObj = data.getFoundAndTotal("points");
-            const currentTier = this.getCurrentTier(pointObj);
-            const nextTier = this.getNextTier(pointObj);
-            const description =
-                nextTier.name && pointObj.found < pointObj.total
-                    ? [
-                          `You’re at "`,
-                          fn.b({ content: currentTier.name }),
-                          `" and just `,
-                          fn.b({ content: nextTier.missingPoints }),
-                          ` ${nextTier.missingPoints !== 1 ? "points" : "point"} away from "`,
-                          fn.b({ content: nextTier.name }),
-                          `".`,
-                      ]
-                    : `You’ve completed today’s puzzle. Here’s a recap.`;
-            return description;
+        createTable() {
+            return new TableBuilder(this.getData(), {
+                hasHeadRow: true,
+                hasHeadCol: false,
+                classNames: ["data-pane", "thead-th-bold"]
+                    .map((name) => prefix(name, "d"))
+                    .concat(["pane"]),
+                caption: "Tiers",
+                rowCallbacks: getRowCallbacks()
+            }).ui
         }
         togglePopup() {
             if (this.popup.isOpen) {
                 this.popup.toggle(false);
                 return this;
             }
-            this.description = this.getDescription();
             const summaryElements = [];
             Object.values(this.summaryTblObjects).forEach((tblObj) => {
                 summaryElements.push(tblObj.getPane());
@@ -1615,75 +1723,20 @@
                         classNames: ["col", "summaries"].map((name) => prefix(name, "d")),
                     }),
                     fn.figure({
-                        content: this.getPane(),
+                        content: this.createTable(),
                         classNames: ["col", "tiers"].map((name) => prefix(name, "d")),
                     }),
                 ],
             });
-            this.popup.setContent("subtitle", this.getDescription()).setContent("body", body).toggle(true);
+            this.popup.setContent("subtitle", getDescription()).setContent("body", body).toggle(true);
             return this;
         }
         getData(reversed = true) {
-            const pointObj = data.getFoundAndTotal("points");
-            const rows = [["", "To reach"]];
-            const tiers = reversed ? this.tiers.toReversed() : this.tiers;
-            tiers.forEach((entry) => {
-                rows.push([entry[0], Math.round((entry[1] / 100) * pointObj.total)]);
-            });
-            return rows;
-        }
-        getCurrentTier(pointObj) {
-            const tier = this.getData(false)
-                .filter((entry) => !isNaN(entry[1]) && entry[1] <= pointObj.found)
-                .pop();
-            return {
-                name: tier[0],
-                value: tier[1],
-                additionalPoints: pointObj.found - tier[1],
-            };
-        }
-        getNextTier(pointObj) {
-            const nextTier = this.getData(false)
-                .filter((entry) => !isNaN(entry[1]) && entry[1] > pointObj.found)
-                .shift();
-            return nextTier && nextTier.length
-                ? {
-                      name: nextTier[0],
-                      value: nextTier[1],
-                      missingPoints: nextTier[1] - pointObj.found,
-                  }
-                : {
-                      name: null,
-                      value: null,
-                      missingPoints: 0,
-                  };
+            return getDataArray(reversed);
         }
         constructor(app) {
-            super(app, "Milestones", "The number of points required for each level", {
-                classNames: ["thead-th-bold"].map((name) => prefix(name, "d")),
-                caption: "Tiers",
-            });
-            this.tiers = [
-                ["Beginner", 0],
-                ["Good Start", 2],
-                ["Moving Up", 5],
-                ["Good", 8],
-                ["Solid", 15],
-                ["Nice", 25],
-                ["Great", 40],
-                ["Amazing", 50],
-                ["Genius", 70],
-                ["Queen Bee", 100],
-            ];
-            this.cssMarkers = {
-                completed: (rowData) => {
-                    const pointObj = data.getFoundAndTotal("points");
-                    const currentTier = this.getCurrentTier(pointObj);
-                    return rowData[1] < pointObj.found && rowData[1] !== currentTier.value;
-                },
-                preeminent: (rowData) => rowData[1] === this.getCurrentTier(data.getFoundAndTotal("points")).value,
-            };
-            this.popup = new Popup(this.app, this.key).setContent("title", this.title);
+            super(app, "Milestones", "The number of points required for each level", {runEvt: prefix("refreshUi")});
+            this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
             this.summaryTblObjects = {};
             const summaryFields = {
                 points: "Points",
@@ -1873,7 +1926,7 @@
                     }),
                 ],
             });
-            this.popup = new Popup(this.app, this.key)
+            this.popup = new PopupBuilder(this.app, this.key)
                 .setContent("title", this.title)
                 .setContent("subtitle", this.description)
                 .setContent("body", features);
@@ -1919,7 +1972,7 @@
                 key: 'todaysAnswers'
             });
             this.marker = prefix('resolved', 'd');
-            this.popup = new Popup(this.app, this.key)
+            this.popup = new PopupBuilder(this.app, this.key)
                 .setContent('title', this.title)
                 .setContent('subtitle', data.getDate().display);
             this.menu = {
@@ -2183,95 +2236,84 @@
         }
     }
 
-    var gridIcon = "<svg version=\"1.1\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n <path d=\"m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z\" stroke-dasharray=\"0.5, 0.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>\n</svg>\n";
+    function buildDataMatrix() {
+        const foundTerms = data.getList("foundTerms");
+        const allTerms = data.getList("answers");
+        const allLetters = Array.from(new Set(allTerms.map((t) => t[0]))).sort();
+        const allLengths = Array.from(new Set(allTerms.map((t) => t.length))).sort((a, b) => a - b);
+        allLetters.push("∑");
+        allLengths.push("∑");
+        const header = [""].concat(allLetters);
+        const matrix = [header];
+        const letterTpl = Object.fromEntries(allLetters.map((l) => [l, {fnd: 0, all: 0}]));
+        const rows = Object.fromEntries(allLengths.map((len) => [len, structuredClone(letterTpl)]));
+        for (const term of allTerms) {
+            const letter = term[0];
+            const len = term.length;
+            const buckets = [
+                [len, letter],
+                [len, "∑"],
+                ["∑", letter],
+                ["∑", "∑"],
+            ];
+            for (const [r, c] of buckets) {
+                rows[r][c].all++;
+                if (foundTerms.includes(term)) {
+                    rows[r][c].fnd++;
+                }
+            }
+        }
+        for (const [len, cols] of Object.entries(rows)) {
+            const row = [len];
+            for (const col of allLetters) {
+                const cell = cols[col];
+                row.push(cell.all > 0 ? `${cell.fnd}/${cell.all}` : "-");
+            }
+            matrix.push(row);
+        }
+        return matrix;
+    }
+    const markCompletedRatioCells = ({cellData, cellObj}) => {
+        if (typeof cellData === "string") {
+            const parts = cellData.split("/");
+            if (parts.length === 2 && parts[0] === parts[1]) {
+                cellObj.classNames.push(prefix("completed", "d"));
+            }
+        }
+    };
 
-    class Grid extends TablePane {
+    class Grid extends Plugin {
         togglePopup() {
             if (this.popup.isOpen) {
                 this.popup.toggle(false);
                 return this;
             }
-            this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
-            return this;
-        }
-        run(evt) {
-            super.run(evt);
-            const rows = fn.$$("tr", this.pane);
-            const rCnt = rows.length;
-            rows.forEach((row, rInd) => {
-                if (rCnt === rInd + 1) {
-                    return false;
-                }
-                const cells = fn.$$("td", row);
-                const cCnt = cells.length;
-                cells.forEach((cell, cInd) => {
-                    const cellArr = cell.textContent.trim().split("/");
-                    if (cInd < cCnt - 1 && cellArr.length === 2 && cellArr[0] === cellArr[1]) {
-                        cell.classList.add(prefix("completed", "d"));
-                    }
-                });
-            });
+            this.popup.setContent("subtitle", this.description).setContent("body", this.createTable()).toggle(true);
             return this;
         }
         getData() {
-            const foundTerms = data.getList("foundTerms");
-            const allTerms = data.getList("answers");
-            const allLetters = Array.from(new Set(allTerms.map((entry) => entry.charAt(0)))).concat(["∑"]);
-            const allDigits = Array.from(new Set(allTerms.map((term) => term.length))).concat(["∑"]);
-            allDigits.sort((a, b) => a - b);
-            allLetters.sort();
-            const cellData = [[""].concat(allLetters)];
-            let letterTpl = Object.fromEntries(
-                allLetters.map((letter) => [
-                    letter,
-                    {
-                        fnd: 0,
-                        all: 0,
-                    },
-                ])
-            );
-            let rows = Object.fromEntries(allDigits.map((digit) => [digit, JSON.parse(JSON.stringify(letterTpl))]));
-            allTerms.forEach((term) => {
-                const letter = term.charAt(0);
-                const digit = term.length;
-                rows[digit][letter].all++;
-                rows[digit]["∑"].all++;
-                rows["∑"][letter].all++;
-                rows["∑"]["∑"].all++;
-                if (foundTerms.includes(term)) {
-                    rows[digit][letter].fnd++;
-                    rows[digit]["∑"].fnd++;
-                    rows["∑"][letter].fnd++;
-                    rows["∑"]["∑"].fnd++;
-                }
-            });
-            for (let [digit, cols] of Object.entries(rows)) {
-                const cellVals = [digit];
-                Object.values(cols).forEach((colVals) => {
-                    cellVals.push(colVals.all > 0 ? `${colVals.fnd}/${colVals.all}` : "-");
-                });
-                cellData.push(cellVals);
-            }
-            return cellData;
+            return buildDataMatrix();
+        }
+        createTable() {
+            return (new TableBuilder(this.getData(), {
+                hasHeadRow: true,
+                hasHeadCol: true,
+                classNames: [
+                    "data-pane",
+                    "th-upper",
+                    "equal-cols",
+                    "small-txt"]
+                    .map((name) => prefix(name, "d"))
+                    .concat(["pane"]),
+                cellCallbacks: [markCompletedRatioCells]
+            })).ui;
         }
         constructor(app) {
-            super(app, "Grid", "The number of words by length and by first letter.", {
-                classNames: ["th-upper", "small-txt"].map((name) => prefix(name, "d")),
-            });
-            this.popup = new Popup(this.app, this.key).setContent("title", this.title);
+            super(app, "Grid", "The number of words by length and by first letter.", {runEvt: prefix("refreshUi")});
+            this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
             this.menu = {
                 action: "popup",
             };
-            this.panelBtn = fn.span({
-                classNames: ["sba-tool-btn"],
-                events: {
-                    pointerup: () => this.togglePopup(),
-                },
-                attributes: {
-                    title: `Show ${this.title}`,
-                },
-                content: gridIcon,
-            });
             this.shortcuts = [
                 {
                     combo: "Shift+Alt+G",
@@ -2321,6 +2363,8 @@
             ].map((shortcut) => ({ ...shortcut, origin: "nyt" }));
         }
     }
+
+    var gridIcon = "<svg version=\"1.1\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n <path d=\"m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z\" stroke-dasharray=\"0.5, 0.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>\n</svg>\n";
 
     let registry = new Map();
     const modifierMap = new Map([
@@ -2507,7 +2551,7 @@
             super(app, "Shortcuts", msg.map((part) => fn.p({ content: part })), {
                 classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d")),
             });
-            this.popup = new Popup(this.app, this.key).setContent("title", this.title);
+            this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
             this.menu = {
                 action: "popup",
             };

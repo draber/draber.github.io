@@ -5,7 +5,10 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import data from "../modules/data.js";
-import DetailsPane from "./detailsPane.js";
+import {buildStandardTable} from '../widgets/tableBuilder.js'
+import {prefix} from "../utils/string.js";
+import DetailsBuilder from "../widgets/detailsBuilder.js";
+import Plugin from "../modules/plugin.js";
 
 /**
  * Overview so far plugin
@@ -13,7 +16,16 @@ import DetailsPane from "./detailsPane.js";
  * @param {App} app
  * @returns {Plugin} Overview
  */
-class Overview extends DetailsPane {
+export default class Overview extends Plugin {
+    togglePane() {
+        return this.detailsBuilder.togglePane();
+    }
+
+    run(evt) {
+        this.detailsBuilder.update(this.createTable());
+        return this;
+    }
+
     /**
      * Build table data set
      * @returns {Array}
@@ -27,23 +39,25 @@ class Overview extends DetailsPane {
         ];
     }
 
+    createTable() {
+        return buildStandardTable(this.getData());
+    }
+
     /**
      * Overview constructor
      * @param {App} app
      */
     constructor(app) {
-        super(app, {
-            title: "Overview",
-            description: "The number of words and points and how many have been found",
-            shortcuts: [
-                {
-                    combo: "Shift+Alt+O",
-                    method: "togglePane",
-                },
-            ],
-            open: true,
-        });
+        super(app, "Overview", "The number of words and points and how many have been found", {runEvt: prefix("refreshUi")});
+
+        this.detailsBuilder = new DetailsBuilder(this.title, true);
+        this.ui = this.detailsBuilder.ui;
+
+        this.shortcuts = [
+            {
+                combo: "Shift+Alt+O",
+                method: "togglePane",
+            },
+        ]
     }
 }
-
-export default Overview;

@@ -29,7 +29,7 @@ const svgIcons = {
 class Menu extends Plugin {
 
     /**
-     * Get element to which the launcher will be attached to
+     * Retrieve the element the launcher will be attached to
      * @returns {HTMLElement}
      */
     getTarget() {
