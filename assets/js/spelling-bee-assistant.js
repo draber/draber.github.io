@@ -1159,103 +1159,263 @@
         }
     }
 
-    class FirstLetter extends DetailsPane {
-        getData() {
-            const letters = {};
-            const answers = data.getList("answers").sort();
-            const remainders = data.getList("remainders");
-            const tpl = {
-                foundTerms: 0,
-                remainders: 0,
-                total: 0,
-            };
-            answers.forEach((term) => {
-                const letter = term.charAt(0);
-                if (typeof letters[letter] === "undefined") {
-                    letters[letter] = {
-                        ...tpl,
-                    };
-                }
-                if (remainders.includes(term)) {
-                    letters[letter].remainders++;
-                } else {
-                    letters[letter].foundTerms++;
-                }
-                letters[letter].total++;
-            });
-            const cellData = [["", "✓", "?", "∑"]];
-            for (let [letter, values] of Object.entries(letters)) {
-                values = Object.values(values);
-                values.unshift(letter);
-                cellData.push(values);
-            }
-            return cellData;
+    const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = [], caption = "", classNames=[] } = {}) => {
+        const skeleton = getTableSkeleton();
+        if (caption) {
+            skeleton.caption.content.push(caption);
         }
-        constructor(app) {
-            super(app, {
-                title: "First letter",
-                description: "The number of words by first letter",
-                cssMarkers: {
-                    completed: (rowData, i) => rowData[2] === 0,
-                    preeminent: (rowData, i) => rowData[0] === data.getCenterLetter(),
+        data.forEach((rowData, rowIdx) => {
+            const rowObj = {
+                tag: "tr",
+                content: [],
+                classNames: [],
+                attributes: {},
+            };
+            const trTarget = hasHeadRow && rowIdx === 0 ? "thead" : "tbody";
+            rowData.forEach((cellData, cellIdx) => {
+                let cellTag = "td";
+                if (hasHeadRow && rowIdx === 0) {
+                    cellTag = "th";
+                } else if (hasHeadCol && cellIdx === 0) {
+                    cellTag = "th";
+                }
+                rowObj.content.push({
+                    tag: cellTag,
+                    content: cellData,
+                });
+            });
+            skeleton[trTarget].content.push(rowObj);
+            rowCallbacks.forEach((cb) => cb(rowData, rowIdx, rowObj, skeleton));
+        });
+        return finalizeSkeleton(skeleton, classNames);
+    };
+    const getTableSkeleton = () => {
+        const skeleton = {};
+        ["caption", "thead", "tbody", "tfoot"].forEach((tag) => {
+            skeleton[tag] = {
+                tag,
+                content: [],
+            };
+        });
+        return skeleton;
+    };
+    const finalizeSkeleton = (skeleton, classNames = []) => {
+        const content = Object.values(skeleton).filter((part) => {
+            return Array.isArray(part.content) && part.content.length > 0;
+        });
+        return {
+            tag: "table",
+            content,
+            classNames
+        };
+    };
+    const insertAfterCurrentRow = (skeleton, currentRow, newRow, section = "tbody") => {
+        const target = skeleton[section]?.content;
+        if (!target) return;
+        const index = target.indexOf(currentRow);
+        if (index === -1) {
+            target.push(newRow);
+        } else {
+            target.splice(index + 1, 0, newRow);
+        }
+    };
+    const buildFirstLetterTableData = (n) => {
+        const answers = data.getList("answers").sort();
+        const remainders = data.getList("remainders");
+        const stats = {};
+        const tpl = { found: 0, missing: 0, total: 0 };
+        for (const word of answers) {
+            const key = word.slice(0, n);
+            if (!stats[key]) stats[key] = { ...tpl };
+            if (remainders.includes(word)) {
+                stats[key].missing++;
+            } else {
+                stats[key].found++;
+            }
+            stats[key].total++;
+        }
+        const rows = [["", "✓", "?", "∑"]];
+        for (const [key, { found, missing, total }] of Object.entries(stats)) {
+            rows.push([key, found, missing, total]);
+        }
+        return rows;
+    };
+    var tableUtils = {
+        dataToObj,
+        insertAfterCurrentRow,
+        buildFirstLetterTableData
+    };
+
+    const render = (obj) => {
+        const defaults = {
+            tag: "div",
+            content: [],
+            attributes: {},
+            style: {},
+            data: {},
+            aria: {},
+            events: {},
+            classNames: [],
+            isSvg: false,
+        };
+        const merged = {
+            ...defaults,
+            ...obj,
+            content: castToArray(obj.content).map((item) =>
+                typeof item === "string" || !isNaN(item) || item instanceof Node ? item : render(item)
+            ),
+        };
+        return srcExports.create(merged);
+    };
+    const castToArray = (content) => {
+        if (typeof content === "undefined" || content === null) {
+            return [];
+        }
+        if (Array.isArray(content)) {
+            return content;
+        }
+        return [content];
+    };
+
+    class TableBuilder {
+        constructor(
+            data,
+            {
+                caption = "",
+                hasHeadRow = true,
+                hasHeadCol = true,
+                rowCallbacks = [],
+                classNames = []
+            } = {}
+        ) {
+            this.data = data;
+            this.caption = caption;
+            this.hasHeadRow = hasHeadRow;
+            this.hasHeadCol = hasHeadCol;
+            this.rowCallbacks = rowCallbacks;
+            this.classNames = classNames;
+            this.element = null;
+        }
+        render() {
+            const obj = tableUtils.dataToObj(this.data, {
+                caption: this.caption,
+                hasHeadRow: this.hasHeadRow,
+                hasHeadCol: this.hasHeadCol,
+                rowCallbacks: this.rowCallbacks,
+                classNames: this.classNames
+            });
+            this.element = render(obj);
+            return this.element;
+        }
+        get ui() {
+            return this.element || this.render();
+        }
+    }
+
+    class DetailsBuilder {
+        update(newContent) {
+            if (!this.element) {
+                this.render();
+            }
+            this.content.replaceWith(newContent);
+            this.content = newContent;
+            return this;
+        }
+        render() {
+            this.element = fn.details({
+                content: [
+                    fn.summary({
+                        content: this.title,
+                    }),
+                    this.content,
+                ],
+                attributes: {
+                    open: this.open,
                 },
-                shortcuts: [
-                    {
-                        combo: "Shift+Alt+F",
-                        method: "togglePane",
+            });
+            return this.element;
+        }
+        togglePane() {
+            this.element.open = !this.element.open;
+            return this;
+        }
+        get ui() {
+            return this.element || this.render();
+        }
+        constructor(title, open = false) {
+            this.title = title;
+            this.open = open;
+            this.content = fn.div();
+            this.element = null;
+        }
+    }
+
+    class StartSequence extends Plugin {
+        togglePane() {
+            return this.detailsBuilder.togglePane();
+        }
+        run(evt) {
+            this.detailsBuilder.update(this.createTable().ui);
+            return this;
+        }
+        constructor(app, title, description, {letterCnt, shortcuts} = {}) {
+            super(app, title, description, {runEvt: prefix("refreshUi")});
+            this.detailsBuilder = new DetailsBuilder(this.title, false);
+            this.ui = this.detailsBuilder.ui;
+            this.shortcuts = shortcuts;
+            this.letterCnt = letterCnt;
+        }
+        getData() {
+            return tableUtils.buildFirstLetterTableData(this.letterCnt);
+        }
+        createTable() {
+            return new TableBuilder(this.getData(), {
+                hasHeadRow: true,
+                hasHeadCol: true,
+                classNames: ["data-pane", "th-upper", "table-full-width", "equal-cols", "small-txt"]
+                    .map((name) => prefix(name, "d"))
+                    .concat(["pane"]),
+                rowCallbacks: [
+                    (rowData, rowIdx, rowObj) => {
+                        if (rowIdx === 0) {
+                            return;
+                        }
+                        if (rowData[2] === 0) {
+                            rowObj.classNames.push(prefix("completed", "d"));
+                        }
+                        if (rowData[0] === data.getCenterLetter()) {
+                            rowObj.classNames.push(prefix("preeminent", "d"));
+                        }
                     },
                 ],
             });
         }
     }
 
-    class FirstTwoLetters extends DetailsPane {
-        getData() {
-            const letters = {};
-            const answers = data.getList('answers').sort();
-            const remainders = data.getList('remainders');
-            const tpl = {
-                foundTerms: 0,
-                remainders: 0,
-                total: 0
-            };
-            answers.forEach(term => {
-                const bigram = term.slice(0, 2);
-                if (typeof letters[bigram] === 'undefined') {
-                    letters[bigram] = {
-                        ...tpl
-                    };
-                }
-                if (remainders.includes(term)) {
-                    letters[bigram].remainders++;
-                } else {
-                    letters[bigram].foundTerms++;
-                }
-                letters[bigram].total++;
-            });
-            const cellData = [
-                ['', '✓', '?', '∑']
-            ];
-            for (let [letter, values] of Object.entries(letters)) {
-                values = Object.values(values);
-                values.unshift(letter);
-                cellData.push(values);
-            }
-            return cellData;
-        }
+    class FirstLetter extends StartSequence {
         constructor(app) {
-            super(app, {
-                title: "First two letters",
-                description: "The number of words by the first two letters",
-                cssMarkers: {
-                    completed: (rowData, i) => rowData[2] === 0
-                },
+            super(app, "First letter", "The number of words by first letter", {
+                shortcuts: [
+                    {
+                        combo: "Shift+Alt+F",
+                        method: "togglePane",
+                    },
+                ],
+                letterCnt: 1
+            });
+        }
+    }
+
+    class FirstTwoLetters extends StartSequence {
+        constructor(app) {
+            super(app, "First two letters", "The number of words by the first two letters", {
                 shortcuts: [
                     {
                         combo: "Shift+Alt+2",
                         method: "togglePane",
                     },
-                ]
+                ],
+                letterCnt: 2
             });
         }
     }

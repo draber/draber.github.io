@@ -16,10 +16,10 @@ import data from "../modules/data.js";
  * @param {boolean} [options.hasHeadCol=true] - Whether the first column of each row should be <th>.
  * @param {Array<Function>} [options.rowCallbacks=[]] - Functions applied to each row object. Signature: (rowData, rowIdx, currentRow, skeleton) => void
  * @param {string|Node} [options.caption=""] - Optional table caption.
- * @param {Array<String>} [options.tableClassNames=[]] - CSS class names to be used on <table>
+ * @param {Array<String>} [options.classNames=[]] - CSS class names to be used on <table>
  * @returns {{tag: string, content: Array}} A complete table object.
  */
-const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = [], caption = "", tableClassNames=[] } = {}) => {
+const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = [], caption = "", classNames=[] } = {}) => {
     const skeleton = getTableSkeleton();
 
     if (caption) {
@@ -30,7 +30,7 @@ const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = 
         const rowObj = {
             tag: "tr",
             content: [],
-            classNames: [], // not to be mixed up with tableClassNames
+            classNames: [], // not to be mixed up with classNames from the signature which aplly to the <table>
             attributes: {},
         };
 
@@ -53,8 +53,8 @@ const dataToObj = (data, { hasHeadRow = true, hasHeadCol = true, rowCallbacks = 
         skeleton[trTarget].content.push(rowObj);
         rowCallbacks.forEach((cb) => cb(rowData, rowIdx, rowObj, skeleton));
     });
-
-    return finalizeSkeleton(skeleton, tableClassNames);
+    
+    return finalizeSkeleton(skeleton, classNames);
 };
 
 /**

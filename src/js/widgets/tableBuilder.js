@@ -4,8 +4,8 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import TableUtils from "./table.utils.js";
-import { render } from "./render.fn.js";
+import TableUtils from "../utils/table.utils.js";
+import { render } from "../utils/render.fn.js";
 
 /**
  * DynamicTable is a lightweight utility to generate an HTML table
@@ -14,7 +14,7 @@ import { render } from "./render.fn.js";
  * It supports optional caption, header row/column, and row-level callbacks.
  * The rendered DOM node is cached after first creation.
  */
-export default class DynamicTable {
+export default class TableBuilder {
     /**
      * @param {Array<Array<any>>} data - The 2D table data.
      * @param {Object} options - Table rendering options.
@@ -39,7 +39,7 @@ export default class DynamicTable {
         this.hasHeadCol = hasHeadCol;
         this.rowCallbacks = rowCallbacks;
         this.classNames = classNames;
-        this._tableNode = null;
+        this.element = null;
     }
 
     /**
@@ -56,15 +56,15 @@ export default class DynamicTable {
             classNames: this.classNames
         });
 
-        this._tableNode = render(obj);
-        return this._tableNode;
+        this.element = render(obj);
+        return this.element;
     }
 
     /**
      * Returns the rendered table node, using the cached version if available.
      * Triggers rendering if it hasn't been called yet.
      */
-    get table() {
-        return this._tableNode || this.render();
+    get ui() {
+        return this.element || this.render();
     }
 }
