@@ -12,10 +12,10 @@ import { findCloseButton } from "../utils/popup.ui.js";
 /**
  * Plugin base class
  */
-class Popup {
+class PopupBuilder {
     /**
      * Enable closing the popup by clicking on the x button
-     * @returns {Popup}
+     * @returns {PopupBuilder}
      */
     enableKeyClose() {
         document.addEventListener("keyup", (evt) => {
@@ -29,7 +29,7 @@ class Popup {
 
     /**
      * Enable closing the popup by clicking on the x button
-     * @returns {Popup}
+     * @returns {PopupBuilder}
      */
     enableCanvasClose() {
         this.app.modalWrapper.addEventListener("pointerup", (evt) => {
@@ -110,7 +110,7 @@ class Popup {
     }
 
     /**
-     * Set any part of the content the content of the popup
+     * Set any part of the content of the popup
      * @param {String} part
      * @param {Element|NodeList|Array|String} content
      */
@@ -127,7 +127,7 @@ class Popup {
     /**
      * Open/close popup
      * @param state
-     * @returns {Popup}
+     * @returns {PopupBuilder}
      */
     toggle(state) {
         const closer = findCloseButton(this.app);
@@ -157,8 +157,6 @@ class Popup {
         this.key = key;
 
         this.app = app;
-
-        this.state = false;
 
         this.isOpen = false;
 
@@ -199,4 +197,4 @@ class Popup {
     }
 }
 
-export default Popup;
+export default PopupBuilder;

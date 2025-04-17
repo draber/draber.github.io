@@ -7,7 +7,7 @@
 import fn from "fancy-node";
 import settings from "../modules/settings.js";
 import Plugin from "../modules/plugin.js";
-import Popup from "./popup.js";
+import PopupBuilder from "../widgets/popupBuilder.js";
 import { prefix } from "../utils/string.js";
 import { utils } from "../utils/darkMode.utils.js";
 import { ui } from "../utils/darkMode.ui.js";
@@ -115,7 +115,7 @@ class DarkMode extends Plugin {
             },
         ];
 
-        this.popup = new Popup(this.app, this.key);
+        this.popup = new PopupBuilder(this.app, this.key);
 
         if (!this.found3rdPartyDm) {            
             this.popup

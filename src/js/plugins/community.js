@@ -7,7 +7,7 @@
 import { prefix } from "../utils/string.js";
 import Plugin from "../modules/plugin.js";
 import data from "../modules/data.js";
-import Popup from "./popup.js";
+import PopupBuilder from "../widgets/popupBuilder.js";
 import fn from "fancy-node";
 
 /**
@@ -234,7 +234,7 @@ class Community extends Plugin {
             ],
         });
 
-        this.popup = new Popup(this.app, this.key)
+        this.popup = new PopupBuilder(this.app, this.key)
             .setContent("title", this.title)
             .setContent("subtitle", this.description)
             .setContent("body", features);

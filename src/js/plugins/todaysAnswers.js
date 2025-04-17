@@ -9,7 +9,7 @@ import {
     prefix
 } from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
-import Popup from './popup.js';
+import PopupBuilder from '../widgets/popupBuilder.js';
 import fn from 'fancy-node';
 
 /**
@@ -74,7 +74,7 @@ class TodaysAnswers extends Plugin {
         });
 
         this.marker = prefix('resolved', 'd');
-        this.popup = new Popup(this.app, this.key)
+        this.popup = new PopupBuilder(this.app, this.key)
             .setContent('title', this.title)
             .setContent('subtitle', data.getDate().display);
 

@@ -6,7 +6,7 @@
  */
 
 import TablePane from "./tablePane.js";
-import Popup from "./popup.js";
+import PopupBuilder from "../widgets/popupBuilder.js";
 import { prefix } from "../utils/string.js";
 import gridIcon from "../assets/grid.svg";
 import fn from "fancy-node";
@@ -73,7 +73,7 @@ class ShortcutScreen extends TablePane {
             classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d")),
         });
 
-        this.popup = new Popup(this.app, this.key).setContent("title", this.title);
+        this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
 
         this.menu = {
             action: "popup",
