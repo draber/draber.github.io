@@ -41,7 +41,7 @@ export default class Milestones extends Plugin {
     createMilestoneTable() {
         return new TableBuilder(getMilestoneData(true), {
             hasHeadRow: true,
-            hasHeadCol: false,
+            hasHeadCol: true,
             classNames: ["data-pane", "thead-th-bold"]
                 .map((name) => prefix(name, "d"))
                 .concat(["pane"]),

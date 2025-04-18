@@ -5,7 +5,6 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
- 
 @use './_mixins.scss' as *;
 
 body {
@@ -54,32 +53,39 @@ body {
 
         .sb-message {
             color: var(--text-color);
-          }
+        }
+        #conversion-banner {
+            background: inherit;
+        }
 
         .pz-moment__frame {
             &:is(.pz-moment__congrats, .pz-moment__welcome) {
                 & .pz-moment__content {
                     color: var(--text-color);
                 }
+
                 .pz-moment__button {
                     &.primary {
                         @include button-style(primary);
                     }
+
                     &.secondary {
                         @include button-style(secondary);
                     }
                 }
             }
         }
-        
+
         .pz-game-wrapper,
         #js-hook-pz-moment__loading {
             background: var(--body-bg-color) !important;
             color: var(--text-color);
         }
+
         .sb-message {
             background: var(--area-bg-color);
         }
+
         .pangram-message {
             .sb-message {
                 background: var(--sb-yellow);
@@ -98,6 +104,7 @@ body {
                 &.primary {
                     @include button-style(primary);
                 }
+
                 &.secondary {
                     @include button-style(secondary);
                 }
@@ -111,6 +118,7 @@ body {
         .sb-progress-value {
             font-weight: bold;
         }
+
         .pz-icon-close {
             filter: invert(1);
         }
@@ -194,12 +202,12 @@ body {
 }
 
 
-
 .sb-modal-wrapper {
     .sb-modal-frame {
         border: 1px solid var(--border-color);
         background: var(--body-bg-color);
         color: var(--text-color);
+
         &.stats {
             & .sb-modal-header {
                 background: var(--body-bg-color);
@@ -209,6 +217,7 @@ body {
                 background: var(--body-bg-color);
                 color: var(--text-color);
             }
+
             & .sb-stats-bar__text {
                 color: #333;
             }
@@ -225,12 +234,14 @@ body {
     .sb-modal-close {
         color: var(--text-color);
     }
+
     .sb-modal-body {
         .sb-modal-buttons-container {
             button {
                 &.button-primary {
                     @include button-style(primary);
                 }
+
                 &.button-secondary {
                     @include button-style(secondary);
                 }
@@ -275,6 +286,7 @@ body {
     .cell-letter {
         fill: var(--text-color);
     }
+
     &.center {
         .cell-letter {
             fill: var(--highlight-text-color);

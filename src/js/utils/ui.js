@@ -7,25 +7,6 @@
 import fn from "fancy-node";
 import { prefix } from "./string.js";
 
-
-/**
- * Create a visual progress bar element for a given value/max.
- * @param {number} value - The current value.
- * @param {number} max - The maximum possible value.
- * @returns {HTMLElement} A <progress> element.
- */
-export const getProgressBar = (value, max) => {
-    value = Math.min(Math.round((value * 100) / max), 100);
-
-    return fn.progress({
-        attributes: {
-            max: 100,
-            value,
-            title: `Progress: ${value}%`,
-        },
-    });
-};
-
 export const getToggleButton = (id, checked, callback, labelText = "", labelPosition = "before") => {
     const toggleBtn = fn.input({
         attributes: {

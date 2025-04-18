@@ -23,6 +23,7 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
         }
     }
 }
+
 // toggle body, not checked
 .sba-toggle-switch:where([type="checkbox"][role="switch"]) {
     -webkit-appearance: none;
@@ -56,14 +57,17 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
         border-radius: 50%;
         background: var(--toggle-handle-color);
     }
+
     &:checked {
         // body when checked
         background: var(--toggle-on-bg-color);
+
         &::before {
             left: 1em;
             background: var(--toggle-handle-color);
         }
     }
+
     &:disabled {
         opacity: 0.4;
     }
@@ -128,6 +132,7 @@ details {
     .sba-data-pane {
         font-size: 95%;
     }
+
     i {
         font-style: italic
     }
@@ -289,6 +294,7 @@ details {
             table-layout: fixed;
             margin-block-end: #{$gapV}px;
         }
+
         tr {
             :is(td, th) {
                 text-align: center;
@@ -298,8 +304,23 @@ details {
 
     .sba-tiers {
         .sba-data-pane {
-            .sba-preeminent {
+            .sba-preeminent:not(.sba-queen-bee) {
                 border-bottom: 1px solid var(--border-color) !important;
+            }
+        }
+
+        .sba-queen-bee {
+            &.sba-preeminent {
+                th {
+                    &::before {
+                        content: "";
+                        display: inline-block;
+                        background: no-repeat url(/games-assets/v2/assets/sb-stats-queen-bee.svg);
+                        width: 19px;
+                        height: 12px;
+                        margin-right: 4px;
+                    }
+                }
             }
         }
     }
@@ -325,6 +346,7 @@ details {
             th {
                 text-align: start;
             }
+
             td {
                 &:nth-child(n + 2) {
                     max-width: 100px;
@@ -605,6 +627,7 @@ progress {
 :is(.pz-dropdown, .pz-mobile-dropdown) {
     :is(button[class*="pz-dropdown__"], a[class*="pz-dropdown__"]) {
         background-color: var(--body-bg-color) !important;
+
         &:hover {
             background: var(--menu-hover-color);
         }
@@ -619,6 +642,7 @@ progress {
             background-color: transparent;
         }
     }
+
     .conversion-banner__icon {
         filter: invert(1);
     }
@@ -684,17 +708,21 @@ progress {
             th {
                 text-align: start;
             }
+
             td {
                 &:last-child {
                     font-size: 16px;
                     cursor: pointer;
+
                     &::selection {
                         color: currentColor;
                         background-color: transparent;
                     }
+
                     &[data-enabled="true"] {
                         color: var(--sba-success-color);
                     }
+
                     &[data-enabled="false"] {
                         color: var(--sba-error-color);
                     }
@@ -709,6 +737,7 @@ progress {
         margin-left: -20px;
         width: calc(100% + 40px);
     }
+
     tbody {
         tr {
             &:last-child {
@@ -846,12 +875,13 @@ progress {
 .sb-modal-frame {
     .sb-modal-content {
         scrollbar-color: var(--invalid-color) var(--body-bg-color);
+
         &::after {
             background: linear-gradient(
-                180deg,
-                transparent 0%,
-                var(--modal-bg-color) 56.65%,
-                var(--body-bg-color) 100%
+                            180deg,
+                            transparent 0%,
+                            var(--modal-bg-color) 56.65%,
+                            var(--body-bg-color) 100%
             );
         }
     }

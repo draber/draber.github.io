@@ -15,11 +15,11 @@ import fn from "fancy-node";
  * @param {App} app
  * @returns {Plugin} PangramHl
  */
-class PangramHl extends Plugin {
+class PangramHighlighter extends Plugin {
     /**
      * Toggle state
      * @param state
-     * @returns {PangramHl}
+     * @returns {PangramHighlighter}
      */
     toggle(state) {
         super.toggle(state);
@@ -29,7 +29,7 @@ class PangramHl extends Plugin {
     /**
      * Add pangram underlines
      * @param {Event} evt
-     * @returns {PangramHl}
+     * @returns {PangramHighlighter}
      */
     // eslint-disable-next-line no-unused-vars
     run(evt) {
@@ -65,4 +65,4 @@ class PangramHl extends Plugin {
     }
 }
 
-export default PangramHl;
+export default PangramHighlighter;

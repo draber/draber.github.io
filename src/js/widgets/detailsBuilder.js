@@ -27,7 +27,7 @@ class DetailsBuilder {
 
     /**
      * Generates and returns a new <details> element 
-     * @returns {HTMLElement} A complete details element.
+     * @returns {HTMLElement} A complete <details> element.
      */
     render() {
         this.element = fn.details({

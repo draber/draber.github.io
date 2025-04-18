@@ -131,6 +131,13 @@ class PopupBuilder {
      */
     toggle(state) {
         const closer = findCloseButton(this.app);
+
+        // some other popup
+        if(!this.isOpen && closer) {
+            closer.click();
+        }
+
+        // force close self
         if (!state && closer) {
             closer.click();
         }

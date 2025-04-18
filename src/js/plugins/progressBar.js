@@ -10,6 +10,7 @@ import {
 import Plugin from '../modules/plugin.js';
 import data from '../modules/data.js';
 import fn from 'fancy-node';
+import ProgressBuilder from "../widgets/progressBuilder.js";
 
 /**
  * Dark Mode plugin
@@ -17,42 +18,33 @@ import fn from 'fancy-node';
  * @param {App} app
  * @returns {Plugin} ProgressBar
  */
-class ProgressBar extends Plugin {
+export default class ProgressBar extends Plugin {
 
     /**
      * Get current progress in % and refresh the bar
      * @param {Event} evt
      * @returns {Plugin}
      */
-    // eslint-disable-next-line no-unused-vars
     run(evt) {
-        let progress = data.getPoints('foundTerms') * 100 / data.getPoints('answers');
-        progress = Math.min(Number(Math.round(progress + 'e2') + 'e-2'), 100);
-        this.ui.value = progress;
-        this.ui.textContent = progress + '%';
-        this.ui.title = `Progress: ${progress}%`;
+        this.progress.update(data.getPoints("foundTerms"));
+
         return this;
     }
+
 
     /**
      * ProgressBar constructor
      * @param {App} app
      */
     constructor(app) {
-
         super(app, 'Progress Bar', 'Displays your progress as a yellow bar', {
             runEvt: prefix('refreshUi'),
-            addMethod: 'before'
+            addMethod: 'before',
         });
 
-        this.ui = fn.progress({
-            attributes: {
-                max: 100
-            }
-        })
+        this.progress = new ProgressBuilder(data.getPoints("foundTerms"), data.getPoints("answers"));
+        this.ui = this.progress.ui;
 
         this.target = fn.$('.sb-wordlist-heading', this.app.gameWrapper);
     }
 }
-
-export default ProgressBar;

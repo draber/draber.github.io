@@ -9,9 +9,9 @@
 import data from "../modules/data.js";
 import fn from "fancy-node";
 import {prefix} from "./string.js";
-import {getProgressBar} from "./ui.js";
 
 import tableUtils from './table.utils.js';
+import ProgressBuilder from "../widgets/progressBuilder.js";
 
 const tiers = [
     ["Beginner", 0],
@@ -121,17 +121,22 @@ export const getMilestoneTableRowCallbacks = () => {
             const pointObj = data.getFoundAndTotal("points");
             const currentTier = getCurrentTier(pointObj);
             const nextTier = getNextTier(pointObj);
+            if(rowIdx > 0){
+                rowObj.classNames.push(prefix(rowData[0], "d"));
+            }
             if (rowData[1] < pointObj.found && rowData[1] !== currentTier.value) {
                 rowObj.classNames.push(prefix("completed", "d"));
             }
             if (rowData[1] === currentTier.value) {
                 rowObj.classNames.push(prefix("preeminent", "d"));
-                getProgressbarInjectionCallback(
-                    currentTier.additionalPoints,
-                    nextTier.value - currentTier.value,
-                    rowObj,
-                    skeleton
-                );
+                if(rowIdx !== 1) { // = queen bee
+                    getProgressbarInjectionCallback(
+                        currentTier.additionalPoints,
+                        nextTier.value - currentTier.value,
+                        rowObj,
+                        skeleton
+                    );
+                }
             }
         },
 
@@ -144,7 +149,7 @@ export const getSummaryTableRowCallbacks = () => {
             if (rowIdx === 1) {
                 getProgressbarInjectionCallback(
                     rowData[0],
-                    rowData[1],
+                    rowData[2],
                     rowObj,
                     skeleton
                 );
@@ -163,7 +168,7 @@ const getProgressbarInjectionCallback = (points, max, rowObj, skeleton) => {
                 tag: "td",
                 classNames: [prefix("progress-box", "d")],
                 attributes: {colspan: rowObj.content.length},
-                content: getProgressBar(points, max)
+                content: (new ProgressBuilder(points, max)).ui
             }
         ]
     };

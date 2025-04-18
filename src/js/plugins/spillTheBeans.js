@@ -5,7 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import data from "../modules/data.js";
-import { prefix } from "../utils/string.js";
+import {prefix} from "../utils/string.js";
 import Plugin from "../modules/plugin.js";
 import fn from "fancy-node";
 
@@ -21,10 +21,11 @@ class SpillTheBeans extends Plugin {
      * @param evt
      */
     run(evt) {
+        let partial = evt.detail?.textContent?.trim() || '';
         let emoji = "🙂";
-        if (!evt.detail) {            
+        if (!partial) {
             emoji = "😐";
-        } else if (!data.getList("remainders").filter((term) => term.startsWith(evt.detail.textContent.trim())).length) {
+        } else if (!data.getList("remainders").filter((term) => term.startsWith(partial)).length) {
             emoji = "🙁";
         }
         this.ui.textContent = emoji;
@@ -43,7 +44,7 @@ class SpillTheBeans extends Plugin {
      * Toggle the display of the widget
      * @returns {Plugin} SpillTheBeans
      */
-    toggle() {        
+    toggle() {
         this.ui.classList.toggle('inactive', this.getState());
         return this;
     }
@@ -57,7 +58,7 @@ class SpillTheBeans extends Plugin {
             runEvt: prefix("newInput"),
             addMethod: "prepend",
         });
-        
+
         this.menu = {
             action: "boolean",
         };
