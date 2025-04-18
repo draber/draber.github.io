@@ -2543,7 +2543,7 @@
         getSyncData() {
             let puzzleId = window.gameData.today.id.toString();
             let gameData;
-            let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/\d+$/.test(key));
+            let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/(\d+|ANON)$/.test(key));
             if (!lsKeysFiltered.length) {
                 return [];
             }

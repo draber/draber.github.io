@@ -59,7 +59,7 @@ class App extends Widget {
     getSyncData() {
         let puzzleId = window.gameData.today.id.toString();
         let gameData;
-        let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/\d+$/.test(key));
+        let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/(\d+|ANON)$/.test(key));
 
         // if the user has never been logged in, e.g. in an incognito window
         if (!lsKeysFiltered.length) {
@@ -146,7 +146,7 @@ class App extends Widget {
                 }
             });
 
-            this.on(prefix("newInput"), (event) => {
+            this.on(prefix("newInput"), (event) => {                
                 if (this._lastShortcutEvent) {
                     shortcutRegistry.handleShortcut(this._lastShortcutEvent);
                     this._lastShortcutEvent = null;
