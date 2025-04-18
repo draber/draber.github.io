@@ -131,7 +131,9 @@ const finalizeSkeleton = (skeleton, cellCnt, classNames = []) => {
  */
 const insertAfterCurrentRow = (skeleton, currentRow, newRow, section = "tbody") => {
     const target = skeleton[section]?.content;
-    if (!target) return;
+    if (!target) {
+        return;
+    }
 
     const index = target.indexOf(currentRow);
 

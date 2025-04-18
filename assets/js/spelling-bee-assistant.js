@@ -1012,7 +1012,9 @@
     };
     const insertAfterCurrentRow = (skeleton, currentRow, newRow, section = "tbody") => {
         const target = skeleton[section]?.content;
-        if (!target) return;
+        if (!target) {
+            return;
+        }
         const index = target.indexOf(currentRow);
         if (index === -1) {
             target.push(newRow);
@@ -1460,141 +1462,6 @@
         }
     };
 
-    class TablePane extends Plugin {
-        run(evt) {
-            this.pane = fn.empty(this.pane);
-            const tbody = fn.tbody();
-            const data = this.getData();
-            if (this.caption) {
-                this.pane.append(fn.caption({ content: this.caption }));
-            }
-            if (this.hasHeadRow) {
-                this.pane.append(this.buildHead(data.shift()));
-            }
-            const l = data.length;
-            let colCnt = 0;
-            data.forEach((rowData, i) => {
-                colCnt = rowData.length;
-                const classNames = [];
-                for (const [marker, func] of Object.entries(this.cssMarkers)) {
-                    if (func(rowData, i, l)) {
-                        classNames.push(prefix(marker, "d"));
-                    }
-                }
-                const tr = fn.tr({
-                    classNames,
-                });
-                rowData.forEach((cellData, rInd) => {
-                    const tag = rInd === 0 && this.hasHeadCol ? "th" : "td";
-                    tr.append(
-                        fn[tag]({
-                            content: cellData,
-                        })
-                    );
-                });
-                tbody.append(tr);
-            });
-            this.pane.dataset.cols = colCnt;
-            this.pane.append(tbody);
-            return this;
-        }
-        buildHead(rowData) {
-            return fn.thead({
-                content: fn.tr({
-                    content: rowData.map((cellData) =>
-                        fn.th({
-                            content: cellData,
-                        })
-                    ),
-                }),
-            });
-        }
-        getPane() {
-            return this.pane;
-        }
-        constructor(
-            app,
-            title,
-            description,
-            {
-                cssMarkers = {},
-                hasHeadRow = true,
-                hasHeadCol = true,
-                classNames = [],
-                events = {},
-                caption = "",
-            } = {}
-        ) {
-            super(app, title, description);
-            app.on(prefix("refreshUi"), () => {
-                this.run();
-            });
-            this.cssMarkers = cssMarkers;
-            this.hasHeadRow = hasHeadRow;
-            this.hasHeadCol = hasHeadCol;
-            this.caption = caption;
-            this.pane = fn.table({
-                classNames: ["pane", prefix("dataPane", "d")].concat(classNames),
-                events,
-            });
-        }
-    }
-
-    class SummaryTable extends TablePane {
-        run(evt) {
-            super.run(evt);
-            const achievements = data.getFoundAndTotal(this.fieldName);
-            const tFoot = fn.tfoot({
-                content: [
-                    fn.tr({
-                        content: [
-                            fn.td({
-                                attributes: {
-                                    colSpan: fn.$("thead tr", this.getPane()).children.length,
-                                },
-                                classNames: [prefix("progress-box", "d")],
-                                content: getProgressBar(achievements.found, achievements.total),
-                            }),
-                        ],
-                    }),
-                ],
-            });
-            this.getPane().append(tFoot);
-            return this;
-        }
-        getData() {
-            const achievements = data.getFoundAndTotal(this.fieldName);
-            return [
-                ["✓", "?", "∑"],
-                [achievements.found, achievements.total - achievements.found, achievements.total],
-            ];
-        }
-        constructor(
-            app,
-            title,
-            description,
-            fieldName,
-            {
-                cssMarkers = {},
-                hasHeadRow = true,
-                hasHeadCol = true,
-                classNames = [],
-                events = {},
-                caption = "",
-            } = {}
-        ) {
-            super(app, title, description, {
-                cssMarkers,
-                hasHeadRow,
-                hasHeadCol,
-                classNames,
-                events,
-                caption,
-            });
-            this.fieldName = fieldName;
-        }
-    }
-
     const tiers = [
         ["Beginner", 0],
         ["Good Start", 2],
@@ -1607,7 +1474,14 @@
         ["Genius", 70],
         ["Queen Bee", 100]
     ];
-    const getDataArray = (reversed = true) => {
+    const getSummaryTableData = (fieldName) => {
+        const achievements = data.getFoundAndTotal(fieldName);
+        return [
+            ["✓", "?", "∑"],
+            [achievements.found, achievements.total - achievements.found, achievements.total],
+        ];
+    };
+    const getMilestoneData = (reversed = true) => {
         const pointObj = data.getFoundAndTotal("points");
         const rows = [["", "To reach"]];
         const tierData = reversed ? tiers.toReversed() : tiers;
@@ -1617,7 +1491,7 @@
         return rows;
     };
     const getCurrentTier = (pointObj) => {
-        const tier = getDataArray(false)
+        const tier = getMilestoneData(false)
             .filter((entry) => !isNaN(entry[1]) && entry[1] <= pointObj.found)
             .pop();
         return {
@@ -1627,7 +1501,7 @@
         };
     };
     const getNextTier = (pointObj) => {
-        const nextTier = getDataArray(false)
+        const nextTier = getMilestoneData(false)
             .filter((entry) => !isNaN(entry[1]) && entry[1] > pointObj.found)
             .shift();
         return nextTier && nextTier.length
@@ -1658,52 +1532,77 @@
             ]
             : `You’ve completed today’s puzzle. Here’s a recap.`;
     };
-    const getRowCallbacks = () => {
+    const getMilestoneTableRowCallbacks = () => {
         return [
-            (rowData, rowIdx, rowObj) => {
+            (rowData, rowIdx, rowObj, skeleton) => {
                 const pointObj = data.getFoundAndTotal("points");
                 const currentTier = getCurrentTier(pointObj);
+                const nextTier = getNextTier(pointObj);
                 if (rowData[1] < pointObj.found && rowData[1] !== currentTier.value) {
                     rowObj.classNames.push(prefix("completed", "d"));
                 }
-                if(rowData[1] === currentTier.value){
-                    rowObj.classNames.push(prefix("completed", "d"));
+                if (rowData[1] === currentTier.value) {
+                    rowObj.classNames.push(prefix("preeminent", "d"));
+                    getProgressbarInjectionCallback(
+                        currentTier.additionalPoints,
+                        nextTier.value - currentTier.value,
+                        rowObj,
+                        skeleton
+                    );
                 }
-            }
+            },
         ];
+    };
+    const getSummaryTableRowCallbacks = () => {
+        return [
+            (rowData, rowIdx, rowObj, skeleton) => {
+                if (rowIdx === 1) {
+                    getProgressbarInjectionCallback(
+                        rowData[0],
+                        rowData[1],
+                        rowObj,
+                        skeleton
+                    );
+                }
+            },
+        ];
+    };
+    const getProgressbarInjectionCallback = (points, max, rowObj, skeleton) => {
+        const tableRow = {
+            tag: "tr",
+            content: [
+                {
+                    tag: "td",
+                    classNames: [prefix("progress-box", "d")],
+                    attributes: {colspan: rowObj.content.length},
+                    content: getProgressBar(points, max)
+                }
+            ]
+        };
+        tableUtils.insertAfterCurrentRow(skeleton, rowObj, tableRow);
     };
 
     class Milestones extends Plugin {
-        run(evt) {
-            const insertionPoint = fn.$("tbody .sba-preeminent", this.pane);
-            const pointObj = data.getFoundAndTotal("points");
-            const currentTier = getCurrentTier(pointObj);
-            const nextTier = getNextTier(pointObj);
-            if (!insertionPoint || !nextTier.value) {
-                return this;
-            }
-            insertionPoint.after(
-                fn.tr({
-                    content: fn.td({
-                        attributes: {
-                            colSpan: fn.$("thead tr", this.pane).children.length,
-                        },
-                        classNames: [prefix("progress-box", "d")],
-                        content: getProgressBar(currentTier.additionalPoints, nextTier.value - currentTier.value),
-                    }),
-                })
-            );
-            return this;
+        createSummaryTable(fieldName) {
+            return new TableBuilder(getSummaryTableData(fieldName), {
+                hasHeadRow: true,
+                hasHeadCol: false,
+                classNames: ["data-pane", "thead-th-bold"]
+                    .map((name) => prefix(name, "d"))
+                    .concat(["pane"]),
+                caption: this.summaryFields[fieldName],
+                rowCallbacks: getSummaryTableRowCallbacks()
+            }).ui
         }
-        createTable() {
-            return new TableBuilder(this.getData(), {
+        createMilestoneTable() {
+            return new TableBuilder(getMilestoneData(true), {
                 hasHeadRow: true,
                 hasHeadCol: false,
                 classNames: ["data-pane", "thead-th-bold"]
                     .map((name) => prefix(name, "d"))
                     .concat(["pane"]),
                 caption: "Tiers",
-                rowCallbacks: getRowCallbacks()
+                rowCallbacks: getMilestoneTableRowCallbacks()
             }).ui
         }
         togglePopup() {
@@ -1712,8 +1611,8 @@
                 return this;
             }
             const summaryElements = [];
-            Object.values(this.summaryTblObjects).forEach((tblObj) => {
-                summaryElements.push(tblObj.getPane());
+            Object.keys(this.summaryFields).forEach(fieldName => {
+                summaryElements.push(this.createSummaryTable(fieldName));
             });
             const body = fn.div({
                 classNames: [prefix("milestone-table-wrapper", "d")],
@@ -1723,7 +1622,7 @@
                         classNames: ["col", "summaries"].map((name) => prefix(name, "d")),
                     }),
                     fn.figure({
-                        content: this.createTable(),
+                        content: this.createMilestoneTable(),
                         classNames: ["col", "tiers"].map((name) => prefix(name, "d")),
                     }),
                 ],
@@ -1731,25 +1630,14 @@
             this.popup.setContent("subtitle", getDescription()).setContent("body", body).toggle(true);
             return this;
         }
-        getData(reversed = true) {
-            return getDataArray(reversed);
-        }
         constructor(app) {
             super(app, "Milestones", "The number of points required for each level", {runEvt: prefix("refreshUi")});
             this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
-            this.summaryTblObjects = {};
-            const summaryFields = {
+            this.summaryFields = {
                 points: "Points",
                 terms: "Words",
                 pangrams: "Pangrams",
             };
-            for (const [fieldName, title] of Object.entries(summaryFields)) {
-                this.summaryTblObjects[fieldName] = new SummaryTable(app, title, "", fieldName, {
-                    classNames: ["thead-th-bold"].map((name) => prefix(name, "d")),
-                    caption: title,
-                    hasHeadCol: false,
-                });
-            }
             this.menu = {
                 action: 'popup'
             };
@@ -2291,11 +2179,8 @@
             this.popup.setContent("subtitle", this.description).setContent("body", this.createTable()).toggle(true);
             return this;
         }
-        getData() {
-            return buildDataMatrix();
-        }
         createTable() {
-            return (new TableBuilder(this.getData(), {
+            return (new TableBuilder(buildDataMatrix(), {
                 hasHeadRow: true,
                 hasHeadCol: true,
                 classNames: [
@@ -2363,8 +2248,6 @@
             ].map((shortcut) => ({ ...shortcut, origin: "nyt" }));
         }
     }
-
-    var gridIcon = "<svg version=\"1.1\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">\n <path d=\"m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z\" stroke-dasharray=\"0.5, 0.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>\n</svg>\n";
 
     let registry = new Map();
     const modifierMap = new Map([
@@ -2515,14 +2398,23 @@
         getRegistry,
     };
 
-    class ShortcutScreen extends TablePane {
+    class ShortcutScreen extends Plugin {
         togglePopup() {
             if (this.popup.isOpen) {
                 this.popup.toggle(false);
                 return this;
             }
-            this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
+            this.popup.setContent("subtitle", this.description).setContent("body", this.createTable()).toggle(true);
             return this;
+        }
+        createTable() {
+            return (new TableBuilder(this.getData(), {
+                hasHeadRow: true,
+                hasHeadCol: true,
+                classNames: ["data-pane", "tbody-th-start", "thead-th-bold"]
+                    .map((name) => prefix(name, "d"))
+                    .concat(["pane"])
+            })).ui;
         }
         getData() {
             const rows = [["", "Shortcut", "State"]];
@@ -2537,40 +2429,21 @@
             return rows;
         }
         constructor(app) {
-            let msg = [
-                `This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. 
-            If a shortcut conflicts with your system or browser, you can disable it here.`,
-            ];
+            let msg = [`This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. 
+            If a shortcut conflicts with your system or browser, you can disable it here.`,];
             if (app.envIs("mobile")) {
-                msg.push(
-                    fn.i({
-                        content: `Note: On mobile devices, keyboard shortcuts may be limited or unavailable, depending on your setup.`,
-                    })
-                );
+                msg.push(fn.i({
+                    content: `Note: On mobile devices, keyboard shortcuts may be limited or unavailable, depending on your setup.`,
+                }));
             }
-            super(app, "Shortcuts", msg.map((part) => fn.p({ content: part })), {
-                classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d")),
-            });
+            super(app, "Shortcuts", msg.map((part) => fn.p({content: part})));
             this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
             this.menu = {
                 action: "popup",
             };
-            this.panelBtn = fn.span({
-                classNames: ["sba-tool-btn"],
-                events: {
-                    pointerup: () => this.togglePopup(),
-                },
-                attributes: {
-                    title: `Show ${this.title}`,
-                },
-                content: gridIcon,
-            });
-            this.shortcuts = [
-                {
-                    combo: "Shift+Alt+S",
-                    method: "togglePopup",
-                },
-            ];
+            this.shortcuts = [{
+                combo: "Shift+Alt+S", method: "togglePopup",
+            },];
         }
     }
 

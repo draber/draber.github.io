@@ -1,7 +1,17 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ *
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+
 // Tier thresholds in percent based on the actual game code
 import data from "../modules/data.js";
 import fn from "fancy-node";
 import {prefix} from "./string.js";
+import {getProgressBar} from "./ui.js";
+
+import tableUtils from './table.utils.js';
 
 const tiers = [
     ["Beginner", 0],
@@ -16,12 +26,20 @@ const tiers = [
     ["Queen Bee", 100]
 ];
 
+export const getSummaryTableData = (fieldName) => {
+    const achievements = data.getFoundAndTotal(fieldName);
+    return [
+        ["✓", "?", "∑"],
+        [achievements.found, achievements.total - achievements.found, achievements.total],
+    ];
+}
+
 /**
  * Generate the rows for the milestone tier table.
  * @param {boolean} [reversed=true] - Whether to reverse the tier order.
  * @returns {Array[]} A 2D array of table rows.
  */
-export const getDataArray = (reversed = true) => {
+export const getMilestoneData = (reversed = true) => {
     const pointObj = data.getFoundAndTotal("points");
     const rows = [["", "To reach"]];
     const tierData = reversed ? tiers.toReversed() : tiers;
@@ -37,7 +55,7 @@ export const getDataArray = (reversed = true) => {
  * @returns {{name: string, value: number, additionalPoints: number}} The matching tier.
  */
 export const getCurrentTier = (pointObj) => {
-    const tier = getDataArray(false)
+    const tier = getMilestoneData(false)
         .filter((entry) => !isNaN(entry[1]) && entry[1] <= pointObj.found)
         .pop();
     return {
@@ -58,7 +76,7 @@ export const getNextTier = (pointObj) => {
      * nextTier[1] is the number of points required for the next tier
      * missingPoints is the difference between the next tier and the points the user has already achieved
      */
-    const nextTier = getDataArray(false)
+    const nextTier = getMilestoneData(false)
         .filter((entry) => !isNaN(entry[1]) && entry[1] > pointObj.found)
         .shift();
 
@@ -96,18 +114,59 @@ export const getDescription = () => {
         ]
         : `You’ve completed today’s puzzle. Here’s a recap.`;
 }
-
-export const getRowCallbacks = () => {
+//rowData, rowIdx, rowObj, skeleton
+export const getMilestoneTableRowCallbacks = () => {
     return [
-        (rowData, rowIdx, rowObj) => {
+        (rowData, rowIdx, rowObj, skeleton) => {
             const pointObj = data.getFoundAndTotal("points");
             const currentTier = getCurrentTier(pointObj);
+            const nextTier = getNextTier(pointObj);
             if (rowData[1] < pointObj.found && rowData[1] !== currentTier.value) {
                 rowObj.classNames.push(prefix("completed", "d"));
             }
-            if(rowData[1] === currentTier.value){
-                rowObj.classNames.push(prefix("completed", "d"));
+            if (rowData[1] === currentTier.value) {
+                rowObj.classNames.push(prefix("preeminent", "d"));
+                getProgressbarInjectionCallback(
+                    currentTier.additionalPoints,
+                    nextTier.value - currentTier.value,
+                    rowObj,
+                    skeleton
+                );
             }
-        }
+        },
+
     ];
+}
+
+export const getSummaryTableRowCallbacks = () => {
+    return [
+        (rowData, rowIdx, rowObj, skeleton) => {
+            if (rowIdx === 1) {
+                getProgressbarInjectionCallback(
+                    rowData[0],
+                    rowData[1],
+                    rowObj,
+                    skeleton
+                );
+            }
+        },
+
+    ];
+}
+
+const getProgressbarInjectionCallback = (points, max, rowObj, skeleton) => {
+
+    const tableRow = {
+        tag: "tr",
+        content: [
+            {
+                tag: "td",
+                classNames: [prefix("progress-box", "d")],
+                attributes: {colspan: rowObj.content.length},
+                content: getProgressBar(points, max)
+            }
+        ]
+    };
+
+    tableUtils.insertAfterCurrentRow(skeleton, rowObj, tableRow);
 }

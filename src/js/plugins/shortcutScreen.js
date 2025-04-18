@@ -5,21 +5,21 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-import TablePane from "./tablePane.js";
 import PopupBuilder from "../widgets/popupBuilder.js";
-import { prefix } from "../utils/string.js";
-import gridIcon from "../assets/grid.svg";
+import {prefix} from "../utils/string.js";
 import fn from "fancy-node";
 import shortcutRegistry from "../modules/shortcutRegistry.js";
-import { getToggleButton } from "../utils/ui.js";
+import {getToggleButton} from "../utils/ui.js";
+import Plugin from "../modules/plugin.js";
+import TableBuilder from "../widgets/tableBuilder.js";
 
 /**
- * Grid plugin
+ * ShortcutScreen plugin
  *
  * @param {App} app
  * @returns {Plugin} Grid
  */
-class ShortcutScreen extends TablePane {
+export default class ShortcutScreen extends Plugin {
     /**
      * Toggle pop-up
      * @returns {ShortcutScreen}
@@ -29,9 +29,19 @@ class ShortcutScreen extends TablePane {
             this.popup.toggle(false);
             return this;
         }
-        this.popup.setContent("subtitle", this.description).setContent("body", this.getPane()).toggle(true);
+        this.popup.setContent("subtitle", this.description).setContent("body", this.createTable()).toggle(true);
 
         return this;
+    }
+
+    createTable() {
+        return (new TableBuilder(this.getData(), {
+            hasHeadRow: true,
+            hasHeadCol: true,
+            classNames: ["data-pane", "tbody-th-start", "thead-th-bold"]
+                .map((name) => prefix(name, "d"))
+                .concat(["pane"])
+        })).ui;
     }
 
     /**
@@ -58,20 +68,14 @@ class ShortcutScreen extends TablePane {
      * @param {App} app
      */
     constructor(app) {
-        let msg = [
-            `This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. 
-            If a shortcut conflicts with your system or browser, you can disable it here.`,
-        ];
+        let msg = [`This is a list of all SBA shortcuts. Each one triggers a feature — for example, opening and closing a panel. 
+            If a shortcut conflicts with your system or browser, you can disable it here.`,];
         if (app.envIs("mobile")) {
-            msg.push(
-                fn.i({
-                    content: `Note: On mobile devices, keyboard shortcuts may be limited or unavailable, depending on your setup.`,
-                })
-            );
+            msg.push(fn.i({
+                content: `Note: On mobile devices, keyboard shortcuts may be limited or unavailable, depending on your setup.`,
+            }));
         }
-        super(app, "Shortcuts", msg.map((part) => fn.p({ content: part })), {
-            classNames: ["tbody-th-start", "thead-th-bold"].map((name) => prefix(name, "d")),
-        });
+        super(app, "Shortcuts", msg.map((part) => fn.p({content: part})));
 
         this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
 
@@ -79,24 +83,9 @@ class ShortcutScreen extends TablePane {
             action: "popup",
         };
 
-        this.panelBtn = fn.span({
-            classNames: ["sba-tool-btn"],
-            events: {
-                pointerup: () => this.togglePopup(),
-            },
-            attributes: {
-                title: `Show ${this.title}`,
-            },
-            content: gridIcon,
-        });
 
-        this.shortcuts = [
-            {
-                combo: "Shift+Alt+S",
-                method: "togglePopup",
-            },
-        ];
+        this.shortcuts = [{
+            combo: "Shift+Alt+S", method: "togglePopup",
+        },];
     }
 }
-
-export default ShortcutScreen;

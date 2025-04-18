@@ -7,8 +7,6 @@
 import data from "../modules/data.js";
 import {prefix} from "./string.js";
 
-import fn from "fancy-node";
-
 /**
  * Builds a 2D matrix of word lengths × first letters with totals ("∑").
  * Each cell shows `found/total` (e.g. "3/5"). Returns table-compatible data.

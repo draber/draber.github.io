@@ -4,14 +4,17 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import data from "../modules/data.js";
 import PopupBuilder from "../widgets/popupBuilder.js";
 import fn from "fancy-node";
 import {prefix} from "../utils/string.js";
-import {getProgressBar} from "../utils/ui.js";
-import SummaryTable from "./summaryTable.js";
 import Plugin from "../modules/plugin.js";
-import {getCurrentTier, getDataArray, getDescription, getNextTier, getRowCallbacks} from "../utils/milestones.utils.js";
+import {
+    getMilestoneData,
+    getDescription,
+    getMilestoneTableRowCallbacks,
+    getSummaryTableData,
+    getSummaryTableRowCallbacks
+} from "../utils/milestones.utils.js";
 import TableBuilder from "../widgets/tableBuilder.js";
 
 /**
@@ -22,43 +25,28 @@ import TableBuilder from "../widgets/tableBuilder.js";
  */
 export default class Milestones extends Plugin {
 
-    /**
-     * Run method of the main table, i.e., tiers
-     * @param {Event} evt - The event that triggered the run.
-     * @returns {Milestones}
-     */
-    run(evt) {
-        const insertionPoint = fn.$("tbody .sba-preeminent", this.pane);
-        const pointObj = data.getFoundAndTotal("points");
-        const currentTier = getCurrentTier(pointObj);
-        const nextTier = getNextTier(pointObj);
-        if (!insertionPoint || !nextTier.value) {
-            return this;
-        }
-
-        insertionPoint.after(
-            fn.tr({
-                content: fn.td({
-                    attributes: {
-                        colSpan: fn.$("thead tr", this.pane).children.length,
-                    },
-                    classNames: [prefix("progress-box", "d")],
-                    content: getProgressBar(currentTier.additionalPoints, nextTier.value - currentTier.value),
-                }),
-            })
-        );
-        return this;
+    createSummaryTable(fieldName) {
+        return new TableBuilder(getSummaryTableData(fieldName), {
+            hasHeadRow: true,
+            hasHeadCol: false,
+            classNames: ["data-pane", "thead-th-bold"]
+                .map((name) => prefix(name, "d"))
+                .concat(["pane"]),
+            caption: this.summaryFields[fieldName],
+            rowCallbacks: getSummaryTableRowCallbacks()
+        }).ui
     }
 
-    createTable() {
-        return new TableBuilder(this.getData(), {
+
+    createMilestoneTable() {
+        return new TableBuilder(getMilestoneData(true), {
             hasHeadRow: true,
             hasHeadCol: false,
             classNames: ["data-pane", "thead-th-bold"]
                 .map((name) => prefix(name, "d"))
                 .concat(["pane"]),
             caption: "Tiers",
-            rowCallbacks: getRowCallbacks()
+            rowCallbacks: getMilestoneTableRowCallbacks()
         }).ui
     }
 
@@ -74,9 +62,9 @@ export default class Milestones extends Plugin {
         }
 
         const summaryElements = [];
-        Object.values(this.summaryTblObjects).forEach((tblObj) => {
-            summaryElements.push(tblObj.getPane());
-        });
+        Object.keys(this.summaryFields).forEach(fieldName => {
+            summaryElements.push(this.createSummaryTable(fieldName));
+        })
 
         const body = fn.div({
             classNames: [prefix("milestone-table-wrapper", "d")],
@@ -86,7 +74,7 @@ export default class Milestones extends Plugin {
                     classNames: ["col", "summaries"].map((name) => prefix(name, "d")),
                 }),
                 fn.figure({
-                    content: this.createTable(),
+                    content: this.createMilestoneTable(),
                     classNames: ["col", "tiers"].map((name) => prefix(name, "d")),
                 }),
             ],
@@ -98,19 +86,7 @@ export default class Milestones extends Plugin {
     }
 
     /**
-     * Generate the rows for the milestone tier table.
-     * @param {boolean} [reversed=true] - Whether to reverse the tier order.
-     * @returns {Array[]} A 2D array of table rows.
-     */
-    getData(reversed = true) {
-        return getDataArray(reversed);
-    }
-
-    /**
      * Milestones constructor
-     * Mind you that this one handles two types of tables. "Tiers" and "Summaries".
-     * Tiers is the main table, build by extending the TablePane class.
-     * The summary tables are built by creating a new instance of SummaryTable for each summary table.
      * @param {App} app
      */
     constructor(app) {
@@ -119,21 +95,11 @@ export default class Milestones extends Plugin {
 
         this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
 
-
-
-        this.summaryTblObjects = {};
-        const summaryFields = {
+        this.summaryFields = {
             points: "Points",
             terms: "Words",
             pangrams: "Pangrams",
         };
-        for (const [fieldName, title] of Object.entries(summaryFields)) {
-            this.summaryTblObjects[fieldName] = new SummaryTable(app, title, "", fieldName, {
-                classNames: ["thead-th-bold"].map((name) => prefix(name, "d")),
-                caption: title,
-                hasHeadCol: false,
-            });
-        }
 
         this.menu = {
             action: 'popup'

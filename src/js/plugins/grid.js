@@ -32,17 +32,9 @@ export default class Grid extends Plugin {
         return this;
     }
 
-    /**
-     * Get the data for the table cells
-     * @returns {Array}
-     */
-    getData() {
-        return buildDataMatrix();
-    }
-
 
     createTable() {
-        return (new TableBuilder(this.getData(), {
+        return (new TableBuilder(buildDataMatrix(), {
             hasHeadRow: true,
             hasHeadCol: true,
             classNames: [
