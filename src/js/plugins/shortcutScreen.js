@@ -29,7 +29,10 @@ export default class ShortcutScreen extends Plugin {
             this.popup.toggle(false);
             return this;
         }
-        this.popup.setContent("subtitle", this.description).setContent("body", this.createTable()).toggle(true);
+        this.popup
+            .setContent("subtitle", this.description)
+            .setContent("body", this.createTable())
+            .toggle(true);
 
         return this;
     }
@@ -81,6 +84,7 @@ export default class ShortcutScreen extends Plugin {
 
         this.menu = {
             action: "popup",
+            icon: 'new'
         };
 
 

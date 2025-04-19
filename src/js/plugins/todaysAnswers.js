@@ -20,15 +20,7 @@ import fn from 'fancy-node';
  */
 class TodaysAnswers extends Plugin {
 
-    /**
-     * Toggle pop-up
-     * @returns {TodaysAnswers}
-     */
-    togglePopup() {
-        if(this.popup.isOpen) {
-            this.popup.toggle(false);
-            return this;
-        }
+    buildContent() {
         const foundTerms = data.getList('foundTerms');
         const pangrams = data.getList('pangrams');
 
@@ -49,14 +41,27 @@ class TodaysAnswers extends Plugin {
             }));
         });
 
+        return [
+            fn.div({
+                content: data.getList('letters').join(''),
+                classNames: ['sb-modal-letters']
+            }),
+            pane
+        ]
+    }
+
+    /**
+     * Toggle pop-up
+     * @returns {TodaysAnswers}
+     */
+    togglePopup() {
+        if(this.popup.isOpen) {
+            this.popup.toggle(false);
+            return this;
+        }
+
         this.popup
-            .setContent('body', [
-                fn.div({
-                    content: data.getList('letters').join(''),
-                    classNames: ['sb-modal-letters']
-                }),
-                pane
-            ])
+            .setContent('body', this.buildContent())
             .toggle(true);
 
         return this;

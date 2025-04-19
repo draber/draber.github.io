@@ -406,6 +406,34 @@ progress {
     position: relative;
     z-index: 1;
 
+    @keyframes pulse-fade {
+        0% {
+            text-shadow: hsla(0, 100%, 50%, 0.5) 1px 0 0;
+            opacity: 1;
+        }
+        80% {
+            text-shadow: hsla(0, 100%, 50%, 0) 1px 0 20px;
+        }
+        100% {
+            opacity: 0;
+            text-shadow: none;
+        }
+    }
+    &:has([data-icon="new"] svg) {
+        #sba-menu-entry-point {
+            &::after {
+                content: "•";
+                animation: pulse-fade 9s ease-out 1 forwards;
+                animation-delay: 3s;
+                color: hsla(0, 100%, 50%, .75);
+                font-size: 1.2em;
+                position: absolute;
+                top: 0;
+                right: 3px;
+            }
+        }
+    }
+
     .pane {
         color: var(--text-color);
         background: var(--body-bg-color);
@@ -423,6 +451,10 @@ progress {
         display: block;
         padding: 5px 9px 5px 36px;
         font-size: 18px;
+
+        &[data-icon="new"]:has(svg) {
+            background: color-mix(in srgb, var(--games-yellow) 15%, transparent);
+        }
 
         &::before,
         &::after {

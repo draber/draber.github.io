@@ -11,12 +11,21 @@ import {
 import Plugin from '../modules/plugin.js';
 import iconWarning from '../assets/warning.svg';
 import iconCoffee from '../assets/kofi.svg';
+import iconNew from '../assets/new.svg';
 import fn from 'fancy-node';
+
+import newItems from "../utils/newItems.js";
 
 
 const svgIcons = {
     warning: iconWarning,
-    coffee: iconCoffee
+    coffee: iconCoffee,
+    new: iconNew,
+}
+
+newItems.ensureInstallDate();
+if (!newItems.shouldHighlightNewItems()) {
+    delete svgIcons.new;
 }
 
 
@@ -47,7 +56,7 @@ class Menu extends Plugin {
         }
 
         const observer = new MutationObserver(mutationList => {
-            for(let mutation of mutationList){                
+            for (let mutation of mutationList) {
                 if (mutation.type === 'attributes' &&
                     mutation.attributeName === 'class' &&
                     mutation.target.classList.contains('show-mobile-toolbar')) {
@@ -109,7 +118,7 @@ class Menu extends Plugin {
             },
             events: {
                 pointerup: evt => {
-                    if(evt.target.nodeName === 'A'){
+                    if (evt.target.nodeName === 'A') {
                         this.resetSubmenu();
                         evt.target.click();
                         return true;
@@ -152,6 +161,7 @@ class Menu extends Plugin {
         this.ui = fn.div({
             events: {
                 pointerup: evt => {
+                    newItems.markSeen();
                     if (evt.button !== 0) {
                         return true;
                     }
@@ -161,7 +171,12 @@ class Menu extends Plugin {
                 }
             },
             content: [
-                settings.get('title'),
+                fn.span({
+                    attributes: {
+                        id: prefix("menu-entry-point", "d"),
+                    },
+                    content: settings.get('title')
+                }),
                 pane
             ],
             aria: {
@@ -176,7 +191,7 @@ class Menu extends Plugin {
             }
         });
 
-        fn.$('#pz-game-root').addEventListener('pointerdown', evt => { 
+        fn.$('#pz-game-root').addEventListener('pointerdown', evt => {
             if (this.app.domGet('submenu') === true) {
                 this.app.domSet('submenu', false)
             }
@@ -193,19 +208,18 @@ class Menu extends Plugin {
                     action: plugin.menu.action
                 }
                 let classNames = [];
-                if(plugin.menu.action === 'boolean'){
+                if (plugin.menu.action === 'boolean') {
                     data.icon = 'checkmark';
-                    if(plugin.getState()) {
+                    if (plugin.getState()) {
                         classNames = ['checked'];
                     }
-                }
-                else if(icon){
+                } else if (icon) {
                     data.icon = icon;
                 }
                 pane.append(fn.li({
                     classNames,
                     attributes: {
-                        title: plugin.description
+                        title: fn.toNode(plugin.description).textContent
                     },
                     data,
                     content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
