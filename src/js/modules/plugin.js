@@ -78,8 +78,6 @@ class Plugin extends Widget {
 
         this.addMethod = addMethod || "append";
 
-        this.menuIcon = menuIcon || "checkbox";
-
         /**
          * Define keyboard shortcuts for this plugin.
          * Recommended format: Alt+Shift+<Key> to avoid browser conflicts.

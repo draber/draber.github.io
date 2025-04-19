@@ -22,7 +22,6 @@ class TodaysAnswers extends Plugin {
 
     /**
      * Toggle pop-up
-     * @param {Event} evt
      * @returns {TodaysAnswers}
      */
     togglePopup() {

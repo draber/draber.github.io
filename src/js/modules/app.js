@@ -131,7 +131,7 @@ class App extends Widget {
             this.domSet("active", true);
             shortcutRegistry.add(this.shortcut);
             this.registerPlugins();
-            this.trigger(prefix("refreshUi"));
+            this.trigger(prefix("refreshUi"), null);
             document.dispatchEvent(new Event(prefix("ready")));
 
             // fire shortcuts
@@ -166,7 +166,6 @@ class App extends Widget {
 
     /**
      * Change app state
-     * @param state
      * @returns {App}
      */
     toggle() {

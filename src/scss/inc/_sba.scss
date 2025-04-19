@@ -219,7 +219,7 @@ details {
 
     h4 {
         font-weight: 700;
-        font-family: nyt-franklin;
+        font-family: nyt-franklin, sans-serif;
         font-size: 18px;
         margin: 0 0 1px 0;
     }
@@ -231,10 +231,9 @@ details {
 
     em {
         display: block;
-        font-weight: normal;
         font-weight: 500;
         font-size: 14px;
-        font-family: nyt-franklin;
+        font-family: nyt-franklin, sans-serif;
     }
 
     li {

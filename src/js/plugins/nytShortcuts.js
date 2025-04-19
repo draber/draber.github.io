@@ -52,11 +52,6 @@ class NytShortcuts extends Plugin {
     constructor(app) {
         super(app, "NYT Shortcuts", "Adds keyboard shortcuts to native NYT popups", { key: "nytShortcuts" });
 
-        this.selectors = {
-            yesterdaysAnswers: ".pz-toolbar-button__yesterday",
-            statistics: ".pz-toolbar-button__stats",
-        };
-
         this.shortcuts = [
             { combo: "Shift+Alt+Y", method: "toggleYesterday", label: `Yesterday's Answers` },
             { combo: "Shift+Alt+I", method: "toggleStats", label: `Statistics` },

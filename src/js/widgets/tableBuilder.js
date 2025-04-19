@@ -81,7 +81,7 @@ export default class TableBuilder {
  * @param {Array<Array<any>>} data - 2D table data
  * @param {Array<Function>} [rowCallbacks=[]]
  * @param {Array<Function>} [cellCallbacks=[]]
- * @returns {TableBuilder}
+ * @returns {HTMLElement}
  */
 export function buildStandardTable(data, rowCallbacks = [], cellCallbacks=[]) {
     return (new TableBuilder(data, {

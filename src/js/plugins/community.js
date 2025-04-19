@@ -126,7 +126,6 @@ class Community extends Plugin {
 
     /**
      * Toggle pop-up
-     * @param {Event} evt
      * @returns {Community}
      */
     togglePopup() {

@@ -6,6 +6,7 @@
  */
 
 import settings from "../modules/settings.js";
+// noinspection ES6PreferShortImport
 import { isEmptyObject } from "../utils/utils.js";
 
 export const utils = (self) => ({
@@ -52,8 +53,8 @@ export const utils = (self) => ({
     /**
      * Compares two color config objects for equality.
      *
-     * @param {Object} {{mode: 'light' | 'dark', hsl: {hue: number, sat: number, lig: number}}} a
-     * @param {Object} {{mode: 'light' | 'dark', hsl: {hue: number, sat: number, lig: number}}} b
+     * @param {Object} a {{mode: 'light' | 'dark', hsl: {hue: number, sat: number, lig: number}}} a
+     * @param {Object} b {{mode: 'light' | 'dark', hsl: {hue: number, sat: number, lig: number}}} b
      * @returns {boolean} True if both objects are equal, false otherwise.
      */
     colorObjectsAreEqual(a, b) {
