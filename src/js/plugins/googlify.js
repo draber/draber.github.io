@@ -6,7 +6,7 @@
  */
 import {
     prefix
-} from '../modules/string.js';
+} from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
 
 // noinspection SpellCheckingInspection
@@ -18,15 +18,15 @@ import Plugin from '../modules/plugin.js';
  */
 class Googlify extends Plugin {
 
-    /**
-     * Toggle state
-     * @param {Boolean} state
-     * @returns {Googlify}
-     */
-    toggle(state) {
-        super.toggle(state);
-        return this.run();
-    }
+    // /**
+    //  * Toggle state
+    //  * @param {Boolean} state
+    //  * @returns {Googlify}
+    //  */
+    // toggle(state) {
+    //     super.toggle(state);
+    //     return this.run();
+    // }
 
     /**
      * Search for term in Google
@@ -44,16 +44,15 @@ class Googlify extends Plugin {
     }
 
     /**
-     * Add or remove pangram underlines
+     * Add pangram underlines
      * @param evt
      * @returns {Googlify}
      */
     // eslint-disable-next-line no-unused-vars
     run(evt = null) {
-        const method = `${this.getState() ? 'add' : 'remove'}EventListener`;
         [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
-            container[method]('pointerup', this.listener);
-            container.classList.toggle(prefix('googlified', 'd'), this.getState());
+            container.addEventListener('pointerup', this.listener);
+            container.classList.add(prefix('googlified', 'd'));
         });
         return this;
     }
@@ -65,9 +64,7 @@ class Googlify extends Plugin {
      */
     constructor(app) {
 
-        super(app, 'Googlify', 'Link all result terms to Google', {
-            canChangeState: false
-        });
+        super(app, 'Googlify', 'Link all result terms to Google');
 
         this.run();
     }

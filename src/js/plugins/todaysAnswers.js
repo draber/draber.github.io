@@ -7,9 +7,9 @@
 import data from '../modules/data.js';
 import {
     prefix
-} from '../modules/string.js';
+} from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
-import Popup from './popup.js';
+import PopupBuilder from '../widgets/popupBuilder.js';
 import fn from 'fancy-node';
 
 /**
@@ -20,12 +20,7 @@ import fn from 'fancy-node';
  */
 class TodaysAnswers extends Plugin {
 
-    /**
-     * Display pop-up
-     * @param {Event} evt
-     * @returns {TodaysAnswers}
-     */
-    display() {
+    buildContent() {
         const foundTerms = data.getList('foundTerms');
         const pangrams = data.getList('pangrams');
 
@@ -46,14 +41,27 @@ class TodaysAnswers extends Plugin {
             }));
         });
 
+        return [
+            fn.div({
+                content: data.getList('letters').join(''),
+                classNames: ['sb-modal-letters']
+            }),
+            pane
+        ]
+    }
+
+    /**
+     * Toggle pop-up
+     * @returns {TodaysAnswers}
+     */
+    togglePopup() {
+        if(this.popup.isOpen) {
+            this.popup.toggle(false);
+            return this;
+        }
+
         this.popup
-            .setContent('body', [
-                fn.div({
-                    content: data.getList('letters').join(''),
-                    classNames: ['sb-modal-letters']
-                }),
-                pane
-            ])
+            .setContent('body', this.buildContent())
             .toggle(true);
 
         return this;
@@ -66,18 +74,23 @@ class TodaysAnswers extends Plugin {
     constructor(app) {
 
         super(app, 'Today’s Answers', 'Reveals the solution of the game', {
-            canChangeState: true,
-            defaultState: false,
             key: 'todaysAnswers'
         });
 
         this.marker = prefix('resolved', 'd');
-        this.popup = new Popup(this.app, this.key)
+        this.popup = new PopupBuilder(this.app, this.key)
             .setContent('title', this.title)
             .setContent('subtitle', data.getDate().display);
 
-        this.menuAction = 'popup';
-        this.menuIcon = 'warning';
+        this.menu = {
+            action: 'popup',
+            icon: 'warning'
+        }
+
+        this.shortcuts = [{
+            combo: "Shift+Alt+T",
+            method: "togglePopup"
+        }];
     }
 }
 

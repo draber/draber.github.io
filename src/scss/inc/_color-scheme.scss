@@ -4,6 +4,9 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
+
+@use './_mixins.scss' as *;
+
 body {
     background: var(--body-bg-color);
     color: var(--text-color);
@@ -11,14 +14,6 @@ body {
     .pz-game-field {
         background: var(--body-bg-color);
         color: var(--text-color);
-    }
-
-    &[data-sba-theme="dark"] {
-        .pz-game-wrapper,
-        #js-hook-pz-moment__loading {
-            background: var(--body-bg-color) !important;
-            color: var(--text-color);
-        }
     }
 
     .pz-game-wrapper {
@@ -38,8 +33,8 @@ body {
 
         .sb-progress-marker .sb-progress-value,
         .hive-cell:first-child .cell-fill {
-            background: var(--highlight-bg-color);
-            fill: var(--highlight-bg-color);
+            background: var(--sb-yellow);
+            fill: var(--sb-yellow);
             color: var(--highlight-text-color);
         }
 
@@ -47,16 +42,72 @@ body {
         .hive-cell .cell-fill {
             fill: var(--area-bg-color);
         }
+
+        .sba-color-selector .hive .hive-cell .cell-letter {
+            fill: var(--text-color);
+        }
     }
 
     &[data-sba-theme="dark"] {
+        scrollbar-color: var(--invalid-color) var(--body-bg-color);
+
+        .sb-message {
+            color: var(--text-color);
+        }
+        #conversion-banner {
+            background: inherit;
+        }
+
+        .pz-moment__frame {
+            &:is(.pz-moment__congrats, .pz-moment__welcome) {
+                & .pz-moment__content {
+                    color: var(--text-color);
+                }
+
+                .pz-moment__button {
+                    &.primary {
+                        @include button-style(primary);
+                    }
+
+                    &.secondary {
+                        @include button-style(secondary);
+                    }
+                }
+            }
+        }
+
+        .pz-game-wrapper,
+        #js-hook-pz-moment__loading {
+            background: var(--body-bg-color) !important;
+            color: var(--text-color);
+        }
+
         .sb-message {
             background: var(--area-bg-color);
         }
+
         .pangram-message {
             .sb-message {
-                background: var(--highlight-bg-color);
+                background: var(--sb-yellow);
                 color: var(--highlight-text-color);
+            }
+        }
+
+        .pz-modal__button.white,
+        .pz-footer,
+        .pz-moment,
+        .sb-modal-scrim {
+            background: var(--modal-bg-color) !important;
+            color: var(--text-color) !important;
+
+            .pz-moment__button {
+                &.primary {
+                    @include button-style(primary);
+                }
+
+                &.secondary {
+                    @include button-style(secondary);
+                }
             }
         }
 
@@ -67,14 +118,26 @@ body {
         .sb-progress-value {
             font-weight: bold;
         }
+
         .pz-icon-close {
             filter: invert(1);
         }
 
-        &.pz-mobile {
+        &.pz-mobile,
+        &.pz-desktop {
             .pz-toolbar-button,
             .pz-dropdown__button {
                 background-color: transparent !important;
+            }
+        }
+
+        .pz-dropdown {
+            .pz-dropdown__show {
+                & + .pz-dropdown__list {
+                    .pz-dropdown__menu-item {
+                        background-color: var(--body-bg-color);
+                    }
+                }
             }
         }
 
@@ -138,43 +201,52 @@ body {
     background: var(--body-bg-color);
 }
 
-.pz-modal__button.white,
-.pz-footer,
-.pz-moment,
-.sb-modal-scrim {
-    background: var(--modal-bg-color) !important;
-    color: var(--text-color) !important;
-
-    .pz-moment__button {
-        &.secondary {
-            color: white;
-        }
-    }
-}
-
-.pz-moment__frame {
-    &:is(.pz-moment__congrats, .pz-moment__welcome) {
-        .pz-moment__button {
-            &.secondary {
-                color: var(--text-color);
-                &:hover {
-                    color: var(--body-bg-color);
-                }
-            }
-        }
-    }
-}
 
 .sb-modal-wrapper {
     .sb-modal-frame {
         border: 1px solid var(--border-color);
         background: var(--body-bg-color);
         color: var(--text-color);
+
+        &.stats {
+            & .sb-modal-header {
+                background: var(--body-bg-color);
+            }
+
+            & .sb-stats-bar {
+                background: var(--body-bg-color);
+                color: var(--text-color);
+            }
+
+            & .sb-stats-bar__text {
+                color: #333;
+            }
+        }
+    }
+
+    .sb-modal-ranks__list {
+        tr:not(.sb-modal-ranks__current) {
+            color: var(--text-color);
+        }
     }
 
     .pz-modal__title,
     .sb-modal-close {
         color: var(--text-color);
+    }
+
+    .sb-modal-body {
+        .sb-modal-buttons-container {
+            button {
+                &.button-primary {
+                    @include button-style(primary);
+                }
+
+                &.button-secondary {
+                    @include button-style(secondary);
+                }
+            }
+        }
     }
 }
 
@@ -203,7 +275,7 @@ body {
 
 .sb-input-bright,
 .sb-progress-dot.completed::after {
-    color: var(--highlight-bg-color);
+    color: var(--sb-yellow);
 }
 
 .hive-cell {
@@ -214,9 +286,10 @@ body {
     .cell-letter {
         fill: var(--text-color);
     }
+
     &.center {
         .cell-letter {
-            fill: var(--highhlight-text-color);
+            fill: var(--highlight-text-color);
         }
     }
 }

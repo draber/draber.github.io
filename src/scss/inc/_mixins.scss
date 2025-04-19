@@ -1,0 +1,29 @@
+@mixin button-base {
+    padding: 0.6em 1em;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    line-height: 1.2;
+    text-align: center;
+}
+
+@mixin button-style($type) {
+    @if $type == primary {
+        background: var(--area-bg-color);
+        color: var(--text-color);
+        &:hover {
+            background: var(--invalid-color);
+            color: var(--body-bg-color)
+        }
+    } @else if $type == secondary {
+        background: var(--head-row-bg-color);
+        color: var(--text-color);
+        &:hover {
+            background: var(--area-bg-color);
+        }
+    } @else {
+        @warn "Unknown button style: #{$type}";
+    }
+}

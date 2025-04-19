@@ -1,582 +1,571 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-	<meta charset="utf-8">
-	<title>Spelling Bee Assistant</title>
-	<meta content="Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle. Features Dark Mode, Grid, First Letter, Letter Count, Bingo, Perfect Pangram"
+	<head>
+		<meta charset="utf-8">
+		<title>Spelling Bee Assistant</title>
+		<meta content="Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle. Features Dark Mode, Grid, First Letter, Letter Count, Bingo, Perfect Pangram"
 		name="description">
-	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<meta content="Spelling Bee Assistant" property="og:title">
-	<meta content="Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle" property="og:description">
-	<meta content="https://spelling-bee-assistant.app/assets/img/social.webp?4.4.0" property="og:image">
-	<meta content="https://spelling-bee-assistant.app/" property="og:url">
-	<meta content="Spelling Bee Assistant" property="og:site_name">
-	<meta content="summary_large_image" name="twitter:card">
-	<meta content="@d_raber" name="twitter:site">
-	<meta content="https://spelling-bee-assistant.app/assets/img/social.webp?4.4.0" name="twitter:image">
-	<meta content="Spelling Bee Assistant" name="twitter:image:alt">
-	<meta content="7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8" name="google-site-verification">
-	<meta content="JdtUYs7m2sn0OLvWbE-xp0xxsluoRnMFJDmgzUiSKb0" name="google-site-verification">
-	<meta name="theme-color" content="#f9df6f">
-	<link rel="apple-touch-icon" href="assets/img/icon72.webp?4.4.0" type="image/png">
-	<link rel="icon" href="assets/img/icon72.webp?4.4.0" type="image/png">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-	<link href="assets/css/site.css?4.4.0" rel="stylesheet">
-</head>
+		<meta content="width=device-width, initial-scale=1" name="viewport">
+		<meta content="Spelling Bee Assistant" property="og:title">
+		<meta content="Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle" property="og:description">
+		<meta content="https://spelling-bee-assistant.app/assets/img/social.webp?5.0.0" property="og:image">
+		<meta content="https://spelling-bee-assistant.app/" property="og:url">
+		<meta content="Spelling Bee Assistant" property="og:site_name">
+		<meta content="7vZlJKBsl3KZZRbJV474IyxJMXg64TYzSpAAoxO74-8" name="google-site-verification">
+		<meta content="JdtUYs7m2sn0OLvWbE-xp0xxsluoRnMFJDmgzUiSKb0" name="google-site-verification">
+		<meta name="theme-color" content="#f9df6f">
+		<link rel="apple-touch-icon" href="assets/img/icon72.webp?5.0.0" type="image/png">
+		<link rel="icon" href="assets/img/icon72.webp?5.0.0" type="image/png">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+		<link href="assets/css/site.css?5.0.0" rel="stylesheet">
+	</head>
 
-<body data-sba-theme="light">
-	<svg aria-hidden="true" class="symbols" version="1.1" xmlns="http://www.w3.org/2000/svg"
-		xmlns:xlink="http://www.w3.org/1999/xlink">
-		<defs>
-			<symbol id="icon-extension" viewBox="0 0 24 24">
-				<path
-					d="M14.935.054c-1.942 0-3.12 1.424-3.12 2.615 0 1.025.587 1.435.955 1.805h.002v.002c.363.362.437.722.327.982-.11.26-.43.476-1.026.476H5.945v6.139c0 .597-.217.917-.476 1.028-.26.11-.619.036-.98-.328h-.002v-.002c-.37-.369-.78-.957-1.802-.957-1.19 0-2.61 1.18-2.61 3.126s1.42 3.125 2.61 3.125c1.023 0 1.433-.588 1.802-.957v-.002h.002c.361-.363.72-.437.98-.327.26.11.476.43.476 1.028v6.138h6.128c.69 0 1.184-.273 1.366-.702.182-.43.028-.957-.407-1.392-.41-.41-.847-.652-.847-1.542 0-.94.99-2.244 2.75-2.244s2.75 1.304 2.75 2.244c0 .89-.437 1.131-.847 1.542-.435.435-.59.963-.407 1.392.182.429.676.702 1.366.702h6.128v-6.138c0-.691-.273-1.186-.701-1.369-.429-.182-.956-.028-1.39.408-.41.41-.65.848-1.54.848-.937 0-2.239-.99-2.239-2.754s1.302-2.755 2.24-2.755c.889 0 1.13.438 1.54.848.434.436.96.59 1.389.408.428-.182.701-.677.701-1.368V5.934h-6.128c-.596 0-.916-.217-1.026-.476-.11-.26-.036-.62.327-.982v-.002h.002c.368-.37.955-.78.955-1.805 0-1.191-1.178-2.615-3.12-2.615zm7.164 12.72c-14.56 7.324-7.28 3.662 0 0z" />
-			</symbol>
-			<symbol id="icon-bookmark" viewBox="0 0 24 24">
-				<path
-					d="m20.188 0.1795c0.234 0 0.469 0.047 0.688 0.141 0.688 0.266 1.125 0.906 1.125 1.609v20.141c0 0.703-0.438 1.344-1.125 1.609-0.219 0.094-0.453 0.125-0.688 0.125-0.484 0-0.938-0.172-1.297-0.5l-6.891-6.625-6.891 6.625c-0.359 0.328-0.812 0.516-1.297 0.516-0.234 0-0.469-0.047-0.688-0.141-0.688-0.266-1.125-0.906-1.125-1.609v-20.141c0-0.703 0.438-1.344 1.125-1.609 0.219-0.094 0.453-0.141 0.688-0.141h16.375z" />
-			</symbol>
-			<symbol id="icon-twitter" viewBox="0 0 32 32">
-				<path
-					d="M32 7.075c-1.175 0.525-2.444 0.875-3.769 1.031 1.356-0.813 2.394-2.1 2.887-3.631-1.269 0.75-2.675 1.3-4.169 1.594-1.2-1.275-2.906-2.069-4.794-2.069-3.625 0-6.563 2.938-6.563 6.563 0 0.512 0.056 1.012 0.169 1.494-5.456-0.275-10.294-2.888-13.531-6.862-0.563 0.969-0.887 2.1-0.887 3.3 0 2.275 1.156 4.287 2.919 5.463-1.075-0.031-2.087-0.331-2.975-0.819 0 0.025 0 0.056 0 0.081 0 3.181 2.263 5.838 5.269 6.437-0.55 0.15-1.131 0.231-1.731 0.231-0.425 0-0.831-0.044-1.237-0.119 0.838 2.606 3.263 4.506 6.131 4.563-2.25 1.762-5.075 2.813-8.156 2.813-0.531 0-1.050-0.031-1.569-0.094 2.913 1.869 6.362 2.95 10.069 2.95 12.075 0 18.681-10.006 18.681-18.681 0-0.287-0.006-0.569-0.019-0.85 1.281-0.919 2.394-2.075 3.275-3.394z">
-				</path>
-			</symbol>
-			<symbol id="icon-grid" viewBox="0 0 24 24">
- 				<path 
-					d="m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z" stroke-dasharray="0.5, 0.5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-				</path>
-			</symbol>
-			<symbol id="icon-kofi" viewBox="0 0 20 20">
-				<path
+	<body data-sba-theme="light">
+		<svg aria-hidden="true" class="symbols" xmlns="http://www.w3.org/2000/svg">
+			<defs>
+				<symbol id="icon-extension" viewBox="0 0 24 24">
+					<path
+					d="M14.935.054c-1.942 0-3.12 1.424-3.12 2.615 0 1.025.587 1.435.955 1.805h.002v.002c.363.362.437.722.327.982-.11.26-.43.476-1.026.476H5.945v6.139c0 .597-.217.917-.476 1.028-.26.11-.619.036-.98-.328h-.002v-.002c-.37-.369-.78-.957-1.802-.957-1.19 0-2.61 1.18-2.61 3.126s1.42 3.125 2.61 3.125c1.023 0 1.433-.588 1.802-.957v-.002h.002c.361-.363.72-.437.98-.327.26.11.476.43.476 1.028v6.138h6.128c.69 0 1.184-.273 1.366-.702.182-.43.028-.957-.407-1.392-.41-.41-.847-.652-.847-1.542 0-.94.99-2.244 2.75-2.244s2.75 1.304 2.75 2.244c0 .89-.437 1.131-.847 1.542-.435.435-.59.963-.407 1.392.182.429.676.702 1.366.702h6.128v-6.138c0-.691-.273-1.186-.701-1.369-.429-.182-.956-.028-1.39.408-.41.41-.65.848-1.54.848-.937 0-2.239-.99-2.239-2.754s1.302-2.755 2.24-2.755c.889 0 1.13.438 1.54.848.434.436.96.59 1.389.408.428-.182.701-.677.701-1.368V5.934h-6.128c-.596 0-.916-.217-1.026-.476-.11-.26-.036-.62.327-.982v-.002h.002c.368-.37.955-.78.955-1.805 0-1.191-1.178-2.615-3.12-2.615zm7.164 12.72c-14.56 7.324-7.28 3.662 0 0z"/>
+				</symbol>
+				<symbol id="icon-bookmark" viewBox="0 0 24 24">
+					<path
+					d="m20.188 0.1795c0.234 0 0.469 0.047 0.688 0.141 0.688 0.266 1.125 0.906 1.125 1.609v20.141c0 0.703-0.438 1.344-1.125 1.609-0.219 0.094-0.453 0.125-0.688 0.125-0.484 0-0.938-0.172-1.297-0.5l-6.891-6.625-6.891 6.625c-0.359 0.328-0.812 0.516-1.297 0.516-0.234 0-0.469-0.047-0.688-0.141-0.688-0.266-1.125-0.906-1.125-1.609v-20.141c0-0.703 0.438-1.344 1.125-1.609 0.219-0.094 0.453-0.141 0.688-0.141h16.375z"/>
+				</symbol>
+				<symbol id="icon-twitter" viewBox="0 0 32 32">
+					<path
+					d="M32 7.075c-1.175 0.525-2.444 0.875-3.769 1.031 1.356-0.813 2.394-2.1 2.887-3.631-1.269 0.75-2.675 1.3-4.169 1.594-1.2-1.275-2.906-2.069-4.794-2.069-3.625 0-6.563 2.938-6.563 6.563 0 0.512 0.056 1.012 0.169 1.494-5.456-0.275-10.294-2.888-13.531-6.862-0.563 0.969-0.887 2.1-0.887 3.3 0 2.275 1.156 4.287 2.919 5.463-1.075-0.031-2.087-0.331-2.975-0.819 0 0.025 0 0.056 0 0.081 0 3.181 2.263 5.838 5.269 6.437-0.55 0.15-1.131 0.231-1.731 0.231-0.425 0-0.831-0.044-1.237-0.119 0.838 2.606 3.263 4.506 6.131 4.563-2.25 1.762-5.075 2.813-8.156 2.813-0.531 0-1.050-0.031-1.569-0.094 2.913 1.869 6.362 2.95 10.069 2.95 12.075 0 18.681-10.006 18.681-18.681 0-0.287-0.006-0.569-0.019-0.85 1.281-0.919 2.394-2.075 3.275-3.394z"></path>
+				</symbol>
+				<symbol id="icon-grid" viewBox="0 0 24 24">
+					<path 
+					d="m0 0v24h24v-24h-24zm2 2h9v9h-9v-9zm11 0h9v9h-9v-9zm-11 11h9v9h-9v-9zm11 0h9v9h-9v-9z" stroke-dasharray="0.5, 0.5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+				</symbol>
+				<symbol id="icon-kofi" viewBox="0 0 20 20">
+					<path
 					d="M2.042 15.915c-.418-.09-.867-.402-1.116-.776-.192-.289-.273-.558-.3-1C.561 13.06.517 5.163.574 4.573c.017-.185.032-.232.099-.314a.774.774 0 01.18-.156l.102-.059 7.291.007c6.859.006 7.304.01 7.52.053 1.545.312 2.778 1.251 3.324 2.531.125.293.21.592.284 1.008.089.492.09 1.307.004 1.734-.35 1.725-1.687 3.002-3.553 3.393a5.827 5.827 0 01-1.218.13c-.255.005-.427.02-.464.04-.102.055-.13.155-.147.528-.027.6-.119.996-.32 1.387-.253.492-.614.795-1.163.978l-.196.065-2.762.029c-3.94.04-7.293.034-7.513-.013zm13.386-4.909c.38-.033.602-.094.892-.243a2.398 2.398 0 001.257-1.645c.054-.266.055-.91.002-1.193-.166-.873-.74-1.596-1.492-1.88-.321-.12-.51-.142-1.232-.142h-.665l-.171.153-.008 2.365c-.004 1.3 0 2.392.008 2.426.008.033.046.09.083.124.067.062.078.063.538.063.258 0 .613-.013.788-.028z"
-					fill="#fff" />
-				<path
+					fill="#fff"/>
+					<path
 					d="M7.158 13.565c.191.064.255 0 .255 0s2.228-2.037 3.246-3.247c.892-1.082.955-2.8-.573-3.501-1.527-.7-2.8.764-2.8.764a2.508 2.508 0 00-3.502-.382l-.063.064c-.764.827-.51 2.228.063 2.992a38.304 38.304 0 003.247 3.183z"
-					fill="#ff5e5b" />
-				<path class="shape"
-					d="M.984 3.495a.266.266 0 00-.038.003c-.51.071-.903.498-.93 1.013a.266.266 0 000 .014v.191c0 .003-.064 6.17.064 9.56a.266.266 0 000 .004 2.364 2.364 0 002.368 2.225c.002 0 6.42 0 9.485-.064h.445a.266.266 0 00.064-.007c.965-.241 1.523-.842 1.803-1.481.244-.556.26-1.096.27-1.54 1.708.003 3.202-.561 4.19-1.59 1.036-1.077 1.523-2.622 1.193-4.35a4.436 4.436 0 00-1.96-3.04 5.15 5.15 0 00-2.95-.938zm.033.532h13.97a4.617 4.617 0 012.649.843.266.266 0 00.007.005 3.903 3.903 0 011.728 2.682.266.266 0 00.003.01c.304 1.58-.133 2.93-1.053 3.888s-2.338 1.522-4.024 1.461a.266.266 0 00-.276.268c0 .432-.034 1.032-.264 1.555-.227.519-.625.963-1.43 1.17h-.395a.266.266 0 00-.005 0c-3.048.064-9.48.063-9.48.063a.266.266 0 00-.002 0A1.823 1.823 0 01.612 14.25C.486 10.89.55 4.718.55 4.718a.266.266 0 000-.002v-.178a.545.545 0 01.467-.51zm13.271 1.886a.266.266 0 00-.266.268v4.583a.266.266 0 00.26.266c.48.012.961-.009 1.439-.065a.266.266 0 00.027-.005 2.4 2.4 0 001.86-2.557 2.535 2.535 0 00-.564-1.622 2.178 2.178 0 00-1.81-.868zm.267.534h.688a.266.266 0 00.009 0 1.643 1.643 0 011.37.656.266.266 0 00.006.01c.297.364.457.822.45 1.292a.266.266 0 00.002.03 1.862 1.862 0 01-1.443 2.002c-.359.041-.72.048-1.081.048z" />
-			</symbol>
-		</defs>
-	</svg>
-	<header>
-		<div class="wrapper">
-			<img src="assets/img/icon72.webp?4.4.0" width="72" height="72" alt="Spelling Bee Assistant" id="logo" />
-			<h1> Spelling Bee Assistant</h1>
-			<ul class="social">
-				<li class="kofi action-button">
-					<a target="_blank" href="https://ko-fi.com/sbassistant" rel="noopener">
-						<svg>
-							<use xlink:href="#icon-kofi"></use>
-						</svg>
-						<span>Buy me a coffee</span>
-					</a>
-				</li>
-			</ul>
-		</div>
-	</header>
-	<main class="wrapper">
-		<section class="intro">
-			<div class="intro-text">
-				<figure class="hive-box">
-					<svg viewbox="0 0 190.5 199" xmlns="http://www.w3.org/2000/svg">
-						<g class="cells" fill="#e6e6e6">
-							<path class="center"
+					fill="#ff5e5b"/>
+					<path class="shape"
+					d="M.984 3.495a.266.266 0 00-.038.003c-.51.071-.903.498-.93 1.013a.266.266 0 000 .014v.191c0 .003-.064 6.17.064 9.56a.266.266 0 000 .004 2.364 2.364 0 002.368 2.225c.002 0 6.42 0 9.485-.064h.445a.266.266 0 00.064-.007c.965-.241 1.523-.842 1.803-1.481.244-.556.26-1.096.27-1.54 1.708.003 3.202-.561 4.19-1.59 1.036-1.077 1.523-2.622 1.193-4.35a4.436 4.436 0 00-1.96-3.04 5.15 5.15 0 00-2.95-.938zm.033.532h13.97a4.617 4.617 0 012.649.843.266.266 0 00.007.005 3.903 3.903 0 011.728 2.682.266.266 0 00.003.01c.304 1.58-.133 2.93-1.053 3.888s-2.338 1.522-4.024 1.461a.266.266 0 00-.276.268c0 .432-.034 1.032-.264 1.555-.227.519-.625.963-1.43 1.17h-.395a.266.266 0 00-.005 0c-3.048.064-9.48.063-9.48.063a.266.266 0 00-.002 0A1.823 1.823 0 01.612 14.25C.486 10.89.55 4.718.55 4.718a.266.266 0 000-.002v-.178a.545.545 0 01.467-.51zm13.271 1.886a.266.266 0 00-.266.268v4.583a.266.266 0 00.26.266c.48.012.961-.009 1.439-.065a.266.266 0 00.027-.005 2.4 2.4 0 001.86-2.557 2.535 2.535 0 00-.564-1.622 2.178 2.178 0 00-1.81-.868zm.267.534h.688a.266.266 0 00.009 0 1.643 1.643 0 011.37.656.266.266 0 00.006.01c.297.364.457.822.45 1.292a.266.266 0 00.002.03 1.862 1.862 0 01-1.443 2.002c-.359.041-.72.048-1.081.048z"/>
+				</symbol>
+			</defs>
+		</svg>
+		<header>
+			<div class="wrapper">
+				<img src="assets/img/icon72.webp?5.0.0" width="72" height="72" alt="Spelling Bee Assistant" id="logo"/>
+				<h1> Spelling Bee Assistant</h1>
+				<ul class="social">
+					<li class="kofi action-button">
+						<a target="_blank" href="https://ko-fi.com/sbassistant" rel="noopener">
+							<svg>
+								<use href="#icon-kofi"></use>
+							</svg>
+							<span>Buy me a coffee</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</header>
+		<main class="wrapper">
+			<section class="intro">
+				<div class="intro-text">
+					<figure class="hive-box">
+						<svg viewbox="0 0 190.5 199" xmlns="http://www.w3.org/2000/svg">
+							<g class="cells" fill="#e6e6e6">
+								<path class="center"
 								d="M77.099 67.763L58.674 99.511l18.141 31.748h36.566l18.425-31.748-18.141-31.748z"
 								fill="#F7DB22"></path>
-							<path d="M135.85 101.73l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z">
-							</path>
-							<path d="M77.099 135.61l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z">
-							</path>
-							<path d="M18.388 101.68L-.037 133.428l18.141 31.748H54.67l18.425-31.748-18.141-31.748z">
-							</path>
-							<path d="M18.388 33.832L-.037 65.58l18.141 31.748H54.67L73.095 65.58 54.954 33.832z"></path>
-							<path d="M77.099-.09L58.674 31.656l18.141 31.748h36.566l18.425-31.748L113.665-.09z"></path>
-							<path d="M135.85 33.879l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z">
-							</path>
-						</g>
-						<g class="text">
-							<path class="center"
-								d="M103.04 99.41q0 2.01-.918 3.606-.919 1.586-2.32 2.436-1.055.639-2.311.89-1.257.251-2.978.251h-5.076V92.197h5.22q1.76 0 3.037.3 1.276.29 2.146.831 1.489.91 2.34 2.456.86 1.537.86 3.626zm-3.838-.029q0-1.421-.522-2.427-.513-1.015-1.634-1.585-.57-.28-1.17-.377-.59-.107-1.789-.107h-.937v9.011h.937q1.325 0 1.944-.116.618-.126 1.208-.445 1.015-.58 1.49-1.547.473-.976.473-2.407z">
-							</path>
-							<path
-								d="M44.825 140.54h-3.838l-.996-2.91h-5.337l-.996 2.91h-3.741l5.317-14.396h4.274zm-5.733-5.55l-1.77-5.162-1.768 5.163z">
-							</path>
-							<path d="M95.498 160.05h3.7148v14.395h-3.7148z"></path>
-							<path d="M160.05 140.56h-10.383v-14.396h3.712v11.611h6.671z"></path>
-							<path
-								d="M161.03 62.859q0 .967-.338 1.895-.339.918-.967 1.547-.86.85-1.924 1.286-1.054.435-2.63.435h-2.31v4.689h-3.713V58.315h6.11q1.373 0 2.31.241.948.232 1.674.706.87.57 1.324 1.46.464.89.464 2.137zm-3.838.087q0-.61-.329-1.044-.329-.445-.764-.619-.58-.232-1.13-.251-.552-.03-1.47-.03h-.638v4.313h1.063q.947 0 1.557-.116.618-.116 1.034-.464.358-.31.512-.735.165-.435.165-1.054z">
-							</path>
-							<path
-								d="M97.708 28.753q0-.541-.222-.928-.223-.387-.764-.61-.377-.154-.88-.183-.503-.039-1.17-.039h-1.344v3.877h1.141q.89 0 1.49-.087t1.005-.396q.386-.3.56-.657.184-.368.184-.977zm5.791 9.987h-4.534l-3.925-5.279h-1.712v5.279h-3.693V24.344h6.226q1.277 0 2.195.145.918.145 1.72.628.813.484 1.287 1.257.483.764.483 1.924 0 1.595-.744 2.6-.735 1.006-2.108 1.673z">
-							</path>
-							<path
-								d="M44.793 58.315l-5.308 8.827v5.569h-3.712v-5.395l-5.395-9h4.215l3.113 5.568 3.007-5.569z">
-							</path>
-						</g>
-					</svg>
-				</figure>
-				<p><strong>Spelling Bee Assistant</strong> is an add-on for <a href="https://www.nytimes.com/puzzles/spelling-bee"
-						rel="noopener" target="_blank">Spelling
-						Bee</a>, the New York Times’ popular word puzzle. It’s packed with <a
-						href="#features">features</a> that will boost your playing experience.</p>
-				<p>Follow your progress, see what lies ahead of you and if you want to, get a hint or two.
-					Eventually, when you run out of ideas, reveal today’s answers - no more waiting until the next
-					day!</p>
-				<p>Spelling Bee Assistant is a great improvement for this excellent game and it won’t spoil the fun. Promised!</p>
+								<path d="M135.85 101.73l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z"></path>
+								<path d="M77.099 135.61l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z"></path>
+								<path d="M18.388 101.68L-.037 133.428l18.141 31.748H54.67l18.425-31.748-18.141-31.748z"></path>
+								<path d="M18.388 33.832L-.037 65.58l18.141 31.748H54.67L73.095 65.58 54.954 33.832z"></path>
+								<path d="M77.099-.09L58.674 31.656l18.141 31.748h36.566l18.425-31.748L113.665-.09z"></path>
+								<path d="M135.85 33.879l-18.425 31.748 18.141 31.748h36.566l18.425-31.748-18.141-31.748z"></path>
+							</g>
+							<g class="text">
+								<path class="center"
+								d="M103.04 99.41q0 2.01-.918 3.606-.919 1.586-2.32 2.436-1.055.639-2.311.89-1.257.251-2.978.251h-5.076V92.197h5.22q1.76 0 3.037.3 1.276.29 2.146.831 1.489.91 2.34 2.456.86 1.537.86 3.626zm-3.838-.029q0-1.421-.522-2.427-.513-1.015-1.634-1.585-.57-.28-1.17-.377-.59-.107-1.789-.107h-.937v9.011h.937q1.325 0 1.944-.116.618-.126 1.208-.445 1.015-.58 1.49-1.547.473-.976.473-2.407z"></path>
+								<path
+								d="M44.825 140.54h-3.838l-.996-2.91h-5.337l-.996 2.91h-3.741l5.317-14.396h4.274zm-5.733-5.55l-1.77-5.162-1.768 5.163z"></path>
+								<path d="M95.498 160.05h3.7148v14.395h-3.7148z"></path>
+								<path d="M160.05 140.56h-10.383v-14.396h3.712v11.611h6.671z"></path>
+								<path
+								d="M161.03 62.859q0 .967-.338 1.895-.339.918-.967 1.547-.86.85-1.924 1.286-1.054.435-2.63.435h-2.31v4.689h-3.713V58.315h6.11q1.373 0 2.31.241.948.232 1.674.706.87.57 1.324 1.46.464.89.464 2.137zm-3.838.087q0-.61-.329-1.044-.329-.445-.764-.619-.58-.232-1.13-.251-.552-.03-1.47-.03h-.638v4.313h1.063q.947 0 1.557-.116.618-.116 1.034-.464.358-.31.512-.735.165-.435.165-1.054z"></path>
+								<path
+								d="M97.708 28.753q0-.541-.222-.928-.223-.387-.764-.61-.377-.154-.88-.183-.503-.039-1.17-.039h-1.344v3.877h1.141q.89 0 1.49-.087t1.005-.396q.386-.3.56-.657.184-.368.184-.977zm5.791 9.987h-4.534l-3.925-5.279h-1.712v5.279h-3.693V24.344h6.226q1.277 0 2.195.145.918.145 1.72.628.813.484 1.287 1.257.483.764.483 1.924 0 1.595-.744 2.6-.735 1.006-2.108 1.673z"></path>
+								<path
+								d="M44.793 58.315l-5.308 8.827v5.569h-3.712v-5.395l-5.395-9h4.215l3.113 5.568 3.007-5.569z"></path>
+							</g>
+						</svg>
+					</figure>
+					<p>
+						<strong>Spelling Bee Assistant</strong> is a handy add-on for the New York Times’ beloved word puzzle, 
+					<a href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener" target="_blank">Spelling Bee</a>. 
+					Packed with <a href="#features">features</a> , it’s designed to enhance your experience without taking 
+					away the joy of the game.</p>
+					<p>Track your progress, uncover what challenges lie ahead, and – if you choose – get a hint or two to keep your 
+					momentum going. And when the ideas run dry, you can reveal today’s answers on your schedule – no more waiting
+					for tomorrow!</p>
+					<p>The Spelling Bee Assistant adds a new layer of fun to this already excellent game, all without spoiling the magic. 
+					Promise!</p>
 
-			</div>
-			<div class="desktop-only">
-				<figure>
-					<img alt="Spelling Bee Assistant" class="start-up-img desktop-only"
-						src="assets/img/start-up.webp?4.4.0" width="157" height="216">
-				</figure>
-			</div>
+				</div>
+				<div class="desktop-only">
+					<figure>
+						<img alt="Spelling Bee Assistant" class="start-up-img desktop-only"
+						src="assets/img/start-up.webp?5.0.0" width="157" height="216">
+					</figure>
+				</div>
 
-		</section>
-		<section id="installation">
-			<h2>Installation</h2>
-			<p>By installing this software you agree to the terms of the <a href="https://github.com/draber/draber.github.io/blob/main/LICENSE.md" target="_blank"> GNU General Public License v3.0</a>.</p> 
-			<ul class="card-listing">
-				<li class="card row">
-					<ul class="install-source">
-						<li><a href="https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg" rel="noopener" target="_blank"><img
-									class="store-icon chrome" src="assets/img/chrome-store.svg?4.4.0" width="160" height="46"
-									alt="Spelling Bee Assistant from the Chrome Web Store" /></a></li>
-						<li><a href="https://microsoftedge.microsoft.com/addons/detail/spelling-bee-assistant/doeniefjeejkkdfnakoflmjlmfipejin" rel="noopener" target="_blank"><img
-									class="store-icon edge" src="assets/img/edge-store.svg?4.4.0" width="160" height="46"
-									alt="Get Spelling Bee Assistant from Edge Add-ons" /></a></li>
+			</section>
+			<section id="whats-new">
+				<h2>What’s new in Version 5?</h2>
+				<div class="card">
+					<ul>
+						<li>
+							<a href="#fe-shortcuts">Keyboard shortcuts</a> for almost everything – each one can be disabled individually if needed.</li>
+						<li>The <a href="#fe-menu">Menu</a> got a full makeover: fewer entries, bigger buttons, better accessibility</li>
+						<li>
+							<a href="#fe-dark">Dark Mode</a> settings are now simpler and more visual – just pick a scheme in the new interface and see it instantly</li>
+						<li>
+							<a href="#fe-milestones">Milestones</a> offer a clearer picture of your progress through the ranks</li>
 					</ul>
-					<article>
-						<h3>Browser extension</h3>
-						<p>The browser extension loads the assistant along with the <a
-								href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener"
-								target="_blank">Spelling
-								Bee</a> website. It is available for
-							<a href="https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg" rel="noopener" target="_blank">Chrome</a> and
+				</div>
+			</section>
+			<section id="installation">
+				<h2>Installation</h2>
+				<p>By installing this software, you agree to the terms of the <a href="https://github.com/draber/draber.github.io/blob/main/LICENSE.md" target="_blank"> GNU General Public License v3.0</a>.</p>
+				<ul class="card-listing">
+					<li class="card row">
+						<ul class="install-source">
+							<li>
+								<a href="https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg" rel="noopener" target="_blank"><img
+									class="store-icon chrome" src="assets/img/chrome-store.svg?5.0.0" width="160" height="46"
+									alt="Spelling Bee Assistant from the Chrome Web Store"/></a>
+							</li>
+							<li>
+								<a href="https://microsoftedge.microsoft.com/addons/detail/spelling-bee-assistant/doeniefjeejkkdfnakoflmjlmfipejin" rel="noopener" target="_blank"><img
+									class="store-icon edge" src="assets/img/edge-store.svg?5.0.0" width="160" height="46"
+									alt="Get Spelling Bee Assistant from Edge Add-ons"/></a>
+							</li>
+						</ul>
+						<article>
+							<h3>Browser extension</h3>
+							<p>The browser extension integrates the assistant seamlessly with the 
+							<a href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener" target="_blank">Spelling Bee website</a>
+							and is available for
+							<a href="https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg" rel="noopener" target="_blank">Chrome</a>
+							and
 							<a href="https://microsoftedge.microsoft.com/addons/detail/spelling-bee-assistant/doeniefjeejkkdfnakoflmjlmfipejin" rel="noopener" target="_blank">Edge</a>.
 							
 						</p>
-					</article>
-				</li>
-				<li class="card row">
-					<ul class="install-source">
-						<li><a class="installer" href="javascript:(()%3D%3E%7Bconst%20s%3Ddocument.createElement(%22script%22)%3Bs.async%3D!0%2Cs.src%3D%22https%3A%2F%2Fspelling-bee-assistant.app%2Fassets%2Fjs%2Fspelling-bee-assistant.min.js%22%2Cdocument.body.append(s)%3B%7D)()" onclick="return false" rel="nofollow"><img
-									class="bookmarklet store-icon"
-									src="assets/img/bookmarklet.svg?4.4.0" width="160" height="46" alt="Spelling Bee Assistant" /></a>
-						</li>
-					</ul>
-					<article>
-						<h3>Bookmarklet</h3>
-						<p>Alternatively, you can launch the assistant via a <a class="help" href="#bookmarklet">bookmarklet</a>. 
-							To set it up, simply drag the amber badge to your browser's bookmarks bar.</p>
-					</article>
-				</li>
-			</ul>
-			<ul>
-				<li><a href="#requirements">Can I install Spelling Bee Assistant on a mobile device</a>?</li>
-				<li><a href="#privacy-stores">Which data does Spelling Bee Assistant access?</a></li>
-			</ul>
-		</section>
-		<section id="features">
-			<h2>Feature Overview</h2>
-			<ul class="card-listing">
-				<li class="card row panel">
-					<figure>
-						<img alt="Spelling Bee Assistant" src="assets/img/assistant-open.webp?4.4.0" width="158" height="511">
-					</figure>
-					<article class="main-panel">
-						<h3>The main panel</h3>
-						<p>All tools in the main panel work in the same fashion; they show you how
-							many items you’ve found so far (<b>✓</b>), how many are still in the pot (<b>?</b>)
-							and the sum thereof (<b>∑</b>). </p>
-						<ul>
-							<li>"<strong>Score</strong>" represents your all-over progress for both, words and points.
-							</li>
-							<li>"<strong>Letter count</strong>" groups the terms by word length.</li>
-							<li>"<strong>First letter</strong>" groups them by their first letter.</li>
-							<li>"<strong>First two letters</strong>" is similar, but obviously, it's more revealing.</li>
-							<li>"<strong>Pangrams</strong>" displays the number of pangrams.</li>							
-						</ul>
-						<p>Greyed out lines indicate that all terms in a row have been found.</p>
-						<p id="grid-btn">On desktop, just click on 
-							<svg title="Grid icon"><use xlink:href="#icon-grid"></use></svg> to quickly pull up the 
-							<strong><a href="#fe-grid">Grid</a></strong>.</p>
-					</article>
-				</li>
-				<li class="card row panel">
-					<figure>
-						<img alt="Assistant Menu" src="assets/img/assistant-menu.webp?4.4.0" width="177" height="550">
-					</figure>
-					<article>
-						<h3>The Assistant menu</h3>
-						<p>
-							<strong>Show Assistant</strong> lets you show or hide the main panel.
-							<strong>Score</strong>,	<strong>Letter count</strong>, <strong>First letter</strong>, <strong>First two
-								letters</strong> and <strong>Pangrams</strong> do the same for each section.</p>
-						<p>The <strong><a href="#fe-progress">Progress Bar</a></strong> is a visual indicator of your all-over progress.</p>
-						<p>The <strong><a href="#fe-grid">Grid</a></strong> is a matrix grouping the terms by first letter and word length.</p>
-						<p><strong><a href="#fe-spill">Spill the beans</a></strong> validates your answer while you type.</p>
-						<p><strong><a href="#fe-dark">Dark Mode</a></strong> and <strong><a href="#fe-dm-color">Dark Mode Colors</a></strong> provide a configurable dark color scheme.</p>
-						<p><strong><a href="#fe-your-progress">Your Progress</a></strong> explains in detail what you already achieved.</p>  
-						<p><strong><a href="#fe-community">Community</a></strong> shows how to connect to like-minded <em>hiveminds</em>.</p>  
-						<p><strong><a href="#fe-today">Today’s Answers</a></strong> should be the last resort.</p>
-						<p>Use the <strong><a target="_blank" href="https://ko-fi.com/sbassistant" rel="noopener">Buy me a coffee</a></strong> link if you want to show some appreciation...</p>
-		
-					</article>
-				</li>
-				<li class="card" id="fe-progress">
-					<figure>
-						<img alt="Progress Bar" src="assets/img/progress-bar.webp?4.4.0" width="468" height="243">
-		
-					</figure>
-					<article>
-						<p>The <strong>Progress Bar</strong> displays your advancement based on your points so far. You can click on it
-							to reveal the more detailed <strong>Your Progress</strong> screen.</p>
-					</article>
-				</li>
-				<li class="card" id="fe-spill">
-					<figure>
-						<img alt="Spill the Beans" src="assets/img/spill-the-beans.webp?4.4.0" width="468" height="243">
-		
-					</figure>
-					<article>
-						<p>With every letter you type, the <strong>Spill the beans</strong> emoji reveals whether you’re on the right track or
-							barking up the wrong tree. </p>
-					</article>
-				</li>
-				<li class="card" id="fe-dark">
-					<figure>
-						<img alt="Dark Mode" class="full" src="assets/img/dark-mode.webp?4.4.0" width="468" height="269">
-		
-					</figure>
-					<article>
-						<p>If you prefer darker interfaces, SBA's <strong>Dark Mode</strong> is for you. The default theme is too boring - you want it more colorful? Try…</p>
-					</article>
-		
-				</li>
-				<li class="card" id="fe-dm-color">
-					<figure>
-						<img alt="Dark Mode Color Scheme" class="full"
-							src="assets/img/color-scheme.webp?4.4.0" width="468" height="269">
-		
-					</figure>
-					<article>
-						<p>…the <strong>Dark Mode configuration</strong>. You can pick your favorite out of twelve different color
-							schemes.</p>
-					</article>
-		
-				</li>
-				<li class="card" id="fe-your-progress">
-					<figure>
-						<img alt="Your Progress" src="assets/img/your-progress.webp?4.4.0" width="468" height="345">
-		
-					</figure>
-					<article>
-						<p>An overview of the different ranks and how far you made it into your journey. You can also
-							launch the <strong>Your Progress</strong> screen by clicking on the <strong>Progress Bar</strong>.</p>
-					</article>
-				</li>
-				<li class="card"  id="fe-grid">
-					<figure>
-						<img alt="Grid" src="assets/img/grid.webp?4.4.0" width="468" height="301">
-		
-					</figure>
-					<article>
-						<p><strong>Letter count</strong> and <strong>First letter</strong> from the main panel give you a brief overview
-							of the words that you’ve found and those that remain. The <strong>Grid</strong> screen combines
-							these two views into a handy matrix.</p>
-					</article>
-				</li>
-				<li class="card" id="fe-community">
-					<figure class="screen">
-						<img alt="Community" src="assets/img/community.webp?4.4.0" width="468" height="401">
-					</figure>
-					<article>
-						<p><strong>Bingo, Perfect Pangram, GN4L</strong> - confused yet? The NYT has a
-							<a href="https://www.nytimes.com/2021/07/26/crosswords/spelling-bee-forum-introduction.html"
-								rel="noopener" target="_blank">glossary</a> of common terms Spelling Bee fans use when
-							talking
-							about their favorite game.
-							Some terms refer to game features and some are addidtional fun challenges.
-						</p>
-						<p>So, where is this community? Well, there is more then just one way to join fellow players and
-							the Assistant will you show you how to find them.</p>
-					</article>
-				</li>
-				<li class="card" id="fe-today">
-					<figure class="screen">
-						<img alt="Today’s Answers" src="assets/img/todays-answers.webp?4.4.0" width="468" height="462">
-					</figure>
-					<article>
-						<p>When you’re eventually out of words but are dying to know the solution, the <strong>Today’s
-								Answers</strong> screen will satisfy your curiosity!</p>
-						<p>All words are linked to the respective terms in Google; maybe this will
-							help you next time!</p>
-					</article>
-				</li>
-				<li class="card" id="fe-mobile">
-					<figure class="screen">
-						<img alt="Small Screens" src="assets/img/mobile.webp?4.4.0" width="300" height="462">
-		
-					</figure>
-					<article>
-						<p>Spelling Bee Assistant uses responsive design and has been tested on many screen sizes. If the <a
-								href="#requirements">system requirements</a> are met, it should run on your mobile device.
-						</p>
-					</article>
-				</li>
-			</ul>
-		</section>
-		<div class="text-part">
-			<section>
-				<h2 id="requirements">System requirements</h2>
-				<p>Spelling Bee Assistant requires a modern web browser in a recent version. Below is a chart with Browser/OS combinations that are known to be working:</p>
-				<figure id="requirement-chart">
-					<table>
-						<thead>
-							<tr>
-								<th>Browser</th>
-								<th>Windows</th>
-								<th>MacOS</th>
-								<th>Ubuntu</th>
-								<th>Android</th>
-								<th>iOS</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Blink ¹<sup>|</sup>²</td>
-								<td class="win-10"><svg>
-										<title>Extension</title>
-										<use xlink:href="#icon-extension"></use>
-									</svg>
-									<svg>
-										<title>Bookmarklet</title>
-										<use xlink:href="#icon-bookmark"></use>
-									</svg>
-								</td>
-								<td class="mac-os"><svg>
-										<title>Extension</title>
-										<use xlink:href="#icon-extension"></use>
-									</svg>
-									<svg>
-										<title>Bookmarklet</title>
-										<use xlink:href="#icon-bookmark"></use>
-									</svg>
-								</td>
-								<td class="linux"><svg>
-										<title>Extension</title>
-										<use xlink:href="#icon-extension"></use>
-									</svg>
-									<svg>
-										<title>Bookmarklet</title>
-										<use xlink:href="#icon-bookmark"></use>
-									</svg>
-								</td>
-								<td class="android"><svg>
-										<title>Extension</title>
-										<use xlink:href="#icon-extension"></use>
-									</svg>²</td>
-								<td class="ios">?</td>
-							</tr>
-
-
-							<tr>
-								<td>WebKit ³<sup>|</sup>⁴</td>
-								<td class="win-10">n/a</td>
-								<td class="mac-os"><svg>
-										<title>Bookmarklet</title>
-										<use xlink:href="#icon-bookmark"></use>
-									</svg>³</td>
-								<td class="linux"><svg>
-										<title>Bookmarklet</title>
-										<use xlink:href="#icon-bookmark"></use>
-									</svg>⁴</td>
-								<td class="android">n/a</td>
-								<td class="ios"><svg>
-										<title>Bookmarklet</title>
-										<use xlink:href="#icon-bookmark"></use>
-									</svg>³</td>
-							</tr>
-						</tbody>
-					</table>
-					<figcaption>
-						<ol>
-							<li>Chrome, Edge, Brave, Vivaldi…</li>
-							<li>Kiwi</li>
-							<li>Safari</li>
-							<li>Gnome Web</li>
-						</ol>
-						<svg>
-							<use xlink:href="#icon-extension"></use>
-						</svg> Browser extension | <svg>
-							<use xlink:href="#icon-bookmark"></use>
-						</svg> Bookmarklet
-					</figcaption>
-				</figure>
-				<div id="mobile-installation">
-					<p>To install it on mobile devices, follow the instructions below.</p>
-					<p><em class="comment">Thanks to <a href="https://github.com/ajs256">Alex</a> for contributing the iOS instructions and hosting the shortcut.</em></p>
-					<ul class="card-listing">
-						<li class="card" id="kiwi-install">
-							<article>								
-								<h4>Android: Use the extension with <a
-									href="https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg"
-									rel="noopener" target="_blank">Kiwi</a></h4>
-								<ol>
-									<li>Download <a href="https://play.google.com/store/apps/details?id=com.kiwibrowser.browser" rel="noopener"
-											target="_blank">Kiwi Browser</a> from the Google Play Store.</li>
-									<li>Open Kiwi and navigate to the Spelling Bee Assistant’s <a
-											href="https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg"
-											rel="noopener" target="_blank">page on the Chrome Web Store</a>.</li>
-									<li>Select <em>Add to Chrome</em> to install the extension.</li>
-									<li>Review the security warning that appears; if acceptable, confirm by tapping <em>OK</em>.</li>
-								</ol>
-								<p>The extension will now be active whenever you visit the Spelling Bee game on Kiwi, enhancing your gameplay
-									experience.</p>
-							</article>
-						</li>
-						<li class="card" id="safari-install">
-							<article>
-								<h4>iOS / iPadOS: Use a shortcut on Safari</h4>								
-								<ol>
-									<li>Open the Settings app. Navigate to <em>Shortcuts &gt; Advanced</em> and enable <em>Allow
-											Running Scripts</em> to let shortcuts run scripts like those of Spelling Bee Assistant.</li>
-									<li>Access the shortcut by opening <a
-											href="https://www.icloud.com/shortcuts/bb503ab585b1491aa5678d62cf1e18d4">this link</a>. Tap <em>Get
-											Shortcut</em> and then <em>Add</em>.</li>
-									<li>To use the shortcut, open <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener"
-											target="_blank">Spelling Bee</a> in Safari and access the Share menu. Find and run <em>SB Assistant</em>.
-									</li>
-									<li>Upon first run, a security warning appears. If you agree, tap <em>Allow</em>.</li>
-								</ol>
-								<p>To keep it handy, pin <em>SB Assistant</em> to the top of your share sheet by tapping <em>Edit Actions…</em> and selecting
-									the green plus next to the <em>SB Assistant</em> action.</p>
-							</article>
-						</li>
-					</ul>
-				</div>
-				
-			</section>
-			<section>
-				<h2>Doesn’t it spoil the game?</h2>
-				<p>I try to keep Spelling Bee Assistant as subtle and unobstrusive as possible. Judging from user feedback as well my own experience, this concept works out just fine.</p>
-				<p>The challenge stays the same and so does the fun. But now you have a set of little helpers at hand when you’re stuck in a corner.</p>
-			</section>
-			<section>
-				<h2 id="bookmarklet">What is a bookmarklet?</h2>
-				<div>
-					<figure class="bookmarklet">
-						<img alt="Bookmarklet" src="assets/img/bookmarklet-light.webp?4.4.0" width="499" height="98">
-					</figure>
-					<figcaption>
-						Regular bookmarks along with the Spelling Bee Assistant
-					</figcaption>
-				</div>
-				<p>Bookmarklets are small pieces of code that can enhance the functionality of a website. They reside,
-					just
-					like regular bookmarks, in your browser’s bookmark menu. Unfortunately, there is no straightforward
-					way
-					to assign an icon to them.</p>
-			</section>
-			<section id="contact">
-				<h2>I discovered a bug | I’d like to give feedback</h2>
-				<p>You can report bugs or request features <a
-						href="https://github.com/draber/draber.github.io/issues">at GitHub</a>. Keep in mind that this
-					is a
-					fun weekend project and I don’t want it to be a burden. I might work on issues from time to time,
-					but I can’t make any promises.</p>
-				<p>You can also find me at <a href="https://www.reddit.com/r/NYTSpellingBee" rel="noopener"
-						target="_blank">r/NYTSpellingBee</a> where I regularly post the latest updates under the handle
-					<a href="https://www.reddit.com/user/spellingBeeAssistant" target="_blank"
-						rel="noopener">spellingBeeAssistant</a>.</p>
-			</section>
-			<section>
-				<h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
-				<p>No, no affiliation whatsover. They know that Spelling Bee Assistant exists and rumor has it that some of them are even users...</p>
-			</section>
-			<section id="privacy">
-				<h2>Your privacy</h2>
-				<p>This website does not employ any technology to collect personally identifiable information about its visitors.
-					Both the site and the associated bookmarklet are hosted on GitHub Pages. For details on the data GitHub Pages
-					collects, please consult <a href="https://docs.github.com/en/github/site-policy/github-privacy-statement#github-pages"
-						rel="noopener" target="_blank">their privacy policy.</a> Regardless, I have no access to the data collected by GitHub.</p>
-
-				<p id="privacy-stores">
-					Regarding the browser extension associated with this site: When installing the extension from a browser 
-					add-on store, you might see a message stating, <em>&quot;This extension can read and change your data 
-						on www.nytimes.com [...]&quot;</em>, or something similar. Such messages can understandably lead to 
-						privacy concerns. However, the extension is designed solely to read data from the Spelling Bee game; 
-						it does not access, modify, or submit any personal information.</p>
-
-				<p>Although most <a href="#installation">add-on stores</a> offer download statistics, these are typically 
-					aggregated by country and do not include any personally identifiable information.</p>
-			</section>
-			<section>
-				<h2>Spelling Bee Assistant on GitHub</h2>
-				<ul>
-					<li><a href="https://github.com/draber/draber.github.io" rel="noopener"
-							target="_blank">Repository</a>
+						</article>
 					</li>
-					<li><a href="https://github.com/draber/draber.github.io/releases" rel="noopener"
-							target="_blank">Releases</a></li>
-					<li><a href="https://github.com/draber/draber.github.io/issues" rel="noopener"
-							target="_blank">Issues</a></li>
-					<li><a href="https://github.com/draber/draber.github.io/pulls" rel="noopener" target="_blank">Pull
-							Requests</a></li>
+					<li class="card row">
+						<ul class="install-source">
+							<li>
+								<a class="installer" href="javascript:(()%3D%3E%7Bconst%20s%3Ddocument.createElement(%22script%22)%3Bs.async%3D!0%2Cs.src%3D%22https%3A%2F%2Fspelling-bee-assistant.app%2Fassets%2Fjs%2Fspelling-bee-assistant.min.js%22%2Cdocument.body.append(s)%3B%7D)()" onclick="return false" rel="nofollow"><img
+									class="bookmarklet store-icon"
+									src="assets/img/bookmarklet.svg?5.0.0" width="160" height="46" alt="Spelling Bee Assistant"/></a>
+							</li>
+						</ul>
+						<article>
+							<h3>Bookmarklet</h3>
+							<p>Alternatively, you can use a <a class="help" href="#bookmarklet">bookmarklet</a> to launch the assistant. 
+							To set it up, simply drag the amber badge to your browser's bookmarks bar.</p>
+						</article>
+					</li>
+				</ul>
+				<ul>
+					<li>
+						<a href="#requirements">Can I install Spelling Bee Assistant on a mobile device</a>?</li>
+					<li>
+						<a href="#privacy-stores">Which data does Spelling Bee Assistant access?</a>
+					</li>
 				</ul>
 			</section>
-		</div>
-	</main>
-	<div id="btt">
-		<div class="wrapper">
-			<a title="Back to top" href="#">
-				<svg viewBox="0 0 78 78" xmlns="http://www.w3.org/2000/svg">
-					<circle cx="39" cy="39" r="39" fill="#999999" fill-opacity=".5" />
-					<path d="m39 18-24 22h16v22h16v-22h16z" fill="#fff" />
-				</svg>
-			</a>
-		</div>
-	</div>
-	<script>
-		(function (d) {
-			const bmBtn = d.querySelector("#copy-bm");
-			const bmContainer = d.querySelector("#content-bm");
-			if (navigator.clipboard) {
-				bmContainer.style.display = 'none';
-			} else {
-				bmBtn.style.display = 'none';
-			}
+			<section id="features">
+				<h2>Feature Overview</h2>
+				<ul class="card-listing">
+					<li class="card row panel">
+						<figure>
+							<img alt="Spelling Bee Assistant" src="assets/img/assistant-open.webp?5.0.0" width="158" height="511">
+						</figure>
+						<article class="main-panel">
+							<h3>The main panel</h3>
+							<p>Here, you can track your progress and see how you’re doing at a glance.</p>
+							<p>Each tool in the panel gives you a clear breakdown of your current status:</p>
+							<ul class="custom-symbols">
+								<li data-symbol="✓">Words you’ve found</li>
+								<li data-symbol="?">Still to go</li>
+								<li data-symbol="∑">Total count</li>
+							</ul>
+							<ul>
+								<li>
+									<strong>Overview</strong>: Tracks your overall progress, including both words and points.</li>
+								<li>
+									<strong>Letter count</strong>: Groups words by their length.</li>
+								<li>
+									<strong>First letter</strong>: Groups words by their first letter.</li>
+								<li>
+									<strong>First two letters</strong>: Groups words by their first two letters.</li>
+								<li>
+									<strong>Pangrams</strong>: Displays the number of pangrams.</li>
+							</ul>
+							<p>Greyed-out lines indicate that you’ve already found all the words in that row.</p>
+						</article>
+					</li>
+					<li class="card row panel" id="fe-menu">
+						<figure>
+							<img alt="Assistant Menu" src="assets/img/assistant-menu.webp?5.0.0" width="177" height="450">
+						</figure>
+						<article>
+							<h3>The Assistant menu</h3>
+							<p>
+								<strong>Show Assistant</strong>: Toggle the main panel on or off.</p>
+							<p>
+								<strong>
+									<a href="#fe-spill">Spill the beans</a>
+								</strong>: Validates your answers as you type.</p>
+							<p>
+								<strong>
+									<a href="#fe-grid">Grid</a>
+								</strong>: A matrix that groups words by their first letter and word length.</p>
+							<p>
+								<strong>
+									<a href="#fe-dark">Dark Mode</a>
+								</strong>: Customize your experience with a configurable dark color scheme.</p>
+							<p>
+								<strong>
+									<a href="#fe-milestones">Milestones</a>
+								</strong>: A detailed breakdown of what you’ve accomplished so far.</p>
+							<p>
+								<strong>
+									<a href="#fe-community">Community</a>
+								</strong>: Connect with like-minded <em>hiveminds</em>.</p>
+							<p>
+								<strong>
+									<a href="#fe-today">Today’s Answers</a>
+								</strong>: Your last resort for when you’re truly stumped.</p>
+							<p>
+								<strong>
+									<a target="_blank" href="https://ko-fi.com/sbassistant" rel="noopener">Buy me a coffee</a>
+								</strong>: A simple way to show your appreciation.</p>
+						</article>
+					</li>
+					<li class="card" id="fe-progress">
+						<figure>
+							<img alt="Progress Bar" src="assets/img/progress-bar.webp?5.0.0" width="468" height="243">
 
-			bmBtn.addEventListener('click', () => {
-				navigator.clipboard.writeText(bmContainer.textContent.trim())
-					.then(bmBtn.classList.add('success'));
-			});
+						</figure>
+						<article>
+							<p>The <strong>Progress Bar</strong> shows how far you’ve come based on your current score – from Beginner to Queen Bee.</p>
+						</article>
+					</li>
+					<li class="card" id="fe-spill">
+						<figure>
+							<img alt="Spill the Beans" src="assets/img/spill-the-beans.webp?5.0.0" width="468" height="243">
 
-		})(document);
-	</script>
-	<script type="application/ld+json">
-		{
-			"@context": "https://schema.org",
-			"@type": "SoftwareApplication",
-			"name": "Spelling Bee Assistant",
-			"operatingSystem": "Any",
-			"applicationCategory": "BrowserApplication",
-			"aggregateRating": {
-				"@type": "AggregateRating",
-				"ratingValue": "5",
-				"ratingCount": "2"
-			},
-			"offers": {
-				"@type": "Offer",
-				"price": "0"
+						</figure>
+						<article>
+							<p>As you type, the <strong>Spill the beans</strong> emoji reacts instantly, showing whether you’re on the right track – or way off.</p>
+						</article>
+					</li>
+					<li class="card"  id="fe-grid">
+						<figure>
+							<img alt="Grid" src="assets/img/grid.webp?5.0.0" width="468" height="301">
+
+						</figure>
+						<article>
+							<p>
+								The <strong>Grid</strong> screen combines the <strong>First letter</strong> and <strong>Letter count</strong> views into a compact matrix, showing what you've found and what’s still missing.</p>
+						</article>
+					</li>
+					<li class="card" id="fe-dark">
+						<figure>
+							<img alt="Dark Mode" class="full" src="assets/img/dark-mode.webp?5.0.0" width="468" height="301">
+
+						</figure>
+						<article>
+
+							<p>Prefer a darker interface? You can choose from twelve distinct color schemes, each with its own mood – ideal for low-light settings or just a different vibe.</p>
+						</article>
+
+					</li>
+					<li class="card" id="fe-milestones">
+						<figure>
+							<img alt="Milestones" src="assets/img/milestones.webp?5.0.0" width="468" height="399">
+
+						</figure>
+						<article>
+							<p>Track your progress through the puzzle’s scoring tiers. See which ones you’ve reached and how close you are to the next milestone.</p>
+						</article>
+					</li>
+
+					<li class="card" id="fe-community">
+						<figure class="screen">
+							<img alt="Community" src="assets/img/community.webp?5.0.0" width="468" height="422">
+						</figure>
+						<article>
+							<p>Where the hive mind gathers. Find out if there’s a perfect pangram today and check out a few places where players connect.</p>
+						</article>
+					</li>
+					<li class="card" id="fe-shortcuts">
+						<figure>
+							<img alt="Shortcuts" class="full" src="assets/img/shortcuts.webp?5.0.0" width="468" height="422">
+
+						</figure>
+						<article>
+
+							<p>Most features – and even some puzzle actions – are just a keystroke away. Shortcuts can be individually disabled if they clash with your setup.</p>
+						</article>
+
+					</li>
+					<li class="card" id="fe-today">
+						<figure class="screen">
+							<img alt="Today’s Answers" src="assets/img/todays-answers.webp?5.0.0" width="468" height="422">
+						</figure>
+						<article>
+							<p>When you’ve reached your limit, this screen reveals the full list of answers. Each word links to a search engine – a chance to learn, not just peek.</p>
+						</article>
+					</li>
+					<li class="card" id="fe-mobile">
+						<figure class="screen">
+							<img alt="Small Screens" src="assets/img/mobile.webp?5.0.0" width="300" height="440">
+
+						</figure>
+						<article>
+							<p>The interface adapts to different screen sizes and works on many phones and tablets – as long as the <a href="#requirements">system requirements</a> are met.</p>
+						</article>
+					</li>
+				</ul>
+			</section>
+			<div class="text-part">
+				<section>
+					<h2 id="requirements">System requirements</h2>
+					<p>Spelling Bee Assistant works best with a modern web browser in a recent version. Below is a chart of Browser/OS combinations that have been tested and are known to work in typical setups.</p>
+					<figure id="requirement-chart">
+						<table>
+							<thead>
+								<tr>
+									<th>Browser</th>
+									<th>Windows</th>
+									<th>MacOS</th>
+									<th>Ubuntu</th>
+									<th>Android</th>
+									<th>iOS</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Blink ¹<sup>|</sup>²</td>
+									<td class="win-10">
+										<svg>
+											<title>Extension</title>
+											<use href="#icon-extension"></use>
+										</svg>
+										<svg>
+											<title>Bookmarklet</title>
+											<use href="#icon-bookmark"></use>
+										</svg>
+									</td>
+									<td class="mac-os">
+										<svg>
+											<title>Extension</title>
+											<use href="#icon-extension"></use>
+										</svg>
+										<svg>
+											<title>Bookmarklet</title>
+											<use href="#icon-bookmark"></use>
+										</svg>
+									</td>
+									<td class="linux">
+										<svg>
+											<title>Extension</title>
+											<use href="#icon-extension"></use>
+										</svg>
+										<svg>
+											<title>Bookmarklet</title>
+											<use href="#icon-bookmark"></use>
+										</svg>
+									</td>
+									<td class="android">
+										<svg>
+											<title>Extension</title>
+											<use href="#icon-extension"></use>
+										</svg>²</td>
+									<td class="ios">?</td>
+								</tr>
+
+								<tr>
+									<td>WebKit ³<sup>|</sup>⁴</td>
+									<td class="win-10">n/a</td>
+									<td class="mac-os">
+										<svg>
+											<title>Bookmarklet</title>
+											<use href="#icon-bookmark"></use>
+										</svg>³</td>
+									<td class="linux">
+										<svg>
+											<title>Bookmarklet</title>
+											<use href="#icon-bookmark"></use>
+										</svg>⁴</td>
+									<td class="android">n/a</td>
+									<td class="ios">
+										<svg>
+											<title>Bookmarklet</title>
+											<use href="#icon-bookmark"></use>
+										</svg>³</td>
+								</tr>
+							</tbody>
+						</table>
+						<figcaption>
+							<ol>
+								<li>Chrome, Edge, Brave, Vivaldi…</li>
+								<li>Kiwi</li>
+								<li>Safari</li>
+								<li>Gnome Web</li>
+							</ol>
+							<svg>
+								<use href="#icon-extension"></use>
+							</svg> Browser extension | <svg>
+								<use href="#icon-bookmark"></use>
+							</svg> Bookmarklet
+					</figcaption>
+					</figure>
+					<div id="mobile-installation">
+						<p>Follow the steps below to install Spelling Bee Assistant on your mobile device.</p>
+
+						<ul class="card-listing">
+							<li class="card" id="kiwi-install">
+								<article>
+									<h4>Android: Use the extension with <a
+									href="https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg"
+									rel="noopener" target="_blank">Kiwi</a>
+									</h4>
+									<ol>
+										<li>Download <a href="https://play.google.com/store/apps/details?id=com.kiwibrowser.browser" rel="noopener"
+											target="_blank">Kiwi Browser</a> from the Google Play Store.</li>
+										<li>Open Kiwi and navigate to the Spelling Bee Assistant’s <a
+											href="https://chrome.google.com/webstore/detail/spelling-bee-assistant/ncejlmlagglodbdmkfmgnadfnbhnjcpg"
+											rel="noopener" target="_blank">page on the Chrome Web Store</a>.</li>
+										<li>Tap <em>Add to Chrome</em> to install the extension.</li>
+										<li>Review the notice that appears; if acceptable, confirm by tapping <em>OK</em>.</li>
+									</ol>
+									<p>The extension will now enhance your gameplay whenever you visit the Spelling Bee game in Kiwi.</p>
+								</article>
+							</li>
+							<li class="card" id="safari-install">
+								<article>
+									<h4>iOS / iPadOS: Use a shortcut on Safari</h4>
+									<p>
+										<em class="comment">Special thanks to <a href="https://github.com/ajs256">Alex</a> for contributing the iOS instructions and hosting the shortcut.</em>
+									</p>
+									<ol>
+										<li>Open the Settings app. Navigate to <em>Shortcuts &gt; Advanced</em> and enable <em>Allow
+											Running Scripts</em> to let shortcuts run scripts like those of Spelling Bee Assistant.</li>
+										<li>Access the shortcut by opening <a
+											href="https://www.icloud.com/shortcuts/bb503ab585b1491aa5678d62cf1e18d4">this link</a>. Tap <em>Get
+											Shortcut</em> and then <em>Add</em>.</li>
+										<li>To use the shortcut, open <a href="https://www.nytimes.com/puzzles/spelling-bee" rel="noopener"
+											target="_blank">Spelling Bee</a> in Safari and access the Share menu. Find and run <em>SB Assistant</em>.
+									</li>
+										<li>Upon first run, a security warning appears. If you agree, tap <em>Allow</em>.</li>
+									</ol>
+									<p>To keep it handy, pin <em>SB Assistant</em> to the top of your share sheet by tapping <em>Edit Actions…</em> and selecting
+									the green plus next to the <em>SB Assistant</em> action.</p>
+								</article>
+							</li>
+						</ul>
+					</div>
+
+				</section>
+				<section>
+					<h2>Doesn’t it spoil the game?</h2>
+					<p>Not at all! Spelling Bee Assistant is crafted to stay subtle and unobtrusive. User feedback – and plenty of gameplay testing – shows this strikes the right balance.
+					The challenge and fun of the game remain the same. The Assistant simply gives you a set of helpful tools for those moments when you’re stuck in a corner.</p>
+				</section>
+				<section>
+					<h2 id="bookmarklet">What is a bookmarklet?</h2>
+					<div>
+						<figure class="bookmarklet">
+							<img alt="Bookmarklet" src="assets/img/bookmarklet-light.webp?5.0.0" width="499" height="98">
+							<figcaption>Regular bookmarks along with the Spelling Bee Assistant	</figcaption>
+						</figure>
+					</div>
+					<p>Bookmarklets are clever little tools that work like bookmarks but include small pieces of code to enhance how a website functions. You’ll find them in your browser’s bookmarks menu, just like regular bookmarks.</p>
+				</section>
+				<section id="contact">
+					<h2>I discovered a bug | I’d like to give feedback</h2>
+					<p>You can report bugs or suggest features at <a href="https://github.com/draber/draber.github.io/issues">GitHub</a>. Please remember, this is a fun weekend project, and I aim to keep it light. While I address issues occasionally, I can’t make any promises.</p>
+				</section>
+				<section>
+					<h2>Is the NYT behind this or are you affiliated with the NYT?</h2>
+					<p>No, I have no affiliation with the New York Times. Spelling Bee Assistant is an independent project.</p>
+				</section>
+				<section id="privacy">
+					<h2>Your privacy</h2>
+					<p>This website does not use any technology to collect personally identifiable information about its visitors. Both the site and the associated bookmarklet are hosted on GitHub Pages. 
+						For details on what data GitHub Pages collects, please refer to <a href="https://docs.github.com/en/github/site-policy/github-privacy-statement#github-pages"
+						rel="noopener" target="_blank">their privacy policy</a>. I do not have access to any data collected by GitHub.</p>
+
+					<p id="privacy-stores">
+					When installing the extension from a browser add-on store, you might see a message like, <em>&quot;This extension can read and change your data 
+						on www.nytimes.com [...]&quot;</em>. This is standard for extensions and ensures functionality. Rest assured, the extension is strictly designed to read data from the Spelling Bee game – it does not access, modify, or submit any personal information.</p>
+
+					<p>Most <a href="#installation">add-on stores</a> provide basic download statistics, such as aggregated numbers by country. These statistics do not include any personally identifiable information.</p>
+				</section>
+				<section>
+					<h2>Spelling Bee Assistant on GitHub</h2>
+					<ul>
+						<li>
+							<a href="https://github.com/draber/draber.github.io" rel="noopener"
+							target="_blank">Repository</a>
+						</li>
+						<li>
+							<a href="https://github.com/draber/draber.github.io/releases" rel="noopener"
+							target="_blank">Releases</a>
+						</li>
+						<li>
+							<a href="https://github.com/draber/draber.github.io/issues" rel="noopener"
+							target="_blank">Issues</a>
+						</li>
+					</ul>
+				</section>
+			</div>
+		</main>
+		<div id="btt">
+			<div class="wrapper">
+				<a title="Back to top" href="#">
+					<svg viewBox="0 0 78 78" xmlns="http://www.w3.org/2000/svg">
+						<circle cx="39" cy="39" r="39" fill="#999999" fill-opacity=".5"/>
+						<path d="m39 18-24 22h16v22h16v-22h16z" fill="#fff"/>
+					</svg>
+				</a>
+			</div>
+		</div>
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "SoftwareApplication",
+				"name": "Spelling Bee Assistant",
+				"operatingSystem": "Any",
+				"applicationCategory": "BrowserApplication",
+				"aggregateRating": {
+					"@type": "AggregateRating",
+					"ratingValue": "5",
+					"ratingCount": "2"
+				},
+				"offers": {
+					"@type": "Offer",
+					"price": "0"
+				}
 			}
-		}
-	</script>
-</body>
+		</script>
+	</body>
 
 </html>

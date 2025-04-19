@@ -184,6 +184,22 @@ main .hive-box svg {
     padding: 0;
     list-style: none;
 }
+
+#whats-new .card ul {
+    margin: 0 0 1rem 0;
+    padding: 0 0 0 2.5rem;
+    list-style: disc;
+}
+
+.card ul.custom-symbols {
+    list-style: none;
+}
+
+.card ul.custom-symbols li::marker {
+    content: attr(data-symbol) "  ";
+    font-weight: bold;
+}
+
 ::selection {
     background: var(--highlight-bg-color);
 }
@@ -240,7 +256,6 @@ header ul .kofi a {
     padding: 0.3rem 0.7rem;
     line-height: 1;
     font-size: 1.4rem;
-    color: currentColor;
     text-decoration: none;
     align-items: center;
     color: #fff;
@@ -425,10 +440,11 @@ tr:nth-child(n + 1) td:nth-child(n + 2) {
     aspect-ratio: 1/1;
     display: block;
 }
-#grid-btn svg{ 
+#grid-btn svg {
     width: 1.4rem;
     aspect-ratio: 1/1;
 }
+
 @media screen and (max-width: 1160px) {
     #btt .wrapper {
         max-width: calc(100vw - 4.5rem);
@@ -544,4 +560,4 @@ tr:nth-child(n + 1) td:nth-child(n + 2) {
         right: 0;
         top: 2.5rem;
     }
-} 
+}

@@ -22,8 +22,7 @@ const manifest = {
         .filter((file) => path.extname(file) === ".png" && /(\d+)/.test(file))
         .reduce((result, file) => {
             let key = file.match(/(\d+)/).shift();
-            let value = `assets/${path.basename(file)}`;
-            result[key] = value;
+            result[key] = `assets/${path.basename(file)}`;
             return result;
         }, {}),
     web_accessible_resources: [

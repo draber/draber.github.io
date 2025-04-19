@@ -50,7 +50,6 @@ function getStoredData(formatAsString = false) {
 
     /**
      * Parse a cookie
-     * @param {String} document.cookie
      * @returns Object
      */
     const getCookieData = () => {

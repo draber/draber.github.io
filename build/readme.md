@@ -15,7 +15,7 @@ git clone draber/draber.github.io
 npm i
 
 // compile the extension
-npm run app:build
+npm run app:build:prod
 ```
 
 This creates two different IIFE bundles, a compressed and an uncompressed version of the same code base. It depends on the store which version is used in the extension.

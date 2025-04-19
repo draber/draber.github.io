@@ -7,16 +7,25 @@
 import settings from '../modules/settings.js';
 import {
     prefix
-} from '../modules/string.js';
+} from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
 import iconWarning from '../assets/warning.svg';
 import iconCoffee from '../assets/kofi.svg';
+import iconNew from '../assets/new.svg';
 import fn from 'fancy-node';
+
+import newItems from "../utils/newItems.js";
 
 
 const svgIcons = {
     warning: iconWarning,
-    coffee: iconCoffee
+    coffee: iconCoffee,
+    new: iconNew,
+}
+
+newItems.ensureInstallDate();
+if (!newItems.shouldHighlightNewItems()) {
+    delete svgIcons.new;
 }
 
 
@@ -29,7 +38,7 @@ const svgIcons = {
 class Menu extends Plugin {
 
     /**
-     * Get element to which the launcher will be attached to
+     * Retrieve the element the launcher will be attached to
      * @returns {HTMLElement}
      */
     getTarget() {
@@ -47,7 +56,7 @@ class Menu extends Plugin {
         }
 
         const observer = new MutationObserver(mutationList => {
-            for(let mutation of mutationList){                
+            for (let mutation of mutationList) {
                 if (mutation.type === 'attributes' &&
                     mutation.attributeName === 'class' &&
                     mutation.target.classList.contains('show-mobile-toolbar')) {
@@ -109,7 +118,7 @@ class Menu extends Plugin {
             },
             events: {
                 pointerup: evt => {
-                    if(evt.target.nodeName === 'A'){
+                    if (evt.target.nodeName === 'A') {
                         this.resetSubmenu();
                         evt.target.click();
                         return true;
@@ -122,17 +131,13 @@ class Menu extends Plugin {
                     const component = this.getComponent(entry);
                     switch (entry.dataset.action) {
                         case 'boolean': {
-                            let nextState = !component.getState();
-                            component.toggle(nextState);
-                            entry.classList.toggle('checked', nextState);
-                            if (component === this.app) {
-                                this.app.toggle(nextState);
-                            }
+                            component.toggle();
+                            entry.classList.toggle('checked', component.getState());
                             break;
                         }
                         case 'popup':
                             this.app.domSet('submenu', false);
-                            component.display();
+                            component.togglePopup();
                             break;
                         default:
                             this.resetSubmenu();
@@ -156,6 +161,7 @@ class Menu extends Plugin {
         this.ui = fn.div({
             events: {
                 pointerup: evt => {
+                    newItems.markSeen();
                     if (evt.button !== 0) {
                         return true;
                     }
@@ -165,7 +171,12 @@ class Menu extends Plugin {
                 }
             },
             content: [
-                settings.get('title'),
+                fn.span({
+                    attributes: {
+                        id: prefix("menu-entry-point", "d"),
+                    },
+                    content: settings.get('title')
+                }),
                 pane
             ],
             aria: {
@@ -180,7 +191,7 @@ class Menu extends Plugin {
             }
         });
 
-        fn.$('#pz-game-root').addEventListener('pointerdown', evt => { 
+        fn.$('#pz-game-root').addEventListener('pointerdown', evt => {
             if (this.app.domGet('submenu') === true) {
                 this.app.domSet('submenu', false)
             }
@@ -188,22 +199,30 @@ class Menu extends Plugin {
 
         app.on(prefix('pluginsReady'), evt => {
             evt.detail.forEach((plugin, key) => {
-                if (!plugin.canChangeState || plugin === this) {
+                if (!plugin.menu || !plugin.menu.action) {
                     return false;
                 }
-                const action = plugin.menuAction || 'boolean';
-                const icon = plugin.menuIcon || null;
+                let icon = plugin.menu.icon || null;
+                const data = {
+                    component: key,
+                    action: plugin.menu.action
+                }
+                let classNames = [];
+                if (plugin.menu.action === 'boolean') {
+                    data.icon = 'checkmark';
+                    if (plugin.getState()) {
+                        classNames = ['checked'];
+                    }
+                } else if (icon) {
+                    data.icon = icon;
+                }
                 pane.append(fn.li({
-                    classNames: action === 'boolean' && plugin.getState() ? ['checked'] : [],
+                    classNames,
                     attributes: {
-                        title: plugin.description
+                        title: fn.toNode(plugin.description).textContent
                     },
-                    data: {
-                        component: key,
-                        icon: action === 'boolean' ? 'checkmark' : icon,
-                        action
-                    },
-                    content: svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
+                    data,
+                    content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
                 }));
             })
             pane.append(fn.li({

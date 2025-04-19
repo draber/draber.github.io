@@ -8,8 +8,10 @@ import settings from "./settings.js";
 import data from "./data.js";
 import getPlugins from "./importer.js";
 import Widget from "./widget.js";
-import { prefix } from "./string.js";
+import { prefix } from "../utils/string.js";
 import fn from "fancy-node";
+import pluginRegistry from "./pluginRegistry.js";
+import shortcutRegistry from "./shortcutRegistry.js";
 
 /**
  * App container
@@ -57,7 +59,7 @@ class App extends Widget {
     getSyncData() {
         let puzzleId = window.gameData.today.id.toString();
         let gameData;
-        let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/\d+$/.test(key));
+        let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/(\d+|ANON)$/.test(key));
 
         // if the user has never been logged in, e.g. in an incognito window
         if (!lsKeysFiltered.length) {
@@ -96,16 +98,20 @@ class App extends Widget {
      * Position the game on launch
      * @returns {Boolean}
      */
-    focusGame(){        
+    focusGame() {
         if (!this.envIs("desktop")) {
             return false;
         }
-        fn.$(".pz-moment__welcome.on-stage .pz-moment__button").addEventListener('pointerup', () => {
-            window.scrollTo(0,0);
-            const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
-            const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
-            window.scrollTo(0, targetOffsetTop);
-        }, false);
+        fn.$(".pz-moment__welcome.on-stage .pz-moment__button").addEventListener(
+            "pointerup",
+            () => {
+                window.scrollTo(0, 0);
+                const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
+                const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
+                window.scrollTo(0, targetOffsetTop);
+            },
+            false
+        );
         return true;
     }
 
@@ -123,10 +129,30 @@ class App extends Widget {
 
             this.add();
             this.domSet("active", true);
+            shortcutRegistry.add(this.shortcut);
             this.registerPlugins();
-            this.trigger(prefix("refreshUi"));
+            this.trigger(prefix("refreshUi"), null);
             document.dispatchEvent(new Event(prefix("ready")));
-            this.focusGame();            
+
+            // fire shortcuts
+            document.addEventListener("keydown", (event) => {
+                if (!shortcutRegistry.getSbaShortcutEntry(event)) {
+                    return;
+                }
+                if (!shortcutRegistry.requiresDeletion(event, this)) {
+                    shortcutRegistry.handleShortcut(event); // run immediately
+                } else {
+                    this._lastShortcutEvent = event; // delay and run after newInput
+                }
+            });
+
+            this.on(prefix("newInput"), (event) => {                
+                if (this._lastShortcutEvent) {
+                    shortcutRegistry.handleShortcut(this._lastShortcutEvent);
+                    this._lastShortcutEvent = null;
+                }
+            });
+            this.focusGame();
         });
     }
 
@@ -140,11 +166,10 @@ class App extends Widget {
 
     /**
      * Change app state
-     * @param state
      * @returns {App}
      */
-    toggle(state) {
-        this.domSet("active", state);
+    toggle() {
+        this.domSet("active", !this.getState());
         return this;
     }
 
@@ -169,7 +194,7 @@ class App extends Widget {
 
                     // text input
                     case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
-                        this.trigger(prefix("newInput"), mutation.target.textContent.trim());
+                        this.trigger(prefix("newInput"), mutation.target);
                         break;
 
                     // term added to word list
@@ -224,12 +249,10 @@ class App extends Widget {
      * @returns {App}
      */
     registerPlugins() {
-        this.plugins = new Map();
         Object.values(getPlugins()).forEach((plugin) => {
-            const instance = new plugin(this);
-            instance.add();
-            this.plugins.set(instance.key, instance);
+            pluginRegistry.register(plugin, this);
         });
+        this.plugins = pluginRegistry.getPlugins();
         this.trigger(prefix("pluginsReady"), this.plugins);
         return this;
     }
@@ -248,7 +271,6 @@ class App extends Widget {
      */
     constructor(gameWrapper) {
         super(settings.get("label"), {
-            canChangeState: true,
             key: prefix("app"),
         });
 
@@ -269,6 +291,13 @@ class App extends Widget {
         this.container = fn.div({
             classNames: [prefix("container", "d")],
         });
+
+        this.shortcut = {
+            combo: "Shift+Alt+A",
+            label: "Assistant Panel",
+            module: this.key,
+            callback: () => this.toggle(),
+        };
 
         this.load();
     }

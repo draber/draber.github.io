@@ -1,0 +1,19 @@
+{
+    "version": "4.5.0",
+    "sbaApp": false,
+    "score": false,
+    "letterCount": true,
+    "firstTwoLetters": true,
+    "pangrams": true,
+    "progressBar": true,
+    "grid": true,
+    "darkModeColors": { "hue": 210, "sat": 25 },
+    "yourProgress": true,
+    "community": true,
+    "todaysAnswers": false,
+    "oldVersion": "4.4.1",
+    "spillTheBeans": false,
+    "firstLetter": true,
+    "darkMode": true,
+    "shortcuts": true
+}

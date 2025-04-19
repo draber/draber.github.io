@@ -4,6 +4,7 @@ import pkg from "../../package.json" assert { type: "json" };
 
 const args = minimist(process.argv.slice(2));
 const env = args["config-env"] && args["config-env"] === "prod" ? "prod" : "dev";
+
 const outputFile = env === "dev" ? `${pkg.name}.js` : `${pkg.name}.min.js`;
 
 const setup = {

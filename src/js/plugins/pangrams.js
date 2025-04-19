@@ -4,33 +4,50 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import data from '../modules/data.js';
-import TablePane from './tablePane.js';
-import fn from 'fancy-node';
+import Plugin from "../modules/plugin.js";
+import { prefix } from "../utils/string.js";
+import DetailsBuilder from "../widgets/detailsBuilder.js";
+import  TableBuilder from "../widgets/tableBuilder.js";
+import data from "../modules/data.js";
 
-/**
- * Pangrams plugin
- *
- * @param {App} app
- * @returns {Plugin} Pangrams
- */
-class Pangrams extends TablePane {
+export default class Pangrams extends Plugin {
+    togglePane() {
+        return this.detailsBuilder.togglePane();
+    }
+
+    run(evt) {
+        this.detailsBuilder.update(this.createTable());
+        return this;
+    }
 
     /**
      * Get the data for the table cells
      * @returns {Array}
      */
     getData() {
-        const pangramCount = data.getCount('pangrams');
-        const foundPangramCount = data.getCount('foundPangrams');
+        const pangramCount = data.getCount("pangrams");
+        const foundPangramCount = data.getCount("foundPangrams");
         return [
-            ['✓', '?', '∑'],
-            [
-                foundPangramCount,
-                pangramCount - foundPangramCount,
-                pangramCount
-            ]
+            ["✓", "?", "∑"],
+            [foundPangramCount, pangramCount - foundPangramCount, pangramCount],
         ];
+    }
+
+    createTable() {
+        return (new TableBuilder(this.getData(), {
+            hasHeadRow: true,
+            hasHeadCol: false,
+            classNames: ["data-pane", "th-upper", "table-full-width", "equal-cols", "small-txt"]
+                .map((name) => prefix(name, "d"))
+                .concat(["pane"]),
+            rowCallbacks: [
+                (rowData, rowIdx, rowObj) => {
+                    if (rowData[2] === 0) {
+                        rowObj.classNames.push(prefix("completed", "d"));
+                    }
+                },
+            ],
+        })).ui;
     }
 
     /**
@@ -38,25 +55,16 @@ class Pangrams extends TablePane {
      * @param {App} app
      */
     constructor(app) {
+        super(app, "Pangrams", "The number of pangrams", { runEvt: prefix("refreshUi") });
 
-        super(app, 'Pangrams', 'The number of pangrams', {
-            cssMarkers: {
-                completed: (rowData, i) => rowData[1] === 0
+        this.detailsBuilder = new DetailsBuilder(this.title, false);
+        this.ui = this.detailsBuilder.ui;
+
+        this.shortcuts = [
+            {
+                combo: "Shift+Alt+P",
+                method: "togglePane",
             },
-            hasHeadCol: false
-        });
-
-        this.ui = fn.details({
-            content: [
-                fn.summary({
-                    content: this.title
-                }),
-                this.getPane()
-            ]
-        });
-
-        this.toggle(this.getState());
+        ];
     }
 }
-
-export default Pangrams;
