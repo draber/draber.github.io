@@ -1925,7 +1925,7 @@
 
     var iconCoffee = "<svg viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M2.042 15.915c-.418-.09-.867-.402-1.116-.776-.192-.289-.273-.558-.3-1C.561 13.06.517 5.163.574 4.573c.017-.185.032-.232.099-.314a.774.774 0 01.18-.156l.102-.059 7.291.007c6.859.006 7.304.01 7.52.053 1.545.312 2.778 1.251 3.324 2.531.125.293.21.592.284 1.008.089.492.09 1.307.004 1.734-.35 1.725-1.687 3.002-3.553 3.393a5.827 5.827 0 01-1.218.13c-.255.005-.427.02-.464.04-.102.055-.13.155-.147.528-.027.6-.119.996-.32 1.387-.253.492-.614.795-1.163.978l-.196.065-2.762.029c-3.94.04-7.293.034-7.513-.013zm13.386-4.909c.38-.033.602-.094.892-.243a2.398 2.398 0 001.257-1.645c.054-.266.055-.91.002-1.193-.166-.873-.74-1.596-1.492-1.88-.321-.12-.51-.142-1.232-.142h-.665l-.171.153-.008 2.365c-.004 1.3 0 2.392.008 2.426.008.033.046.09.083.124.067.062.078.063.538.063.258 0 .613-.013.788-.028z\" fill=\"#fff\"/><path d=\"M7.158 13.565c.191.064.255 0 .255 0s2.228-2.037 3.246-3.247c.892-1.082.955-2.8-.573-3.501-1.527-.7-2.8.764-2.8.764a2.508 2.508 0 00-3.502-.382l-.063.064c-.764.827-.51 2.228.063 2.992a38.304 38.304 0 003.247 3.183z\" fill=\"#ff5e5b\"/><path class=\"shape\" d=\"M.984 3.495a.266.266 0 00-.038.003c-.51.071-.903.498-.93 1.013a.266.266 0 000 .014v.191c0 .003-.064 6.17.064 9.56a.266.266 0 000 .004 2.364 2.364 0 002.368 2.225c.002 0 6.42 0 9.485-.064h.445a.266.266 0 00.064-.007c.965-.241 1.523-.842 1.803-1.481.244-.556.26-1.096.27-1.54 1.708.003 3.202-.561 4.19-1.59 1.036-1.077 1.523-2.622 1.193-4.35a4.436 4.436 0 00-1.96-3.04 5.15 5.15 0 00-2.95-.938zm.033.532h13.97a4.617 4.617 0 012.649.843.266.266 0 00.007.005 3.903 3.903 0 011.728 2.682.266.266 0 00.003.01c.304 1.58-.133 2.93-1.053 3.888s-2.338 1.522-4.024 1.461a.266.266 0 00-.276.268c0 .432-.034 1.032-.264 1.555-.227.519-.625.963-1.43 1.17h-.395a.266.266 0 00-.005 0c-3.048.064-9.48.063-9.48.063a.266.266 0 00-.002 0A1.823 1.823 0 01.612 14.25C.486 10.89.55 4.718.55 4.718a.266.266 0 000-.002v-.178a.545.545 0 01.467-.51zm13.271 1.886a.266.266 0 00-.266.268v4.583a.266.266 0 00.26.266c.48.012.961-.009 1.439-.065a.266.266 0 00.027-.005 2.4 2.4 0 001.86-2.557 2.535 2.535 0 00-.564-1.622 2.178 2.178 0 00-1.81-.868zm.267.534h.688a.266.266 0 00.009 0 1.643 1.643 0 011.37.656.266.266 0 00.006.01c.297.364.457.822.45 1.292a.266.266 0 00.002.03 1.862 1.862 0 01-1.443 2.002c-.359.041-.72.048-1.081.048z\"/></svg>";
 
-    var iconNew = "<svg version=\"1.1\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n <path d=\"m2 6v20h24.1l4.05-7.2v-5.13l-4.96-7.68z\" fill=\"#fff\" stroke-width=\"0\"/>\n <path d=\"m31.4 13.9-5-8c-0.73-1.17-2.01-1.88-3.39-1.88h-19c-2.21 0-4 1.79-4 4v16c0 2.21 1.79 4 4 4h19c1.38 0 2.66-0.711 3.39-1.88l5-8c0.812-1.3 0.812-2.94 0-4.24zm-1.7 3.18-5 8c-0.367 0.588-1 0.939-1.7 0.939h-19c-1.1 0-2-0.898-2-2v-16c0-1.1 0.897-2 2-2h19c0.693 0 1.33 0.352 1.7 0.939l5 8c0.403 0.645 0.403 1.48 0 2.12z\" fill=\"#a10000\"/>\n <path d=\"m26.9 12-2.14 8h-1.51l-1.59-5.88-1.45 5.88h-1.48l-2.19-8h1.53l1.55 5.83 1.44-5.83h1.46l1.59 5.83 1.52-5.83zm-10.8 8h-5.2v-8h5.14v1.19h-3.7v2.17h2.98v1.16h-2.98v2.24h3.76zm-6.96 0h-1.4l-3.04-5.11q-0.0703-0.117-0.229-0.381-0.0703-0.117-0.217-0.369v5.86h-1.16v-8h1.59l2.8 4.71q0.0352 0.0586 0.51 0.861v-5.57h1.14z\" fill=\"#a10000\"/>\n</svg>\n";
+    var iconNew = "<svg version=\"1.1\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\r\n <path d=\"m2 6v20h24.1l4.05-7.2v-5.13l-4.96-7.68z\" fill=\"#fff\" stroke-width=\"0\"/>\r\n <path d=\"m31.4 13.9-5-8c-0.73-1.17-2.01-1.88-3.39-1.88h-19c-2.21 0-4 1.79-4 4v16c0 2.21 1.79 4 4 4h19c1.38 0 2.66-0.711 3.39-1.88l5-8c0.812-1.3 0.812-2.94 0-4.24zm-1.7 3.18-5 8c-0.367 0.588-1 0.939-1.7 0.939h-19c-1.1 0-2-0.898-2-2v-16c0-1.1 0.897-2 2-2h19c0.693 0 1.33 0.352 1.7 0.939l5 8c0.403 0.645 0.403 1.48 0 2.12z\" fill=\"#a10000\"/>\r\n <path d=\"m26.9 12-2.14 8h-1.51l-1.59-5.88-1.45 5.88h-1.48l-2.19-8h1.53l1.55 5.83 1.44-5.83h1.46l1.59 5.83 1.52-5.83zm-10.8 8h-5.2v-8h5.14v1.19h-3.7v2.17h2.98v1.16h-2.98v2.24h3.76zm-6.96 0h-1.4l-3.04-5.11q-0.0703-0.117-0.229-0.381-0.0703-0.117-0.217-0.369v5.86h-1.16v-8h1.59l2.8 4.71q0.0352 0.0586 0.51 0.861v-5.57h1.14z\" fill=\"#a10000\"/>\r\n</svg>\r\n";
 
     const versionToString = (version) => version.split(".").slice(0, 2).join("-");
     const currentVersion = settings.get('options.version') || '0';
@@ -2522,6 +2522,126 @@
         }
     }
 
+    var ing = {
+    	grip: "gripping",
+    	pin: "pinning",
+    	pine: "pining"
+    };
+    var suffixFinder_wordlist = {
+    	ing: ing
+    };
+
+    var oddCases = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        default: suffixFinder_wordlist,
+        ing: ing
+    });
+
+    class SuffixFinder extends Plugin {
+        hasSuffix(term) {
+            for (const suffix of this.suffixes) {
+                if (term.endsWith(suffix)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        addToLookup(suffix, stem, term) {
+            if (!this.lookup[suffix]) {
+                this.lookup[suffix] = {};
+            }
+            this.lookup[suffix][stem] = term;
+        }
+        buildStemList(term, suffix) {
+            let baseStem = term.slice(0, -suffix.length);
+            let stems = [baseStem, baseStem + "e"];
+            if (baseStem.length > 1 && baseStem.at(-1) === baseStem.at(-2)) {
+                stems.push(baseStem.slice(0, -1));
+            }
+            if (baseStem.endsWith("y")) {
+                stems.push(baseStem.slice(0, -1) + "ie");
+            }
+            if (baseStem.endsWith("k")) {
+                stems.push(baseStem.slice(0, -1) + "c");
+            }
+            return stems.filter((stem) => this.nonSuffixedTerms.includes(stem));
+        }
+        findSuffixes() {
+            for (const term of this.suffixedTerms) {
+                for (const suffix of this.suffixes) {
+                    const stems = this.buildStemList(term, suffix);
+                    if (stems.length === 0) {
+                        continue;
+                    }
+                    for (const stem of stems) {
+                        if (oddCases[suffix]?.[stem] === term) {
+                            this.addToLookup(suffix, stem, term);
+                            break;
+                        }
+                        const fallback = stems[0];
+                        this.addToLookup(suffix, fallback, term);
+                        break;
+                    }
+                }
+            }
+            return this.lookup;
+        }
+        togglePane() {
+            return this.detailsBuilder.togglePane();
+        }
+        run(evt) {
+            this.detailsBuilder.update(this.createTable());
+            return this;
+        }
+        getData() {
+            console.log(this.findSuffixes());
+            const dataGrid = [["", "✓", "?", "∑"]];
+            const remainders = data.getList("remainders");
+            for (const [suffix, pairings] of Object.entries(this.findSuffixes())) {
+                const pairingVals = Object.values(pairings);
+                const sum = pairingVals.length;
+                const missing = pairingVals.filter((term) => remainders.includes(term)).length;
+                dataGrid.push(["-" + suffix, sum - missing, missing, sum]);
+            }
+            return dataGrid;
+        }
+        createTable() {
+            return new TableBuilder(this.getData(), {
+                hasHeadRow: true,
+                hasHeadCol: false,
+                classNames: ["data-pane", "th-upper", "table-full-width", "equal-cols", "small-txt"]
+                    .map((name) => prefix(name, "d"))
+                    .concat(["pane"]),
+                rowCallbacks: [
+                    (rowData, rowIdx, rowObj) => {
+                        if (rowData[2] === 0) {
+                            rowObj.classNames.push(prefix("completed", "d"));
+                        }
+                    },
+                ],
+            }).ui;
+        }
+        constructor(app) {
+            super(app, "Suffixes", "Finds words with suffixes", { runEvt: prefix("refreshUi") });
+            this.lookup = {};
+            const letters = data.getList("letters");
+            const validTerms = data.getList("answers");
+            this.suffixes = ["able", "al", "ed", "ee", "er", "ible", "ic", "ing", "ion", "ly", "ment", "ness", "y"].filter((suffix) =>
+                [...suffix].every((char) => letters.includes(char))
+            );
+            this.suffixedTerms = validTerms.filter((term) => this.hasSuffix(term));
+            this.nonSuffixedTerms = validTerms.filter((term) => !this.hasSuffix(term));
+            this.detailsBuilder = new DetailsBuilder(this.title, false);
+            this.ui = this.detailsBuilder.ui;
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+U",
+                    method: "togglePane",
+                },
+            ];
+        }
+    }
+
     const getPlugins$1 = () => {
         return {
             Header,
@@ -2542,7 +2662,8 @@
             Community,
             ShortcutScreen,
             TodaysAnswers,
-            NytShortcuts
+            NytShortcuts,
+            SuffixFinder
         };
     };
 

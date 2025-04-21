@@ -24,6 +24,8 @@ import Grid from "../plugins/grid.js";
 import NytShortcuts from "../plugins/nytShortcuts.js";
 import ShortcutScreen from "../plugins/shortcutScreen.js";
 
+import SuffixFinder from "../plugins/suffixFinder.js";
+
 /**
  * Plugins
  * @returns {Object}
@@ -48,7 +50,8 @@ const getPlugins = () => {
         Community,
         ShortcutScreen,
         TodaysAnswers,
-        NytShortcuts
+        NytShortcuts,
+        SuffixFinder
     };
 };
 
