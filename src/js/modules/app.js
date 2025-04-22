@@ -53,36 +53,12 @@ class App extends Widget {
     }
 
     /**
-     * Retrieve sync data from local storage
+     * Retrieve sync data from DOM
+     * @param {HTMLElement} resultsList
      * @returns {Array}
      */
     getSyncData() {
-        let puzzleId = window.gameData.today.id.toString();
-        let gameData;
-        let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/(\d+|ANON)$/.test(key));
-
-        // if the user has never been logged in, e.g. in an incognito window
-        if (!lsKeysFiltered.length) {
-            return [];
-        }
-
-        // At this point the user is either logged or has been logged in at some point.
-        // `nyt-auth-action=logout` indicates, the user was logged in but is no longer
-        if (/nyt-auth-action=logout/.test(document.cookie)) {
-            return [];
-        }
-
-        gameData = JSON.parse(localStorage.getItem(lsKeysFiltered.shift()) || "{}");
-        if (!gameData.states) {
-            return [];
-        }
-
-        gameData.states = gameData.states.filter((item) => item.puzzleId === puzzleId);
-        if (!gameData.states.length) {
-            return [];
-        }
-
-        return gameData.states.shift().data.answers || [];
+        return Array.from(fn.$$('li', this.resultList)).map(li => li.textContent.trim());
     }
 
     /**
@@ -123,9 +99,9 @@ class App extends Widget {
         fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
             // Observe game for various changes
             this.observer = this.buildObserver();
-            data.init(this, this.getSyncData());
             this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
             this.resultList = resultList;
+            data.init(this, this.getSyncData());
 
             this.add();
             this.domSet("active", true);
