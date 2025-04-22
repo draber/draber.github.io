@@ -53,14 +53,16 @@ export default class SuffixFinder extends Plugin {
                 if (stems.length === 0) {
                     continue;
                 }
+                let matched = false;
                 for (const stem of stems) {
                     if (oddCases[suffix]?.[stem] === term) {
                         this.addToLookup(suffix, stem, term);
+                        matched = true;
                         break;
                     }
-                    const fallback = stems[0];
-                    this.addToLookup(suffix, fallback, term);
-                    break;
+                }
+                if (!matched) {
+                    this.addToLookup(suffix, stems[0], term);
                 }
             }
         }
@@ -80,7 +82,7 @@ export default class SuffixFinder extends Plugin {
      * @returns {Array}
      */
     getData() {
-        console.log(this.findSuffixes())
+        console.log(this.findSuffixes());
         const dataGrid = [["", "✓", "?", "∑"]];
         const remainders = data.getList("remainders");
         for (const [suffix, pairings] of Object.entries(this.findSuffixes())) {
@@ -124,8 +126,8 @@ export default class SuffixFinder extends Plugin {
         /**
          * Filters suffixes that could actually appear based on current puzzle letters.
          */
-        this.suffixes = ["able", "al", "ed", "ee", "er", "ible", "ic", "ing", "ion", "ly", "ment", "ness", "y"].filter((suffix) =>
-            [...suffix].every((char) => letters.includes(char))
+        this.suffixes = ["able", "al", "ed", "ee", "er", "ible", "ic", "ing", "ion", "ly", "ment", "ness", "y"].filter(
+            (suffix) => [...suffix].every((char) => letters.includes(char))
         );
 
         this.suffixedTerms = validTerms.filter((term) => this.hasSuffix(term));

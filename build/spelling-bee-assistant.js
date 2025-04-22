@@ -2573,14 +2573,16 @@
                     if (stems.length === 0) {
                         continue;
                     }
+                    let matched = false;
                     for (const stem of stems) {
                         if (oddCases[suffix]?.[stem] === term) {
                             this.addToLookup(suffix, stem, term);
+                            matched = true;
                             break;
                         }
-                        const fallback = stems[0];
-                        this.addToLookup(suffix, fallback, term);
-                        break;
+                    }
+                    if (!matched) {
+                        this.addToLookup(suffix, stems[0], term);
                     }
                 }
             }
@@ -2626,8 +2628,8 @@
             this.lookup = {};
             const letters = data.getList("letters");
             const validTerms = data.getList("answers");
-            this.suffixes = ["able", "al", "ed", "ee", "er", "ible", "ic", "ing", "ion", "ly", "ment", "ness", "y"].filter((suffix) =>
-                [...suffix].every((char) => letters.includes(char))
+            this.suffixes = ["able", "al", "ed", "ee", "er", "ible", "ic", "ing", "ion", "ly", "ment", "ness", "y"].filter(
+                (suffix) => [...suffix].every((char) => letters.includes(char))
             );
             this.suffixedTerms = validTerms.filter((term) => this.hasSuffix(term));
             this.nonSuffixedTerms = validTerms.filter((term) => !this.hasSuffix(term));
@@ -2712,24 +2714,7 @@
             return JSON.parse(document.body.dataset[prefix(key)]);
         }
         getSyncData() {
-            let puzzleId = window.gameData.today.id.toString();
-            let gameData;
-            let lsKeysFiltered = Object.keys(localStorage).filter((key) => /^games-state-spelling_bee\/(\d+|ANON)$/.test(key));
-            if (!lsKeysFiltered.length) {
-                return [];
-            }
-            if (/nyt-auth-action=logout/.test(document.cookie)) {
-                return [];
-            }
-            gameData = JSON.parse(localStorage.getItem(lsKeysFiltered.shift()) || "{}");
-            if (!gameData.states) {
-                return [];
-            }
-            gameData.states = gameData.states.filter((item) => item.puzzleId === puzzleId);
-            if (!gameData.states.length) {
-                return [];
-            }
-            return gameData.states.shift().data.answers || [];
+            return Array.from(fn.$$('li', this.resultList)).map(li => li.textContent.trim());
         }
         envIs(env) {
             return document.body.classList.contains("pz-" + env);
@@ -2753,9 +2738,9 @@
         load() {
             fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
                 this.observer = this.buildObserver();
-                data.init(this, this.getSyncData());
                 this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
                 this.resultList = resultList;
+                data.init(this, this.getSyncData());
                 this.add();
                 this.domSet("active", true);
                 shortcutRegistry.add(this.shortcut);
