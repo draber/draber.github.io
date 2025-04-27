@@ -4,10 +4,9 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import {prefix} from "../utils/string.js";
-import fn from 'fancy-node';
-import {isEmptyObject} from "../utils/utils.js";
-
+import { prefix } from "../utils/string.js";
+import fn from "fancy-node";
+import { isEmptyObject } from "../utils/utils.js";
 
 /**
  * Reference to the hive container element
@@ -40,7 +39,7 @@ const hitActionButton = (action) => {
             return resolve();
         }
 
-        const evtOpts = {bubbles: true, cancelable: true};
+        const evtOpts = { bubbles: true, cancelable: true };
         const feedbackClass = prefix("no-feedback", "d");
 
         actionButtons[action].classList.add(feedbackClass);
@@ -79,7 +78,7 @@ const typeLetter = (letter) => {
             return resolve();
         }
 
-        const evtOpts = {bubbles: true, cancelable: true};
+        const evtOpts = { bubbles: true, cancelable: true };
         el.dispatchEvent(new Event("touchstart", evtOpts));
 
         setTimeout(() => {
@@ -110,7 +109,7 @@ const typeWord = (word) => {
  * @returns {Promise<void>}
  */
 const deleteWord = () => {
-    const input = fn.$('.sb-hive-input-content.non-empty', container);
+    const input = fn.$(".sb-hive-input-content.non-empty", container);
     if (!input) {
         return Promise.resolve();
     }
@@ -154,7 +153,7 @@ const getCellByLetter = (letter) => {
  */
 const init = (_container) => {
     container = _container;
-    ['submit', 'delete', 'shuffle'].forEach(action => {
+    ["submit", "delete", "shuffle"].forEach((action) => {
         actionButtons[action] = fn.$(`.hive-action__${action}`, container);
     });
 };
@@ -166,5 +165,5 @@ export default {
     deleteWord,
     deleteLetter,
     typeWord,
-    typeLetter
+    typeLetter,
 };
