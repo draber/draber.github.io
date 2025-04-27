@@ -5,9 +5,9 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-import { deleteLastLetter } from "../utils/shortcuts.utils.js";
 import { findCloseButton } from "../utils/popup.ui.js";
 import settings from "./settings.js";
+import hive from "./hive.js";
 
 /**
  * Registry of all registered shortcuts.
@@ -192,8 +192,7 @@ const handleShortcut = (event) => {
         entry.callback();
         return true;
     }
-    deleteLastLetter();
-    entry.callback();
+    hive.deleteLetter().then(entry.callback());
     return true;
 };
 

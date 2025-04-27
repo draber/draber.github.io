@@ -48,7 +48,7 @@ const getPlugins = () => {
         Community,
         ShortcutScreen,
         TodaysAnswers,
-        NytShortcuts
+        NytShortcuts,
     };
 };
 

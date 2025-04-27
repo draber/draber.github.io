@@ -7,6 +7,7 @@
 
 import fn from "fancy-node";
 import { prefix } from "./string.js";
+import hive from "../modules/hive.js";
 
 export const ui = (self) => ({
     /**
@@ -133,7 +134,8 @@ export const ui = (self) => ({
 
         const elements = [defs];
 
-        fn.$$(".sb-hive .hive-cell").forEach((cell, i) => {
+        let i = 0;
+        for(const [letter, cell] of Object.entries(hive.getCells())) {
             const orientation = canonicalOrder[i];
             elements.push(
                 fn.g({
@@ -155,12 +157,13 @@ export const ui = (self) => ({
                                 x: 12,
                                 y: 11,
                             },
-                            content: cell.textContent.trim(),
+                            content: letter,
                         }),
                     ],
                 })
             );
-        });
+            i++;
+        }
 
         return fn.div({
             classNames: [prefix("dark-mode-preview", "d")],

@@ -6,6 +6,7 @@
  */
 import settings from "./settings.js";
 import data from "./data.js";
+import hive from "./hive.js";
 import getPlugins from "./importer.js";
 import Widget from "./widget.js";
 import { prefix } from "../utils/string.js";
@@ -102,6 +103,7 @@ class App extends Widget {
             this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
             this.resultList = resultList;
             data.init(this, this.getSyncData());
+            hive.init(this, fn.$('.sb-controls-box', this.gameWrapper));
 
             this.add();
             this.domSet("active", true);
