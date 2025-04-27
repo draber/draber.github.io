@@ -8,11 +8,6 @@ import {prefix} from "../utils/string.js";
 import fn from 'fancy-node';
 import {isEmptyObject} from "../utils/utils.js";
 
-/**
- * Reference to the main SBA App instance
- * @type {App}
- */
-let app;
 
 /**
  * Reference to the hive container element
@@ -155,11 +150,9 @@ const getCellByLetter = (letter) => {
 /**
  * Initializes the hive input controller.
  *
- * @param {App} _app - The SBA App instance
  * @param {HTMLElement} _container - The container element for the hive
  */
-const init = (_app, _container) => {
-    app = _app;
+const init = (_container) => {
     container = _container;
     ['submit', 'delete', 'shuffle'].forEach(action => {
         actionButtons[action] = fn.$(`.hive-action__${action}`, container);

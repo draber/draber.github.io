@@ -472,7 +472,7 @@
     const getCellByLetter = (letter) => {
         return cells[letter] || null;
     };
-    const init = (_app, _container) => {
+    const init = (_container) => {
         container = _container;
         ['submit', 'delete', 'shuffle'].forEach(action => {
             actionButtons[action] = fn.$(`.hive-action__${action}`, container);
