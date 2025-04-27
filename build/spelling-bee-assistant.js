@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "5.0.2";
+    var version = "5.0.3";
 
     const storageKey = `${prefix$1}-settings`;
     const state = {
@@ -2689,7 +2689,7 @@
                 this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
                 this.resultList = resultList;
                 data.init(this, this.getSyncData());
-                hive.init(this, fn.$('.sb-controls-box', this.gameWrapper));
+                hive.init(fn.$('.sb-controls-box', this.gameWrapper));
                 this.add();
                 this.domSet("active", true);
                 shortcutRegistry.add(this.shortcut);

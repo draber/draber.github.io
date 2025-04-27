@@ -103,7 +103,7 @@ class App extends Widget {
             this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
             this.resultList = resultList;
             data.init(this, this.getSyncData());
-            hive.init(this, fn.$('.sb-controls-box', this.gameWrapper));
+            hive.init(fn.$('.sb-controls-box', this.gameWrapper));
 
             this.add();
             this.domSet("active", true);
