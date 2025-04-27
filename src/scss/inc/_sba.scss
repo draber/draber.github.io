@@ -116,6 +116,12 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     &.inactive {
         display: none;
     }
+    b, strong {
+        font-weight: bold;
+    }
+    i, em {
+        font-style: italic;
+    }
 }
 
 details {
@@ -259,16 +265,13 @@ details {
 }
 
 [data-ui="milestones"] {
-    $gapV: 12;
-    $gapH: 40;
+    --flex-gap: 12px;
 
     .sba-milestone-table-wrapper {
         display: flex;
         flex-wrap: wrap;
-        align-content: flex-start;
-        align-items: flex-start;
-        justify-content: flex-start;
-        gap: $gapV * 1px $gapH * 1px;
+        justify-content: space-between;
+        gap: var(--flex-gap);
     }
 
     figcaption {
@@ -285,13 +288,14 @@ details {
     }
 
     .sba-col {
-        width: calc(100% / 2 - #{math.div($gapH, 2)}px);
+        width: calc(50% - (var(--flex-gap) / 2));
+        min-width: 145px;
     }
 
     .sba-summaries {
         .sba-data-pane {
             table-layout: fixed;
-            margin-block-end: #{$gapV}px;
+            margin-block-end: var(--flex-gap);
         }
 
         tr {
@@ -543,10 +547,10 @@ progress {
 .sba-color-selector {
     display: flex;
     justify-content: space-around;
-    gap: 10px;
+    gap: 20px;
 
     .sba-dark-mode-preview {
-        width: 200px;
+        width: calc(40% - 10px);
         aspect-ratio: 62.4 / 64.8;
 
         & svg {
@@ -587,26 +591,32 @@ progress {
         list-style: none;
         justify-content: space-around;
         padding: 0;
-        width: 220px;
+        width: calc(60% - 10px);
 
         li {
             position: relative;
             overflow: hidden;
-            margin-bottom: 5px;
+            width: 25%;
+            aspect-ratio: 1 / 1;
+            padding: 2px;
+
+            &:has([for="sbaH360"]) {
+                width: 100%;
+                line-height: 50px;
+                aspect-ratio: auto;
+                height: auto;
+            }
         }
 
         label {
             border: 1px var(--border-color) solid;
             display: block;
-            width: 50px;
-            height: 50px;
             overflow: hidden;
             cursor: pointer;
             text-align: center;
+            height: 100%;
 
             &[for="sbaH360"] {
-                width: 213px;
-                line-height: 50px;
                 color: var(--highlight-text-color);
             }
         }

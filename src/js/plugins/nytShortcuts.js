@@ -5,10 +5,10 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  *
  */
-import { deleteLastLetter } from "../utils/shortcuts.utils.js";
 import { findCloseButton } from "../utils/popup.ui.js";
 import Plugin from "../modules/plugin.js";
 import fn from "fancy-node";
+import hive from "../modules/hive.js";
 /**
  * NYT Shortcuts Plugin
  *
@@ -42,7 +42,7 @@ class NytShortcuts extends Plugin {
     triggerPopup(selector) {
         let popupCloser = findCloseButton(this.app);
         if (popupCloser) {
-            setTimeout(deleteLastLetter, 50);
+            setTimeout(hive.deleteLetter, 50);
             popupCloser.click();
         } else {
             fn.$(selector)?.click();

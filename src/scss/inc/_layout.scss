@@ -132,6 +132,14 @@ $gameWidth: 1280;
             width: 71px;
             min-width: auto;
         }
+
+
+        [data-ui="milestones"] {
+
+            .sb-modal-body {
+                padding-inline: calc(var(--flex-gap) / 2);
+            }
+        }
     }
 }
 
