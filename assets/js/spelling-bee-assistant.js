@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "5.0.2";
+    var version = "5.0.3";
 
     const storageKey = `${prefix$1}-settings`;
     const state = {
