@@ -6,7 +6,7 @@
     "support":
     {
         "url": "https://ko-fi.com/sbassistant",
-        "text": "Buy me a coffee"
+        "text": "Tip Jar"
     },
     "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
     "buildPath": "build",

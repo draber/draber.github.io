@@ -36,7 +36,7 @@ $gameWidth: 1280;
         align-items: center;
         height: 100%;
         padding: 0 6px;
-        top: 2px
+        top: 2px;
     }
 }
 
@@ -133,11 +133,19 @@ $gameWidth: 1280;
             min-width: auto;
         }
 
-
         [data-ui="milestones"] {
-
             .sb-modal-body {
                 padding-inline: calc(var(--flex-gap) / 2);
+            }
+
+            .sba-queen-bee {
+                &.sba-preeminent {
+                    th {
+                        &::before {
+                            content: normal;
+                        }
+                    }
+                }
             }
         }
     }
@@ -304,7 +312,6 @@ $gameWidth: 1280;
         }
     }
 }
-
 
 // result list on the right
 @media (min-width: 768px) {

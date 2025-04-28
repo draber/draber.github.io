@@ -122,6 +122,9 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     i, em {
         font-style: italic;
     }
+    .sb-modal-body {
+        padding-block-end: 20px
+    }
 }
 
 details {
@@ -293,6 +296,8 @@ details {
     }
 
     .sba-summaries {
+        width: calc(48% - (var(--flex-gap) / 2));
+        min-width: 139px;
         .sba-data-pane {
             table-layout: fixed;
             margin-block-end: var(--flex-gap);
@@ -306,6 +311,8 @@ details {
     }
 
     .sba-tiers {
+        width: calc(52% - (var(--flex-gap) / 2));
+        min-width: 149px;
         .sba-data-pane {
             .sba-preeminent:not(.sba-queen-bee) {
                 border-bottom: 1px solid var(--border-color) !important;

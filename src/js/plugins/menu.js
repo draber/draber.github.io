@@ -12,6 +12,7 @@ import Plugin from '../modules/plugin.js';
 import iconWarning from '../assets/warning.svg';
 import iconCoffee from '../assets/kofi.svg';
 import iconNew from '../assets/new.svg';
+import iconBee from '../assets/sba-bee.svg';
 import fn from 'fancy-node';
 
 import newItems from "../utils/newItems.js";
@@ -21,6 +22,7 @@ const svgIcons = {
     warning: iconWarning,
     coffee: iconCoffee,
     new: iconNew,
+    bee: iconBee
 }
 
 newItems.ensureInstallDate();
