@@ -10,6 +10,8 @@ import {buildDataMatrix} from "../utils/grid.utils.js";
 import Plugin from "../modules/plugin.js";
 import TableBuilder from "../widgets/tableBuilder.js";
 import {markCompletedRatioCells} from "../utils/grid.utils.js";
+import gridIcon from '../assets/grid.svg';
+import fn from 'fancy-node';
 
 /**
  * Grid plugin
@@ -61,6 +63,17 @@ export default class Grid extends Plugin {
         this.menu = {
             action: "popup",
         };
+
+        this.panelBtn = fn.span({
+            classNames: ['sba-tool-btn'],
+            events: {
+                pointerup: () => this.togglePopup()
+            },
+            attributes:{
+                title: this.title
+            },
+            content: gridIcon
+        });
 
         this.shortcuts = [
             {
