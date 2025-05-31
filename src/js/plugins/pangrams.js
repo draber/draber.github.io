@@ -42,7 +42,7 @@ export default class Pangrams extends Plugin {
                 .concat(["pane"]),
             rowCallbacks: [
                 (rowData, rowIdx, rowObj) => {
-                    if (rowData[2] === 0) {
+                    if (rowData[1] === 0) {
                         rowObj.classNames.push(prefix("completed", "d"));
                     }
                 },
