@@ -83,8 +83,7 @@ export default class ShortcutScreen extends Plugin {
         this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
 
         this.menu = {
-            action: "popup",
-            icon: 'new'
+            action: "popup"
         };
 
 

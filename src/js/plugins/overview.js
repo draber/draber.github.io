@@ -48,7 +48,9 @@ export default class Overview extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Overview", "The number of words and points and how many have been found", {runEvt: prefix("refreshUi")});
+        super(app, "Overview", "The number of words and points and how many have been found", {
+            runEvt: prefix("refreshUi")
+        });
 
         this.detailsBuilder = new DetailsBuilder(this.title, true);
         this.ui = this.detailsBuilder.ui;

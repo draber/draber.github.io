@@ -6,7 +6,7 @@
  */
 import DarkMode from "../plugins/darkMode.js";
 import Header from "../plugins/header.js";
-import ProgressBar from "../plugins/ProgressBar.js";
+import ProgressBar from "../plugins/progressBar.js";
 import Overview from "../plugins/overview.js";
 import SpillTheBeans from "../plugins/spillTheBeans.js";
 import LetterCount from "../plugins/letterCount.js";
