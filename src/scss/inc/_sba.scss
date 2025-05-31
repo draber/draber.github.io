@@ -373,6 +373,14 @@ details {
     text-indent: 1px;
     justify-content: space-between;
     align-items: center;
+
+    .sba-tool-btn {
+        padding: 1px;
+        width: 12px;
+        aspect-ratio: 1 / 1;
+        display: inline-block;
+        cursor: pointer
+    }
 }
 
 progress {

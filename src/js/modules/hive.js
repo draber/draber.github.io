@@ -73,16 +73,17 @@ const submitWord = () => hitActionButton("submit");
  */
 const typeLetter = (letter) => {
     return new Promise((resolve) => {
-        const el = getCellByLetter(letter);
-        if (!el) {
+        const cell = getCellByLetter(letter);
+        if (!cell) {
             return resolve();
         }
 
+        const polygon = fn.$('polygon', cell);
         const evtOpts = { bubbles: true, cancelable: true };
-        el.dispatchEvent(new Event("touchstart", evtOpts));
+        polygon.dispatchEvent(new Event("touchstart", evtOpts));
 
         setTimeout(() => {
-            el.dispatchEvent(new Event("touchend", evtOpts));
+            polygon.dispatchEvent(new Event("touchend", evtOpts));
             resolve();
         }, 50);
     });
@@ -92,15 +93,24 @@ const typeLetter = (letter) => {
  * Simulates typing a full word into the hive and submitting it.
  *
  * @param {string} word - The word to type
+ * @param {boolean} slow - If true, types with delay (e.g. for voice input)
  * @returns {Promise<void>}
  */
-const typeWord = (word) => {
+const typeWord = (word, slow=false) => {
     const letters = [...word.toLowerCase()];
     let chain = Promise.resolve();
+
+    const delay = slow ?  250 : 0;
+
     letters.forEach((letter) => {
-        chain = chain.then(() => typeLetter(letter));
+        chain = chain
+            .then(() => typeLetter(letter))
+            .then(() => new Promise((res) => setTimeout(res, delay)));
     });
-    return chain.then(() => submitWord());
+
+    return chain
+        .then(() => new Promise((res) => setTimeout(res, delay))) // extra delay before submit
+        .then(() => submitWord());
 };
 
 /**

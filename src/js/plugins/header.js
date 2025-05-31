@@ -7,6 +7,7 @@
 import settings from "../modules/settings.js";
 import Plugin from "../modules/plugin.js";
 import fn from "fancy-node";
+import { prefix } from "../utils/string.js";
 /**
  * Header plugin
  *
@@ -23,12 +24,25 @@ class Header extends Plugin {
             key: "header",
         });
 
+        const toolbar = fn.div({
+            classNames: ["sba-toolbar"],
+        });
+
+        app.on(prefix("pluginsReady"), (evt) => {
+            evt.detail.forEach((plugin, key) => {
+                if (plugin.panelBtn) {
+                    toolbar.append(plugin.panelBtn);
+                }
+            });
+        });
+
         this.ui = fn.div({
             content: [
                 fn.div({
                     classNames: ["sba-title"],
                     content: this.title,
-                })
+                }),
+                toolbar,
             ],
         });
     }

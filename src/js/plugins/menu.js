@@ -133,6 +133,7 @@ class Menu extends Plugin {
                     const component = this.getComponent(entry);
                     switch (entry.dataset.action) {
                         case 'boolean': {
+                            this.app.domSet('submenu', false);
                             component.toggle();
                             entry.classList.toggle('checked', component.getState());
                             break;

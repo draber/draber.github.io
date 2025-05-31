@@ -49,11 +49,10 @@ class Plugin extends Widget {
      * @param {string|Array|Node} description - Description shown in the plugin’s main view.
      * @param {Object} [options={}] - Optional configuration.
      * @param {string} [options.key] - Internal plugin identifier (used in registry, localStorage keys, etc.).
-     * @param {string} [options.menuIcon] - Symbol or emoji shown in the plugin selection menu.
      * @param {string} [options.runEvt] - Event name that triggers this plugin’s `run()` method (e.g., "refreshUi").
      * @param {string} [options.addMethod] - If provided, calls `app.addMethod(this)` to expose plugin-specific methods.
      */
-    constructor(app, title, description, { key, menuIcon, runEvt, addMethod } = {}) {
+    constructor(app, title, description, { key, runEvt, addMethod } = {}) {
         super(title, {
             key
         });
