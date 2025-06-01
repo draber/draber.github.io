@@ -11,7 +11,6 @@
     --sba-cell-block-padding: 3px;
 }
 
-
 body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     display: none;
 }
@@ -116,14 +115,16 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     &.inactive {
         display: none;
     }
-    b, strong {
+    b,
+    strong {
         font-weight: bold;
     }
-    i, em {
+    i,
+    em {
         font-style: italic;
     }
     .sb-modal-body {
-        padding-block-end: 20px
+        padding-block-end: 20px;
     }
 }
 
@@ -143,7 +144,7 @@ details {
     }
 
     i {
-        font-style: italic
+        font-style: italic;
     }
 }
 
@@ -374,12 +375,16 @@ details {
     justify-content: space-between;
     align-items: center;
 
+    svg {
+        fill: var(--text-color);
+    }
+
     .sba-tool-btn {
         padding: 1px;
         width: 12px;
         aspect-ratio: 1 / 1;
         display: inline-block;
-        cursor: pointer
+        cursor: pointer;
     }
 }
 
@@ -444,7 +449,7 @@ progress {
                 content: "•";
                 animation: pulse-fade 9s ease-out 1 forwards;
                 animation-delay: 3s;
-                color: hsla(0, 100%, 50%, .75);
+                color: hsla(0, 100%, 50%, 0.75);
                 font-size: 1.2em;
                 position: absolute;
                 top: 0;
@@ -757,7 +762,6 @@ progress {
     }
 }
 
-
 [data-ui="shortcuts"] {
     tbody {
         tr {
@@ -934,10 +938,10 @@ progress {
 
         &::after {
             background: linear-gradient(
-                            180deg,
-                            transparent 0%,
-                            var(--modal-bg-color) 56.65%,
-                            var(--body-bg-color) 100%
+                180deg,
+                transparent 0%,
+                var(--modal-bg-color) 56.65%,
+                var(--body-bg-color) 100%
             );
         }
     }
