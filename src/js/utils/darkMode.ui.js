@@ -17,7 +17,7 @@ export const ui = (self) => ({
      * @returns
      */
     getSwatch(scheme, content = "") {
-        let isCurrent = self.colorObjectsAreEqual(scheme, self.getStoredColorScheme());
+        let isCurrent = self.colorSchemesAreEqual(scheme, self.ensureValidColorScheme());
         // The color for the reset swatch are always white, it stores, however, the dark mode colors along with mode = light
         let btnConfig = structuredClone(scheme);
         let background;
@@ -85,10 +85,7 @@ export const ui = (self) => ({
             swatches.append(self.getSwatch({ mode: "dark", hsl: { hue, sat, lig } }));
         }
         // reset button
-        // keeps the last color scheme but switches to 'light', i.e. disables dark mode
-        const scheme = self.getStoredColorScheme(true);
-        scheme.mode = "light";
-        swatches.append(self.getSwatch(scheme, "Return to Light Mode"));
+        swatches.append(self.getSwatch({ mode: "light", hsl: { hue: 0, sat: 0, lig }} , "Return to Light Mode"));
         return swatches;
     },
 

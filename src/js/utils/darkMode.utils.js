@@ -10,6 +10,63 @@ import settings from "../modules/settings.js";
 import { isEmptyObject } from "../utils/utils.js";
 
 export const utils = (self) => ({
+
+    isValidHsl(hsl) {
+        return hsl && !isEmptyObject(hsl) && !isNaN(hsl.hue) && !isNaN(hsl.sat) && !isNaN(hsl.lig);
+    },
+
+    /**
+     * @see _colors.scss [data-sba-theme] --dhue, --dsat and --dlig
+     * @returns {Object} {hue: number, sat: number, lig: number}
+     */
+    ensureValidHsl(hsl) {        
+        if(self.isValidHsl(hsl)) {
+            return hsl;
+        }
+        let scheme = settings.get(`options.${self.key}`);
+        if(scheme?.hsl && self.isValidHsl(scheme.hsl)) {
+            return scheme.hsl;
+        }
+        return {
+            hue: 0,
+            sat: 0,
+            lig: 7,
+        };
+    },
+
+    isValidMode(mode){
+        return mode && ['dark', 'light'].includes(mode);
+    },
+
+    ensureValidMode(mode){      
+        if(self.isValidMode(mode)) {
+            return mode;
+        }
+        return (self.usesSystemDarkMode() ? "dark" : "light");
+    },    
+
+
+    /**
+     * Retrieve the current configuration of the color mode
+     * @returns {Object} {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
+     */
+    ensureValidColorScheme(requestedScheme = null) {
+        let scheme = requestedScheme || settings.get(`options.${self.key}`) || {};
+        scheme.mode = self.ensureValidMode(scheme.mode);
+        scheme.hsl = self.ensureValidHsl(scheme.hsl);
+        return scheme;
+    },
+    
+
+    /**
+     * Check if a scheme is what it's meant to be
+     * @param {{mode: string, hsl: Object}|null} scheme
+     * @returns
+     */
+    isValidColorScheme(scheme = null) {
+        return scheme && !isEmptyObject(scheme) && self.isValidHsl(scheme.hsl) && isValidMode(scheme.mode);
+    },
+
     /**
      * "Dark Mode" in self context means a mode implemented by parties other than the Spelling Bee Assistant.
      * @returns {boolean} - True if the dark mode is enabled, false otherwise.
@@ -38,7 +95,7 @@ export const utils = (self) => ({
      * @returns {boolean} - True if the dark mode is enabled, false otherwise.
      */
     usesSbaDarkMode() {
-        return self.getStoredColorScheme().mode === "dark";
+        return self.ensureValidColorScheme().mode === "dark";
     },
 
     /**
@@ -57,50 +114,16 @@ export const utils = (self) => ({
      * @param {Object} b {{mode: 'light' | 'dark', hsl: {hue: number, sat: number, lig: number}}} b
      * @returns {boolean} True if both objects are equal, false otherwise.
      */
-    colorObjectsAreEqual(a, b) {
+    colorSchemesAreEqual(a, b) {
         return a.mode === b.mode && a.hsl.hue === b.hsl.hue && a.hsl.sat === b.hsl.sat && a.hsl.lig === b.hsl.lig;
     },
 
     /**
-     * Retrieve the current configuration of the color mode
-     * @returns {Object} {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
-     */
-    getStoredColorScheme() {
-        let scheme = settings.get(`options.${self.key}`);
-        if (self.isInvalidScheme(scheme)) {
-            return {
-                mode: "light",
-                // @see _colors.scss [data-sba-theme] --dhue, --dsat and --dlig
-                hsl: {
-                    hue: 0,
-                    sat: 0,
-                    lig: 7,
-                },
-            };
-        } else {
-            // ignore keys such as shortcuts
-            return {
-                mode: scheme.mode,
-                hsl: scheme.hsl,
-            };
-        }
-    },
-
-    /**
      * Turn scheme into a hsl string for CSS
-     * @param {Object} scheme 
+     * @param {Object} scheme
      * @returns {String}
      */
     cssHslFromColorScheme(scheme) {
         return `hsl(${scheme.hsl.hue}, ${scheme.hsl.sat}%, ${scheme.hsl.lig}%)`;
-    },
-
-    /**
-     * Check if a scheme is what it's meant to be
-     * @param {{mode: string, hsl: Object}|null} scheme
-     * @returns 
-     */
-    isInvalidScheme(scheme = null) {
-        return !scheme || isEmptyObject(scheme) || !scheme.hsl || isEmptyObject(scheme.hsl) || !scheme.mode;
     },
 });
