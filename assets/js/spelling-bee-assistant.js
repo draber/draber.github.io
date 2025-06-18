@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "5.1.0";
+    var version = "5.1.1";
 
     const storageKey = `${prefix$1}-settings`;
     const state = {
@@ -709,6 +709,41 @@
     }
 
     const utils = (self) => ({
+        isValidHsl(hsl) {
+            return hsl && !isEmptyObject(hsl) && !isNaN(hsl.hue) && !isNaN(hsl.sat) && !isNaN(hsl.lig);
+        },
+        ensureValidHsl(hsl) {
+            if(self.isValidHsl(hsl)) {
+                return hsl;
+            }
+            let scheme = settings.get(`options.${self.key}`);
+            if(scheme.hsl && self.isValidHsl(scheme.hsl)) {
+                return scheme.hsl;
+            }
+            return {
+                hue: 0,
+                sat: 0,
+                lig: 7,
+            };
+        },
+        isValidMode(mode){
+            return mode && ['dark', 'light'].includes(mode);
+        },
+        ensureValidMode(mode){
+            if(self.isValidMode(mode)) {
+                return mode;
+            }
+            return (self.usesSystemDarkMode() ? "dark" : "light");
+        },
+        ensureValidColorScheme(requestedScheme = null) {
+            let scheme = requestedScheme || settings.get(`options.${self.key}`) || {};
+            scheme.mode = self.ensureValidMode(scheme.mode);
+            scheme.hsl = self.ensureValidHsl(scheme.hsl);
+            return scheme;
+        },
+        isValidColorScheme(scheme = null) {
+            return scheme && !isEmptyObject(scheme) && self.isValidHsl(scheme.hsl) && isValidMode(scheme.mode);
+        },
         usesNonSbaDarkMode() {
             const rgb = getComputedStyle(document.body).backgroundColor.match(/\d+/g);
             if (!rgb || (rgb.length === 4 && parseInt(rgb[3]) === 0)) {
@@ -724,44 +759,25 @@
             return luminance < 0.5;
         },
         usesSbaDarkMode() {
-            return self.getStoredColorScheme().mode === "dark";
+            console.log('uses sba dm');
+            return self.ensureValidColorScheme().mode === "dark";
         },
         usesSystemDarkMode() {
+            console.log('uses system dm');
             const darkMode = window.matchMedia("(prefers-color-scheme: dark)");
             return !!darkMode.matches;
         },
-        colorObjectsAreEqual(a, b) {
+        colorSchemesAreEqual(a, b) {
             return a.mode === b.mode && a.hsl.hue === b.hsl.hue && a.hsl.sat === b.hsl.sat && a.hsl.lig === b.hsl.lig;
-        },
-        getStoredColorScheme() {
-            let scheme = settings.get(`options.${self.key}`);
-            if (self.isInvalidScheme(scheme)) {
-                return {
-                    mode: "light",
-                    hsl: {
-                        hue: 0,
-                        sat: 0,
-                        lig: 7,
-                    },
-                };
-            } else {
-                return {
-                    mode: scheme.mode,
-                    hsl: scheme.hsl,
-                };
-            }
         },
         cssHslFromColorScheme(scheme) {
             return `hsl(${scheme.hsl.hue}, ${scheme.hsl.sat}%, ${scheme.hsl.lig}%)`;
-        },
-        isInvalidScheme(scheme = null) {
-            return !scheme || isEmptyObject(scheme) || !scheme.hsl || isEmptyObject(scheme.hsl) || !scheme.mode;
         },
     });
 
     const ui = (self) => ({
         getSwatch(scheme, content = "") {
-            let isCurrent = self.colorObjectsAreEqual(scheme, self.getStoredColorScheme());
+            let isCurrent = self.colorSchemesAreEqual(scheme, self.ensureValidColorScheme());
             let btnConfig = structuredClone(scheme);
             let background;
             if (scheme.mode === "light") {
@@ -818,7 +834,7 @@
                 const sat = hue === 0 ? 0 : 25;
                 swatches.append(self.getSwatch({ mode: "dark", hsl: { hue, sat, lig } }));
             }
-            const scheme = self.getStoredColorScheme(true);
+            const scheme = self.ensureValidColorScheme();
             scheme.mode = "light";
             swatches.append(self.getSwatch(scheme, "Return to Light Mode"));
             return swatches;
@@ -902,19 +918,13 @@
                 return this;
             }
             this.popup.toggle(true);
-            if(this.found3rdPartyDm){
-                return this;
-            }
             fn.$("input:checked", this.popup.ui).focus();
             return this;
         }
         applyColorScheme(scheme) {
-            if (!scheme.hsl || isEmptyObject(scheme.hsl)) {
-                scheme.hsl = this.getStoredColorScheme().hsl;
-            }
-            if(this.found3rdPartyDm){
-                scheme.mode = 'light';
-            }
+            console.log('cs arg', structuredClone(scheme));
+            scheme = this.ensureValidColorScheme(scheme);
+            console.log('cs corrected', structuredClone(scheme));
             document.body.dataset[prefix("theme")] = scheme.mode;
             document.body.style.setProperty("--dhue", scheme.hsl.hue);
             document.body.style.setProperty("--dsat", scheme.hsl.sat + "%");
@@ -924,28 +934,19 @@
             return this;
         }
         toggleColorScheme() {
-            if(this.found3rdPartyDm){
-                return this;
-            }
-            const scheme = this.getStoredColorScheme();
+            const scheme = this.ensureValidColorScheme();
             scheme.mode = scheme.mode === "dark" ? "light" : "dark";
             return this.applyColorScheme(scheme);
         }
         constructor(app) {
             super(app, "Dark Mode", "Choose your vibe: shades for morning people and night owls.");
             Object.assign(this, utils(this), ui(this));
-            this.found3rdPartyDm = false;
             if (this.usesNonSbaDarkMode()) {
-                this.applyColorScheme({ mode: "light" });
-                this.found3rdPartyDm = true;
+                console.log('non-sba');
+                this.applyColorScheme({ mode: "dark" });
                 return;
-            } else if (this.usesSbaDarkMode()) {
-                this.applyColorScheme({ mode: "dark" });
-            } else if (this.usesSystemDarkMode()) {
-                this.applyColorScheme({ mode: "dark" });
-            } else {
-                this.applyColorScheme({ mode: "light" });
             }
+            this.applyColorScheme(settings.get(`options.${this.key}`));
             this.menu = {
                 action: "popup",
             };
@@ -961,32 +962,16 @@
                     label: "Dark Mode Colors",
                 },
             ];
-            this.popup = new PopupBuilder(this.app, this.key);
-            if (!this.found3rdPartyDm) {
-                this.popup
-                    .setContent("title", this.title)
-                    .setContent("subtitle", this.description)
-                    .setContent(
-                        "body",
-                        fn.div({
-                            classNames: [prefix("color-selector", "d")],
-                            content: [this.getSwatches(), this.getHive()],
-                        })
-                    );
-            } else {
-                this.popup.setContent("title", "Dark Mode disabled").setContent(
-                    "subtitle",
-                    fn.toNode([
-                        fn.p({
-                            content: `Spelling Bee Assistant’s dark mode has been turned off because 
-                    another dark theme (likely from the NYT) was detected.`,
-                        }),
-                        fn.p({
-                            content: `If you prefer SBA’s dark mode, consider disabling the other one.`,
-                        }),
-                    ])
+            this.popup = new PopupBuilder(this.app, this.key)
+                .setContent("title", this.title)
+                .setContent("subtitle", this.description)
+                .setContent(
+                    "body",
+                    fn.div({
+                        classNames: [prefix("color-selector", "d")],
+                        content: [this.getSwatches(), this.getHive()],
+                    })
                 );
-            }
         }
     }
 
@@ -2072,7 +2057,7 @@
         warning: iconWarning,
         coffee: iconCoffee,
         new: iconNew,
-        bee: iconBee
+        bee: iconBee,
     };
     newItems.ensureInstallDate();
     if (!newItems.shouldHighlightNewItems()) {
@@ -2080,33 +2065,35 @@
     }
     class Menu extends Plugin {
         getTarget() {
-            return this.app.envIs('mobile') ? fn.$('#js-mobile-toolbar') : fn.$('#portal-game-toolbar > div:last-of-type');
+            return this.app.envIs("mobile") ? fn.$("#js-mobile-toolbar") : fn.$("#portal-game-toolbar > div:last-of-type");
         }
         add() {
-            if (!this.app.envIs('mobile')) {
+            if (!this.app.envIs("mobile")) {
                 return super.add();
             }
-            const navContainer = fn.$('#js-global-nav');
-            if (navContainer.classList.contains('show-mobile-toolbar')) {
+            const navContainer = fn.$("#js-global-nav");
+            if (navContainer.classList.contains("show-mobile-toolbar")) {
                 return super.add();
             }
-            const observer = new MutationObserver(mutationList => {
+            const observer = new MutationObserver((mutationList) => {
                 for (let mutation of mutationList) {
-                    if (mutation.type === 'attributes' &&
-                        mutation.attributeName === 'class' &&
-                        mutation.target.classList.contains('show-mobile-toolbar')) {
+                    if (
+                        mutation.type === "attributes" &&
+                        mutation.attributeName === "class" &&
+                        mutation.target.classList.contains("show-mobile-toolbar")
+                    ) {
                         observer.disconnect();
                         return super.add();
                     }
                 }
             });
             observer.observe(navContainer, {
-                attributes: true
+                attributes: true,
             });
         }
         getComponent(entry) {
             if (entry.dataset.component === this.app.key) {
-                return this.app
+                return this.app;
             }
             if (this.app.plugins.has(entry.dataset.component)) {
                 return this.app.plugins.get(entry.dataset.component);
@@ -2115,101 +2102,104 @@
         }
         resetSubmenu() {
             setTimeout(() => {
-                this.app.domSet('submenu', false);
-            }, 60);
+                this.app.domSet("submenu", false);
+            }, 100);
         }
         constructor(app) {
-            super(app, 'Menu', '');
+            super(app, "Menu", "");
             this.target = this.getTarget();
-            if (this.app.envIs('mobile')) {
-                this.addMethod = 'after';
+            if (this.app.envIs("mobile")) {
+                this.addMethod = "after";
             }
-            const classNames = ['pz-toolbar-button__sba', this.app.envIs('mobile') ? 'pz-nav__toolbar-item' : 'pz-toolbar-button'];
+            const classNames = [
+                "pz-toolbar-button__sba",
+                this.app.envIs("mobile") ? "pz-nav__toolbar-item" : "pz-toolbar-button",
+            ];
             this.resetSubmenu();
             const pane = fn.ul({
-                classNames: ['pane'],
+                classNames: ["pane"],
                 data: {
-                    ui: 'submenu'
+                    ui: "submenu",
                 },
                 events: {
-                    pointerup: evt => {
-                        if (evt.target.nodeName === 'A') {
+                    pointerup: (evt) => {
+                        if (evt.target.nodeName === "A") {
                             this.resetSubmenu();
                             evt.target.click();
                             return true;
                         }
-                        const entry = evt.target.closest('li');
+                        const entry = evt.target.closest("li");
                         if (!entry || evt.button !== 0) {
                             this.resetSubmenu();
                             return true;
                         }
                         const component = this.getComponent(entry);
                         switch (entry.dataset.action) {
-                            case 'boolean': {
-                                this.app.domSet('submenu', false);
+                            case "boolean": {
+                                this.resetSubmenu();
                                 component.toggle();
-                                entry.classList.toggle('checked', component.getState());
+                                entry.classList.toggle("checked", component.getState());
                                 break;
                             }
-                            case 'popup':
-                                this.app.domSet('submenu', false);
+                            case "popup":
+                                this.resetSubmenu();
                                 component.togglePopup();
                                 break;
                             default:
                                 this.resetSubmenu();
                         }
-                    }
+                    },
                 },
                 content: fn.li({
-                    classNames: this.app.getState() ? ['checked'] : [],
+                    classNames: this.app.getState() ? ["checked"] : [],
                     attributes: {
-                        title: this.app.title
+                        title: this.app.title,
                     },
                     data: {
                         component: this.app.key,
-                        icon: 'checkmark',
-                        action: 'boolean'
+                        icon: "checkmark",
+                        action: "boolean",
                     },
-                    content: `Show ${settings.get('title')}`
-                })
+                    content: `Show ${settings.get("title")}`,
+                }),
             });
             this.ui = fn.div({
                 events: {
-                    pointerup: evt => {
+                    pointerup: (evt) => {
                         newItems.markSeen();
                         if (evt.button !== 0) {
                             return true;
                         }
                         if (!evt.target.dataset.action) {
-                            this.app.domSet('submenu', !this.app.domGet('submenu'));
+                            this.app.domSet("submenu", !this.app.domGet("submenu"));
                         }
-                    }
+                    },
                 },
                 content: [
                     fn.span({
                         attributes: {
                             id: prefix("menu-entry-point", "d"),
                         },
-                        content: settings.get('title')
+                        content: settings.get("title"),
                     }),
-                    pane
+                    pane,
                 ],
                 aria: {
-                    role: 'presentation'
+                    role: "presentation",
                 },
-                classNames
+                classNames,
             });
-            document.addEventListener('keyup', evt => {
-                if (this.app.domGet('submenu') === true && /^(Ent|Esc|Key|Dig)/.test(evt.code)) {
-                    this.app.domSet('submenu', false);
+            document.addEventListener("keyup", (evt) => {
+                if (this.app.domGet("submenu") === true && /^(Ent|Esc|Key|Dig)/.test(evt.code)) {
+                    this.app.domSet("submenu", false);
                 }
             });
-            fn.$('#pz-game-root').addEventListener('pointerdown', evt => {
-                if (this.app.domGet('submenu') === true) {
-                    this.app.domSet('submenu', false);
+            fn.$("#pz-game-root").addEventListener("pointerdown", (evt) => {
+                if (this.app.domGet("submenu") === true) {
+                    this.app.domSet("submenu", false);
                 }
             });
-            app.on(prefix('pluginsReady'), evt => {
+            app.on(prefix("pluginsReady"), (evt) => {
                 evt.detail.forEach((plugin, key) => {
                     if (!plugin.menu || !plugin.menu.action) {
                         return false;
@@ -2217,48 +2207,49 @@
                     let icon = plugin.menu.icon || null;
                     const data = {
                         component: key,
-                        action: plugin.menu.action
+                        action: plugin.menu.action,
                     };
                     let classNames = [];
-                    if (plugin.menu.action === 'boolean') {
-                        data.icon = 'checkmark';
+                    if (plugin.menu.action === "boolean") {
+                        data.icon = "checkmark";
                         if (plugin.getState()) {
-                            classNames = ['checked'];
+                            classNames = ["checked"];
                         }
                     } else if (icon) {
                         data.icon = icon;
                     }
-                    pane.append(fn.li({
-                        classNames,
-                        attributes: {
-                            title: fn.toNode(plugin.description).textContent
-                        },
-                        data,
-                        content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title
-                    }));
+                    pane.append(
+                        fn.li({
+                            classNames,
+                            attributes: {
+                                title: fn.toNode(plugin.description).textContent,
+                            },
+                            data,
+                            content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title,
+                        })
+                    );
                 });
-                pane.append(fn.li({
-                    attributes: {
-                        title: settings.get('support.text')
-                    },
-                    data: {
-                        icon: prefix(),
-                        component: prefix('web'),
-                        action: 'link'
-                    },
-                    content: fn.a({
-                        content: [
-                            iconCoffee,
-                            settings.get('support.text'),
-                        ],
+                pane.append(
+                    fn.li({
                         attributes: {
-                            href: settings.get('support.url'),
-                            target: prefix()
-                        }
+                            title: settings.get("support.text"),
+                        },
+                        data: {
+                            icon: prefix(),
+                            component: prefix("web"),
+                            action: "link",
+                        },
+                        content: fn.a({
+                            content: [iconCoffee, settings.get("support.text")],
+                            attributes: {
+                                href: settings.get("support.url"),
+                                target: prefix(),
+                            },
+                        }),
                     })
-                }));
+                );
             });
-            app.on(prefix('destroy'), () => this.ui.remove());
+            app.on(prefix("destroy"), () => this.ui.remove());
         }
     }
 

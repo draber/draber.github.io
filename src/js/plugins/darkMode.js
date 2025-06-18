@@ -11,7 +11,6 @@ import PopupBuilder from "../widgets/popupBuilder.js";
 import { prefix } from "../utils/string.js";
 import { utils } from "../utils/darkMode.utils.js";
 import { ui } from "../utils/darkMode.ui.js";
-import { isEmptyObject } from "../utils/utils.js";
 
 /**
  * Dark Mode plugin
@@ -30,10 +29,11 @@ class DarkMode extends Plugin {
             return this;
         }
         this.popup.toggle(true);
-        if(this.found3rdPartyDm){
-            return this;
-        }
-        fn.$("input:checked", this.popup.ui).focus();
+        
+        const currentSwatch = fn.$("input:checked", this.popup.ui);
+        setTimeout(()=> {
+            currentSwatch.focus();
+        }, 1000);
         return this;
     }
 
@@ -43,12 +43,8 @@ class DarkMode extends Plugin {
      * @returns {DarkMode}
      */
     applyColorScheme(scheme) {
-        if (!scheme.hsl || isEmptyObject(scheme.hsl)) {
-            scheme.hsl = this.getStoredColorScheme().hsl;
-        }
-        if(this.found3rdPartyDm){
-            scheme.mode = 'light';
-        }
+        // scheme has mode but no valid hsl
+        scheme = this.ensureValidColorScheme(scheme);
 
         document.body.dataset[prefix("theme")] = scheme.mode;
         document.body.style.setProperty("--dhue", scheme.hsl.hue);
@@ -65,10 +61,7 @@ class DarkMode extends Plugin {
      * @returns DarkMode
      */
     toggleColorScheme() {
-        if(this.found3rdPartyDm){
-            return this;
-        }
-        const scheme = this.getStoredColorScheme();
+        const scheme = this.ensureValidColorScheme();
         scheme.mode = scheme.mode === "dark" ? "light" : "dark";
         return this.applyColorScheme(scheme);
     }
@@ -82,20 +75,13 @@ class DarkMode extends Plugin {
 
         Object.assign(this, utils(this), ui(this));
 
-        this.found3rdPartyDm = false;
+        let found3rdPartyDm = false;
 
         if (this.usesNonSbaDarkMode()) {
-            this.applyColorScheme({ mode: "light" });
-            this.found3rdPartyDm = true;
-            return;
-        } else if (this.usesSbaDarkMode()) {
-            // sba colors
             this.applyColorScheme({ mode: "dark" });
-        } else if (this.usesSystemDarkMode()) {
-            // default sba colors
-            this.applyColorScheme({ mode: "dark" });
+            found3rdPartyDm = true;
         } else {
-            this.applyColorScheme({ mode: "light" });
+            this.applyColorScheme(settings.get(`options.${this.key}`));
         }
 
         this.menu = {
@@ -117,7 +103,7 @@ class DarkMode extends Plugin {
 
         this.popup = new PopupBuilder(this.app, this.key);
 
-        if (!this.found3rdPartyDm) {            
+        if (!found3rdPartyDm) {
             this.popup
                 .setContent("title", this.title)
                 .setContent("subtitle", this.description)
@@ -142,6 +128,17 @@ class DarkMode extends Plugin {
                 ])
             );
         }
+
+        // this.popup = new PopupBuilder(this.app, this.key)
+        //     .setContent("title", this.title)
+        //     .setContent("subtitle", this.description)
+        //     .setContent(
+        //         "body",
+        //         fn.div({
+        //             classNames: [prefix("color-selector", "d")],
+        //             content: [this.getSwatches(), this.getHive()],
+        //         })
+        //     );
     }
 }
 
