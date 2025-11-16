@@ -50,6 +50,11 @@ export default class Grid extends Plugin {
         })).ui;
     }
 
+    run(env) {
+        this.popup.setContent("body", this.createTable());
+        return this;
+    }
+
     /**
      * Grid constructor
      * @param {App} app
