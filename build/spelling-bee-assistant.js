@@ -2338,6 +2338,10 @@
                 cellCallbacks: [markCompletedRatioCells]
             })).ui;
         }
+        run(env) {
+            this.popup.setContent("body", this.createTable());
+            return this;
+        }
         constructor(app) {
             super(app, "Grid", "The number of words by length and by first letter.", {runEvt: prefix("refreshUi")});
             this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);

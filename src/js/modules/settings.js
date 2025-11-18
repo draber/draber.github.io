@@ -4,8 +4,8 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import * as config from "../../config/config.json" assert { type: "json" };
-import * as pkg from "../../../package.json" assert { type: "json" };
+import * as config from "../../config/config.json" with { type: "json" };
+import * as pkg from "../../../package.json" with { type: "json" };
 
 const storageKey = `${config.prefix}-settings`;
 
