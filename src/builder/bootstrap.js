@@ -1,6 +1,6 @@
 import minimist from "minimist";
-import config from "../config/config.json" assert { type: "json" };
-import pkg from "../../package.json" assert { type: "json" };
+import config from "../config/config.json" with { type: "json" };
+import pkg from "../../package.json" with { type: "json" };
 
 const args = minimist(process.argv.slice(2));
 const env = args["config-env"] && args["config-env"] === "prod" ? "prod" : "dev";
