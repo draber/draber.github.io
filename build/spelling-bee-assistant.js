@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "5.2.0";
+    var version = "5.2.1";
 
     const storageKey = `${prefix$1}-settings`;
     const state = {
@@ -2068,203 +2068,211 @@
     };
 
     const svgIcons = {
-        warning: iconWarning,
-        coffee: iconCoffee,
-        new: iconNew,
-        bee: iconBee,
+      warning: iconWarning,
+      coffee: iconCoffee,
+      new: iconNew,
+      bee: iconBee,
     };
     newItems.ensureInstallDate();
     if (!newItems.shouldHighlightNewItems()) {
-        delete svgIcons.new;
+      delete svgIcons.new;
     }
     class Menu extends Plugin {
-        getTarget() {
-            return this.app.envIs("mobile") ? fn.$("#js-mobile-toolbar") : fn.$("#portal-game-toolbar > div:last-of-type");
+      getTarget() {
+        return this.app.envIs("mobile")
+          ? fn.$("#js-mobile-toolbar")
+          : fn.$(".pz-game-field .pz-toolbar-right");
+      }
+      add() {
+        if (!this.app.envIs("mobile")) {
+          return super.add();
         }
-        add() {
-            if (!this.app.envIs("mobile")) {
-                return super.add();
+        const navContainer = fn.$("#js-global-nav");
+        if (navContainer.classList.contains("show-mobile-toolbar")) {
+          return super.add();
+        }
+        const observer = new MutationObserver((mutationList) => {
+          for (let mutation of mutationList) {
+            if (
+              mutation.type === "attributes" &&
+              mutation.attributeName === "class" &&
+              mutation.target.classList.contains("show-mobile-toolbar")
+            ) {
+              observer.disconnect();
+              return super.add();
             }
-            const navContainer = fn.$("#js-global-nav");
-            if (navContainer.classList.contains("show-mobile-toolbar")) {
-                return super.add();
-            }
-            const observer = new MutationObserver((mutationList) => {
-                for (let mutation of mutationList) {
-                    if (
-                        mutation.type === "attributes" &&
-                        mutation.attributeName === "class" &&
-                        mutation.target.classList.contains("show-mobile-toolbar")
-                    ) {
-                        observer.disconnect();
-                        return super.add();
-                    }
+          }
+        });
+        observer.observe(navContainer, {
+          attributes: true,
+        });
+      }
+      getComponent(entry) {
+        if (entry.dataset.component === this.app.key) {
+          return this.app;
+        }
+        if (this.app.plugins.has(entry.dataset.component)) {
+          return this.app.plugins.get(entry.dataset.component);
+        }
+        return null;
+      }
+      resetSubmenu() {
+        setTimeout(() => {
+          this.app.domSet("submenu", false);
+        }, 300);
+      }
+      constructor(app) {
+        super(app, "Menu", "");
+        this.target = this.getTarget();
+        if (this.app.envIs("mobile")) {
+          this.addMethod = "after";
+        }
+        const classNames = [
+          "pz-toolbar-button__sba",
+          this.app.envIs("mobile") ? "pz-nav__toolbar-item" : "pz-toolbar-button",
+        ];
+        this.resetSubmenu();
+        const pane = fn.ul({
+          classNames: ["pane"],
+          data: {
+            ui: "submenu",
+          },
+          events: {
+            pointerup: (evt) => {
+              if (evt.target.nodeName === "A") {
+                this.resetSubmenu();
+                evt.target.click();
+                return true;
+              }
+              const entry = evt.target.closest("li");
+              if (!entry || evt.button !== 0) {
+                this.resetSubmenu();
+                return true;
+              }
+              const component = this.getComponent(entry);
+              switch (entry.dataset.action) {
+                case "boolean": {
+                  this.resetSubmenu();
+                  component.toggle();
+                  entry.classList.toggle("checked", component.getState());
+                  break;
                 }
-            });
-            observer.observe(navContainer, {
-                attributes: true,
-            });
-        }
-        getComponent(entry) {
-            if (entry.dataset.component === this.app.key) {
-                return this.app;
+                case "popup":
+                  this.resetSubmenu();
+                  component.togglePopup();
+                  break;
+                default:
+                  this.resetSubmenu();
+              }
+            },
+          },
+          content: fn.li({
+            classNames: this.app.getState() ? ["checked"] : [],
+            attributes: {
+              title: this.app.title,
+            },
+            data: {
+              component: this.app.key,
+              icon: "checkmark",
+              action: "boolean",
+            },
+            content: `Show ${settings.get("title")}`,
+          }),
+        });
+        this.ui = fn.div({
+          events: {
+            pointerup: (evt) => {
+              newItems.markSeen();
+              if (evt.button !== 0) {
+                return true;
+              }
+              if (!evt.target.dataset.action) {
+                this.app.domSet("submenu", !this.app.domGet("submenu"));
+              }
+            },
+          },
+          content: [
+            fn.span({
+              attributes: {
+                id: prefix("menu-entry-point", "d"),
+              },
+              content: settings.get("title"),
+            }),
+            pane,
+          ],
+          aria: {
+            role: "presentation",
+          },
+          classNames,
+        });
+        document.addEventListener("keyup", (evt) => {
+          if (
+            this.app.domGet("submenu") === true &&
+            /^(Ent|Esc|Key|Dig)/.test(evt.code)
+          ) {
+            this.app.domSet("submenu", false);
+          }
+        });
+        fn.$("#pz-game-root").addEventListener("pointerdown", (evt) => {
+          if (this.app.domGet("submenu") === true) {
+            this.app.domSet("submenu", false);
+          }
+        });
+        app.on(prefix("pluginsReady"), (evt) => {
+          evt.detail.forEach((plugin, key) => {
+            if (!plugin.menu || !plugin.menu.action) {
+              return false;
             }
-            if (this.app.plugins.has(entry.dataset.component)) {
-                return this.app.plugins.get(entry.dataset.component);
+            let icon = plugin.menu.icon || null;
+            const data = {
+              component: key,
+              action: plugin.menu.action,
+            };
+            let classNames = [];
+            if (plugin.menu.action === "boolean") {
+              data.icon = "checkmark";
+              if (plugin.getState()) {
+                classNames = ["checked"];
+              }
+            } else if (icon) {
+              data.icon = icon;
             }
-            return null;
-        }
-        resetSubmenu() {
-            setTimeout(() => {
-                this.app.domSet("submenu", false);
-            }, 300);
-        }
-        constructor(app) {
-            super(app, "Menu", "");
-            this.target = this.getTarget();
-            if (this.app.envIs("mobile")) {
-                this.addMethod = "after";
-            }
-            const classNames = [
-                "pz-toolbar-button__sba",
-                this.app.envIs("mobile") ? "pz-nav__toolbar-item" : "pz-toolbar-button",
-            ];
-            this.resetSubmenu();
-            const pane = fn.ul({
-                classNames: ["pane"],
-                data: {
-                    ui: "submenu",
-                },
-                events: {
-                    pointerup: (evt) => {
-                        if (evt.target.nodeName === "A") {
-                            this.resetSubmenu();
-                            evt.target.click();
-                            return true;
-                        }
-                        const entry = evt.target.closest("li");
-                        if (!entry || evt.button !== 0) {
-                            this.resetSubmenu();
-                            return true;
-                        }
-                        const component = this.getComponent(entry);
-                        switch (entry.dataset.action) {
-                            case "boolean": {
-                                this.resetSubmenu();
-                                component.toggle();
-                                entry.classList.toggle("checked", component.getState());
-                                break;
-                            }
-                            case "popup":
-                                this.resetSubmenu();
-                                component.togglePopup();
-                                break;
-                            default:
-                                this.resetSubmenu();
-                        }
-                    },
-                },
-                content: fn.li({
-                    classNames: this.app.getState() ? ["checked"] : [],
-                    attributes: {
-                        title: this.app.title,
-                    },
-                    data: {
-                        component: this.app.key,
-                        icon: "checkmark",
-                        action: "boolean",
-                    },
-                    content: `Show ${settings.get("title")}`,
-                }),
-            });
-            this.ui = fn.div({
-                events: {
-                    pointerup: (evt) => {
-                        newItems.markSeen();
-                        if (evt.button !== 0) {
-                            return true;
-                        }
-                        if (!evt.target.dataset.action) {
-                            this.app.domSet("submenu", !this.app.domGet("submenu"));
-                        }
-                    },
-                },
-                content: [
-                    fn.span({
-                        attributes: {
-                            id: prefix("menu-entry-point", "d"),
-                        },
-                        content: settings.get("title"),
-                    }),
-                    pane,
-                ],
-                aria: {
-                    role: "presentation",
-                },
+            pane.append(
+              fn.li({
                 classNames,
-            });
-            document.addEventListener("keyup", (evt) => {
-                if (this.app.domGet("submenu") === true && /^(Ent|Esc|Key|Dig)/.test(evt.code)) {
-                    this.app.domSet("submenu", false);
-                }
-            });
-            fn.$("#pz-game-root").addEventListener("pointerdown", (evt) => {
-                if (this.app.domGet("submenu") === true) {
-                    this.app.domSet("submenu", false);
-                }
-            });
-            app.on(prefix("pluginsReady"), (evt) => {
-                evt.detail.forEach((plugin, key) => {
-                    if (!plugin.menu || !plugin.menu.action) {
-                        return false;
-                    }
-                    let icon = plugin.menu.icon || null;
-                    const data = {
-                        component: key,
-                        action: plugin.menu.action,
-                    };
-                    let classNames = [];
-                    if (plugin.menu.action === "boolean") {
-                        data.icon = "checkmark";
-                        if (plugin.getState()) {
-                            classNames = ["checked"];
-                        }
-                    } else if (icon) {
-                        data.icon = icon;
-                    }
-                    pane.append(
-                        fn.li({
-                            classNames,
-                            attributes: {
-                                title: fn.toNode(plugin.description).textContent,
-                            },
-                            data,
-                            content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title,
-                        })
-                    );
-                });
-                pane.append(
-                    fn.li({
-                        attributes: {
-                            title: settings.get("support.text"),
-                        },
-                        data: {
-                            icon: prefix(),
-                            component: prefix("web"),
-                            action: "link",
-                        },
-                        content: fn.a({
-                            content: [iconCoffee, settings.get("support.text")],
-                            attributes: {
-                                href: settings.get("support.url"),
-                                target: prefix(),
-                            },
-                        }),
-                    })
-                );
-            });
-            app.on(prefix("destroy"), () => this.ui.remove());
-        }
+                attributes: {
+                  title: fn.toNode(plugin.description).textContent,
+                },
+                data,
+                content:
+                  icon && svgIcons[icon]
+                    ? [svgIcons[icon], plugin.title]
+                    : plugin.title,
+              }),
+            );
+          });
+          pane.append(
+            fn.li({
+              attributes: {
+                title: settings.get("support.text"),
+              },
+              data: {
+                icon: prefix(),
+                component: prefix("web"),
+                action: "link",
+              },
+              content: fn.a({
+                content: [iconCoffee, settings.get("support.text")],
+                attributes: {
+                  href: settings.get("support.url"),
+                  target: prefix(),
+                },
+              }),
+            }),
+          );
+        });
+        app.on(prefix("destroy"), () => this.ui.remove());
+      }
     }
 
     function buildDataMatrix() {
@@ -2690,167 +2698,179 @@
     };
 
     class App extends Widget {
-        domSet(key, value) {
-            document.body.dataset[prefix(key)] = value;
-            return this;
+      domSet(key, value) {
+        document.body.dataset[prefix(key)] = value;
+        return this;
+      }
+      domUnset(key) {
+        delete document.body.dataset[prefix(key)];
+        return this;
+      }
+      domGet(key) {
+        if (typeof document.body.dataset[prefix(key)] === "undefined") {
+          return false;
         }
-        domUnset(key) {
-            delete document.body.dataset[prefix(key)];
-            return this;
+        return JSON.parse(document.body.dataset[prefix(key)]);
+      }
+      getSyncData() {
+        return Array.from(fn.$$("li", this.resultList)).map((li) =>
+          li.textContent.trim(),
+        );
+      }
+      envIs(env) {
+        return document.body.classList.contains("pz-" + env);
+      }
+      focusGame() {
+        if (!this.envIs("desktop")) {
+          return false;
         }
-        domGet(key) {
-            if (typeof document.body.dataset[prefix(key)] === "undefined") {
-                return false;
+        fn.$(".pz-moment__button-wrapper.default").addEventListener(
+          "pointerup",
+          () => {
+            window.scrollTo(0, 0);
+            const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
+            const targetOffsetTop =
+              titlebarRect.top +
+              titlebarRect.height -
+              fn.$(".pz-game-header").offsetHeight;
+            window.scrollTo(0, targetOffsetTop);
+          },
+          false,
+        );
+        return true;
+      }
+      load() {
+        fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then(
+          (resultList) => {
+            this.observer = this.buildObserver();
+            this.modalWrapper = fn.$(".sb-modal-wrapper", this.gameWrapper);
+            this.resultList = resultList;
+            data.init(this, this.getSyncData());
+            hive.init(fn.$(".sb-controls-box", this.gameWrapper));
+            this.add();
+            this.domSet("active", true);
+            shortcutRegistry.add(this.shortcut);
+            this.registerPlugins();
+            this.trigger(prefix("refreshUi"), null);
+            document.dispatchEvent(new Event(prefix("ready")));
+            document.addEventListener("keydown", (event) => {
+              if (!shortcutRegistry.getSbaShortcutEntry(event)) {
+                return;
+              }
+              if (!shortcutRegistry.requiresDeletion(event, this)) {
+                shortcutRegistry.handleShortcut(event);
+              } else {
+                this._lastShortcutEvent = event;
+              }
+            });
+            this.on(prefix("newInput"), (event) => {
+              if (this._lastShortcutEvent) {
+                shortcutRegistry.handleShortcut(this._lastShortcutEvent);
+                this._lastShortcutEvent = null;
+              }
+            });
+            this.focusGame();
+          },
+        );
+      }
+      getState() {
+        return this.domGet("active");
+      }
+      toggle() {
+        this.domSet("active", !this.getState());
+        return this;
+      }
+      buildObserver() {
+        const observer = new MutationObserver((mutationList) => {
+          mutationList.forEach((mutation) => {
+            if (!(mutation.target instanceof HTMLElement)) {
+              return false;
             }
-            return JSON.parse(document.body.dataset[prefix(key)]);
-        }
-        getSyncData() {
-            return Array.from(fn.$$('li', this.resultList)).map(li => li.textContent.trim());
-        }
-        envIs(env) {
-            return document.body.classList.contains("pz-" + env);
-        }
-        focusGame() {
-            if (!this.envIs("desktop")) {
-                return false;
+            switch (true) {
+              case mutation.type === "childList" &&
+                mutation.target.isSameNode(this.modalWrapper):
+                if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
+                  this.trigger(prefix("yesterday"), mutation.target);
+                }
+                break;
+              case mutation.type === "childList" &&
+                mutation.target.classList.contains("sb-hive-input-content"):
+                this.trigger(prefix("newInput"), mutation.target);
+                break;
+              case mutation.type === "childList" &&
+                mutation.target.isSameNode(this.resultList) &&
+                !!mutation.addedNodes.length &&
+                !!mutation.addedNodes[0].textContent.trim() &&
+                mutation.addedNodes[0] instanceof HTMLElement:
+                this.trigger(
+                  prefix("newWord"),
+                  mutation.addedNodes[0].textContent.trim(),
+                );
+                break;
             }
-            fn.$(".pz-moment__welcome.on-stage .pz-moment__button").addEventListener(
-                "pointerup",
-                () => {
-                    window.scrollTo(0, 0);
-                    const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
-                    const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
-                    window.scrollTo(0, targetOffsetTop);
-                },
-                false
-            );
-            return true;
+          });
+        });
+        const args = {
+          target: this.gameWrapper,
+          options: {
+            childList: true,
+            subtree: true,
+            attributes: true,
+          },
+        };
+        observer.observe(args.target, args.options);
+        return observer;
+      }
+      buildUi() {
+        const events = {};
+        events[prefix("destroy")] = () => {
+          this.observer.disconnect();
+          this.container.remove();
+          this.domUnset("theme");
+        };
+        const classNames = [settings.get("prefix")];
+        return fn.div({
+          data: {
+            id: this.key,
+            version: settings.get("version"),
+          },
+          classNames,
+          events,
+        });
+      }
+      registerPlugins() {
+        Object.values(getPlugins$1()).forEach((plugin) => {
+          pluginRegistry.register(plugin, this);
+        });
+        this.plugins = pluginRegistry.getPlugins();
+        this.trigger(prefix("pluginsReady"), this.plugins);
+        return this;
+      }
+      add() {
+        this.container.append(this.ui);
+        fn.$(".sb-content-box", this.gameWrapper).prepend(this.container);
+      }
+      constructor(gameWrapper) {
+        super(settings.get("label"), {
+          key: prefix("app"),
+        });
+        const oldInstance = fn.$(`[data-id="${this.key}"]`);
+        if (oldInstance) {
+          oldInstance.dispatchEvent(new Event(prefix("destroy")));
         }
-        load() {
-            fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
-                this.observer = this.buildObserver();
-                this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
-                this.resultList = resultList;
-                data.init(this, this.getSyncData());
-                hive.init(fn.$('.sb-controls-box', this.gameWrapper));
-                this.add();
-                this.domSet("active", true);
-                shortcutRegistry.add(this.shortcut);
-                this.registerPlugins();
-                this.trigger(prefix("refreshUi"), null);
-                document.dispatchEvent(new Event(prefix("ready")));
-                document.addEventListener("keydown", (event) => {
-                    if (!shortcutRegistry.getSbaShortcutEntry(event)) {
-                        return;
-                    }
-                    if (!shortcutRegistry.requiresDeletion(event, this)) {
-                        shortcutRegistry.handleShortcut(event);
-                    } else {
-                        this._lastShortcutEvent = event;
-                    }
-                });
-                this.on(prefix("newInput"), (event) => {
-                    if (this._lastShortcutEvent) {
-                        shortcutRegistry.handleShortcut(this._lastShortcutEvent);
-                        this._lastShortcutEvent = null;
-                    }
-                });
-                this.focusGame();
-            });
-        }
-        getState() {
-            return this.domGet("active");
-        }
-        toggle() {
-            this.domSet("active", !this.getState());
-            return this;
-        }
-        buildObserver() {
-            const observer = new MutationObserver((mutationList) => {
-                mutationList.forEach((mutation) => {
-                    if (!(mutation.target instanceof HTMLElement)) {
-                        return false;
-                    }
-                    switch (true) {
-                        case mutation.type === "childList" && mutation.target.isSameNode(this.modalWrapper):
-                            if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
-                                this.trigger(prefix("yesterday"), mutation.target);
-                            }
-                            break;
-                        case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
-                            this.trigger(prefix("newInput"), mutation.target);
-                            break;
-                        case mutation.type === "childList" &&
-                            mutation.target.isSameNode(this.resultList) &&
-                            !!mutation.addedNodes.length &&
-                            !!mutation.addedNodes[0].textContent.trim() &&
-                            mutation.addedNodes[0] instanceof HTMLElement:
-                            this.trigger(prefix("newWord"), mutation.addedNodes[0].textContent.trim());
-                            break;
-                    }
-                });
-            });
-            const args = {
-                target: this.gameWrapper,
-                options: {
-                    childList: true,
-                    subtree: true,
-                    attributes: true,
-                },
-            };
-            observer.observe(args.target, args.options);
-            return observer;
-        }
-        buildUi() {
-            const events = {};
-            events[prefix("destroy")] = () => {
-                this.observer.disconnect();
-                this.container.remove();
-                this.domUnset("theme");
-            };
-            const classNames = [settings.get("prefix")];
-            return fn.div({
-                data: {
-                    id: this.key,
-                    version: settings.get("version"),
-                },
-                classNames,
-                events,
-            });
-        }
-        registerPlugins() {
-            Object.values(getPlugins$1()).forEach((plugin) => {
-                pluginRegistry.register(plugin, this);
-            });
-            this.plugins = pluginRegistry.getPlugins();
-            this.trigger(prefix("pluginsReady"), this.plugins);
-            return this;
-        }
-        add() {
-            this.container.append(this.ui);
-            fn.$(".sb-content-box", this.gameWrapper).prepend(this.container);
-        }
-        constructor(gameWrapper) {
-            super(settings.get("label"), {
-                key: prefix("app"),
-            });
-            const oldInstance = fn.$(`[data-id="${this.key}"]`);
-            if (oldInstance) {
-                oldInstance.dispatchEvent(new Event(prefix("destroy")));
-            }
-            this.gameWrapper = gameWrapper;
-            this.ui = this.buildUi();
-            this.container = fn.div({
-                classNames: [prefix("container", "d")],
-            });
-            this.shortcut = {
-                combo: "Shift+Alt+A",
-                label: "Assistant Panel",
-                module: this.key,
-                callback: () => this.toggle(),
-            };
-            this.load();
-        }
+        this.gameWrapper = gameWrapper;
+        this.ui = this.buildUi();
+        this.container = fn.div({
+          classNames: [prefix("container", "d")],
+        });
+        this.shortcut = {
+          combo: "Shift+Alt+A",
+          label: "Assistant Panel",
+          module: this.key,
+          callback: () => this.toggle(),
+        };
+        this.load();
+      }
     }
 
     new App(fn.$('#js-hook-game-wrapper'));
