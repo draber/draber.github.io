@@ -41,8 +41,7 @@ class Menu extends Plugin {
   getTarget() {
     return this.app.envIs("mobile")
       ? fn.$("#js-mobile-toolbar")
-      : fn.$(".pz-game-field .pz-toolbar-right");
-    //return this.app.envIs("mobile") ? fn.$("#js-mobile-toolbar") : fn.$("#portal-game-toolbar > div:last-of-type");
+      : fn.$(".pz-toolbar-right");
   }
 
   add() {
@@ -200,7 +199,10 @@ class Menu extends Plugin {
     });
 
     fn.$("#pz-game-root").addEventListener("pointerdown", (evt) => {
-      if (this.app.domGet("submenu") === true) {
+      if (
+        !evt.target.closest('[data-ui="submenu"]') &&
+        this.app.domGet("submenu") === true
+      ) {
         this.app.domSet("submenu", false);
       }
     });

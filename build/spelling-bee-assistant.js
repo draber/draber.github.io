@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "5.2.1";
+    var version = "5.3.0";
 
     const storageKey = `${prefix$1}-settings`;
     const state = {
@@ -1289,41 +1289,43 @@
     }
 
     class DetailsBuilder {
-        update(newContent) {
-            if (!this.element) {
-                this.render();
-            }
-            this.content.replaceWith(newContent);
-            this.content = newContent;
-            return this;
+      update(newContent) {
+        if (!this.element) {
+          this.render();
         }
-        render() {
-            this.element = fn.details({
-                content: [
-                    fn.summary({
-                        content: this.title,
-                    }),
-                    this.content,
-                ],
-                attributes: {
-                    open: this.open,
-                },
-            });
-            return this.element;
-        }
-        togglePane() {
-            this.element.open = !this.element.open;
-            return this;
-        }
-        get ui() {
-            return this.element || this.render();
-        }
-        constructor(title, open = false) {
-            this.title = title;
-            this.open = open;
-            this.content = fn.div();
-            this.element = null;
-        }
+        this.content.replaceWith(newContent);
+        this.content = newContent;
+        return this;
+      }
+      render() {
+        this.element = fn.details({
+          content: [
+            fn.summary({
+              content: this.title,
+            }),
+            this.content,
+          ],
+          attributes: {
+            open: this.open,
+            name: this.name
+          },
+        });
+        return this.element;
+      }
+      togglePane() {
+        this.element.open = !this.element.open;
+        return this;
+      }
+      get ui() {
+        return this.element || this.render();
+      }
+      constructor(title, open = false, name = "") {
+        this.title = title;
+        this.open = open;
+        this.name = name;
+        this.content = fn.div();
+        this.element = null;
+      }
     }
 
     class Overview extends Plugin {
@@ -1444,7 +1446,7 @@
         }
         constructor(app, title, description, {letterCnt, shortcuts} = {}) {
             super(app, title, description, {runEvt: prefix("refreshUi")});
-            this.detailsBuilder = new DetailsBuilder(this.title, false);
+            this.detailsBuilder = new DetailsBuilder(this.title, false, 'startSequence');
             this.ui = this.detailsBuilder.ui;
             this.shortcuts = shortcuts;
             this.letterCnt = letterCnt;
@@ -2081,7 +2083,7 @@
       getTarget() {
         return this.app.envIs("mobile")
           ? fn.$("#js-mobile-toolbar")
-          : fn.$(".pz-game-field .pz-toolbar-right");
+          : fn.$(".pz-toolbar-right");
       }
       add() {
         if (!this.app.envIs("mobile")) {
@@ -2214,7 +2216,10 @@
           }
         });
         fn.$("#pz-game-root").addEventListener("pointerdown", (evt) => {
-          if (this.app.domGet("submenu") === true) {
+          if (
+            !evt.target.closest('[data-ui="submenu"]') &&
+            this.app.domGet("submenu") === true
+          ) {
             this.app.domSet("submenu", false);
           }
         });
@@ -2724,7 +2729,7 @@
         if (!this.envIs("desktop")) {
           return false;
         }
-        fn.$(".pz-moment__button-wrapper.default").addEventListener(
+        fn.$("#js-hook-pz-moment__welcome .pz-moment__button.default").addEventListener(
           "pointerup",
           () => {
             window.scrollTo(0, 0);
@@ -2743,7 +2748,7 @@
         fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then(
           (resultList) => {
             this.observer = this.buildObserver();
-            this.modalWrapper = fn.$(".sb-modal-wrapper", this.gameWrapper);
+            this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
             this.resultList = resultList;
             data.init(this, this.getSyncData());
             hive.init(fn.$(".sb-controls-box", this.gameWrapper));
