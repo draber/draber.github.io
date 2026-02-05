@@ -97,5 +97,3 @@ function getStoredData(formatAsString = false) {
 
     return formatAsString ? JSON.stringify(data) : data;
 }
-
-console.log(getStoredData(true));

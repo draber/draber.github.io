@@ -142,6 +142,7 @@ class PopupBuilder {
             closer.click();
         }
 
+
         if (state) {
             this.app.modalWrapper.append(this.ui);
             this.modalSystem.classList.add("sb-modal-open");

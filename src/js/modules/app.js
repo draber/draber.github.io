@@ -81,7 +81,7 @@ class App extends Widget {
     if (!this.envIs("desktop")) {
       return false;
     }
-    fn.$(".pz-moment__button-wrapper.default").addEventListener(
+    fn.$("#js-hook-pz-moment__welcome .pz-moment__button.default").addEventListener(
       "pointerup",
       () => {
         window.scrollTo(0, 0);
@@ -106,7 +106,7 @@ class App extends Widget {
       (resultList) => {
         // Observe game for various changes
         this.observer = this.buildObserver();
-        this.modalWrapper = fn.$(".sb-modal-wrapper", this.gameWrapper);
+        this.modalWrapper = fn.$("#portal-game-modals .sb-modal-wrapper", this.gameWrapper);
         this.resultList = resultList;
         data.init(this, this.getSyncData());
         hive.init(fn.$(".sb-controls-box", this.gameWrapper));

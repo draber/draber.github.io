@@ -24,7 +24,7 @@ export default class StartSequence extends Plugin {
     constructor(app, title, description, {letterCnt, shortcuts} = {}) {
         super(app, title, description, {runEvt: prefix("refreshUi")});
 
-        this.detailsBuilder = new DetailsBuilder(this.title, false);
+        this.detailsBuilder = new DetailsBuilder(this.title, false, 'startSequence');
         this.ui = this.detailsBuilder.ui;
 
         this.shortcuts = shortcuts;
