@@ -59,9 +59,7 @@ class App extends Widget {
      * @returns {Array}
      */
     getSyncData() {
-        return Array.from(fn.$$("li", this.resultList)).map((li) =>
-            li.textContent.trim(),
-        );
+        return Array.from(fn.$$("li", this.resultList)).map((li) => li.textContent.trim());
     }
 
     /**
@@ -81,23 +79,10 @@ class App extends Widget {
         if (!this.envIs("desktop")) {
             return false;
         }
-        fn.$(
-            "#js-hook-pz-moment__welcome .pz-moment__button.default",
-        ).addEventListener(
-            "pointerup",
-            () => {
-                window.scrollTo(0, 0);
-                const titlebarRect = fn
-                    .$(".pz-game-title-bar")
-                    .getBoundingClientRect();
-                const targetOffsetTop =
-                    titlebarRect.top +
-                    titlebarRect.height -
-                    fn.$(".pz-game-header").offsetHeight;
-                window.scrollTo(0, targetOffsetTop);
-            },
-            false,
-        );
+        window.scrollTo(0, 0);
+        const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
+        const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
+        window.scrollTo(0, targetOffsetTop);
         return true;
     }
 
@@ -106,48 +91,41 @@ class App extends Widget {
      * The result list depends on sync data from the server and it can therefore be assumed that everything is ready
      */
     load() {
-        fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then(
-            (resultList) => {
-                // Observe game for various changes
-                this.observer = this.buildObserver();
-                this.modalWrapper = fn.$(
-                    "#portal-game-modals .sb-modal-wrapper",
-                    this.gameWrapper,
-                );
-                this.resultList = resultList;
-                data.init(this, this.getSyncData());
-                hive.init(fn.$(".sb-controls-box", this.gameWrapper));
+        fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
+            // Observe game for various changes
+            this.observer = this.buildObserver();
+            this.modalWrapper = fn.$(".sb-modal-wrapper:first-of-type", this.gameWrapper);
+            this.resultList = resultList;
+            data.init(this, this.getSyncData());
+            hive.init(fn.$(".sb-controls-box", this.gameWrapper));
 
-                this.add();
-                this.domSet("active", true);
-                shortcutRegistry.add(this.shortcut);
-                this.registerPlugins();
-                this.trigger(prefix("refreshUi"), null);
-                document.dispatchEvent(new Event(prefix("ready")));
+            this.add();
+            this.domSet("active", true);
+            shortcutRegistry.add(this.shortcut);
+            this.registerPlugins();
+            this.trigger(prefix("refreshUi"), null);
+            document.dispatchEvent(new Event(prefix("ready")));
 
-                // fire shortcuts
-                document.addEventListener("keydown", (event) => {
-                    if (!shortcutRegistry.getSbaShortcutEntry(event)) {
-                        return;
-                    }
-                    if (!shortcutRegistry.requiresDeletion(event, this)) {
-                        shortcutRegistry.handleShortcut(event); // run immediately
-                    } else {
-                        this._lastShortcutEvent = event; // delay and run after newInput
-                    }
-                });
+            // fire shortcuts
+            document.addEventListener("keydown", (event) => {
+                if (!shortcutRegistry.getSbaShortcutEntry(event)) {
+                    return;
+                }
+                if (!shortcutRegistry.requiresDeletion(event, this)) {
+                    shortcutRegistry.handleShortcut(event); // run immediately
+                } else {
+                    this._lastShortcutEvent = event; // delay and run after newInput
+                }
+            });
 
-                this.on(prefix("newInput"), (event) => {
-                    if (this._lastShortcutEvent) {
-                        shortcutRegistry.handleShortcut(
-                            this._lastShortcutEvent,
-                        );
-                        this._lastShortcutEvent = null;
-                    }
-                });
-                this.focusGame();
-            },
-        );
+            this.on(prefix("newInput"), (event) => {
+                if (this._lastShortcutEvent) {
+                    shortcutRegistry.handleShortcut(this._lastShortcutEvent);
+                    this._lastShortcutEvent = null;
+                }
+            });
+            this.focusGame();
+        });
     }
 
     /**
@@ -180,20 +158,14 @@ class App extends Widget {
 
                 switch (true) {
                     // 'yesterday' modal is open
-                    case mutation.type === "childList" &&
-                        mutation.target.isSameNode(this.modalWrapper):
-                        if (
-                            fn.$(".sb-modal-frame.yesterday", mutation.target)
-                        ) {
+                    case mutation.type === "childList" && mutation.target.isSameNode(this.modalWrapper):
+                        if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
                             this.trigger(prefix("yesterday"), mutation.target);
                         }
                         break;
 
                     // text input
-                    case mutation.type === "childList" &&
-                        mutation.target.classList.contains(
-                            "sb-hive-input-content",
-                        ):
+                    case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
                         this.trigger(prefix("newInput"), mutation.target);
                         break;
 
@@ -203,10 +175,7 @@ class App extends Widget {
                         !!mutation.addedNodes.length &&
                         !!mutation.addedNodes[0].textContent.trim() &&
                         mutation.addedNodes[0] instanceof HTMLElement:
-                        this.trigger(
-                            prefix("newWord"),
-                            mutation.addedNodes[0].textContent.trim(),
-                        );
+                        this.trigger(prefix("newWord"), mutation.addedNodes[0].textContent.trim());
                         break;
                 }
             });
