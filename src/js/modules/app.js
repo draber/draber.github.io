@@ -59,7 +59,11 @@ class App extends Widget {
      * @returns {Array}
      */
     getSyncData() {
-        return Array.from(fn.$$("li", this.resultList)).map((li) => li.textContent.trim());
+        return Array.from(fn.$$("li", this.resultList)).map((li) => {
+            //2026-06-02: li in resultlist now can have two childnodes, both containing the found word
+            const newWordElem = li.childElementCount > 1 ? li.firstElementChild : li;
+            return newWordElem.textContent.trim();
+        });
     }
 
     /**
@@ -175,7 +179,9 @@ class App extends Widget {
                         !!mutation.addedNodes.length &&
                         !!mutation.addedNodes[0].textContent.trim() &&
                         mutation.addedNodes[0] instanceof HTMLElement:
-                        this.trigger(prefix("newWord"), mutation.addedNodes[0].textContent.trim());
+                        //2026-06-02: li in resultlist now can have two childnodes, both containing the found word
+                        const newWordElem = mutation.addedNodes[0].childElementCount > 1 ? mutation.addedNodes[0].firstElementChild : mutation.addedNodes[0];
+                        this.trigger(prefix("newWord"), newWordElem.textContent.trim());
                         break;
                 }
             });
