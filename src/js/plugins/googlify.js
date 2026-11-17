@@ -4,10 +4,8 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import {
-    prefix
-} from '../utils/string.js';
-import Plugin from '../modules/plugin.js';
+import { prefix } from "../utils/string.js";
+import Plugin from "../modules/plugin.js";
 
 // noinspection SpellCheckingInspection
 /**
@@ -17,7 +15,6 @@ import Plugin from '../modules/plugin.js';
  * @returns {Plugin} Googlify
  */
 class Googlify extends Plugin {
-
     // /**
     //  * Toggle state
     //  * @param {Boolean} state
@@ -34,7 +31,7 @@ class Googlify extends Plugin {
      * @returns {boolean}
      */
     listener(evt) {
-        if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
+        if (!evt.target.classList.contains("sb-anagram") || !evt.target.closest(".sb-anagram")) {
             return false;
         }
         if (evt.button === 0) {
@@ -50,21 +47,19 @@ class Googlify extends Plugin {
      */
     // eslint-disable-next-line no-unused-vars
     run(evt = null) {
-        [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
-            container.addEventListener('pointerup', this.listener);
-            container.classList.add(prefix('googlified', 'd'));
+        [this.app.getModalWrapper(), this.app.resultList.parentElement].forEach((container) => {
+            container.addEventListener("pointerup", this.listener);
+            container.classList.add(prefix("googlified", "d"));
         });
         return this;
     }
-
 
     /**
      * Googlify constructor
      * @param {App} app
      */
     constructor(app) {
-
-        super(app, 'Googlify', 'Link all result terms to Google');
+        super(app, "Googlify", "Link all result terms to Google");
 
         this.run();
     }

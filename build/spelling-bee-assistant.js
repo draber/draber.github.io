@@ -571,6 +571,9 @@
     };
 
     class PopupBuilder {
+        getModalSystem() {
+            return this.app.getModalWrapper().closest(".sb-modal-system");
+        }
         enableKeyClose() {
             document.addEventListener("keyup", (evt) => {
                 const popupCloser = findCloseButton(this.app);
@@ -581,8 +584,9 @@
             return this;
         }
         enableCanvasClose() {
-            this.app.modalWrapper.addEventListener("pointerup", (evt) => {
-                const inner = fn.$(".sb-modal-frame", this.app.modalWrapper);
+            const modalWrapper = this.app.getModalWrapper();
+            modalWrapper.addEventListener("pointerup", (evt) => {
+                const inner = fn.$(".sb-modal-frame", modalWrapper);
                 if (inner && !inner.contains(evt.target)) {
                     findCloseButton(this.app).click();
                 }
@@ -657,19 +661,19 @@
         }
         toggle(state) {
             const closer = findCloseButton(this.app);
-            if(!this.isOpen && closer) {
+            if (!this.isOpen && closer) {
                 closer.click();
             }
             if (!state && closer) {
                 closer.click();
             }
             if (state) {
-                this.app.modalWrapper.append(this.ui);
-                this.modalSystem.classList.add("sb-modal-open");
+                this.app.getModalWrapper().append(this.ui);
+                this.getModalSystem().classList.add("sb-modal-open");
                 this.isOpen = true;
             } else {
                 this.getTarget().append(this.ui);
-                this.modalSystem.classList.remove("sb-modal-open");
+                this.getModalSystem().remove();
                 this.isOpen = false;
             }
             return this;
@@ -678,7 +682,6 @@
             this.key = key;
             this.app = app;
             this.isOpen = false;
-            this.modalSystem = this.app.modalWrapper.closest(".sb-modal-system");
             this.parts = {
                 title: fn.h3({
                     classNames: ["sb-modal-title"],
@@ -1991,7 +1994,7 @@
 
     class Googlify extends Plugin {
         listener(evt) {
-            if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
+            if (!evt.target.classList.contains("sb-anagram") || !evt.target.closest(".sb-anagram")) {
                 return false;
             }
             if (evt.button === 0) {
@@ -2000,14 +2003,14 @@
             }
         }
         run(evt = null) {
-            [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
-                container.addEventListener('pointerup', this.listener);
-                container.classList.add(prefix('googlified', 'd'));
+            [this.app.getModalWrapper(), this.app.resultList.parentElement].forEach((container) => {
+                container.addEventListener("pointerup", this.listener);
+                container.classList.add(prefix("googlified", "d"));
             });
             return this;
         }
         constructor(app) {
-            super(app, 'Googlify', 'Link all result terms to Google');
+            super(app, "Googlify", "Link all result terms to Google");
             this.run();
         }
     }
@@ -2731,6 +2734,26 @@
         envIs(env) {
             return document.body.classList.contains("pz-" + env);
         }
+        getModalWrapper() {
+            let modalWrapper = fn.$(".sb-modal-wrapper:first-of-type", this.gameWrapper);
+            if (modalWrapper) {
+                return modalWrapper;
+            }
+            const contentBox = fn.$(".sb-content-box", this.gameWrapper);
+            modalWrapper = fn.div({
+                classNames: ["sb-modal-wrapper", prefix("googlified")],
+            });
+            contentBox.after(
+                fn.div({
+                    classNames: ["sb-modal-system"],
+                    content: fn.div({
+                        classNames: ["sb-modal-scrim"],
+                        content: modalWrapper,
+                    }),
+                }),
+            );
+            return modalWrapper;
+        }
         focusGame() {
             if (!this.envIs("desktop")) {
                 return false;
@@ -2744,7 +2767,6 @@
         load() {
             fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
                 this.observer = this.buildObserver();
-                this.modalWrapper = fn.$(".sb-modal-wrapper:first-of-type", this.gameWrapper);
                 this.resultList = resultList;
                 data.init(this, this.getSyncData());
                 hive.init(fn.$(".sb-controls-box", this.gameWrapper));
@@ -2787,12 +2809,16 @@
                         return false;
                     }
                     switch (true) {
-                        case mutation.type === "childList" && mutation.target.isSameNode(this.modalWrapper):
+                        case mutation.type === "childList" &&
+                            mutation.target.classList.contains("sb-modal-wrapper"):
+                            console.log(mutation.target);
+                            mutation.target.classList.add(prefix("googlified"));
                             if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
                                 this.trigger(prefix("yesterday"), mutation.target);
                             }
                             break;
-                        case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
+                        case mutation.type === "childList" &&
+                            mutation.target.classList.contains("sb-hive-input-content"):
                             this.trigger(prefix("newInput"), mutation.target);
                             break;
                         case mutation.type === "childList" &&
@@ -2800,7 +2826,10 @@
                             !!mutation.addedNodes.length &&
                             !!mutation.addedNodes[0].textContent.trim() &&
                             mutation.addedNodes[0] instanceof HTMLElement:
-                            const newWordElem = mutation.addedNodes[0].childElementCount > 1 ? mutation.addedNodes[0].firstElementChild : mutation.addedNodes[0];
+                            const newWordElem =
+                                mutation.addedNodes[0].childElementCount > 1
+                                    ? mutation.addedNodes[0].firstElementChild
+                                    : mutation.addedNodes[0];
                             this.trigger(prefix("newWord"), newWordElem.textContent.trim());
                             break;
                     }

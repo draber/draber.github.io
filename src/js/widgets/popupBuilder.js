@@ -14,6 +14,14 @@ import { findCloseButton } from "../utils/popup.ui.js";
  */
 class PopupBuilder {
     /**
+     * Wrappers parent
+     * @returns {HTMLDivElement}
+     */
+    getModalSystem() {
+        return this.app.getModalWrapper().closest(".sb-modal-system");
+    }
+
+    /**
      * Enable closing the popup by clicking on the x button
      * @returns {PopupBuilder}
      */
@@ -32,8 +40,9 @@ class PopupBuilder {
      * @returns {PopupBuilder}
      */
     enableCanvasClose() {
-        this.app.modalWrapper.addEventListener("pointerup", (evt) => {
-            const inner = fn.$(".sb-modal-frame", this.app.modalWrapper);
+        const modalWrapper = this.app.getModalWrapper();
+        modalWrapper.addEventListener("pointerup", (evt) => {
+            const inner = fn.$(".sb-modal-frame", modalWrapper);
             if (inner && !inner.contains(evt.target)) {
                 findCloseButton(this.app).click();
             }
@@ -133,7 +142,7 @@ class PopupBuilder {
         const closer = findCloseButton(this.app);
 
         // some other popup
-        if(!this.isOpen && closer) {
+        if (!this.isOpen && closer) {
             closer.click();
         }
 
@@ -142,14 +151,13 @@ class PopupBuilder {
             closer.click();
         }
 
-
         if (state) {
-            this.app.modalWrapper.append(this.ui);
-            this.modalSystem.classList.add("sb-modal-open");
+            this.app.getModalWrapper().append(this.ui);
+            this.getModalSystem().classList.add("sb-modal-open");
             this.isOpen = true;
         } else {
             this.getTarget().append(this.ui);
-            this.modalSystem.classList.remove("sb-modal-open");
+            this.getModalSystem().remove();
             this.isOpen = false;
         }
 
@@ -167,8 +175,6 @@ class PopupBuilder {
         this.app = app;
 
         this.isOpen = false;
-
-        this.modalSystem = this.app.modalWrapper.closest(".sb-modal-system");
 
         this.parts = {
             title: fn.h3({

@@ -76,6 +76,34 @@ class App extends Widget {
     }
 
     /**
+     * As of Nov 17 2026 `.sb-modal-wrapper` is no longer hard coded and therefore
+     * pop-up building fails.
+     * This function builds and returns the now missing node to re-enable popups.
+     * @see https://github.com/draber/draber.github.io/issues/201
+     * @returns {HTMLDivElement}
+     */
+    getModalWrapper() {
+        let modalWrapper = fn.$(".sb-modal-wrapper:first-of-type", this.gameWrapper);
+        if (modalWrapper) {
+            return modalWrapper;
+        }
+        const contentBox = fn.$(".sb-content-box", this.gameWrapper);
+        modalWrapper = fn.div({
+            classNames: ["sb-modal-wrapper", prefix("googlified")],
+        });
+        contentBox.after(
+            fn.div({
+                classNames: ["sb-modal-system"],
+                content: fn.div({
+                    classNames: ["sb-modal-scrim"],
+                    content: modalWrapper,
+                }),
+            }),
+        );
+        return modalWrapper;
+    }
+
+    /**
      * Position the game on launch
      * @returns {Boolean}
      */
@@ -98,7 +126,6 @@ class App extends Widget {
         fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
             // Observe game for various changes
             this.observer = this.buildObserver();
-            this.modalWrapper = fn.$(".sb-modal-wrapper:first-of-type", this.gameWrapper);
             this.resultList = resultList;
             data.init(this, this.getSyncData());
             hive.init(fn.$(".sb-controls-box", this.gameWrapper));
@@ -162,14 +189,18 @@ class App extends Widget {
 
                 switch (true) {
                     // 'yesterday' modal is open
-                    case mutation.type === "childList" && mutation.target.isSameNode(this.modalWrapper):
+                    case mutation.type === "childList" &&
+                        mutation.target.classList.contains("sb-modal-wrapper"):
+                        console.log(mutation.target);
+                        mutation.target.classList.add(prefix("googlified"));
                         if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
                             this.trigger(prefix("yesterday"), mutation.target);
                         }
                         break;
 
                     // text input
-                    case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
+                    case mutation.type === "childList" &&
+                        mutation.target.classList.contains("sb-hive-input-content"):
                         this.trigger(prefix("newInput"), mutation.target);
                         break;
 
@@ -180,7 +211,10 @@ class App extends Widget {
                         !!mutation.addedNodes[0].textContent.trim() &&
                         mutation.addedNodes[0] instanceof HTMLElement:
                         //2026-06-02: li in resultlist now can have two childnodes, both containing the found word
-                        const newWordElem = mutation.addedNodes[0].childElementCount > 1 ? mutation.addedNodes[0].firstElementChild : mutation.addedNodes[0];
+                        const newWordElem =
+                            mutation.addedNodes[0].childElementCount > 1
+                                ? mutation.addedNodes[0].firstElementChild
+                                : mutation.addedNodes[0];
                         this.trigger(prefix("newWord"), newWordElem.textContent.trim());
                         break;
                 }
