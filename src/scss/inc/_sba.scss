@@ -445,9 +445,9 @@ progress {
     cursor: pointer;
 }
 
-// The NYT's "More" dropdown sits a little lower than the other toolbar buttons, the SBA button borrows its class.
+// The NYT's "More" dropdown and the SBA button sit a little lower than the other toolbar buttons.
 // menu.js measures both against "Stats" and sets the corrections; 0 once the NYT fixes it.
-.pz-toolbar-right .pz-dropdown .pz-dropdown__button {
+.pz-dropdown .pz-dropdown__button {
     position: relative;
     top: var(--sba-dropdown-offset, 0);
 }

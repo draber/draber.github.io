@@ -25,12 +25,12 @@ $gameWidth: 1280;
 }
 
 .pz-mobile {
+    // vertical position: see alignWithToolbar() in menu.js
     [data-ui="menu"] {
         display: flex;
         align-items: center;
         height: 100%;
         padding: 0 6px;
-        top: 2px;
     }
 }
 
