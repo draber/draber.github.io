@@ -19,11 +19,10 @@ describe("app on mobile", () => {
         expect(button.classList.contains("pz-nav__toolbar-item")).toBe(true);
     });
 
-    it("has no pin button, the grid can't be pinned", () => {
+    it("has a floating grid with a title bar to drag", () => {
         const grid = app.plugins.get("grid").popup;
-        expect(grid.ui.querySelector(".sba-pin")).toBeNull();
-        grid.pin(true);
-        expect(grid.isPinned).toBe(false);
+        expect(grid.ui.getAttribute("popover")).toBe("manual");
+        expect(grid.ui.querySelector(".sb-modal-top .sba-move-handle")).not.toBeNull();
     });
 
     it("opens pop-ups from the menu", () => {

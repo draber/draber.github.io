@@ -4,7 +4,7 @@
 
 ## New
 
-- **Pin the Grid** (desktop): click the 📌 in the Grid pop-up and it stays open next to the game, updates with every word you find and can be moved anywhere by its title bar. Position and pinned state are remembered.
+- **The Grid floats:** it stays open while you play and updates with every word you find. Drag it by its title bar to wherever it suits you, it then turns into a compact window. Close it with × or Escape.
 
 ## Improvements
 

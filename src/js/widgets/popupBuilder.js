@@ -8,15 +8,16 @@ import { prefix } from "../utils/string.js";
 import settings from "../modules/settings.js";
 import fn from "fancy-node";
 import nyt from "../nyt/nyt.js";
+import moveIcon from "../assets/move.svg";
 
 /**
- * All pop-ups, used to close them on `destroy` and to answer `PopupBuilder.isAnyOpen()`
+ * All pop-ups, used to answer `PopupBuilder.isAnyOpen()` and for `PopupBuilder.closeAll()`
  * @type {Set<PopupBuilder>}
  */
 const instances = new Set();
 
 /**
- * Minimum distance between a pinned pop-up and the edge of the viewport
+ * Minimum distance between a moved pop-up and the edge of the viewport
  * @type {Number}
  */
 const viewportMargin = 8;
@@ -25,9 +26,14 @@ const viewportMargin = 8;
  * Builder for SBA pop-ups.
  *
  * Pop-ups use the Popover API: they live in the browser's top layer, independent of the NYT's DOM.
- * `popover="auto"` brings closing by Escape or by clicking outside and allows only one open pop-up at a time.
- * Pinnable pop-ups switch to `popover="manual"` while pinned: they stay open, don't block the game
- * and can be dragged by their title bar. Pinning is not available on mobile.
+ *
+ * Regular pop-ups are `popover="auto"`: they close with Escape or a click outside,
+ * and only one of them is open at a time.
+ *
+ * Floating pop-ups are `popover="manual"`, like a window: no backdrop, the game stays usable,
+ * they close only with × or Escape and stay open when other pop-ups open. They can be dragged by their
+ * title bar; once moved, they turn into a compact window with a small title. The position is kept
+ * until the page is reloaded.
  *
  * The markup mimics the pop-ups of Spelling Bee.
  */
@@ -41,13 +47,13 @@ class PopupBuilder {
     }
 
     /**
-     * Close all SBA pop-ups that close with a click outside, i.e. all but the pinned ones
+     * Close all regular SBA pop-ups, floating ones stay open
      * @returns {Boolean} true if a pop-up has been closed
      */
     static closeAll() {
         let closed = false;
         instances.forEach((popup) => {
-            if (popup.isOpen && !popup.isPinned) {
+            if (popup.isOpen && !popup.floating) {
                 popup.toggle(false);
                 closed = true;
             }
@@ -64,20 +70,11 @@ class PopupBuilder {
     }
 
     /**
-     * Whether this pop-up is pinned
+     * Whether this floating pop-up has been moved and is shown as compact window
      * @returns {Boolean}
      */
-    get isPinned() {
-        return this.ui.classList.contains(prefix("pinned", "d"));
-    }
-
-    /**
-     * Settings key for this pop-up
-     * @param {String} name
-     * @returns {String}
-     */
-    settingsKey(name) {
-        return `options.${this.key}.popup.${name}`;
+    get isMoved() {
+        return !!this.position;
     }
 
     /**
@@ -85,7 +82,7 @@ class PopupBuilder {
      * @returns {HTMLElement}
      */
     create() {
-        const topButtons = [
+        const topBar = [
             fn.button({
                 attributes: {
                     type: "button",
@@ -102,22 +99,20 @@ class PopupBuilder {
             }),
         ];
 
-        if (this.pinnable) {
-            topButtons.unshift(
-                fn.button({
+        if (this.floating) {
+            topBar.unshift(
+                fn.span({
+                    classNames: [prefix("window-title", "d")],
+                }),
+                fn.span({
                     attributes: {
-                        type: "button",
-                        title: "Pin – keep open and move freely",
+                        title: "Drag to move",
                     },
                     aria: {
-                        label: "Pin",
-                        pressed: "false",
+                        hidden: "true",
                     },
-                    classNames: [prefix("pin", "d")],
-                    content: "📌",
-                    events: {
-                        click: () => this.pin(!this.isPinned),
-                    },
+                    classNames: [prefix("move-handle", "d")],
+                    content: moveIcon,
                 }),
             );
         }
@@ -125,25 +120,24 @@ class PopupBuilder {
         return fn.div({
             attributes: {
                 id: this.id,
-                popover: "auto",
+                popover: this.floating ? "manual" : "auto",
             },
             aria: {
                 role: "dialog",
             },
-            classNames: [prefix("popover", "d")],
+            classNames: [prefix("popover", "d")].concat(this.floating ? [prefix("floating", "d")] : []),
             data: {
                 ui: this.key,
             },
             events: {
                 beforetoggle: (evt) => this.onBeforeToggle(evt),
-                toggle: (evt) => this.onToggle(evt),
             },
             content: fn.div({
                 classNames: ["sb-modal-frame", prefix("pop-up", "d")],
                 content: [
                     fn.div({
                         classNames: ["sb-modal-top"],
-                        content: topButtons,
+                        content: topBar,
                     }),
                     fn.div({
                         classNames: ["sb-modal-content"],
@@ -174,6 +168,10 @@ class PopupBuilder {
         }
         this.parts[part] = fn.empty(this.parts[part]);
         this.parts[part].append(fn.toNode(content));
+        // the compact window shows the title in its title bar
+        if (part === "title" && this.floating) {
+            fn.$(`.${prefix("window-title", "d")}`, this.ui).textContent = this.parts.title.textContent;
+        }
         return this;
     }
 
@@ -189,27 +187,10 @@ class PopupBuilder {
         }
         // SBA pop-ups replace an open NYT modal, the way NYT modals replace each other
         nyt.closeModal();
-        if (this.isPinned) {
-            const position = settings.get(this.settingsKey("position"));
-            if (position) {
-                this.ui.style.left = `${position.x}px`;
-                this.ui.style.top = `${position.y}px`;
-            }
+        if (this.isMoved) {
+            this.ui.style.left = `${this.position.x}px`;
+            this.ui.style.top = `${this.position.y}px`;
         }
-    }
-
-    /**
-     * After opening or closing: keep pinned pop-ups inside the viewport, remember whether they were open
-     * @param {ToggleEvent} evt
-     */
-    onToggle(evt) {
-        if (!this.pinnable) {
-            return;
-        }
-        if (evt.newState === "open" && this.isPinned) {
-            this.applyPosition(settings.get(this.settingsKey("position")));
-        }
-        settings.set(this.settingsKey("open"), evt.newState === "open");
     }
 
     /**
@@ -230,61 +211,34 @@ class PopupBuilder {
     }
 
     /**
-     * Pin or unpin the pop-up
-     * @param {Boolean} state
-     * @returns {PopupBuilder}
+     * Move a floating pop-up, keeping it inside the viewport
+     * @param {{x: Number, y: Number}} position
+     * @returns {{x: Number, y: Number}} the position actually applied
      */
-    pin(state) {
-        if (!this.pinnable || state === this.isPinned) {
-            return this;
-        }
-        const wasOpen = this.isOpen;
-        // the type of popover can only be changed while it is hidden
-        if (wasOpen) {
-            this.ui.hidePopover();
-        }
-        this.ui.setAttribute("popover", state ? "manual" : "auto");
-        this.ui.classList.toggle(prefix("pinned", "d"), state);
-        fn.$(`.${prefix("pin", "d")}`, this.ui)?.setAttribute("aria-pressed", String(state));
-        if (!state) {
-            this.ui.style.removeProperty("left");
-            this.ui.style.removeProperty("top");
-        }
-        settings.set(this.settingsKey("pinned"), state);
-        if (wasOpen) {
-            this.toggle(true);
-        }
-        return this;
-    }
-
-    /**
-     * Move a pinned pop-up, keeping it inside the viewport.
-     * Without a position it goes to the top right corner.
-     * @param {{x: Number, y: Number}|undefined} position
-     * @returns {{x: Number, y: Number}}
-     */
-    applyPosition(position) {
+    moveTo(position) {
         const rect = this.ui.getBoundingClientRect();
         const maxX = Math.max(viewportMargin, window.innerWidth - rect.width - viewportMargin);
         const maxY = Math.max(viewportMargin, window.innerHeight - rect.height - viewportMargin);
-        const x = Math.min(Math.max(position?.x ?? maxX, viewportMargin), maxX);
-        const y = Math.min(Math.max(position?.y ?? 80, viewportMargin), maxY);
-        this.ui.style.left = `${x}px`;
-        this.ui.style.top = `${y}px`;
-        return { x, y };
+        this.position = {
+            x: Math.round(Math.min(Math.max(position.x, viewportMargin), maxX)),
+            y: Math.round(Math.min(Math.max(position.y, viewportMargin), maxY)),
+        };
+        this.ui.style.left = `${this.position.x}px`;
+        this.ui.style.top = `${this.position.y}px`;
+        return this.position;
     }
 
     /**
-     * Drag a pinned pop-up by its title bar
+     * Drag a floating pop-up by its title bar.
+     * On the first move, the centered pop-up turns into a compact window at the same place.
      * @returns {PopupBuilder}
      */
     enableDragging() {
         const handle = fn.$(".sb-modal-top", this.ui);
         let start = null;
-        let position = null;
 
         handle.addEventListener("pointerdown", (evt) => {
-            if (!this.isPinned || evt.button !== 0 || evt.target.closest("button")) {
+            if (evt.button !== 0 || evt.target.closest("button")) {
                 return;
             }
             const rect = this.ui.getBoundingClientRect();
@@ -298,21 +252,18 @@ class PopupBuilder {
             if (!start) {
                 return;
             }
-            position = this.applyPosition({
+            if (!this.ui.classList.contains(prefix("moved", "d"))) {
+                this.ui.classList.add(prefix("moved", "d"));
+            }
+            this.moveTo({
                 x: start.x + evt.clientX - start.pointerX,
                 y: start.y + evt.clientY - start.pointerY,
             });
         });
 
         const stop = () => {
-            if (!start) {
-                return;
-            }
             start = null;
             this.ui.classList.remove(prefix("dragging", "d"));
-            if (position) {
-                settings.set(this.settingsKey("position"), { x: Math.round(position.x), y: Math.round(position.y) });
-            }
         };
         handle.addEventListener("pointerup", stop);
         handle.addEventListener("pointercancel", stop);
@@ -321,28 +272,30 @@ class PopupBuilder {
     }
 
     /**
-     * Restore the pinned state from the last session
-     * @returns {PopupBuilder}
+     * Escape closes floating pop-ups, unless something else is on top that Escape is meant for:
+     * a regular SBA pop-up, the SBA menu or a NYT modal. Those close first.
+     * Runs in the capture phase, before the browser closes a regular pop-up.
+     * @param {KeyboardEvent} evt
      */
-    restore() {
-        if (!settings.get(this.settingsKey("pinned"))) {
-            return this;
+    onKeyDown = (evt) => {
+        if (evt.key !== "Escape" || !this.isOpen) {
+            return;
         }
-        this.pin(true);
-        if (settings.get(this.settingsKey("open"))) {
-            this.toggle(true);
+        const regularOpen = [...instances].some((popup) => !popup.floating && popup.isOpen);
+        const menuOpen = !!fn.$('[data-ui="submenu"][data-sba-open="true"]');
+        if (!regularOpen && !menuOpen && !nyt.findModalCloser()) {
+            this.toggle(false);
         }
-        return this;
-    }
+    };
 
     /**
      * Build an instance
      * @param {App} app
      * @param {String} key
      * @param {Object} [options]
-     * @param {Boolean} [options.pinnable=false] Whether the pop-up can be pinned (desktop only)
+     * @param {Boolean} [options.floating=false] A window rather than a modal, see class description
      */
-    constructor(app, key, { pinnable = false } = {}) {
+    constructor(app, key, { floating = false } = {}) {
         this.key = key;
 
         /**
@@ -355,7 +308,13 @@ class PopupBuilder {
 
         this.state = "closed";
 
-        this.pinnable = pinnable && !app.envIs("mobile");
+        this.floating = floating;
+
+        /**
+         * Position of a moved floating pop-up, kept until the page is reloaded
+         * @type {{x: Number, y: Number}|null}
+         */
+        this.position = null;
 
         this.parts = {
             title: fn.h3({
@@ -386,14 +345,16 @@ class PopupBuilder {
 
         this.ui = this.create();
 
-        if (this.pinnable) {
+        if (this.floating) {
             this.enableDragging();
+            document.addEventListener("keydown", this.onKeyDown, true);
         }
 
         document.body.append(this.ui);
         instances.add(this);
 
         app.on(prefix("destroy"), () => {
+            document.removeEventListener("keydown", this.onKeyDown, true);
             this.ui.remove();
             instances.delete(this);
         });

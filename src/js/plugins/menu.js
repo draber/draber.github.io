@@ -188,6 +188,7 @@ class Menu extends Plugin {
                 click: (evt) => this.handleEntry(evt),
                 beforetoggle: (evt) => {
                     this.paneOpen = evt.newState === "open";
+                    this.pane.dataset[prefix("open")] = this.paneOpen;
                     this.ui.classList.toggle(prefix("open", "d"), this.paneOpen);
                     if (this.paneOpen) {
                         newItems.markSeen();

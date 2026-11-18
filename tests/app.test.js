@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import { startApp, tick, pointerClick, press } from "./support/game.js";
 
 const popupKeys = ["grid", "darkMode", "milestones", "community", "shortcuts", "todaysAnswers"];
+const regularPopupKeys = popupKeys.filter((key) => key !== "grid");
 
 describe("app", () => {
     let app;
@@ -35,7 +36,7 @@ describe("app", () => {
             popupKeys.forEach((key) => {
                 const ui = plugin(key).popup.ui;
                 expect(ui.parentElement).toBe(document.body);
-                expect(ui.getAttribute("popover")).toBe("auto");
+                expect(ui.getAttribute("popover")).toBe(key === "grid" ? "manual" : "auto");
             });
             expect(openPopups()).toEqual([]);
         });
@@ -46,7 +47,7 @@ describe("app", () => {
     });
 
     describe("pop-ups", () => {
-        it.each(popupKeys)("%s opens and closes with ×, Escape and a click outside, repeatedly", (key) => {
+        it.each(regularPopupKeys)("%s opens and closes with ×, Escape and a click outside, repeatedly", (key) => {
             const p = plugin(key);
             for (let round = 0; round < 2; round++) {
                 p.togglePopup();
@@ -70,8 +71,8 @@ describe("app", () => {
             expect(plugin("milestones").popup.isOpen).toBe(true);
         });
 
-        it("shows one pop-up at a time", () => {
-            plugin("grid").togglePopup();
+        it("shows one regular pop-up at a time", () => {
+            plugin("milestones").togglePopup();
             plugin("community").togglePopup();
             expect(openPopups()).toEqual(["community"]);
         });
@@ -110,55 +111,83 @@ describe("app", () => {
         });
     });
 
-    describe("pinned grid", () => {
-        it("stays open next to other pop-ups and keeps its position", () => {
-            const grid = plugin("grid").popup;
-            grid.toggle(true);
-            grid.ui.querySelector(".sba-pin").click();
-            expect(grid.isPinned).toBe(true);
-            expect(grid.ui.getAttribute("popover")).toBe("manual");
-            expect(grid.isOpen).toBe(true);
+    describe("floating grid", () => {
+        const grid = () => plugin("grid").popup;
 
-            plugin("community").togglePopup();
-            press("Escape");
-            pointerClick($(".sb-hive"));
-            expect(grid.isOpen).toBe(true);
-            expect(plugin("community").popup.isOpen).toBe(false);
+        it("closes with × and Escape, repeatedly", () => {
+            for (let round = 0; round < 2; round++) {
+                grid().toggle(true);
+                grid().ui.querySelector(".sb-modal-close").click();
+                expect(grid().isOpen).toBe(false);
+                grid().toggle(true);
+                press("Escape");
+                expect(grid().isOpen).toBe(false);
+            }
         });
 
-        it("can be dragged by its title bar, the position is stored", () => {
-            const grid = plugin("grid").popup;
-            const handle = grid.ui.querySelector(".sb-modal-top");
+        it("stays open on a click outside and when other pop-ups open", () => {
+            grid().toggle(true);
+            pointerClick($(".sb-hive"));
+            plugin("community").togglePopup();
+            expect(openPopups().sort()).toEqual(["community", "grid"]);
+        });
+
+        it("lets Escape close what's on top first", () => {
+            grid().toggle(true);
+            plugin("community").togglePopup();
+            press("Escape");
+            expect(openPopups()).toEqual(["grid"]);
+            press("Escape");
+            expect(openPopups()).toEqual([]);
+        });
+
+        it("leaves Escape to an open NYT modal", () => {
+            grid().toggle(true);
+            const closer = document.createElement("div");
+            closer.className = "sb-modal-close";
+            const nytModal = document.createElement("div");
+            nytModal.append(closer);
+            closer.addEventListener("click", () => nytModal.remove());
+            $(".sb-game-moment").append(nytModal);
+            press("Escape");
+            expect(nytModal.isConnected).toBe(false);
+            expect(grid().isOpen).toBe(true);
+        });
+
+        it("opens centered with title and description", () => {
+            grid().toggle(true);
+            expect(grid().isMoved).toBe(false);
+            expect(grid().ui.classList.contains("sba-moved")).toBe(false);
+            expect(grid().ui.querySelector(".sba-window-title").textContent).toBe("Grid");
+        });
+
+        it("turns into a compact window when dragged and remembers the position until reload", () => {
+            grid().toggle(true);
+            const handle = grid().ui.querySelector(".sb-modal-top");
             const opts = (x, y) => ({ bubbles: true, button: 0, clientX: x, clientY: y });
             window.innerWidth = 1200;
             window.innerHeight = 900;
             handle.dispatchEvent(new MouseEvent("pointerdown", opts(10, 10)));
             handle.dispatchEvent(new MouseEvent("pointermove", opts(110, 60)));
             handle.dispatchEvent(new MouseEvent("pointerup", opts(110, 60)));
-            const stored = JSON.parse(localStorage.getItem("sba-settings")).grid.popup.position;
-            expect(stored).toEqual({ x: 100, y: 50 });
+            expect(grid().ui.classList.contains("sba-moved")).toBe(true);
+            expect(grid().position).toEqual({ x: 100, y: 50 });
+
+            grid().toggle(false);
+            grid().ui.style.left = "";
+            grid().toggle(true);
+            expect(grid().ui.style.left).toBe("100px");
+            expect(grid().ui.classList.contains("sba-moved")).toBe(true);
+            // nothing stored beyond the page
+            expect(localStorage.getItem("sba-settings")).not.toContain("position");
         });
 
-        it("is restored as pinned and open in the next session", async () => {
-            const grid = plugin("grid").popup;
-            const { default: settings } = await import("../src/js/modules/settings.js");
-            expect(settings.get("options.grid.popup.pinned")).toBe(true);
-            // fresh page: not pinned yet, stored as open
-            grid.ui.setAttribute("popover", "auto");
-            grid.ui.classList.remove("sba-pinned");
-            settings.set("options.grid.popup.open", true);
-            grid.restore();
-            expect(grid.isPinned).toBe(true);
-            expect(grid.isOpen).toBe(true);
-            expect(grid.ui.style.left).toBe("100px");
-        });
-
-        it("unpins", () => {
-            const grid = plugin("grid").popup;
-            grid.pin(false);
-            expect(grid.ui.getAttribute("popover")).toBe("auto");
-            expect(grid.ui.style.left).toBe("");
-            grid.toggle(false);
+        it("doesn't start dragging from the close button", () => {
+            const before = { ...grid().position };
+            const close = grid().ui.querySelector(".sb-modal-close");
+            close.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, button: 0, clientX: 0, clientY: 0 }));
+            grid().ui.querySelector(".sb-modal-top").dispatchEvent(new MouseEvent("pointermove", { bubbles: true, clientX: 300, clientY: 300 }));
+            expect(grid().position).toEqual(before);
         });
     });
 
@@ -296,6 +325,8 @@ describe("app", () => {
             expect($$(".pz-toolbar-button__sba")).toHaveLength(1);
             expect($$('[data-ui="submenu"]')).toHaveLength(1);
             expect($$('[data-ui="grid"][popover]')).toHaveLength(1);
+            // a reload forgets where the grid was
+            expect(second.plugins.get("grid").popup.isMoved).toBe(false);
             app = second;
         });
     });

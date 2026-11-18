@@ -56,26 +56,9 @@
         background: var(--modal-bg-color, hsla(0, 0%, 100%, 0.85));
     }
 
-    // pinned: no backdrop, the game stays usable, the pop-up can be moved by its title bar
-    &.sba-pinned {
-        inset: auto;
-        margin: 0;
-        box-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.2);
-
-        // narrower than a modal, beats `.pz-desktop .sb-modal-frame`
-        .sb-modal-frame {
-            width: min(480px, calc(100vw - 16px));
-        }
-
-        // beats the NYT's wide desktop paddings
-        .sb-modal-content :is(.sb-modal-header, .sb-modal-body) {
-            padding-inline: 16px;
-        }
-
-        .sba-modal-footer {
-            margin-inline: 16px;
-        }
-
+    // floating (Grid): a window rather than a modal, no backdrop, the game stays usable,
+    // can be dragged by its title bar
+    &.sba-floating {
         &::backdrop {
             display: none;
         }
@@ -84,7 +67,48 @@
             cursor: move;
             touch-action: none;
         }
+    }
 
+    // floating and moved: compact window with a small title bar
+    &.sba-floating.sba-moved {
+        inset: auto;
+        margin: 0;
+        box-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.2);
+        border-radius: 6px;
+
+        // narrower than a modal, beats `.pz-desktop .sb-modal-frame`
+        .sb-modal-frame {
+            width: min(480px, calc(100vw - 16px));
+        }
+
+        // title bar, beats the NYT's `.sb-modal-top`
+        .sb-modal-top {
+            min-height: 0;
+            align-items: center;
+            padding: 6px 8px 6px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sba-window-title {
+            display: block;
+        }
+
+        .sb-modal-close {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        // title, description and footer give way to the table
+        .sb-modal-header,
+        .sba-modal-footer {
+            display: none;
+        }
+
+        // beats the NYT's wide desktop paddings
+        .sb-modal-content .sb-modal-body {
+            padding: 12px 16px 16px;
+            margin: 0;
+        }
     }
 
     &.sba-dragging {
@@ -114,7 +138,7 @@
         flex-shrink: 0;
     }
 
-    :where(.sb-modal-close, .sba-pin) {
+    :where(.sb-modal-close) {
         appearance: none;
         background: none;
         border: 0;
@@ -122,22 +146,29 @@
         color: var(--text-color);
         cursor: pointer;
         line-height: 1;
-    }
-
-    :where(.sb-modal-close) {
         font-size: 32px;
         font-weight: 300;
     }
 
-    :where(.sba-pin) {
-        font-size: 15px;
-        opacity: 0.45;
-        filter: grayscale(1);
+    // title of the compact window, see .sba-moved
+    :where(.sba-window-title) {
+        display: none;
+        flex-grow: 1;
+        font: 700 14px/1.2 nyt-franklin, sans-serif;
+        text-align: start;
+    }
 
-        &:hover,
-        &[aria-pressed="true"] {
-            opacity: 1;
-            filter: none;
+    :where(.sba-move-handle) {
+        display: inline-flex;
+        width: 14px;
+        height: 14px;
+        margin-inline: 4px;
+        opacity: 0.5;
+
+        svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--text-color);
         }
     }
 
@@ -217,11 +248,11 @@
 // On large desktops the NYT gives modals a very wide right padding (a narrow column for text modals)
 // and resets it for its own list modals (.yesterday, .stats, .ranks …). SBA pop-ups are list modals too.
 @media (min-width: 992px) {
-    .pz-desktop .sba-popover:not(.sba-pinned) .sb-modal-content :is(.sb-modal-header, .sb-modal-body) {
+    .pz-desktop .sba-popover:not(.sba-moved) .sb-modal-content :is(.sb-modal-header, .sb-modal-body) {
         padding-right: var(--horizontal-spacing-7, 56px);
     }
 
-    .pz-desktop .sba-popover:not(.sba-pinned) .sba-modal-footer {
+    .pz-desktop .sba-popover:not(.sba-moved) .sba-modal-footer {
         margin-inline: var(--horizontal-spacing-7, 56px);
     }
 }
