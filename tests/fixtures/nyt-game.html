@@ -1,0 +1,73 @@
+<!--
+    Simplified Spelling Bee page, modeled on the NYT markup as of Nov 2026.
+    Only the parts SBA touches, see src/js/nyt/selectors.js.
+    Static markup: #js-hook-game-wrapper and its portals. Everything below #pz-game-root is rendered by React.
+-->
+<div id="js-global-nav" class="pz-nav">
+    <div id="js-mobile-toolbar"></div>
+</div>
+<div class="pz-game-header"></div>
+<div class="pz-row pz-game-title-bar">
+    <div class="pz-module" id="portal-game-header">
+        <h2><em class="pz-game-title">Spelling Bee</em><span class="pz-game-date">November 18, 2026</span></h2>
+    </div>
+</div>
+<div class="pz-game-wrapper" id="js-hook-game-wrapper">
+    <div id="portal-toast-system"></div>
+    <div id="portal-game-moments"></div>
+    <div id="portal-toolbar-tooltip"></div>
+    <div id="portal-sb-tooltip"></div>
+    <div id="portal-modal-system"></div>
+    <div class="pz-game-screen" id="js-hook-pz-moment__game">
+        <div class="pz-game-toolbar">
+            <div class="pz-row">
+                <div class="pz-module pz-flex-row pz-game-toolbar-content" id="portal-game-toolbar">
+                    <div class="pz-toolbar-left"></div>
+                    <div class="pz-toolbar-right">
+                        <button type="button" class="pz-toolbar-button pz-toolbar-button__yesterday">Yesterday’s Answers</button>
+                        <button type="button" class="pz-toolbar-button pz-toolbar-button__stats">Statistics</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="portal-game-modals"></div>
+        <div class="pz-game-field" id="pz-game-root">
+            <div class="sb-layout-box">
+                <div class="sb-game-moment">
+                    <div class="sb-content-box">
+                        <div class="sb-status-box">
+                            <div class="sb-wordlist-box">
+                                <div class="sb-wordlist-heading"><div class="sb-wordlist-summary">You have found 2 words</div></div>
+                                <div class="sb-wordlist-window">
+                                    <ul class="sb-wordlist-items-pag">
+                                        <li><span class="sb-anagram">tint</span></li>
+                                        <li><span class="sb-anagram pangram">entrains</span><span class="sb-anagram pangram">entrains</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sb-controls-box">
+                            <div class="sb-controls">
+                                <div class="sb-hive-input"><span class="sb-hive-input-content"></span></div>
+                                <div class="sb-hive">
+                                    <svg class="hive-cell center"><polygon points="0,0"></polygon><text class="cell-letter">a</text></svg>
+                                    <svg class="hive-cell outer"><polygon points="0,0"></polygon><text class="cell-letter">t</text></svg>
+                                    <svg class="hive-cell outer"><polygon points="0,0"></polygon><text class="cell-letter">i</text></svg>
+                                    <svg class="hive-cell outer"><polygon points="0,0"></polygon><text class="cell-letter">n</text></svg>
+                                    <svg class="hive-cell outer"><polygon points="0,0"></polygon><text class="cell-letter">e</text></svg>
+                                    <svg class="hive-cell outer"><polygon points="0,0"></polygon><text class="cell-letter">r</text></svg>
+                                    <svg class="hive-cell outer"><polygon points="0,0"></polygon><text class="cell-letter">s</text></svg>
+                                </div>
+                                <div class="hive-actions">
+                                    <div class="hive-action hive-action__delete">Delete</div>
+                                    <div class="hive-action hive-action__shuffle"></div>
+                                    <div class="hive-action hive-action__submit">Enter</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

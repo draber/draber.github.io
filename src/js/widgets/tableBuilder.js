@@ -9,7 +9,7 @@ import { render } from "../utils/render.fn.js";
 import {prefix} from "../utils/string.js";
 
 /**
- * DynamicTable is a lightweight utility to generate an HTML table
+ * TableBuilder is a lightweight utility to generate an HTML table
  * from raw 2D data using the `dataToObj()` and `render()` pipeline.
  *
  * It supports optional caption, header row/column, and row-level callbacks.
@@ -24,6 +24,7 @@ export default class TableBuilder {
      * @param {boolean} [options.hasHeadCol=true] - Whether the first column is a header column.
      * @param {Array<Function>} [options.rowCallbacks=[]] - Optional callbacks for customizing rows.
      * @param {Array<Function>} [options.cellCallbacks=[]] - Optional callbacks for customizing cells.
+     * @param {Array<String>} [options.classNames=[]] - CSS class names to be used on <table>.
      */
     constructor(
         data,
@@ -68,6 +69,7 @@ export default class TableBuilder {
     /**
      * Returns the rendered table node, using the cached version if available.
      * Triggers rendering if it hasn't been called yet.
+     * @returns {HTMLElement}
      */
     get ui() {
         return this.element || this.render();
@@ -76,7 +78,7 @@ export default class TableBuilder {
 
 
 /**
- * Builds a standardized DynamicTable with SBA-style classnames and layout.
+ * Builds a standardized table with SBA-style classnames and layout.
  *
  * @param {Array<Array<any>>} data - 2D table data
  * @param {Array<Function>} [rowCallbacks=[]]

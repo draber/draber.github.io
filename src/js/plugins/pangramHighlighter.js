@@ -7,38 +7,29 @@
 import { prefix } from "../utils/string.js";
 import Plugin from "../modules/plugin.js";
 import data from "../modules/data.js";
+import nyt from "../nyt/nyt.js";
 import fn from "fancy-node";
 
 /**
- * Pangram Highlight plugin
+ * Pangram Highlighter plugin
+ *
+ * Marks pangrams in the result list and in Yesterday's Answers
  *
  * @param {App} app
- * @returns {Plugin} PangramHl
+ * @returns {Plugin} PangramHighlighter
  */
 class PangramHighlighter extends Plugin {
     /**
-     * Toggle state
-     * @param state
-     * @returns {PangramHighlighter}
-     */
-    toggle(state) {
-        super.toggle(state);
-        return this.run();
-    }
-
-    /**
      * Add pangram underlines
-     * @param {Event} evt
+     * @param {Event|CustomEvent} [evt] a `yesterday` event carries the modal in `detail`, otherwise the result list is used
      * @returns {PangramHighlighter}
      */
-    // eslint-disable-next-line no-unused-vars
     run(evt) {
         const pangrams = data.getList("pangrams");
         const container = evt?.detail ?? this.app.resultList;
 
         fn.$$("li", container).forEach((node) => {
-            const term = node.textContent;
-            if (pangrams.includes(term) || fn.$(".pangram", node)) {
+            if (pangrams.includes(nyt.getTermFromListItem(node)) || nyt.isMarkedAsPangram(node)) {
                 node.classList.add(this.marker);
             }
         });
@@ -47,11 +38,12 @@ class PangramHighlighter extends Plugin {
     }
 
     /**
-     * PangramHl constructor
+     * PangramHighlighter constructor
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Highlight PangramHl", "", {
+        super(app, "Pangram Highlighter", "Marks pangrams in the word lists", {
+            key: "pangramHighlighter",
             runEvt: prefix("refreshUi"),
         });
 

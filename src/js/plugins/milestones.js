@@ -25,6 +25,11 @@ import TableBuilder from "../widgets/tableBuilder.js";
  */
 export default class Milestones extends Plugin {
 
+    /**
+     * Build one of the summary tables
+     * @param {String} fieldName key in `this.summaryFields`
+     * @returns {HTMLElement}
+     */
     createSummaryTable(fieldName) {
         return new TableBuilder(getSummaryTableData(fieldName), {
             hasHeadRow: true,
@@ -34,10 +39,13 @@ export default class Milestones extends Plugin {
                 .concat(["pane"]),
             caption: this.summaryFields[fieldName],
             rowCallbacks: getSummaryTableRowCallbacks()
-        }).ui
+        }).ui;
     }
 
-
+    /**
+     * Build the table of tiers, highest first
+     * @returns {HTMLElement}
+     */
     createMilestoneTable() {
         return new TableBuilder(getMilestoneData(true), {
             hasHeadRow: true,
@@ -47,26 +55,17 @@ export default class Milestones extends Plugin {
                 .concat(["pane"]),
             caption: "Tiers",
             rowCallbacks: getMilestoneTableRowCallbacks()
-        }).ui
+        }).ui;
     }
 
     /**
-     * Toggle the milestone popup open or closed.
-     * Builds all necessary DOM structure and content dynamically.
-     * @returns {Milestones}
+     * Build the pop-up body: summaries on the left, tiers on the right
+     * @returns {HTMLElement}
      */
-    togglePopup() {
-        if (this.popup.isOpen) {
-            this.popup.toggle(false);
-            return this;
-        }
+    createBody() {
+        const summaryElements = Object.keys(this.summaryFields).map((fieldName) => this.createSummaryTable(fieldName));
 
-        const summaryElements = [];
-        Object.keys(this.summaryFields).forEach(fieldName => {
-            summaryElements.push(this.createSummaryTable(fieldName));
-        })
-
-        const body = fn.div({
+        return fn.div({
             classNames: [prefix("milestone-table-wrapper", "d")],
             content: [
                 fn.figure({
@@ -79,9 +78,29 @@ export default class Milestones extends Plugin {
                 }),
             ],
         });
+    }
 
-        this.popup.setContent("subtitle", getDescription()).setContent("body", body).toggle(true);
+    /**
+     * Refresh an open pop-up when a new word has been found
+     * @returns {Milestones}
+     */
+    run() {
+        if (this.popup.isOpen) {
+            this.popup.setContent("subtitle", getDescription()).setContent("body", this.createBody());
+        }
+        return this;
+    }
 
+    /**
+     * Toggle the milestone popup open or closed.
+     * @returns {Milestones}
+     */
+    togglePopup() {
+        if (this.popup.isOpen) {
+            this.popup.toggle(false);
+            return this;
+        }
+        this.popup.setContent("subtitle", getDescription()).setContent("body", this.createBody()).toggle(true);
         return this;
     }
 
@@ -90,8 +109,7 @@ export default class Milestones extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Milestones", "The number of points required for each level", {runEvt: prefix("refreshUi")});
-
+        super(app, "Milestones", "The number of points required for each level", { runEvt: prefix("refreshUi") });
 
         this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
 
@@ -102,8 +120,8 @@ export default class Milestones extends Plugin {
         };
 
         this.menu = {
-            action: 'popup'
-        }
+            action: "popup",
+        };
 
         this.shortcuts = [
             {

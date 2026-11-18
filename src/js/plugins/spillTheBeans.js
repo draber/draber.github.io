@@ -8,6 +8,7 @@ import data from "../modules/data.js";
 import {prefix} from "../utils/string.js";
 import Plugin from "../modules/plugin.js";
 import fn from "fancy-node";
+import nyt from "../nyt/nyt.js";
 
 /**
  * Spill the beans plugin
@@ -18,10 +19,11 @@ import fn from "fancy-node";
 class SpillTheBeans extends Plugin {
     /**
      * Check if the input matches a term in the remainder list
-     * @param evt
+     * @param {CustomEvent} evt `newInput` event, `detail` is the input element
+     * @returns {SpillTheBeans}
      */
     run(evt) {
-        let partial = evt.detail?.textContent?.trim() || '';
+        const partial = evt.detail?.textContent?.trim() || "";
         let emoji = "🙂";
         if (!partial) {
             emoji = "😐";
@@ -37,15 +39,15 @@ class SpillTheBeans extends Plugin {
      * @returns {Boolean}
      */
     getState() {
-        return !this.ui.classList.contains('inactive')
+        return !this.ui.classList.contains("inactive");
     }
 
     /**
      * Toggle the display of the widget
-     * @returns {Plugin} SpillTheBeans
+     * @returns {SpillTheBeans}
      */
     toggle() {
-        this.ui.classList.toggle('inactive', this.getState());
+        this.ui.classList.toggle("inactive", this.getState());
         return this;
     }
 
@@ -68,15 +70,15 @@ class SpillTheBeans extends Plugin {
          */
         this.ui = fn.div({
             content: "😐",
-            classNames: ['inactive']
+            classNames: ["inactive"],
         });
 
-        this.target = fn.$(".sb-controls", this.app.gameWrapper);
+        this.target = nyt.find("controls");
 
         this.shortcuts = [
             {
                 combo: "Shift+Alt+E",
-                method: 'toggle',
+                method: "toggle",
             },
         ];
     }

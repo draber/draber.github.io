@@ -5,8 +5,10 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-// newItems.js
-// Controls when "new" feature markers (like red dots or icons) are shown for a specific release
+/**
+ * Controls when "new" feature markers (like red dots or icons) are shown for a specific release.
+ * A plugin marks its menu entry as new with `this.menu.icon = "new"`.
+ */
 
 import settings from "../modules/settings.js";
 
@@ -14,7 +16,8 @@ import settings from "../modules/settings.js";
 // also we're only interested in major.feature, not in .bug
 const versionToString = (version) => version.split(".").slice(0, 2).join("-");
 
-const currentVersion = settings.get('options.version') || '0';
+// the app version, `options.version` only records the settings format
+const currentVersion = settings.get("version") || "0";
 const versionKey = `newItems-${versionToString(currentVersion)}`;
 const maxDays = 4;
 
@@ -23,7 +26,7 @@ const isActive = true;
 
 /**
  * Check whether the "new" features for this version should still be shown.
- * Returns false if already seen or expired, true otherwise.
+ * @returns {Boolean} false if already seen or expired, true otherwise
  */
 const shouldHighlightNewItems = () => {
     if (!isActive) {
@@ -60,7 +63,7 @@ const markSeen = () => {
  */
 const ensureInstallDate = () => {
     const existing = settings.get(`options.${versionKey}.installDate`);
-    if (typeof existing !== "string") {
+    if (typeof existing !== "number") {
         settings.set(`options.${versionKey}.installDate`, Date.now());
     }
 };

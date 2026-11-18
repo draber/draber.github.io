@@ -5,7 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-import { findCloseButton } from "../utils/popup.ui.js";
+import nyt from "../nyt/nyt.js";
 import settings from "./settings.js";
 import hive from "./hive.js";
 
@@ -14,7 +14,7 @@ import hive from "./hive.js";
  * The key is the normalized combo (e.g., "Alt+Shift+KeyO"),
  * and the value is the shortcut object.
  */
-let registry = new Map();
+const registry = new Map();
 
 /**
  * Maps various modifier key names to a canonical form and human-readable label.
@@ -31,8 +31,7 @@ const modifierMap = new Map([
 ]);
 
 /**
- * Canonical order of modifier keys, used when normalizing shortcut combos
- * to ensure consistent sorting.
+ * Canonical modifier names, used to read the modifier state of keyboard events
  */
 const order = Array.from(new Set(Array.from(modifierMap.values()).map((m) => m.canonical)));
 
@@ -79,8 +78,11 @@ const comboToHuman = (combo) => {
     return (
         combo
             .split("+")
-            // modifierMap = Ctrl => Control etc.
-            .map((part) => (modifierMap.has(part) ? modifierMap.get(part).human : part.replace(/^Digit|^Key/, "")))
+            // modifierMap: Control => Ctrl etc.
+            .map((part) => {
+                const modifier = modifierMap.get(part.toLowerCase());
+                return modifier ? modifier.human : part.replace(/^Digit|^Key/, "");
+            })
             .join(" + ")
     );
 };
@@ -91,17 +93,16 @@ const comboToHuman = (combo) => {
  * would otherwise be inserted into the game's input field.
  *
  * Logic:
- * - If a popup is open, assume we're dealing with an SBA shortcut (not NYT).
- * - Check whether the key is one of the registered SBA character keys.
+ * - While a NYT modal is open, the game doesn't take letters from NYT shortcuts, only SBA keys are relevant.
+ * - Otherwise both SBA and NYT character keys end up in the input field.
  *
  * @param {String|Array|Object} combo - A shortcut combo (e.g., "Alt+Shift+KeyO")
- * @param {App} app - Reference to the main app, needed to detect popup state
  * @returns {Boolean} Whether the key requires deletion from the input field
  */
-const requiresDeletion = (combo, app) => {
+const requiresDeletion = (combo) => {
     const key = getCharacterKey(normalizeCombo(combo));
-    let pool = findCloseButton(app) ? characterKeys.sba : characterKeys.sba.join(characterKeys.nyt);
-    return key && pool.includes(key);
+    const pool = nyt.findModalCloser() ? characterKeys.sba : characterKeys.sba.concat(characterKeys.nyt);
+    return !!key && pool.includes(key);
 };
 
 /**
@@ -175,12 +176,18 @@ const normalizeCombo = (data) => {
     return data.join("+");
 };
 
+/**
+ * Retrieve the registry entry for a keyboard event
+ * @param {KeyboardEvent} event
+ * @returns {Object|Boolean}
+ */
 const getSbaShortcutEntry = (event) => get(normalizeCombo(event));
 
 /**
- * Handle keyboard shortcuts
- * @param {Event} event
- * @returns {boolean}
+ * Handle keyboard shortcuts.
+ * If the shortcut contains a character key, the character has been typed into the game, delete it first.
+ * @param {KeyboardEvent} event
+ * @returns {Boolean}
  */
 const handleShortcut = (event) => {
     const entry = getSbaShortcutEntry(event);
@@ -192,29 +199,36 @@ const handleShortcut = (event) => {
         entry.callback();
         return true;
     }
-    hive.deleteLetter().then(entry.callback());
+    hive.deleteLetter().then(() => entry.callback());
     return true;
 };
 
+/**
+ * Store a shortcut in the registry and persist it in the settings
+ * @param {String|Array|Event} combo
+ * @param {Object} shortcut
+ * @returns {Boolean}
+ */
 const set = (combo, shortcut) => {
     combo = normalizeCombo(combo);
     if (!isValidShortcut(shortcut)) {
         return false;
     }
-    if(!shortcut.human){
+    if (!shortcut.human) {
         shortcut.human = comboToHuman(shortcut.combo);
     }
-    if(typeof shortcut.enabled === 'undefined'){
-        shortcut.enabled = true
+    if (typeof shortcut.enabled === "undefined") {
+        shortcut.enabled = true;
     }
     registry.set(combo, shortcut);
     settings.set(`options.${shortcut.module}.shortcuts.${shortcut.combo}`, shortcut);
+    return true;
 };
 
 /**
  * Register a new shortcut
  * @param {Object} shortcut
- * @return {Boolean}
+ * @returns {Boolean}
  */
 const add = (shortcut) => {
     if (!isValidShortcut(shortcut)) {
@@ -239,6 +253,10 @@ const add = (shortcut) => {
     return true;
 };
 
+/**
+ * All registered shortcuts, keyed by normalized combo
+ * @returns {Map<String, Object>}
+ */
 const getRegistry = () => {
     return registry;
 };

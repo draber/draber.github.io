@@ -5,6 +5,11 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
+/**
+ * Check whether an object is a plain object without own keys
+ * @param {Object} obj
+ * @returns {Boolean}
+ */
 export const isEmptyObject = (obj) => {
     return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
+};

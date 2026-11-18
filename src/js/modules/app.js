@@ -11,19 +11,18 @@ import getPlugins from "./importer.js";
 import Widget from "./widget.js";
 import { prefix } from "../utils/string.js";
 import fn from "fancy-node";
+import nyt from "../nyt/nyt.js";
 import pluginRegistry from "./pluginRegistry.js";
 import shortcutRegistry from "./shortcutRegistry.js";
 
 /**
  * App container
- * @param {HTMLElement} gameWrapper
- * @returns {App} app
  */
 class App extends Widget {
     /**
      * Set a `data` value on `<body>`
-     * @param key
-     * @param value
+     * @param {String} key
+     * @param {*} value
      * @returns {App}
      */
     domSet(key, value) {
@@ -33,7 +32,7 @@ class App extends Widget {
 
     /**
      * Remove a `data` value from `<body>`
-     * @param key
+     * @param {String} key
      * @returns {App}
      */
     domUnset(key) {
@@ -43,8 +42,8 @@ class App extends Widget {
 
     /**
      * Retrieve a `data` value from `<body>`
-     * @param key
-     * @returns {App}
+     * @param {String} key
+     * @returns {*} the parsed value, false if not set
      */
     domGet(key) {
         if (typeof document.body.dataset[prefix(key)] === "undefined") {
@@ -54,25 +53,12 @@ class App extends Widget {
     }
 
     /**
-     * Retrieve sync data from DOM
-     * @param {HTMLElement} resultsList
-     * @returns {Array}
-     */
-    getSyncData() {
-        return Array.from(fn.$$("li", this.resultList)).map((li) => {
-            //2026-06-02: li in resultlist now can have two childnodes, both containing the found word
-            const newWordElem = li.childElementCount > 1 ? li.firstElementChild : li;
-            return newWordElem.textContent.trim();
-        });
-    }
-
-    /**
      * Retrieve environment
      * @param {String} env desktop|mobile
      * @returns {Boolean}
      */
     envIs(env) {
-        return document.body.classList.contains("pz-" + env);
+        return nyt.isEnv(env);
     }
 
     /**
@@ -80,27 +66,44 @@ class App extends Widget {
      * @returns {Boolean}
      */
     focusGame() {
-        if (!this.envIs("desktop")) {
+        const titleBar = nyt.find("titleBar", document);
+        const gameHeader = nyt.find("gameHeader", document);
+        if (!this.envIs("desktop") || !titleBar || !gameHeader) {
             return false;
         }
         window.scrollTo(0, 0);
-        const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
-        const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
-        window.scrollTo(0, targetOffsetTop);
+        const titlebarRect = titleBar.getBoundingClientRect();
+        window.scrollTo(0, titlebarRect.top + titlebarRect.height - gameHeader.offsetHeight);
         return true;
     }
 
     /**
+     * Report missing parts of the NYT page. Doesn't stop the app, most features work without some of them.
+     * @returns {Boolean} true if everything is in place
+     */
+    checkHealth() {
+        const { ok, problems } = nyt.selfCheck();
+        if (!ok) {
+            console.warn(
+                `${settings.get("label")}: the NYT page has changed, some features might not work.\n` +
+                    problems.map((p) => `- ${p.selector} not found, affects ${p.impact}`).join("\n"),
+            );
+            this.domSet("health", JSON.stringify(problems.map((p) => p.name)));
+        }
+        return ok;
+    }
+
+    /**
      * Start the application once the result list has been generated.
-     * The result list depends on sync data from the server and it can therefore be assumed that everything is ready
+     * The result list depends on sync data from the server, so it can be assumed that everything is ready.
      */
     load() {
-        fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
-            // Observe game for various changes
-            this.observer = this.buildObserver();
+        nyt.waitForResultList().then((resultList) => {
             this.resultList = resultList;
-            data.init(this, this.getSyncData());
-            hive.init(fn.$(".sb-controls-box", this.gameWrapper));
+            this.checkHealth();
+            this.observer = this.buildObserver();
+            data.init(this, nyt.getFoundTerms(resultList));
+            hive.init();
 
             this.add();
             this.domSet("active", true);
@@ -109,22 +112,13 @@ class App extends Widget {
             this.trigger(prefix("refreshUi"), null);
             document.dispatchEvent(new Event(prefix("ready")));
 
-            // fire shortcuts
-            document.addEventListener("keydown", (event) => {
-                if (!shortcutRegistry.getSbaShortcutEntry(event)) {
-                    return;
-                }
-                if (!shortcutRegistry.requiresDeletion(event, this)) {
-                    shortcutRegistry.handleShortcut(event); // run immediately
-                } else {
-                    this._lastShortcutEvent = event; // delay and run after newInput
-                }
-            });
+            document.addEventListener("keydown", this.onKeyDown);
+            document.addEventListener("keyup", this.onKeyUp);
 
-            this.on(prefix("newInput"), (event) => {
-                if (this._lastShortcutEvent) {
-                    shortcutRegistry.handleShortcut(this._lastShortcutEvent);
-                    this._lastShortcutEvent = null;
+            this.on(prefix("newInput"), () => {
+                if (this.pendingShortcut) {
+                    shortcutRegistry.handleShortcut(this.pendingShortcut);
+                    this.pendingShortcut = null;
                 }
             });
             this.focusGame();
@@ -132,8 +126,35 @@ class App extends Widget {
     }
 
     /**
+     * Fire shortcuts.
+     * Shortcuts with a character key also type that character into the game.
+     * These are delayed until the input has changed, the character is then deleted before the shortcut runs.
+     * @param {KeyboardEvent} event
+     */
+    onKeyDown = (event) => {
+        if (!shortcutRegistry.getSbaShortcutEntry(event)) {
+            return;
+        }
+        if (!shortcutRegistry.requiresDeletion(event)) {
+            shortcutRegistry.handleShortcut(event);
+        } else {
+            this.pendingShortcut = event;
+        }
+    };
+
+    /**
+     * Close NYT modals with Escape. SBA pop-ups close themselves.
+     * @param {KeyboardEvent} event
+     */
+    onKeyUp = (event) => {
+        if (event.code === "Escape") {
+            nyt.closeModal();
+        }
+    };
+
+    /**
      * See if the app is displayed or not
-     * @returns {App}
+     * @returns {Boolean}
      */
     getState() {
         return this.domGet("active");
@@ -149,51 +170,48 @@ class App extends Widget {
     }
 
     /**
+     * Handle a single mutation of the game
+     * @param {MutationRecord} mutation
+     */
+    handleMutation(mutation) {
+        if (mutation.type !== "childList" || !(mutation.target instanceof HTMLElement)) {
+            return;
+        }
+
+        // text input
+        if (nyt.isHiveInput(mutation.target)) {
+            this.trigger(prefix("newInput"), mutation.target);
+            return;
+        }
+
+        // term added to word list
+        if (mutation.target === this.resultList) {
+            const item = mutation.addedNodes[0];
+            if (item instanceof HTMLElement && item.textContent.trim()) {
+                this.trigger(prefix("newWord"), nyt.getTermFromListItem(item));
+            }
+            return;
+        }
+
+        // 'yesterday' modal is open, the NYT renders it on demand
+        const yesterday = nyt.findYesterdayModal(mutation.addedNodes);
+        if (yesterday) {
+            this.trigger(prefix("yesterday"), yesterday);
+        }
+    }
+
+    /**
      * Observe game for various changes
      * @returns {MutationObserver}
      */
     buildObserver() {
         const observer = new MutationObserver((mutationList) => {
-            mutationList.forEach((mutation) => {
-                if (!(mutation.target instanceof HTMLElement)) {
-                    return false;
-                }
-
-                switch (true) {
-                    // 'yesterday' modal is open
-                    case mutation.type === "childList" && mutation.target.classList.contains("sb-modal-wrapper"):
-                        if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
-                            this.trigger(prefix("yesterday"), mutation.target);
-                        }
-                        break;
-
-                    // text input
-                    case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
-                        this.trigger(prefix("newInput"), mutation.target);
-                        break;
-
-                    // term added to word list
-                    case mutation.type === "childList" &&
-                        mutation.target.isSameNode(this.resultList) &&
-                        !!mutation.addedNodes.length &&
-                        !!mutation.addedNodes[0].textContent.trim() &&
-                        mutation.addedNodes[0] instanceof HTMLElement:
-                        //2026-06-02: li in resultlist now can have two childnodes, both containing the found word
-                        const newWordElem = mutation.addedNodes[0].childElementCount > 1 ? mutation.addedNodes[0].firstElementChild : mutation.addedNodes[0];
-                        this.trigger(prefix("newWord"), newWordElem.textContent.trim());
-                        break;
-                }
-            });
+            mutationList.forEach((mutation) => this.handleMutation(mutation));
         });
-        const args = {
-            target: this.gameWrapper,
-            options: {
-                childList: true,
-                subtree: true,
-                attributes: true,
-            },
-        };
-        observer.observe(args.target, args.options);
+        observer.observe(this.gameWrapper, {
+            childList: true,
+            subtree: true,
+        });
         return observer;
     }
 
@@ -204,19 +222,21 @@ class App extends Widget {
     buildUi() {
         const events = {};
         events[prefix("destroy")] = () => {
-            this.observer.disconnect();
+            this.observer?.disconnect();
+            document.removeEventListener("keydown", this.onKeyDown);
+            document.removeEventListener("keyup", this.onKeyUp);
             this.container.remove();
             this.domUnset("theme");
+            this.domUnset("active");
+            this.domUnset("health");
         };
-
-        const classNames = [settings.get("prefix")];
 
         return fn.div({
             data: {
                 id: this.key,
                 version: settings.get("version"),
             },
-            classNames,
+            classNames: [settings.get("prefix")],
             events,
         });
     }
@@ -236,10 +256,12 @@ class App extends Widget {
 
     /**
      * Add app to the DOM
+     * @returns {App}
      */
     add() {
         this.container.append(this.ui);
-        fn.$(".sb-content-box", this.gameWrapper).prepend(this.container);
+        nyt.find("contentBox").prepend(this.container);
+        return this;
     }
 
     /**
@@ -268,6 +290,12 @@ class App extends Widget {
         this.container = fn.div({
             classNames: [prefix("container", "d")],
         });
+
+        /**
+         * Shortcut event waiting for the input to change, see `onKeyDown()`
+         * @type {KeyboardEvent|null}
+         */
+        this.pendingShortcut = null;
 
         this.shortcut = {
             combo: "Shift+Alt+A",

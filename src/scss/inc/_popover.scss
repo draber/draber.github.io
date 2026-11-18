@@ -1,0 +1,189 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ *
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+
+// SBA pop-ups, see widgets/popupBuilder.js
+//
+// Pop-ups live in the browser's top layer, outside the NYT's modal system. They keep the NYT's class names
+// (.sb-modal-frame, .sb-modal-title etc.), so wherever the NYT styles those globally, the NYT wins.
+// Everything here is wrapped in :where() and has zero specificity: it only fills the gaps.
+
+.sba-popover {
+    // reset the browser's default popover styles
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--text-color);
+    overflow: visible;
+
+    // centered, like the NYT modals
+    inset: 0;
+    margin: auto;
+    width: min(664px, calc(100vw - 24px));
+    height: fit-content;
+    max-height: calc(100dvh - 48px);
+
+    &::backdrop {
+        // ::backdrop doesn't inherit custom properties in older browsers, hence the fallback
+        background: hsla(0, 0%, 100%, 0.85);
+        background: var(--modal-bg-color, hsla(0, 0%, 100%, 0.85));
+    }
+
+    // pinned: no backdrop, the game stays usable, the pop-up can be moved by its title bar
+    &.sba-pinned {
+        inset: auto;
+        margin: 0;
+        width: min(420px, calc(100vw - 16px));
+        box-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.2);
+
+        &::backdrop {
+            display: none;
+        }
+
+        .sb-modal-top {
+            cursor: move;
+            touch-action: none;
+        }
+
+        .sb-modal-content {
+            padding-inline: 16px;
+        }
+    }
+
+    &.sba-dragging {
+        user-select: none;
+        opacity: 0.9;
+    }
+}
+
+:where(.sba-popover) {
+    :where(.sb-modal-frame) {
+        display: flex;
+        flex-direction: column;
+        max-height: inherit;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: var(--body-bg-color);
+        color: var(--text-color);
+        font-family: nyt-franklin, sans-serif;
+    }
+
+    :where(.sb-modal-top) {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 8px 0;
+        flex-shrink: 0;
+    }
+
+    :where(.sb-modal-close, .sba-pin) {
+        appearance: none;
+        background: none;
+        border: 0;
+        padding: 0 6px;
+        color: var(--text-color);
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    :where(.sb-modal-close) {
+        font-size: 32px;
+        font-weight: 300;
+    }
+
+    :where(.sba-pin) {
+        font-size: 15px;
+        opacity: 0.45;
+        filter: grayscale(1);
+
+        &:hover,
+        &[aria-pressed="true"] {
+            opacity: 1;
+            filter: none;
+        }
+    }
+
+    :where(.sb-modal-content) {
+        overflow-y: auto;
+        padding: 0 24px 16px;
+    }
+
+    :where(.sb-modal-header) {
+        margin-block-end: 16px;
+    }
+
+    :where(.sb-modal-title) {
+        font-family: nyt-karnakcondensed, georgia, serif;
+        font-weight: 700;
+        font-size: 34px;
+        line-height: 1.1;
+        margin: 0 0 8px;
+    }
+
+    :where(.sb-modal-message) {
+        font-size: 16px;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    :where(.sb-modal-body) {
+        font-size: 16px;
+    }
+
+    :where(figure) {
+        margin: 0;
+    }
+
+    :where(.sba-modal-footer) {
+        margin-block-start: 16px;
+        padding-block-start: 10px;
+        border-top: 1px solid var(--border-color);
+        text-align: right;
+        font-size: 13px;
+
+        a {
+            color: var(--link-color, inherit);
+        }
+    }
+
+    // Today's Answers, mimics Yesterday's Answers
+    :where(.sb-modal-letters) {
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-block-end: 12px;
+    }
+
+    :where(.sb-modal-wordlist-items) {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        columns: 3 140px;
+
+        li {
+            display: flex;
+            gap: 6px;
+            align-items: baseline;
+            break-inside: avoid;
+            padding: 2px 0;
+        }
+
+        .pangram {
+            font-weight: 700;
+        }
+    }
+}
+
+@media (max-width: 515px) {
+    .sba-popover {
+        width: calc(100vw - 16px);
+    }
+
+    :where(.sba-popover) :where(.sb-modal-content) {
+        padding-inline: 12px;
+    }
+}

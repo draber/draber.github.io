@@ -5,6 +5,13 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import App from "./modules/app.js";
-import fn from "fancy-node";
+import nyt from "./nyt/nyt.js";
+import settings from "./modules/settings.js";
 
-new App(fn.$("#js-hook-game-wrapper"));
+const gameWrapper = nyt.getGameWrapper();
+
+if (gameWrapper) {
+    new App(gameWrapper);
+} else {
+    console.warn(`${settings.get("label")}: ${nyt.selectors.gameWrapper} not found, the NYT page has changed.`);
+}

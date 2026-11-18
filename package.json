@@ -1,10 +1,12 @@
 {
     "name": "spelling-bee-assistant",
-    "version": "5.3.3",
+    "version": "6.0.0",
     "description": "Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle",
     "main": "index.js",
     "type": "module",
     "scripts": {
+        "test": "vitest run",
+        "test:watch": "vitest",
         "js:once": "rollup -c ./src/builder/rollup.js",
         "js:watch": "rollup -c ./src/builder/rollup.js -w",
         "js:build-dev": "rollup -c ./src/builder/rollup.js --config-env=dev",
@@ -25,13 +27,15 @@
         "@rollup/plugin-json": "^6.1.0",
         "@rollup/plugin-node-resolve": "^16.0.1",
         "@rollup/plugin-terser": "^0.4.4",
+        "jsdom": "^31.0.1",
         "minimist": "^1.2.8",
         "node-watch": "^0.7.4",
         "rollup": "^4.40.0",
         "rollup-plugin-cleanup": "^3.2.1",
         "rollup-plugin-import-css": "^3.5.8",
         "rollup-plugin-svg-import": "^3.0.0",
-        "sass": "^1.86.3"
+        "sass": "^1.86.3",
+        "vitest": "^5.1.1"
     },
     "homepage": "https://github.com/draber/draber.github.io.git#readme",
     "repository": {

@@ -4,58 +4,44 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import {
-    prefix
-} from '../utils/string.js';
-import Plugin from '../modules/plugin.js';
+import { prefix } from "../utils/string.js";
+import Plugin from "../modules/plugin.js";
+import nyt from "../nyt/nyt.js";
 
 // noinspection SpellCheckingInspection
 /**
- * Link all term to Google
+ * Googlify plugin
+ *
+ * Links all terms in the game to a Google search: result list, SBA pop-ups and NYT modals such as Yesterday's Answers.
  *
  * @param {App} app
  * @returns {Plugin} Googlify
  */
 class Googlify extends Plugin {
-
-    // /**
-    //  * Toggle state
-    //  * @param {Boolean} state
-    //  * @returns {Googlify}
-    //  */
-    // toggle(state) {
-    //     super.toggle(state);
-    //     return this.run();
-    // }
-
     /**
      * Search for term in Google
-     * @param evt
-     * @returns {boolean}
+     * @param {PointerEvent} evt
+     * @returns {Boolean}
      */
     listener(evt) {
-        if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
+        if (evt.button !== 0 || !nyt.isTerm(evt.target)) {
             return false;
         }
-        if (evt.button === 0) {
-            window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
-            return true;
-        }
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(evt.target.textContent.trim())}`, prefix());
+        return true;
     }
 
     /**
-     * Link all terms in the game to Google: result list, SBA pop-ups and NYT modals such as Yesterday's Answers.
-     * NYT modals are rendered on demand, so the listener sits on the static game wrapper (event delegation).
+     * Listen on <body>, it contains the game as well as the SBA pop-ups.
+     * NYT modals are rendered on demand, hence event delegation.
      * Capture phase, so the NYT's own handlers can't stop the event first.
-     * @see https://github.com/draber/draber.github.io/issues/201
-     * @param evt
      * @returns {Googlify}
      */
-    // eslint-disable-next-line no-unused-vars
-    run(evt = null) {
-        const container = this.app.gameWrapper;
-        container.addEventListener('pointerup', this.listener, true);
-        container.classList.add(prefix('googlified', 'd'));
+    run() {
+        this.containers.forEach((container) => {
+            container.addEventListener("pointerup", this.listener, true);
+            container.classList.add(prefix("googlified", "d"));
+        });
         return this;
     }
 
@@ -64,12 +50,15 @@ class Googlify extends Plugin {
      * @param {App} app
      */
     constructor(app) {
+        super(app, "Googlify", "Link all result terms to Google");
 
-        super(app, 'Googlify', 'Link all result terms to Google');
+        this.containers = [document.body];
 
-        this.app.on(prefix('destroy'), () => {
-            this.app.gameWrapper.removeEventListener('pointerup', this.listener, true);
-            this.app.gameWrapper.classList.remove(prefix('googlified', 'd'));
+        this.app.on(prefix("destroy"), () => {
+            this.containers.forEach((container) => {
+                container.removeEventListener("pointerup", this.listener, true);
+                container.classList.remove(prefix("googlified", "d"));
+            });
         });
 
         this.run();

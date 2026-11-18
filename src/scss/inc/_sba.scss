@@ -135,8 +135,7 @@ details {
     }
 }
 
-.sb-modal-wrapper {
-    //--sba-cell-block-padding:
+:is(.sb-modal-wrapper, .sba-popover) {
     --sba-cell-inline-padding: 7px;
 
     .sba-data-pane {
@@ -381,8 +380,12 @@ details {
     }
 
     .sba-tool-btn {
+        appearance: none;
+        background: none;
+        border: 0;
+        color: inherit;
         padding: 1px;
-        width: 12px;
+        width: 14px;
         aspect-ratio: 1 / 1;
         display: inline-block;
         cursor: pointer;
@@ -444,7 +447,7 @@ progress {
             text-shadow: none;
         }
     }
-    &:has([data-icon="new"] svg) {
+    &.sba-has-new {
         #sba-menu-entry-point {
             &::after {
                 content: "•";
@@ -459,13 +462,23 @@ progress {
         }
     }
 
-    .pane {
-        color: var(--text-color);
-        background: var(--body-bg-color);
-        border: 1px var(--border-color) solid;
-        padding: 5px;
-        width: 179px;
-    }
+}
+
+// menu entries, a popover in the top layer, positioned by JS below the button
+[data-ui="submenu"] {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    color: var(--text-color);
+    background: var(--body-bg-color);
+    border: 1px var(--border-color) solid;
+    padding: 5px;
+    width: 179px;
+    max-height: calc(100dvh - 60px);
+    overflow-y: auto;
+    list-style: none;
+    font-family: nyt-franklin, sans-serif;
+    box-shadow: 0 3px 12px hsla(0, 0%, 0%, 0.15);
 
     li {
         position: relative;
@@ -749,7 +762,7 @@ progress {
 }
 
 .pz-toolbar-button,
-[data-ui="menu"] li {
+[data-ui="submenu"] li {
     &:hover {
         background: var(--menu-hover-color);
         color: var(--text-color);
@@ -760,11 +773,9 @@ progress {
     }
 }
 
-[data-sba-submenu="true"] {
-    [data-ui="menu"] {
-        background: var(--menu-hover-color);
-        color: var(--text-color);
-    }
+[data-ui="menu"].sba-open {
+    background: var(--menu-hover-color);
+    color: var(--text-color);
 }
 
 [data-ui="shortcuts"] {
@@ -799,8 +810,7 @@ progress {
 
 [data-ui="grid"] {
     table {
-        margin-left: -20px;
-        width: calc(100% + 40px);
+        width: 100%;
     }
 
     tbody {

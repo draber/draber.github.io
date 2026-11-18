@@ -11,7 +11,7 @@
     };
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "5.3.3";
+    var version = "6.0.0";
 
     const storageKey = `${prefix$1}-settings`;
     const state = {
@@ -140,102 +140,6 @@
             default:
                 return pf + term;
         }
-    };
-
-    let lists;
-    const sbData = window.gameData.today;
-    let app;
-    const completeLists = () => {
-        lists.foundPangrams = lists.foundTerms.filter(term => lists.pangrams.includes(term));
-        lists.remainders = lists.answers.filter(term => !lists.foundTerms.includes(term));
-        app.trigger(prefix('refreshUi'));
-    };
-    const initLists = foundTerms => {
-        lists = {
-            answers: sbData.answers,
-            pangrams: sbData.pangrams,
-            letters: sbData.validLetters,
-            foundTerms: foundTerms
-        };
-        completeLists();
-    };
-    const getList = type => {
-        return lists[type];
-    };
-    const getId = () => {
-        return sbData.id;
-    };
-    const getDate = () => {
-        return {
-            display: sbData.displayDate,
-            print: sbData.printDate,
-        }
-    };
-    const getCenterLetter = () => {
-        return sbData.centerLetter;
-    };
-    const getCount = type => {
-        return lists[type].length;
-    };
-    const getPoints = type => {
-        const data = lists[type];
-        let points = 0;
-        data.forEach(term => {
-            if (lists.pangrams.includes(term)) {
-                points += term.length + 7;
-            } else if (term.length > 4) {
-                points += term.length;
-            } else {
-                points += 1;
-            }
-        });
-        return points;
-    };
-    const getFoundAndTotal = (type) => {
-        switch (type) {
-            case "points":
-                return {
-                    found: getPoints("foundTerms"),
-                    total: getPoints("answers"),
-                };
-            case "terms":
-                return {
-                    found: getCount("foundTerms"),
-                    total: getCount("answers"),
-                };
-            case "pangrams":
-                return {
-                    found: getCount("foundPangrams"),
-                    total: getCount("pangrams"),
-                };
-            default:
-                console.warn(`[data] getFoundAndTotal: Unsupported type "${type}"`);
-                return {
-                    found: 0,
-                    total: 0,
-                };
-        }
-    };
-    const updateLists = term => {
-        lists.foundTerms.push(term);
-        completeLists();
-    };
-    const init$1 = (_app, foundTerms) => {
-        app = _app;
-        initLists(foundTerms);
-        app.on(prefix('newWord'), evt => {
-            updateLists(evt.detail);
-        });
-    };
-    var data = {
-        init: init$1,
-        getList,
-        getCount,
-        getPoints,
-        getId,
-        getDate,
-        getCenterLetter,
-        getFoundAndTotal
     };
 
     function getDefaultExportFromCjs (x) {
@@ -402,86 +306,337 @@
     var srcExports = requireSrc();
     var fn = /*@__PURE__*/getDefaultExportFromCjs(srcExports);
 
-    const isEmptyObject = (obj) => {
-        return Object.keys(obj).length === 0 && obj.constructor === Object;
+    const selectors = {
+        gameWrapper: "#js-hook-game-wrapper",
+        gameRoot: "#pz-game-root",
+        titleBar: ".pz-game-title-bar",
+        gameHeader: ".pz-game-header",
+        desktopToolbar: ".pz-toolbar-right",
+        mobileToolbar: "#js-mobile-toolbar",
+        globalNav: "#js-global-nav",
+        contentBox: ".sb-content-box",
+        controlsBox: ".sb-controls-box",
+        controls: ".sb-controls",
+        hiveCell: ".sb-hive .hive-cell",
+        hiveInput: ".sb-hive-input-content",
+        resultList: ".sb-wordlist-items-pag",
+        wordlistHeading: ".sb-wordlist-heading",
+        term: ".sb-anagram",
+        pangram: ".pangram",
+        modalWrapper: ".sb-modal-wrapper",
+        yesterdayFrame: ".sb-modal-frame.yesterday",
+        modalClosers: [
+            ".pz-moment__frame.on-stage .pz-moment__close",
+            ".pz-moment__frame.on-stage .pz-moment__close_text",
+            ".sb-modal-close",
+        ],
+        toolbarButtons: {
+            yesterday: ".pz-toolbar-button__yesterday",
+            stats: ".pz-toolbar-button__stats",
+        },
+    };
+    const classNames = {
+        desktop: "pz-desktop",
+        mobile: "pz-mobile",
+        mobileToolbarVisible: "show-mobile-toolbar",
+        hiveInput: "sb-hive-input-content",
+        hiveInputNonEmpty: "non-empty",
+        modalWrapper: "sb-modal-wrapper",
+        hiveActionPrefix: "hive-action__",
+    };
+    const required = {
+        gameWrapper: "the whole assistant",
+        contentBox: "the assistant panel",
+        controlsBox: "the hive, shortcuts",
+        controls: "Spill the Beans",
+        hiveCell: "Dark Mode preview, typing words",
+        resultList: "word and point counts",
+        wordlistHeading: "the progress bar",
     };
 
-    let container;
-    const cells = {};
-    const actionButtons = {};
-    const hitActionButton = (action) => {
-        return new Promise((resolve) => {
-            if (!actionButtons[action]) {
-                return resolve();
+    let gameWrapper$1 = null;
+    const getGameWrapper = () => {
+        if (!gameWrapper$1 || !gameWrapper$1.isConnected) {
+            gameWrapper$1 = fn.$(selectors.gameWrapper);
+        }
+        return gameWrapper$1;
+    };
+    const find = (name, container = getGameWrapper()) => {
+        return container ? fn.$(selectors[name], container) : null;
+    };
+    const findAll = (name, container = getGameWrapper()) => {
+        return container ? fn.$$(selectors[name], container) : [];
+    };
+    const getGameData = () => {
+        const today = window.gameData?.today;
+        if (!today || !Array.isArray(today.answers) || !Array.isArray(today.pangrams) || !Array.isArray(today.validLetters)) {
+            throw new Error("window.gameData.today is missing or incomplete");
+        }
+        return today;
+    };
+    const isEnv = (env) => document.body.classList.contains(classNames[env]);
+    const getToolbar = () => (isEnv("mobile") ? fn.$(selectors.mobileToolbar) : fn.$(selectors.desktopToolbar));
+    const getGlobalNav = () => fn.$(selectors.globalNav);
+    const isMobileToolbarVisible = (nav) => nav.classList.contains(classNames.mobileToolbarVisible);
+    const waitForResultList = () => fn.waitFor(selectors.resultList, getGameWrapper());
+    const getTermFromListItem = (item) => {
+        const elem = item.childElementCount > 1 ? item.firstElementChild : item;
+        return elem.textContent.trim();
+    };
+    const getFoundTerms = (resultList) => fn.$$("li", resultList).map(getTermFromListItem);
+    const isMarkedAsPangram = (item) => !!fn.$(selectors.pangram, item);
+    const isTerm = (elem) => elem instanceof Element && elem.matches(selectors.term);
+    const isHiveInput = (node) => node instanceof Element && node.classList.contains(classNames.hiveInput);
+    const findYesterdayModal = (nodes) => {
+        for (const node of nodes) {
+            if (!(node instanceof Element)) {
+                continue;
             }
+            const frame = node.matches(selectors.yesterdayFrame) ? node : fn.$(selectors.yesterdayFrame, node);
+            if (frame) {
+                return frame;
+            }
+        }
+        return null;
+    };
+    const findModalCloser = () => {
+        for (const selector of selectors.modalClosers) {
+            const closer = fn.$(selector, getGameWrapper());
+            if (closer) {
+                return closer;
+            }
+        }
+        return null;
+    };
+    const closeModal = () => {
+        const closer = findModalCloser();
+        if (closer) {
+            closer.click();
+        }
+        return !!closer;
+    };
+    const clickToolbarButton = (name) => {
+        const button = fn.$(selectors.toolbarButtons[name]);
+        if (button) {
+            button.click();
+        }
+        return !!button;
+    };
+    const getHiveCells = () => {
+        const cells = {};
+        findAll("hiveCell").forEach((cell) => {
+            cells[cell.textContent.trim()] = cell;
+        });
+        return cells;
+    };
+    const getHiveActionButton = (action) => fn.$(`.${classNames.hiveActionPrefix}${action}`, find("controlsBox"));
+    const getHiveInput = () => {
+        const input = find("hiveInput");
+        return input && input.classList.contains(classNames.hiveInputNonEmpty) ? input : null;
+    };
+    const selfCheck = () => {
+        const problems = [];
+        try {
+            getGameData();
+        } catch (e) {
+            problems.push({ name: "gameData", selector: "window.gameData.today", impact: "everything" });
+        }
+        for (const [name, impact] of Object.entries(required)) {
+            const found = name === "gameWrapper" ? getGameWrapper() : find(name);
+            if (!found) {
+                problems.push({ name, selector: selectors[name], impact });
+            }
+        }
+        return {
+            ok: problems.length === 0,
+            problems,
+        };
+    };
+    var nyt = {
+        selectors,
+        getGameWrapper,
+        find,
+        findAll,
+        getGameData,
+        isEnv,
+        getToolbar,
+        getGlobalNav,
+        isMobileToolbarVisible,
+        waitForResultList,
+        getTermFromListItem,
+        getFoundTerms,
+        isMarkedAsPangram,
+        isTerm,
+        isHiveInput,
+        findYesterdayModal,
+        findModalCloser,
+        closeModal,
+        clickToolbarButton,
+        getHiveCells,
+        getHiveActionButton,
+        getHiveInput,
+        selfCheck,
+    };
+
+    let lists;
+    let sbData;
+    let app;
+    const completeLists = () => {
+        lists.foundPangrams = lists.foundTerms.filter((term) => lists.pangrams.includes(term));
+        lists.remainders = lists.answers.filter((term) => !lists.foundTerms.includes(term));
+        app.trigger(prefix("refreshUi"));
+    };
+    const initLists = (foundTerms) => {
+        lists = {
+            answers: [...sbData.answers],
+            pangrams: [...sbData.pangrams],
+            letters: [...sbData.validLetters],
+            foundTerms: [...foundTerms],
+        };
+        completeLists();
+    };
+    const getList = (type) => {
+        return lists[type];
+    };
+    const getId = () => {
+        return sbData.id;
+    };
+    const getDate = () => {
+        return {
+            display: sbData.displayDate,
+            print: sbData.printDate,
+        };
+    };
+    const getCenterLetter = () => {
+        return sbData.centerLetter;
+    };
+    const getCount = (type) => {
+        return lists[type].length;
+    };
+    const getTermPoints = (term) => {
+        if (lists.pangrams.includes(term)) {
+            return term.length + 7;
+        }
+        return term.length > 4 ? term.length : 1;
+    };
+    const getPoints = (type) => {
+        return lists[type].reduce((points, term) => points + getTermPoints(term), 0);
+    };
+    const getFoundAndTotal = (type) => {
+        switch (type) {
+            case "points":
+                return {
+                    found: getPoints("foundTerms"),
+                    total: getPoints("answers"),
+                };
+            case "terms":
+                return {
+                    found: getCount("foundTerms"),
+                    total: getCount("answers"),
+                };
+            case "pangrams":
+                return {
+                    found: getCount("foundPangrams"),
+                    total: getCount("pangrams"),
+                };
+            default:
+                console.warn(`[data] getFoundAndTotal: Unsupported type "${type}"`);
+                return {
+                    found: 0,
+                    total: 0,
+                };
+        }
+    };
+    const updateLists = (term) => {
+        if (lists.foundTerms.includes(term)) {
+            return;
+        }
+        lists.foundTerms.push(term);
+        completeLists();
+    };
+    const init$1 = (_app, foundTerms) => {
+        app = _app;
+        sbData = nyt.getGameData();
+        initLists(foundTerms);
+        app.on(prefix("newWord"), (evt) => {
+            updateLists(evt.detail);
+        });
+    };
+    var data = {
+        init: init$1,
+        getList,
+        getCount,
+        getPoints,
+        getTermPoints,
+        getId,
+        getDate,
+        getCenterLetter,
+        getFoundAndTotal,
+    };
+
+    let cells = null;
+    const actionButtons = {};
+    const touchDuration = 50;
+    const touch = (elem) => {
+        return new Promise((resolve) => {
             const evtOpts = { bubbles: true, cancelable: true };
-            const feedbackClass = prefix("no-feedback", "d");
-            actionButtons[action].classList.add(feedbackClass);
-            actionButtons[action].dispatchEvent(new Event("touchstart", evtOpts));
+            elem.dispatchEvent(new Event("touchstart", evtOpts));
             setTimeout(() => {
-                actionButtons[action].dispatchEvent(new Event("touchend", evtOpts));
-                actionButtons[action].classList.remove(feedbackClass);
+                elem.dispatchEvent(new Event("touchend", evtOpts));
                 resolve();
-            }, 50);
+            }, touchDuration);
+        });
+    };
+    const hitActionButton = (action) => {
+        const button = actionButtons[action];
+        if (!button) {
+            return Promise.resolve();
+        }
+        const feedbackClass = prefix("no-feedback", "d");
+        button.classList.add(feedbackClass);
+        return touch(button).then(() => {
+            button.classList.remove(feedbackClass);
         });
     };
     const deleteLetter = () => hitActionButton("delete");
     const submitWord = () => hitActionButton("submit");
-    const typeLetter = (letter) => {
-        return new Promise((resolve) => {
-            const cell = getCellByLetter(letter);
-            if (!cell) {
-                return resolve();
-            }
-            const polygon = fn.$('polygon', cell);
-            const evtOpts = { bubbles: true, cancelable: true };
-            polygon.dispatchEvent(new Event("touchstart", evtOpts));
-            setTimeout(() => {
-                polygon.dispatchEvent(new Event("touchend", evtOpts));
-                resolve();
-            }, 50);
-        });
-    };
-    const typeWord = (word, slow=false) => {
-        const letters = [...word.toLowerCase()];
-        let chain = Promise.resolve();
-        const delay = slow ?  250 : 0;
-        letters.forEach((letter) => {
-            chain = chain
-                .then(() => typeLetter(letter))
-                .then(() => new Promise((res) => setTimeout(res, delay)));
-        });
-        return chain
-            .then(() => new Promise((res) => setTimeout(res, delay)))
-            .then(() => submitWord());
-    };
-    const deleteWord = () => {
-        const input = fn.$(".sb-hive-input-content.non-empty", container);
-        if (!input) {
-            return Promise.resolve();
-        }
-        const count = input.children.length;
-        let chain = Promise.resolve();
-        for (let i = 0; i < count; i++) {
-            chain = chain.then(() => deleteLetter());
-        }
-        return chain;
-    };
     const getCells = () => {
-        if (isEmptyObject(cells)) {
-            fn.$$(".sb-hive .hive-cell", container).forEach((cell) => {
-                cells[cell.textContent.trim()] = cell;
-            });
+        if (!cells || !Object.keys(cells).length) {
+            cells = nyt.getHiveCells();
         }
         return cells;
     };
     const getCellByLetter = (letter) => {
-        return cells[letter] || null;
+        return getCells()[letter.toLowerCase()] || null;
     };
-    const init = (_container) => {
-        container = _container;
+    const typeLetter = (letter) => {
+        const cell = getCellByLetter(letter);
+        const polygon = cell ? fn.$("polygon", cell) : null;
+        return polygon ? touch(polygon) : Promise.resolve();
+    };
+    const typeWord = (word, slow = false) => {
+        const delay = slow ? 250 : 0;
+        const wait = () => new Promise((resolve) => setTimeout(resolve, delay));
+        let chain = Promise.resolve();
+        [...word.toLowerCase()].forEach((letter) => {
+            chain = chain.then(() => typeLetter(letter)).then(wait);
+        });
+        return chain.then(wait).then(() => submitWord());
+    };
+    const deleteWord = () => {
+        const input = nyt.getHiveInput();
+        let chain = Promise.resolve();
+        if (!input) {
+            return chain;
+        }
+        for (let i = 0; i < input.children.length; i++) {
+            chain = chain.then(() => deleteLetter());
+        }
+        return chain;
+    };
+    const init = () => {
         ["submit", "delete", "shuffle"].forEach((action) => {
-            actionButtons[action] = fn.$(`.hive-action__${action}`, container);
+            actionButtons[action] = nyt.getHiveActionButton(action);
         });
     };
     var hive = {
@@ -556,144 +711,103 @@
         }
     }
 
-    const modalHostKey = prefix("modal-host", "d");
-    const closerSelectors = [
-        ".pz-moment__frame.on-stage .pz-moment__close",
-        ".pz-moment__frame.on-stage .pz-moment__close_text",
-        ".sb-modal-close",
-    ];
-    const findCloseButton = (app) => {
-        for (let selector of closerSelectors) {
-            const closer = fn.$(selector, app.gameWrapper);
-            if (closer) {
-                return closer;
-            }
-        }
-        return false;
-    };
-    const findNytCloseButton = (app) => {
-        for (let selector of closerSelectors) {
-            const closer = Array.from(fn.$$(selector, app.gameWrapper)).find(
-                (elem) => !elem.closest(`[data-ui="${modalHostKey}"]`),
-            );
-            if (closer) {
-                return closer;
-            }
-        }
-        return false;
-    };
-
-    let host = null;
-    let current = null;
-    let appRef = null;
-    const onKeyUp = (evt) => {
-        if (evt.code !== "Escape") {
-            return;
-        }
-        const nytCloser = appRef ? findNytCloseButton(appRef) : false;
-        if (nytCloser) {
-            nytCloser.click();
-            return;
-        }
-        if (current) {
-            current.toggle(false);
-        }
-    };
-    const getModalWrapper = () => {
-        if (!host) {
-            host = fn.div({
-                classNames: ["sb-modal-system", "sb-modal-open"],
-                data: {
-                    ui: modalHostKey,
-                },
-                content: fn.div({
-                    classNames: ["sb-modal-scrim"],
-                    content: fn.div({
-                        classNames: ["sb-modal-wrapper"],
-                    }),
-                }),
-            });
-            host.addEventListener("pointerup", (evt) => {
-                if (current && !current.ui.contains(evt.target)) {
-                    current.toggle(false);
-                }
-            });
-        }
-        return fn.$(".sb-modal-wrapper", host);
-    };
+    const instances = new Set();
+    const viewportMargin = 8;
     class PopupBuilder {
-        get isOpen() {
-            return current === this && !!host && host.isConnected;
+        static isAnyOpen() {
+            return [...instances].some((popup) => popup.isOpen);
         }
-        static init(app) {
-            if (appRef) {
-                return;
-            }
-            appRef = app;
-            document.addEventListener("keyup", onKeyUp);
-            app.on(prefix("destroy"), () => {
-                document.removeEventListener("keyup", onKeyUp);
-                if (host) {
-                    host.remove();
+        static closeAll() {
+            let closed = false;
+            instances.forEach((popup) => {
+                if (popup.isOpen && !popup.isPinned) {
+                    popup.toggle(false);
+                    closed = true;
                 }
-                current = null;
             });
+            return closed;
         }
-        getTarget() {
-            const dataUi = prefix("popup-container", "d");
-            let container = fn.$(`[data-ui="${dataUi}"]`);
-            if (!container) {
-                container = fn.template({
-                    data: {
-                        ui: dataUi,
-                    },
-                });
-                fn.$("body").append(container);
-            }
-            return container;
+        get isOpen() {
+            return this.state === "open" && this.ui.isConnected;
+        }
+        get isPinned() {
+            return this.ui.classList.contains(prefix("pinned", "d"));
+        }
+        settingsKey(name) {
+            return `options.${this.key}.popup.${name}`;
         }
         create() {
+            const topButtons = [
+                fn.button({
+                    attributes: {
+                        type: "button",
+                        title: "Close",
+                    },
+                    aria: {
+                        label: "Close",
+                    },
+                    classNames: ["sb-modal-close"],
+                    content: "×",
+                    events: {
+                        click: () => this.toggle(false),
+                    },
+                }),
+            ];
+            if (this.pinnable) {
+                topButtons.unshift(
+                    fn.button({
+                        attributes: {
+                            type: "button",
+                            title: "Pin – keep open and move freely",
+                        },
+                        aria: {
+                            label: "Pin",
+                            pressed: "false",
+                        },
+                        classNames: [prefix("pin", "d")],
+                        content: "📌",
+                        events: {
+                            click: () => this.pin(!this.isPinned),
+                        },
+                    }),
+                );
+            }
             return fn.div({
-                classNames: ["sb-modal-frame", prefix("pop-up", "d")],
-                aria: {
-                    role: "button",
+                attributes: {
+                    id: this.id,
+                    popover: "auto",
                 },
+                aria: {
+                    role: "dialog",
+                },
+                classNames: [prefix("popover", "d")],
                 data: {
                     ui: this.key,
                 },
                 events: {
-                    click: (e) => {
-                        e.stopPropagation();
-                    },
+                    beforetoggle: (evt) => this.onBeforeToggle(evt),
+                    toggle: (evt) => this.onToggle(evt),
                 },
-                content: [
-                    fn.div({
-                        classNames: ["sb-modal-top"],
-                        content: fn.div({
-                            aria: {
-                                role: "button",
-                            },
-                            classNames: ["sb-modal-close"],
-                            content: "×",
-                            events: {
-                                click: () => {
-                                    this.toggle(false);
-                                },
-                            },
+                content: fn.div({
+                    classNames: ["sb-modal-frame", prefix("pop-up", "d")],
+                    content: [
+                        fn.div({
+                            classNames: ["sb-modal-top"],
+                            content: topButtons,
                         }),
-                    }),
-                    fn.div({
-                        classNames: ["sb-modal-content"],
-                        content: [
-                            fn.div({
-                                classNames: ["sb-modal-header"],
-                                content: [this.parts.title, this.parts.subtitle],
-                            }),
-                            this.parts.body,
-                            this.parts.footer,
-                        ],
-                    }),
-                ],
+                        fn.div({
+                            classNames: ["sb-modal-content"],
+                            content: [
+                                fn.div({
+                                    classNames: ["sb-modal-header"],
+                                    content: [this.parts.title, this.parts.subtitle],
+                                }),
+                                this.parts.body,
+                                this.parts.footer,
+                            ],
+                        }),
+                    ],
+                }),
             });
         }
         setContent(part, content) {
@@ -705,36 +819,124 @@
             this.parts[part].append(fn.toNode(content));
             return this;
         }
+        onBeforeToggle(evt) {
+            this.state = evt.newState;
+            if (evt.newState !== "open") {
+                return;
+            }
+            nyt.closeModal();
+            if (this.isPinned) {
+                const position = settings.get(this.settingsKey("position"));
+                if (position) {
+                    this.ui.style.left = `${position.x}px`;
+                    this.ui.style.top = `${position.y}px`;
+                }
+            }
+        }
+        onToggle(evt) {
+            if (!this.pinnable) {
+                return;
+            }
+            if (evt.newState === "open" && this.isPinned) {
+                this.applyPosition(settings.get(this.settingsKey("position")));
+            }
+            settings.set(this.settingsKey("open"), evt.newState === "open");
+        }
         toggle(state) {
+            if (state === this.isOpen) {
+                return this;
+            }
             if (state) {
-                if (current && current !== this) {
-                    current.getTarget().append(current.ui);
-                }
-                const nytCloser = findNytCloseButton(this.app);
-                if (nytCloser) {
-                    nytCloser.click();
-                }
-                getModalWrapper().append(this.ui);
-                if (!host.isConnected) {
-                    const contentBox = fn.$(".sb-content-box", this.app.gameWrapper);
-                    if (contentBox) {
-                        contentBox.after(host);
-                    } else {
-                        this.app.gameWrapper.append(host);
-                    }
-                }
-                current = this;
-            } else if (current === this) {
-                this.getTarget().append(this.ui);
-                host.remove();
-                current = null;
+                this.ui.showPopover();
+            } else {
+                this.ui.hidePopover();
             }
             return this;
         }
-        constructor(app, key) {
+        pin(state) {
+            if (!this.pinnable || state === this.isPinned) {
+                return this;
+            }
+            const wasOpen = this.isOpen;
+            if (wasOpen) {
+                this.ui.hidePopover();
+            }
+            this.ui.setAttribute("popover", state ? "manual" : "auto");
+            this.ui.classList.toggle(prefix("pinned", "d"), state);
+            fn.$(`.${prefix("pin", "d")}`, this.ui)?.setAttribute("aria-pressed", String(state));
+            if (!state) {
+                this.ui.style.removeProperty("left");
+                this.ui.style.removeProperty("top");
+            }
+            settings.set(this.settingsKey("pinned"), state);
+            if (wasOpen) {
+                this.toggle(true);
+            }
+            return this;
+        }
+        applyPosition(position) {
+            const rect = this.ui.getBoundingClientRect();
+            const maxX = Math.max(viewportMargin, window.innerWidth - rect.width - viewportMargin);
+            const maxY = Math.max(viewportMargin, window.innerHeight - rect.height - viewportMargin);
+            const x = Math.min(Math.max(position?.x ?? maxX, viewportMargin), maxX);
+            const y = Math.min(Math.max(position?.y ?? 80, viewportMargin), maxY);
+            this.ui.style.left = `${x}px`;
+            this.ui.style.top = `${y}px`;
+            return { x, y };
+        }
+        enableDragging() {
+            const handle = fn.$(".sb-modal-top", this.ui);
+            let start = null;
+            let position = null;
+            handle.addEventListener("pointerdown", (evt) => {
+                if (!this.isPinned || evt.button !== 0 || evt.target.closest("button")) {
+                    return;
+                }
+                const rect = this.ui.getBoundingClientRect();
+                start = { pointerX: evt.clientX, pointerY: evt.clientY, x: rect.left, y: rect.top };
+                handle.setPointerCapture?.(evt.pointerId);
+                this.ui.classList.add(prefix("dragging", "d"));
+                evt.preventDefault();
+            });
+            handle.addEventListener("pointermove", (evt) => {
+                if (!start) {
+                    return;
+                }
+                position = this.applyPosition({
+                    x: start.x + evt.clientX - start.pointerX,
+                    y: start.y + evt.clientY - start.pointerY,
+                });
+            });
+            const stop = () => {
+                if (!start) {
+                    return;
+                }
+                start = null;
+                this.ui.classList.remove(prefix("dragging", "d"));
+                if (position) {
+                    settings.set(this.settingsKey("position"), { x: Math.round(position.x), y: Math.round(position.y) });
+                }
+            };
+            handle.addEventListener("pointerup", stop);
+            handle.addEventListener("pointercancel", stop);
+            return this;
+        }
+        restore() {
+            if (!settings.get(this.settingsKey("pinned"))) {
+                return this;
+            }
+            this.pin(true);
+            if (settings.get(this.settingsKey("open"))) {
+                this.toggle(true);
+            }
+            return this;
+        }
+        constructor(app, key, { pinnable = false } = {}) {
             this.key = key;
+            this.id = prefix(`popover-${key}`, "d");
             this.app = app;
-            PopupBuilder.init(app);
+            this.state = "closed";
+            this.pinnable = pinnable && !app.envIs("mobile");
             this.parts = {
                 title: fn.h3({
                     classNames: ["sb-modal-title"],
@@ -746,7 +948,7 @@
                     classNames: ["sb-modal-body"],
                 }),
                 footer: fn.div({
-                    classNames: ["sb-modal-message", "sba-modal-footer"],
+                    classNames: ["sb-modal-message", prefix("modal-footer", "d")],
                     content: [
                         fn.a({
                             content: settings.get("label"),
@@ -759,20 +961,32 @@
                 }),
             };
             this.ui = this.create();
-            this.getTarget().append(this.ui);
+            if (this.pinnable) {
+                this.enableDragging();
+            }
+            document.body.append(this.ui);
+            instances.add(this);
+            app.on(prefix("destroy"), () => {
+                this.ui.remove();
+                instances.delete(this);
+            });
         }
     }
 
+    const isEmptyObject = (obj) => {
+        return Object.keys(obj).length === 0 && obj.constructor === Object;
+    };
+
     const utils = (self) => ({
         isValidHsl(hsl) {
-            return hsl && !isEmptyObject(hsl) && !isNaN(hsl.hue) && !isNaN(hsl.sat) && !isNaN(hsl.lig);
+            return !!hsl && !isEmptyObject(hsl) && !isNaN(hsl.hue) && !isNaN(hsl.sat) && !isNaN(hsl.lig);
         },
         ensureValidHsl(hsl) {
-            if(self.isValidHsl(hsl)) {
+            if (self.isValidHsl(hsl)) {
                 return hsl;
             }
-            let scheme = settings.get(`options.${self.key}`);
-            if(scheme?.hsl && self.isValidHsl(scheme.hsl)) {
+            const scheme = settings.get(`options.${self.key}`);
+            if (scheme?.hsl && self.isValidHsl(scheme.hsl)) {
                 return scheme.hsl;
             }
             return {
@@ -781,23 +995,23 @@
                 lig: 7,
             };
         },
-        isValidMode(mode){
-            return mode && ['dark', 'light'].includes(mode);
+        isValidMode(mode) {
+            return ["dark", "light"].includes(mode);
         },
-        ensureValidMode(mode){
-            if(self.isValidMode(mode)) {
+        ensureValidMode(mode) {
+            if (self.isValidMode(mode)) {
                 return mode;
             }
-            return (self.usesSystemDarkMode() ? "dark" : "light");
+            return self.usesSystemDarkMode() ? "dark" : "light";
         },
         ensureValidColorScheme(requestedScheme = null) {
-            let scheme = requestedScheme || settings.get(`options.${self.key}`) || {};
+            const scheme = { ...(requestedScheme || settings.get(`options.${self.key}`) || {}) };
             scheme.mode = self.ensureValidMode(scheme.mode);
             scheme.hsl = self.ensureValidHsl(scheme.hsl);
             return scheme;
         },
         isValidColorScheme(scheme = null) {
-            return scheme && !isEmptyObject(scheme) && self.isValidHsl(scheme.hsl) && isValidMode(scheme.mode);
+            return !!scheme && !isEmptyObject(scheme) && self.isValidHsl(scheme.hsl) && self.isValidMode(scheme.mode);
         },
         usesNonSbaDarkMode() {
             const rgb = getComputedStyle(document.body).backgroundColor.match(/\d+/g);
@@ -969,10 +1183,7 @@
                 return this;
             }
             this.popup.toggle(true);
-            const currentSwatch = fn.$("input:checked", this.popup.ui);
-            setTimeout(()=> {
-                currentSwatch.focus();
-            }, 1000);
+            fn.$("input:checked", this.popup.ui)?.focus();
             return this;
         }
         applyColorScheme(scheme) {
@@ -1032,8 +1243,7 @@
                     "subtitle",
                     fn.toNode([
                         fn.p({
-                            content: `Spelling Bee Assistant’s dark mode has been turned off because 
-                    another dark theme (likely from the NYT) was detected.`,
+                            content: `Spelling Bee Assistant’s dark mode has been turned off because another dark theme (likely from the NYT) was detected.`,
                         }),
                         fn.p({
                             content: `If you prefer SBA’s dark mode, consider disabling the other one.`,
@@ -1053,7 +1263,7 @@
                 classNames: ["sba-toolbar"],
             });
             app.on(prefix("pluginsReady"), (evt) => {
-                evt.detail.forEach((plugin, key) => {
+                evt.detail.forEach((plugin) => {
                     if (plugin.panelBtn) {
                         toolbar.append(plugin.panelBtn);
                     }
@@ -1100,6 +1310,9 @@
             return this;
         }
         toPercent(value) {
+            if (!this.maxAsNumber) {
+                return 0;
+            }
             return Math.min(Math.round((value * 100) / this.maxAsNumber), 100);
         }
     }
@@ -1110,13 +1323,13 @@
             return this;
         }
         constructor(app) {
-            super(app, 'Progress Bar', 'Displays your progress as a yellow bar', {
-                runEvt: prefix('refreshUi'),
-                addMethod: 'before',
+            super(app, "Progress Bar", "Displays your progress as a yellow bar", {
+                runEvt: prefix("refreshUi"),
+                addMethod: "before",
             });
             this.progress = new ProgressBuilder(data.getPoints("foundTerms"), data.getPoints("answers"));
             this.ui = this.progress.ui;
-            this.target = fn.$('.sb-wordlist-heading', this.app.gameWrapper);
+            this.target = nyt.find("wordlistHeading");
         }
     }
 
@@ -1206,7 +1419,7 @@
         }
     };
     const buildFirstLetterTableData = (n) => {
-        const answers = data.getList("answers").sort();
+        const answers = [...data.getList("answers")].sort();
         const remainders = data.getList("remainders");
         const stats = {};
         const tpl = { found: 0, missing: 0, total: 0 };
@@ -1419,7 +1632,7 @@
 
     class SpillTheBeans extends Plugin {
         run(evt) {
-            let partial = evt.detail?.textContent?.trim() || '';
+            const partial = evt.detail?.textContent?.trim() || "";
             let emoji = "🙂";
             if (!partial) {
                 emoji = "😐";
@@ -1430,10 +1643,10 @@
             return this;
         }
         getState() {
-            return !this.ui.classList.contains('inactive')
+            return !this.ui.classList.contains("inactive");
         }
         toggle() {
-            this.ui.classList.toggle('inactive', this.getState());
+            this.ui.classList.toggle("inactive", this.getState());
             return this;
         }
         constructor(app) {
@@ -1446,13 +1659,13 @@
             };
             this.ui = fn.div({
                 content: "😐",
-                classNames: ['inactive']
+                classNames: ["inactive"],
             });
-            this.target = fn.$(".sb-controls", this.app.gameWrapper);
+            this.target = nyt.find("controls");
             this.shortcuts = [
                 {
                     combo: "Shift+Alt+E",
-                    method: 'toggle',
+                    method: "toggle",
                 },
             ];
         }
@@ -1731,7 +1944,7 @@
                     .concat(["pane"]),
                 caption: this.summaryFields[fieldName],
                 rowCallbacks: getSummaryTableRowCallbacks()
-            }).ui
+            }).ui;
         }
         createMilestoneTable() {
             return new TableBuilder(getMilestoneData(true), {
@@ -1742,18 +1955,11 @@
                     .concat(["pane"]),
                 caption: "Tiers",
                 rowCallbacks: getMilestoneTableRowCallbacks()
-            }).ui
+            }).ui;
         }
-        togglePopup() {
-            if (this.popup.isOpen) {
-                this.popup.toggle(false);
-                return this;
-            }
-            const summaryElements = [];
-            Object.keys(this.summaryFields).forEach(fieldName => {
-                summaryElements.push(this.createSummaryTable(fieldName));
-            });
-            const body = fn.div({
+        createBody() {
+            const summaryElements = Object.keys(this.summaryFields).map((fieldName) => this.createSummaryTable(fieldName));
+            return fn.div({
                 classNames: [prefix("milestone-table-wrapper", "d")],
                 content: [
                     fn.figure({
@@ -1766,11 +1972,23 @@
                     }),
                 ],
             });
-            this.popup.setContent("subtitle", getDescription()).setContent("body", body).toggle(true);
+        }
+        run() {
+            if (this.popup.isOpen) {
+                this.popup.setContent("subtitle", getDescription()).setContent("body", this.createBody());
+            }
+            return this;
+        }
+        togglePopup() {
+            if (this.popup.isOpen) {
+                this.popup.toggle(false);
+                return this;
+            }
+            this.popup.setContent("subtitle", getDescription()).setContent("body", this.createBody()).toggle(true);
             return this;
         }
         constructor(app) {
-            super(app, "Milestones", "The number of points required for each level", {runEvt: prefix("refreshUi")});
+            super(app, "Milestones", "The number of points required for each level", { runEvt: prefix("refreshUi") });
             this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
             this.summaryFields = {
                 points: "Points",
@@ -1778,7 +1996,7 @@
                 pangrams: "Pangrams",
             };
             this.menu = {
-                action: 'popup'
+                action: "popup",
             };
             this.shortcuts = [
                 {
@@ -1891,7 +2109,7 @@
                                         case 0:
                                             return `No, not today.`;
                                         case 1:
-                                            return `Yes - there's one perfect pangram today.`;
+                                            return `Yes - there’s one perfect pangram today.`;
                                         default:
                                             return `Yes - there are ${pp} perfect pangrams today.`;
                                     }
@@ -1962,78 +2180,76 @@
 
     class TodaysAnswers extends Plugin {
         buildContent() {
-            const foundTerms = data.getList('foundTerms');
-            const pangrams = data.getList('pangrams');
+            const foundTerms = data.getList("foundTerms");
+            const pangrams = data.getList("pangrams");
             const pane = fn.ul({
-                classNames: ['sb-modal-wordlist-items']
+                classNames: ["sb-modal-wordlist-items"],
             });
-            data.getList('answers').forEach(term => {
-                pane.append(fn.li({
-                    content: [
-                        fn.span({
-                            classNames: foundTerms.includes(term) ? ['check', 'checked'] : ['check']
-                        }), fn.span({
-                            classNames: pangrams.includes(term) ? ['sb-anagram', 'pangram'] : ['sb-anagram'],
-                            content: term
-                        })
-                    ]
-                }));
+            data.getList("answers").forEach((term) => {
+                pane.append(
+                    fn.li({
+                        content: [
+                            fn.span({
+                                classNames: foundTerms.includes(term) ? ["check", "checked"] : ["check"],
+                            }),
+                            fn.span({
+                                classNames: pangrams.includes(term) ? ["sb-anagram", "pangram"] : ["sb-anagram"],
+                                content: term,
+                            }),
+                        ],
+                    }),
+                );
             });
             return [
                 fn.div({
-                    content: data.getList('letters').join(''),
-                    classNames: ['sb-modal-letters']
+                    content: data.getList("letters").join(""),
+                    classNames: ["sb-modal-letters"],
                 }),
-                pane
-            ]
+                pane,
+            ];
         }
         togglePopup() {
-            if(this.popup.isOpen) {
+            if (this.popup.isOpen) {
                 this.popup.toggle(false);
                 return this;
             }
-            this.popup
-                .setContent('body', this.buildContent())
-                .toggle(true);
+            this.popup.setContent("body", this.buildContent()).toggle(true);
             return this;
         }
         constructor(app) {
-            super(app, 'Today’s Answers', 'Reveals the solution of the game', {
-                key: 'todaysAnswers'
+            super(app, "Today’s Answers", "Reveals the solution of the game", {
+                key: "todaysAnswers",
             });
-            this.marker = prefix('resolved', 'd');
             this.popup = new PopupBuilder(this.app, this.key)
-                .setContent('title', this.title)
-                .setContent('subtitle', data.getDate().display);
+                .setContent("title", this.title)
+                .setContent("subtitle", data.getDate().display);
             this.menu = {
-                action: 'popup',
-                icon: 'warning'
+                action: "popup",
+                icon: "warning",
             };
-            this.shortcuts = [{
-                combo: "Shift+Alt+T",
-                method: "togglePopup"
-            }];
+            this.shortcuts = [
+                {
+                    combo: "Shift+Alt+T",
+                    method: "togglePopup",
+                },
+            ];
         }
     }
 
     class PangramHighlighter extends Plugin {
-        toggle(state) {
-            super.toggle(state);
-            return this.run();
-        }
         run(evt) {
             const pangrams = data.getList("pangrams");
             const container = evt?.detail ?? this.app.resultList;
             fn.$$("li", container).forEach((node) => {
-                const term = node.textContent;
-                if (pangrams.includes(term) || fn.$(".pangram", node)) {
+                if (pangrams.includes(nyt.getTermFromListItem(node)) || nyt.isMarkedAsPangram(node)) {
                     node.classList.add(this.marker);
                 }
             });
             return this;
         }
         constructor(app) {
-            super(app, "Highlight PangramHl", "", {
+            super(app, "Pangram Highlighter", "Marks pangrams in the word lists", {
+                key: "pangramHighlighter",
                 runEvt: prefix("refreshUi"),
             });
             this.marker = prefix("pangram", "d");
@@ -2046,31 +2262,33 @@
 
     class Googlify extends Plugin {
         listener(evt) {
-            if (!evt.target.classList.contains('sb-anagram') || !evt.target.closest('.sb-anagram')) {
+            if (evt.button !== 0 || !nyt.isTerm(evt.target)) {
                 return false;
             }
-            if (evt.button === 0) {
-                window.open(`https://www.google.com/search?q=${evt.target.textContent}`, prefix());
-                return true;
-            }
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(evt.target.textContent.trim())}`, prefix());
+            return true;
         }
-        run(evt = null) {
-            const container = this.app.gameWrapper;
-            container.addEventListener('pointerup', this.listener, true);
-            container.classList.add(prefix('googlified', 'd'));
+        run() {
+            this.containers.forEach((container) => {
+                container.addEventListener("pointerup", this.listener, true);
+                container.classList.add(prefix("googlified", "d"));
+            });
             return this;
         }
         constructor(app) {
-            super(app, 'Googlify', 'Link all result terms to Google');
-            this.app.on(prefix('destroy'), () => {
-                this.app.gameWrapper.removeEventListener('pointerup', this.listener, true);
-                this.app.gameWrapper.classList.remove(prefix('googlified', 'd'));
+            super(app, "Googlify", "Link all result terms to Google");
+            this.containers = [document.body];
+            this.app.on(prefix("destroy"), () => {
+                this.containers.forEach((container) => {
+                    container.removeEventListener("pointerup", this.listener, true);
+                    container.classList.remove(prefix("googlified", "d"));
+                });
             });
             this.run();
         }
     }
 
-    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--dlig: 7%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:hsla(0,0%,100%,.85);--border-color:hsl(0,0%,86%);--area-bg-color:hsl(0,0%,90%);--invalid-color:hsl(0,0%,63%);--menu-hover-color:hsl(0,0%,96%);--head-row-bg-color:hsl(0,0%,96%);--card-color:hsla(52,93%,55%,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--sba-success-color:hsl(112,93%,35%);--sba-error-color:hsl(352,93%,35%);--toggle-on-bg-color:hsl(90,62%,40%);--toggle-off-bg-color:hsl(0,0%,65%);--toggle-handle-color:#fff;--toggle-border-color:hsl(0,0%,90%)}[data-sba-theme=dark]{--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), var(--dlig));--modal-bg-color:hsl(var(--dhue), var(--dsat), var(--dlig), 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 40%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--head-row-bg-color:hsl(var(--dhue), var(--dsat), 13%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--sba-success-color:hsl(112,93%,55%);--sba-error-color:hsl(352,93%,41%);--toggle-on-bg-color:hsl(90,62%,50%);--toggle-off-bg-color:#ccc;--toggle-handle-color:hsl(var(--dhue), var(--dsat), 22%);--toggle-border-color:hsl(var(--dhue), var(--dsat), 22%)}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--sb-yellow);fill:var(--sb-yellow);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-letter{fill:var(--text-color)}body[data-sba-theme=dark]{scrollbar-color:var(--invalid-color) var(--body-bg-color)}body[data-sba-theme=dark] .sb-message{color:var(--text-color)}body[data-sba-theme=dark] #conversion-banner{background:inherit}body[data-sba-theme=dark] [class*=ToolbarAdapter-module_toolbarContainer]{--text: var(--text-color);border-top-color:rgba(0,0,0,0);background:rgba(0,0,0,0)}body[data-sba-theme=dark] [class*=ToolbarAdapter-module_toolbarContainer] .pz-dropdown *:hover{color:#fff}body[data-sba-theme=dark] [class*=ToolbarAdapter-module_toolbarContainer] i{filter:invert(1)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__content{color:var(--text-color)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.primary{background:var(--area-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.primary:hover{background:var(--invalid-color);color:var(--body-bg-color)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary{background:var(--head-row-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary:hover{background:var(--area-bg-color)}body[data-sba-theme=dark] .pz-game-wrapper,body[data-sba-theme=dark] #js-hook-pz-moment__loading{background:var(--body-bg-color) !important;color:var(--text-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .pangram-message .sb-message{background:var(--sb-yellow);color:var(--highlight-text-color)}body[data-sba-theme=dark] .pz-modal__button.white,body[data-sba-theme=dark] .pz-footer,body[data-sba-theme=dark] .pz-moment,body[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}body[data-sba-theme=dark] .pz-modal__button.white .pz-moment__button.primary,body[data-sba-theme=dark] .pz-footer .pz-moment__button.primary,body[data-sba-theme=dark] .pz-moment .pz-moment__button.primary,body[data-sba-theme=dark] .sb-modal-scrim .pz-moment__button.primary{background:var(--area-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-modal__button.white .pz-moment__button.primary:hover,body[data-sba-theme=dark] .pz-footer .pz-moment__button.primary:hover,body[data-sba-theme=dark] .pz-moment .pz-moment__button.primary:hover,body[data-sba-theme=dark] .sb-modal-scrim .pz-moment__button.primary:hover{background:var(--invalid-color);color:var(--body-bg-color)}body[data-sba-theme=dark] .pz-modal__button.white .pz-moment__button.secondary,body[data-sba-theme=dark] .pz-footer .pz-moment__button.secondary,body[data-sba-theme=dark] .pz-moment .pz-moment__button.secondary,body[data-sba-theme=dark] .sb-modal-scrim .pz-moment__button.secondary{background:var(--head-row-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-modal__button.white .pz-moment__button.secondary:hover,body[data-sba-theme=dark] .pz-footer .pz-moment__button.secondary:hover,body[data-sba-theme=dark] .pz-moment .pz-moment__button.secondary:hover,body[data-sba-theme=dark] .sb-modal-scrim .pz-moment__button.secondary:hover{background:var(--area-bg-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .pz-icon-close{filter:invert(1)}body[data-sba-theme=dark].pz-mobile .pz-toolbar-button,body[data-sba-theme=dark].pz-mobile .pz-dropdown__button,body[data-sba-theme=dark].pz-desktop .pz-toolbar-button,body[data-sba-theme=dark].pz-desktop .pz-dropdown__button{background-color:rgba(0,0,0,0) !important}body[data-sba-theme=dark] .pz-dropdown .pz-dropdown__show+.pz-dropdown__list .pz-dropdown__menu-item{background-color:var(--body-bg-color)}body[data-sba-theme=dark] .pz-moment__frame.pz-moment__welcome *{color:var(--text-color)}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}.sb-modal-wrapper .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .sb-modal-frame.stats .sb-modal-header{background:var(--body-bg-color)}.sb-modal-wrapper .sb-modal-frame.stats .sb-stats-bar{background:var(--body-bg-color);color:var(--text-color)}.sb-modal-wrapper .sb-modal-frame.stats .sb-stats-bar__text{color:#333}.sb-modal-wrapper .sb-modal-ranks__list tr:not(.sb-modal-ranks__current){color:var(--text-color)}.sb-modal-wrapper .pz-modal__title,.sb-modal-wrapper .sb-modal-close{color:var(--text-color)}.sb-modal-wrapper .sb-modal-body .sb-modal-buttons-container button.button-primary{background:var(--area-bg-color);color:var(--text-color)}.sb-modal-wrapper .sb-modal-body .sb-modal-buttons-container button.button-primary:hover{background:var(--invalid-color);color:var(--body-bg-color)}.sb-modal-wrapper .sb-modal-body .sb-modal-buttons-container button.button-secondary{background:var(--head-row-bg-color);color:var(--text-color)}.sb-modal-wrapper .sb-modal-body .sb-modal-buttons-container button.button-secondary:hover{background:var(--area-bg-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-moment__close_text{color:currentColor}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--sb-yellow)}.hive-cell .cell-fill{stroke:var(--body-bg-color)}.hive-cell .cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}[data-sba-theme] .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist,.hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}:root{--sba-cell-inline-padding: 2px;--sba-cell-block-padding: 3px}body:has(.pz-moment__congrats.on-stage) [data-ui=menu]{display:none}.hive-action.push-active.sba-no-feedback{background:var(--body-bg-color) !important}.sba-toggle-switch:where([type=checkbox][role=switch]){-webkit-appearance:none;-moz-appearance:none;appearance:none;position:relative;color:var(--toggle-border-color);font-size:inherit;width:2em;height:1em;box-sizing:content-box;border:1px solid;border-radius:1em;vertical-align:text-bottom;margin:auto;cursor:pointer;background:var(--toggle-off-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch])::before{content:\"\";position:absolute;top:50%;left:0;transform:translate(0, -50%);box-sizing:border-box;width:.7em;height:.7em;margin:0 .15em;border:1px solid;border-radius:50%;background:var(--toggle-handle-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked{background:var(--toggle-on-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked::before{left:1em;background:var(--toggle-handle-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):disabled{opacity:.4}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:rgba(0,0,0,0)}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--border-color)}[data-ui].inactive{display:none}[data-ui] b,[data-ui] strong{font-weight:bold}[data-ui] i,[data-ui] em{font-style:italic}[data-ui] .sb-modal-body{padding-block-end:20px}details .sba-data-pane{border-top:none;margin-bottom:2px}.sb-modal-wrapper{--sba-cell-inline-padding: 7px}.sb-modal-wrapper .sba-data-pane{font-size:95%}.sb-modal-wrapper i{font-style:italic}.sba-data-pane{border:1px solid var(--border-color);border-collapse:collapse}.sba-data-pane.sba-thead-th-bold thead th{font-weight:bold}.sba-data-pane.sba-table-full-width{width:100%;table-layout:fixed}.sba-data-pane.sba-small-txt{font-size:85%}.sba-data-pane.sba-th-upper th{text-transform:uppercase}.sba-data-pane.sba-equal-cols[data-cols=\"3\"] :is(th,td){width:33.3333333333%}.sba-data-pane.sba-equal-cols[data-cols=\"4\"] :is(th,td){width:25%}.sba-data-pane.sba-equal-cols[data-cols=\"5\"] :is(th,td){width:20%}.sba-data-pane.sba-equal-cols[data-cols=\"6\"] :is(th,td){width:16.6666666667%}.sba-data-pane.sba-equal-cols[data-cols=\"7\"] :is(th,td){width:14.2857142857%}.sba-data-pane.sba-equal-cols[data-cols=\"8\"] :is(th,td){width:12.5%}.sba-data-pane.sba-equal-cols[data-cols=\"9\"] :is(th,td){width:11.1111111111%}.sba-data-pane.sba-equal-cols[data-cols=\"10\"] :is(th,td){width:10%}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--sb-yellow) !important}.sba-data-pane .sba-completed td,.sba-data-pane td.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane caption{text-align:start;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);line-height:1.75;font-weight:700}.sba-data-pane :is(th,td){border:1px solid var(--border-color);border-top:none;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);white-space:nowrap;text-align:center}.sba-data-pane th{background-color:var(--head-row-bg-color)}[data-ui=community] .sb-modal-body{margin-block-end:0}[data-ui=community] h4{font-weight:700;font-family:nyt-franklin,sans-serif;font-size:18px;margin:0 0 1px 0}[data-ui=community] p{margin:0 0 2px 0;font-size:16px}[data-ui=community] em{display:block;font-weight:500;font-size:14px;font-family:nyt-franklin,sans-serif}[data-ui=community] li{margin:0 0 12px 0}[data-ui=community] li ul{padding-left:20px;list-style:disc}[data-ui=community] li ul li{margin:0}[data-ui=community] li ul li a{color:var(--link-color)}[data-ui=community] li ul li a:hover{color:var(--link-hover-color)}[data-ui=milestones]{--flex-gap: 12px}[data-ui=milestones] .sba-milestone-table-wrapper{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--flex-gap)}[data-ui=milestones] figcaption{padding:10px var(--sba-cell-inline-padding)}[data-ui=milestones] b{font-weight:700}[data-ui=milestones] progress{border-width:0;height:5px}[data-ui=milestones] .sba-col{width:calc(50% - var(--flex-gap)/2);min-width:145px}[data-ui=milestones] .sba-summaries{width:calc(48% - var(--flex-gap)/2);min-width:139px}[data-ui=milestones] .sba-summaries .sba-data-pane{table-layout:fixed;margin-block-end:var(--flex-gap)}[data-ui=milestones] .sba-summaries tr :is(td,th){text-align:center}[data-ui=milestones] .sba-tiers{width:calc(52% - var(--flex-gap)/2);min-width:149px}[data-ui=milestones] .sba-tiers .sba-data-pane .sba-preeminent:not(.sba-queen-bee){border-bottom:1px solid var(--border-color) !important}[data-ui=milestones] .sba-tiers .sba-queen-bee.sba-preeminent th::before{content:\"\";display:inline-block;background:no-repeat url(/games-assets/v2/assets/sb-stats-queen-bee.svg);width:19px;height:12px;margin-right:4px}[data-ui=milestones] .sba-data-pane{width:100%}[data-ui=milestones] .sba-data-pane td.sba-progress-box{padding:0}[data-ui=milestones] .sba-data-pane tr.sba-completed :is(th,td){color:var(--invalid-color)}[data-ui=milestones] .sba-data-pane tbody th{text-align:start}[data-ui=milestones] .sba-data-pane tbody td:nth-child(n+2){max-width:100px}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px;justify-content:space-between;align-items:center}[data-ui=header] svg{fill:var(--text-color)}[data-ui=header] .sba-tool-btn{padding:1px;width:12px;aspect-ratio:1/1;display:inline-block;cursor:pointer}progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;padding:0;background:rgba(0,0,0,0);display:block;height:10px;border:1px var(--border-color) solid}progress::-webkit-progress-bar{background-color:rgba(0,0,0,0)}progress::-webkit-progress-value{background-color:var(--sb-yellow);height:4px}progress::-moz-progress-bar{background-color:var(--sb-yellow)}[data-ui=progressBar]{border-width:0 0 1px 0;height:6px}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}@keyframes pulse-fade{0%{text-shadow:rgba(255,0,0,.5) 1px 0 0;opacity:1}80%{text-shadow:rgba(255,0,0,0) 1px 0 20px}100%{opacity:0;text-shadow:none}}[data-ui=menu]:has([data-icon=new] svg) #sba-menu-entry-point::after{content:\"•\";animation:pulse-fade 9s ease-out 1 forwards;animation-delay:3s;color:rgba(255,0,0,.75);font-size:1.2em;position:absolute;top:0;right:3px}[data-ui=menu] .pane{color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px;width:179px}[data-ui=menu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 36px;font-size:18px}[data-ui=menu] li[data-icon=new]:has(svg){background:color-mix(in srgb, var(--games-yellow) 15%, transparent)}[data-ui=menu] li::before,[data-ui=menu] li::after{position:absolute;display:block}[data-ui=menu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--sb-yellow);top:3px;left:10px;font-size:20px}[data-ui=menu] li[data-target=darkMode],[data-ui=menu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=menu] li[data-icon=sba]{color:currentColor}[data-ui=menu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}[data-ui=menu] li svg{display:inline-block;width:20px;height:20px;position:absolute;left:7px;top:10px}[data-ui=menu] li svg .shape{fill:var(--text-color)}[data-ui=menu] li svg .content{fill:var(--sb-yellow)}[data-ui=darkMode] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkMode] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkMode] .cell-letter{font-size:8px;font-weight:600}[data-ui=darkMode] .sba-toggle-label{padding-inline-end:10px}[data-ui=darkMode] .sba-header-wrap{display:flex;justify-content:space-between}.sba-color-selector{display:flex;justify-content:space-around;gap:20px}.sba-color-selector .sba-dark-mode-preview{width:calc(40% - 10px);aspect-ratio:62.4/64.8}.sba-color-selector .sba-dark-mode-preview svg{width:100%;aspect-ratio:inherit;display:block}.sba-color-selector .sba-dark-mode-preview .sba-cell{fill:var(--area-bg-color)}.sba-color-selector .sba-dark-mode-preview .sba-cell text{fill:var(--text-color)}.sba-color-selector .sba-dark-mode-preview .sba-center-cell{fill:var(--sb-yellow)}.sba-color-selector .sba-dark-mode-preview .sba-center-cell text{fill:var(--highlight-text-color)}.sba-color-selector .sba-dark-mode-preview text{font-weight:700;font-size:6px;text-transform:uppercase;dominant-baseline:middle;text-anchor:middle;pointer-events:none}.sba-color-selector .sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:calc(60% - 10px)}.sba-color-selector .sba-swatches li{position:relative;overflow:hidden;width:25%;aspect-ratio:1/1;padding:2px}.sba-color-selector .sba-swatches li:has([for=sbaH360]){width:100%;line-height:50px;aspect-ratio:auto;height:auto}.sba-color-selector .sba-swatches label{border:1px var(--border-color) solid;display:block;overflow:hidden;cursor:pointer;text-align:center;height:100%}.sba-color-selector .sba-swatches label[for=sbaH360]{color:var(--highlight-text-color)}.sba-color-selector .sba-swatches input{position:absolute;left:-100px}.sba-color-selector .sba-swatches input:checked~label:not([for=sbaH360]){border-color:var(--sb-yellow)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *{color:var(--text-color);border-color:var(--border-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *::selection{background-color:var(--body-bg-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) .pz-dropdown__arrow{border-top-color:var(--text-color);border-bottom-color:var(--text-color);border-right-color:rgba(0,0,0,0);border-left-color:rgba(0,0,0,0)}.pz-mobile .pz-toolbar-button__sba{color:var(--text-color)}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]){background-color:var(--body-bg-color) !important}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]):hover{background:var(--menu-hover-color)}[data-sba-theme=dark] #portal-game-toolbar i,[data-sba-theme=dark] #js-mobile-toolbar i{filter:invert(1);background-color:rgba(0,0,0,0)}[data-sba-theme=dark] .conversion-banner__icon{filter:invert(1)}[data-sba-theme=dark] :is(.sb-stats-bar-rank__word-count,.sb-stats-bar-rank__text){filter:contrast(99%);color:#999}[data-sba-theme] .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--sb-yellow);top:4px;font-size:16px}[data-sba-theme] .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=menu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=menu] li::selection{background-color:rgba(0,0,0,0)}[data-sba-submenu=true] [data-ui=menu]{background:var(--menu-hover-color);color:var(--text-color)}[data-ui=shortcuts] tbody tr th{text-align:start}[data-ui=shortcuts] tbody tr td:last-child{font-size:16px;cursor:pointer}[data-ui=shortcuts] tbody tr td:last-child::selection{color:currentColor;background-color:rgba(0,0,0,0)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=true]{color:var(--sba-success-color)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=false]{color:var(--sba-error-color)}[data-ui=grid] table{margin-left:-20px;width:calc(100% + 40px)}[data-ui=grid] tbody tr:last-child td{background-color:var(--head-row-bg-color)}[data-ui=grid] tbody tr td{padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type{background-color:var(--head-row-bg-color)}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba summary{list-style:none;padding:1px 15px 0 21px}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li{position:relative}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li.sba-pangram{font-weight:700;border-bottom:2px var(--sb-yellow) solid}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks{position:absolute;right:0;bottom:3px}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks mark{display:none}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-s-active .sba-mark-s{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-p-active .sba-mark-p{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-d-active .sba-mark-d{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-c-active .sba-mark-c{display:inline-block}[data-sba-theme] mark{background:rgba(0,0,0,0);font-size:11px;pointer-events:none;text-transform:uppercase}[data-sba-theme] mark::after{content:\" \"}[data-sba-theme] mark:last-of-type::after{content:normal}[data-sba-theme] mark::selection{background-color:rgba(0,0,0,0)}[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}.sb-modal-frame .sb-modal-content{scrollbar-color:var(--invalid-color) var(--body-bg-color)}.sb-modal-frame .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}[data-ui=menu] .pane{display:none}.pz-mobile [data-ui=menu]{display:flex;align-items:center;height:100%;padding:0 6px;top:2px}[data-sba-submenu=true] .pz-mobile-dropdown.show .pz-dropdown__list{display:none}[data-sba-submenu=true] .pz-game-toolbar{position:relative;z-index:4}[data-sba-submenu=true] [data-ui=menu] .pane{display:block;position:absolute;right:-16px;top:45px}[data-sba-submenu=true].pz-desktop .pane{right:-16px;top:55px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;top:50%;transform:translate(0, -50%);right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:rgba(0,0,0,0)}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}[data-sba-active=true] [data-ui=milestones] .sb-modal-body{padding-inline:calc(var(--flex-gap)/2)}[data-sba-active=true] [data-ui=milestones] .sba-queen-bee.sba-preeminent th::before{content:normal}}@media(max-width: 450px){[data-ui=grid] table{table-layout:auto}[data-ui=grid] table.sba-data-pane tbody th{width:28px !important}[data-ui=grid] table.sba-data-pane thead th:first-of-type{width:28px !important}[data-ui=grid] table.sba-data-pane :is(thead,tbody) tr :is(th,td){width:auto;font-size:90%}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}[data-ui=overview] .sba-data-pane tbody th{text-transform:none;width:31%}[data-ui=overview] .sba-data-pane tbody td{width:23%}[data-ui=overview] .sba-data-pane tbody tr:nth-child(1) th::after{content:\"ords\"}[data-ui=overview] .sba-data-pane tbody tr:nth-child(2) th::after{content:\"oints\"}[data-ui=overview] .sba-data-pane thead th{width:23%}[data-ui=overview] .sba-data-pane thead th:first-of-type{width:31%}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:flex}}@media(min-width: 900px){[data-sba-submenu=true].pz-desktop [data-ui=menu] .pane{right:0;top:55px}[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 66px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;transform:none}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true].pz-desktop .sba{left:-191px}}@media(min-width: 768px){[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-body{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sb-modal-header{padding-right:56px}[data-sba-theme].pz-page .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;border-top:1px solid var(--border-color);padding-top:10px;width:calc(100% - 112px);margin:-8px auto 15px}}\n";
+    var css = "[data-sba-theme]{--dhue: 0;--dsat: 0%;--dlig: 7%;--link-hue: 206;--shadow-light-color: hsl(49, 96%, 50%, 0.35);--shadow-dark-color: hsl(49, 96%, 50%, 0.7);--highlight-text-color: hsl(0, 0%, 0%)}[data-sba-theme=light]{--text-color:#000;--site-text-color:rgba(0,0,0,.9);--body-bg-color:#fff;--modal-bg-color:hsla(0,0%,100%,.85);--border-color:hsl(0,0%,86%);--area-bg-color:hsl(0,0%,90%);--invalid-color:hsl(0,0%,63%);--menu-hover-color:hsl(0,0%,96%);--head-row-bg-color:hsl(0,0%,96%);--card-color:hsla(52,93%,55%,.1);--link-color:hsl(var(--link-hue), 45%, 38%);--link-visited-color:hsl(var(--link-hue), 45%, 53%);--link-hover-color:hsl(var(--link-hue), 45%, 53%);--sba-success-color:hsl(112,93%,35%);--sba-error-color:hsl(352,93%,35%);--toggle-on-bg-color:hsl(90,62%,40%);--toggle-off-bg-color:hsl(0,0%,65%);--toggle-handle-color:#fff;--toggle-border-color:hsl(0,0%,90%)}[data-sba-theme=dark]{--text-color:hsl(var(--dhue), var(--dsat), 85%);--site-text-color:hsl(var(--dhue), var(--dsat), 100%, 0.9);--body-bg-color:hsl(var(--dhue), var(--dsat), var(--dlig));--modal-bg-color:hsl(var(--dhue), var(--dsat), var(--dlig), 0.85);--border-color:hsl(var(--dhue), var(--dsat), 20%);--area-bg-color:hsl(var(--dhue), var(--dsat), 22%);--invalid-color:hsl(var(--dhue), var(--dsat), 40%);--menu-hover-color:hsl(var(--dhue), var(--dsat), 22%);--head-row-bg-color:hsl(var(--dhue), var(--dsat), 13%);--card-color:hsl(var(--dhue), var(--dsat), 22%);--link-color:hsl(var(--link-hue), 90%, 64%);--link-visited-color:hsl(var(--link-hue), 90%, 76%);--link-hover-color:hsl(var(--link-hue), 90%, 76%);--sba-success-color:hsl(112,93%,55%);--sba-error-color:hsl(352,93%,41%);--toggle-on-bg-color:hsl(90,62%,50%);--toggle-off-bg-color:#ccc;--toggle-handle-color:hsl(var(--dhue), var(--dsat), 22%);--toggle-border-color:hsl(var(--dhue), var(--dsat), 22%)}body{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-field{background:var(--body-bg-color);color:var(--text-color)}body .pz-game-wrapper .sb-modal-message a{color:var(--link-color)}body .pz-game-wrapper .sb-modal-message a:visited{color:var(--link-visited-color)}body .pz-game-wrapper .sb-modal-message a:hover{color:var(--link-hover-color)}body .pz-game-wrapper .sb-progress-marker .sb-progress-value,body .pz-game-wrapper .hive-cell:first-child .cell-fill{background:var(--sb-yellow);fill:var(--sb-yellow);color:var(--highlight-text-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-fill,body .pz-game-wrapper .hive-cell .cell-fill{fill:var(--area-bg-color)}body .pz-game-wrapper .sba-color-selector .hive .hive-cell .cell-letter{fill:var(--text-color)}body[data-sba-theme=dark]{scrollbar-color:var(--invalid-color) var(--body-bg-color)}body[data-sba-theme=dark] .sb-message{color:var(--text-color)}body[data-sba-theme=dark] #conversion-banner{background:inherit}body[data-sba-theme=dark] [class*=ToolbarAdapter-module_toolbarContainer]{--text: var(--text-color);border-top-color:rgba(0,0,0,0);background:rgba(0,0,0,0)}body[data-sba-theme=dark] [class*=ToolbarAdapter-module_toolbarContainer] .pz-dropdown *:hover{color:#fff}body[data-sba-theme=dark] [class*=ToolbarAdapter-module_toolbarContainer] i{filter:invert(1)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__content{color:var(--text-color)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.primary{background:var(--area-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.primary:hover{background:var(--invalid-color);color:var(--body-bg-color)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary{background:var(--head-row-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-moment__frame:is(.pz-moment__congrats,.pz-moment__welcome) .pz-moment__button.secondary:hover{background:var(--area-bg-color)}body[data-sba-theme=dark] .pz-game-wrapper,body[data-sba-theme=dark] #js-hook-pz-moment__loading{background:var(--body-bg-color) !important;color:var(--text-color)}body[data-sba-theme=dark] .sb-message{background:var(--area-bg-color)}body[data-sba-theme=dark] .pangram-message .sb-message{background:var(--sb-yellow);color:var(--highlight-text-color)}body[data-sba-theme=dark] .pz-modal__button.white,body[data-sba-theme=dark] .pz-footer,body[data-sba-theme=dark] .pz-moment,body[data-sba-theme=dark] .sb-modal-scrim{background:var(--modal-bg-color) !important;color:var(--text-color) !important}body[data-sba-theme=dark] .pz-modal__button.white .pz-moment__button.primary,body[data-sba-theme=dark] .pz-footer .pz-moment__button.primary,body[data-sba-theme=dark] .pz-moment .pz-moment__button.primary,body[data-sba-theme=dark] .sb-modal-scrim .pz-moment__button.primary{background:var(--area-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-modal__button.white .pz-moment__button.primary:hover,body[data-sba-theme=dark] .pz-footer .pz-moment__button.primary:hover,body[data-sba-theme=dark] .pz-moment .pz-moment__button.primary:hover,body[data-sba-theme=dark] .sb-modal-scrim .pz-moment__button.primary:hover{background:var(--invalid-color);color:var(--body-bg-color)}body[data-sba-theme=dark] .pz-modal__button.white .pz-moment__button.secondary,body[data-sba-theme=dark] .pz-footer .pz-moment__button.secondary,body[data-sba-theme=dark] .pz-moment .pz-moment__button.secondary,body[data-sba-theme=dark] .sb-modal-scrim .pz-moment__button.secondary{background:var(--head-row-bg-color);color:var(--text-color)}body[data-sba-theme=dark] .pz-modal__button.white .pz-moment__button.secondary:hover,body[data-sba-theme=dark] .pz-footer .pz-moment__button.secondary:hover,body[data-sba-theme=dark] .pz-moment .pz-moment__button.secondary:hover,body[data-sba-theme=dark] .sb-modal-scrim .pz-moment__button.secondary:hover{background:var(--area-bg-color)}body[data-sba-theme=dark] .hive-action__shuffle{position:relative}body[data-sba-theme=dark] .sb-progress-value{font-weight:bold}body[data-sba-theme=dark] .pz-icon-close{filter:invert(1)}body[data-sba-theme=dark].pz-mobile .pz-toolbar-button,body[data-sba-theme=dark].pz-mobile .pz-dropdown__button,body[data-sba-theme=dark].pz-desktop .pz-toolbar-button,body[data-sba-theme=dark].pz-desktop .pz-dropdown__button{background-color:rgba(0,0,0,0) !important}body[data-sba-theme=dark] .pz-dropdown .pz-dropdown__show+.pz-dropdown__list .pz-dropdown__menu-item{background-color:var(--body-bg-color)}body[data-sba-theme=dark] .pz-moment__frame.pz-moment__welcome *{color:var(--text-color)}body[data-sba-theme=dark] .sb-toggle-icon,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow,body[data-sba-theme=dark] .hive-action__shuffle{background-position:-1000px}body[data-sba-theme=dark] .sb-toggle-icon:after,body[data-sba-theme=dark] .sb-kebob .sb-bob-arrow:after,body[data-sba-theme=dark] .hive-action__shuffle:after{content:\"\";opacity:.85;top:0;left:0;bottom:0;right:0;position:absolute;z-index:0;filter:invert(1);background-image:inherit;background-repeat:inherit;background-position:center;background-size:inherit}#js-logo-nav rect{fill:var(--body-bg-color)}#js-logo-nav path{fill:var(--text-color)}.pz-moment__loading{color:#000}.pz-nav__hamburger-inner,.pz-nav__hamburger-inner::before,.pz-nav__hamburger-inner::after{background-color:var(--text-color)}.pz-nav{width:100%;background:var(--body-bg-color)}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-frame{border:1px solid var(--border-color);background:var(--body-bg-color);color:var(--text-color)}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-frame.stats .sb-modal-header{background:var(--body-bg-color)}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-frame.stats .sb-stats-bar{background:var(--body-bg-color);color:var(--text-color)}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-frame.stats .sb-stats-bar__text{color:#333}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-ranks__list tr:not(.sb-modal-ranks__current){color:var(--text-color)}:is(.sb-modal-wrapper,.sba-popover) .pz-modal__title,:is(.sb-modal-wrapper,.sba-popover) .sb-modal-close{color:var(--text-color)}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-body .sb-modal-buttons-container button.button-primary{background:var(--area-bg-color);color:var(--text-color)}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-body .sb-modal-buttons-container button.button-primary:hover{background:var(--invalid-color);color:var(--body-bg-color)}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-body .sb-modal-buttons-container button.button-secondary{background:var(--head-row-bg-color);color:var(--text-color)}:is(.sb-modal-wrapper,.sba-popover) .sb-modal-body .sb-modal-buttons-container button.button-secondary:hover{background:var(--area-bg-color)}.pz-moment__close::before,.pz-moment__close::after{background:var(--text-color)}.pz-moment__close_text{color:currentColor}.pz-modal__button.white:hover{background:var(--area-bg-color)}.sb-input-invalid{color:var(--invalid-color)}.sb-toggle-expand{box-shadow:none}.sb-input-bright,.sb-progress-dot.completed::after{color:var(--sb-yellow)}.hive-cell .cell-fill{stroke:var(--body-bg-color)}.hive-cell .cell-letter{fill:var(--text-color)}.hive-cell.center .cell-letter{fill:var(--highlight-text-color)}.hive-action{background-color:var(--body-bg-color);color:var(--text-color)}.hive-action.push-active{background:var(--menu-hover-color)}[data-sba-theme] .sb-modal-wordlist-items li,.sb-wordlist-items-pag>li,.pz-ad-box,.pz-game-toolbar,.pz-spelling-bee-wordlist,.hive-action,.sb-wordlist-box,.sb-message{border-color:var(--border-color)}.sb-toggle-expand{background:var(--body-bg-color)}.sb-progress-line,.sb-progress-dot::after,.pz-nav::after{background:var(--border-color)}.sb-bob{background-color:var(--border-color)}.sb-bob.active{background-color:var(--text-color)}:root{--sba-cell-inline-padding: 2px;--sba-cell-block-padding: 3px}body:has(.pz-moment__congrats.on-stage) [data-ui=menu]{display:none}.hive-action.push-active.sba-no-feedback{background:var(--body-bg-color) !important}.sba-toggle-switch:where([type=checkbox][role=switch]){-webkit-appearance:none;-moz-appearance:none;appearance:none;position:relative;color:var(--toggle-border-color);font-size:inherit;width:2em;height:1em;box-sizing:content-box;border:1px solid;border-radius:1em;vertical-align:text-bottom;margin:auto;cursor:pointer;background:var(--toggle-off-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch])::before{content:\"\";position:absolute;top:50%;left:0;transform:translate(0, -50%);box-sizing:border-box;width:.7em;height:.7em;margin:0 .15em;border:1px solid;border-radius:50%;background:var(--toggle-handle-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked{background:var(--toggle-on-bg-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):checked::before{left:1em;background:var(--toggle-handle-color)}.sba-toggle-switch:where([type=checkbox][role=switch]):disabled{opacity:.4}.sba{background:var(--body-bg-color);border-radius:6px;border-style:solid;border-width:1px}.sba *:focus{outline:0}.sba ::selection{background:rgba(0,0,0,0)}.sba details{font-size:90%;margin-bottom:1px}.sba summary{font-size:13px;line-height:20px;padding:1px 6px 0 6px;background:var(--area-bg-color);color:var(--text-color);cursor:pointer;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid var(--border-color)}[data-ui].inactive{display:none}[data-ui] b,[data-ui] strong{font-weight:bold}[data-ui] i,[data-ui] em{font-style:italic}[data-ui] .sb-modal-body{padding-block-end:20px}details .sba-data-pane{border-top:none;margin-bottom:2px}:is(.sb-modal-wrapper,.sba-popover){--sba-cell-inline-padding: 7px}:is(.sb-modal-wrapper,.sba-popover) .sba-data-pane{font-size:95%}:is(.sb-modal-wrapper,.sba-popover) i{font-style:italic}.sba-data-pane{border:1px solid var(--border-color);border-collapse:collapse}.sba-data-pane.sba-thead-th-bold thead th{font-weight:bold}.sba-data-pane.sba-table-full-width{width:100%;table-layout:fixed}.sba-data-pane.sba-small-txt{font-size:85%}.sba-data-pane.sba-th-upper th{text-transform:uppercase}.sba-data-pane.sba-equal-cols[data-cols=\"3\"] :is(th,td){width:33.3333333333%}.sba-data-pane.sba-equal-cols[data-cols=\"4\"] :is(th,td){width:25%}.sba-data-pane.sba-equal-cols[data-cols=\"5\"] :is(th,td){width:20%}.sba-data-pane.sba-equal-cols[data-cols=\"6\"] :is(th,td){width:16.6666666667%}.sba-data-pane.sba-equal-cols[data-cols=\"7\"] :is(th,td){width:14.2857142857%}.sba-data-pane.sba-equal-cols[data-cols=\"8\"] :is(th,td){width:12.5%}.sba-data-pane.sba-equal-cols[data-cols=\"9\"] :is(th,td){width:11.1111111111%}.sba-data-pane.sba-equal-cols[data-cols=\"10\"] :is(th,td){width:10%}.sba-data-pane .sba-preeminent{font-weight:bold;border-bottom:2px solid var(--sb-yellow) !important}.sba-data-pane .sba-completed td,.sba-data-pane td.sba-completed{color:var(--invalid-color);font-weight:normal}.sba-data-pane .sba-hidden{display:none}.sba-data-pane caption{text-align:start;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);line-height:1.75;font-weight:700}.sba-data-pane :is(th,td){border:1px solid var(--border-color);border-top:none;padding:var(--sba-cell-block-padding) var(--sba-cell-inline-padding);white-space:nowrap;text-align:center}.sba-data-pane th{background-color:var(--head-row-bg-color)}[data-ui=community] .sb-modal-body{margin-block-end:0}[data-ui=community] h4{font-weight:700;font-family:nyt-franklin,sans-serif;font-size:18px;margin:0 0 1px 0}[data-ui=community] p{margin:0 0 2px 0;font-size:16px}[data-ui=community] em{display:block;font-weight:500;font-size:14px;font-family:nyt-franklin,sans-serif}[data-ui=community] li{margin:0 0 12px 0}[data-ui=community] li ul{padding-left:20px;list-style:disc}[data-ui=community] li ul li{margin:0}[data-ui=community] li ul li a{color:var(--link-color)}[data-ui=community] li ul li a:hover{color:var(--link-hover-color)}[data-ui=milestones]{--flex-gap: 12px}[data-ui=milestones] .sba-milestone-table-wrapper{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--flex-gap)}[data-ui=milestones] figcaption{padding:10px var(--sba-cell-inline-padding)}[data-ui=milestones] b{font-weight:700}[data-ui=milestones] progress{border-width:0;height:5px}[data-ui=milestones] .sba-col{width:calc(50% - var(--flex-gap)/2);min-width:145px}[data-ui=milestones] .sba-summaries{width:calc(48% - var(--flex-gap)/2);min-width:139px}[data-ui=milestones] .sba-summaries .sba-data-pane{table-layout:fixed;margin-block-end:var(--flex-gap)}[data-ui=milestones] .sba-summaries tr :is(td,th){text-align:center}[data-ui=milestones] .sba-tiers{width:calc(52% - var(--flex-gap)/2);min-width:149px}[data-ui=milestones] .sba-tiers .sba-data-pane .sba-preeminent:not(.sba-queen-bee){border-bottom:1px solid var(--border-color) !important}[data-ui=milestones] .sba-tiers .sba-queen-bee.sba-preeminent th::before{content:\"\";display:inline-block;background:no-repeat url(/games-assets/v2/assets/sb-stats-queen-bee.svg);width:19px;height:12px;margin-right:4px}[data-ui=milestones] .sba-data-pane{width:100%}[data-ui=milestones] .sba-data-pane td.sba-progress-box{padding:0}[data-ui=milestones] .sba-data-pane tr.sba-completed :is(th,td){color:var(--invalid-color)}[data-ui=milestones] .sba-data-pane tbody th{text-align:start}[data-ui=milestones] .sba-data-pane tbody td:nth-child(n+2){max-width:100px}[data-ui=header]{font-weight:bold;line-height:32px;flex-grow:2;text-indent:1px;justify-content:space-between;align-items:center}[data-ui=header] svg{fill:var(--text-color)}[data-ui=header] .sba-tool-btn{appearance:none;background:none;border:0;color:inherit;padding:1px;width:14px;aspect-ratio:1/1;display:inline-block;cursor:pointer}progress{-webkit-appearance:none;appearance:none;width:100%;border-radius:0;margin:0;padding:0;background:rgba(0,0,0,0);display:block;height:10px;border:1px var(--border-color) solid}progress::-webkit-progress-bar{background-color:rgba(0,0,0,0)}progress::-webkit-progress-value{background-color:var(--sb-yellow);height:4px}progress::-moz-progress-bar{background-color:var(--sb-yellow)}[data-ui=progressBar]{border-width:0 0 1px 0;height:6px}[data-ui=spillTheBeans]{text-align:center;padding:14px 0;font-size:38px;margin-top:-24px}[data-ui=menu]{position:relative;z-index:1}@keyframes pulse-fade{0%{text-shadow:rgba(255,0,0,.5) 1px 0 0;opacity:1}80%{text-shadow:rgba(255,0,0,0) 1px 0 20px}100%{opacity:0;text-shadow:none}}[data-ui=menu].sba-has-new #sba-menu-entry-point::after{content:\"•\";animation:pulse-fade 9s ease-out 1 forwards;animation-delay:3s;color:rgba(255,0,0,.75);font-size:1.2em;position:absolute;top:0;right:3px}[data-ui=submenu]{position:fixed;inset:auto;margin:0;color:var(--text-color);background:var(--body-bg-color);border:1px var(--border-color) solid;padding:5px;width:179px;max-height:calc(100dvh - 60px);overflow-y:auto;list-style:none;font-family:nyt-franklin,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.15)}[data-ui=submenu] li{position:relative;line-height:1.8;white-space:nowrap;cursor:pointer;overflow:hidden;display:block;padding:5px 9px 5px 36px;font-size:18px}[data-ui=submenu] li[data-icon=new]:has(svg){background:color-mix(in srgb, var(--games-yellow) 15%, transparent)}[data-ui=submenu] li::before,[data-ui=submenu] li::after{position:absolute;display:block}[data-ui=submenu] li[data-icon=checkmark].checked::after{content:\"✔\";color:var(--sb-yellow);top:3px;left:10px;font-size:20px}[data-ui=submenu] li[data-target=darkMode],[data-ui=submenu] li[data-icon=sba]{border-top:1px solid var(--border-color)}[data-ui=submenu] li[data-icon=sba]{color:currentColor}[data-ui=submenu] li[data-icon=sba]:hover{color:var(--link-hover-color);text-decoration:underline}[data-ui=submenu] li svg{display:inline-block;width:20px;height:20px;position:absolute;left:7px;top:10px}[data-ui=submenu] li svg .shape{fill:var(--text-color)}[data-ui=submenu] li svg .content{fill:var(--sb-yellow)}[data-ui=darkMode] .hive{width:auto;padding:0;flex-grow:2;display:flex}[data-ui=darkMode] .hive-cell{position:static;margin:auto;border:1px solid var(--border-color);padding:20px;width:168px;height:100%;border-radius:6px}[data-ui=darkMode] .cell-letter{font-size:8px;font-weight:600}[data-ui=darkMode] .sba-toggle-label{padding-inline-end:10px}[data-ui=darkMode] .sba-header-wrap{display:flex;justify-content:space-between}.sba-color-selector{display:flex;justify-content:space-around;gap:20px}.sba-color-selector .sba-dark-mode-preview{width:calc(40% - 10px);aspect-ratio:62.4/64.8}.sba-color-selector .sba-dark-mode-preview svg{width:100%;aspect-ratio:inherit;display:block}.sba-color-selector .sba-dark-mode-preview .sba-cell{fill:var(--area-bg-color)}.sba-color-selector .sba-dark-mode-preview .sba-cell text{fill:var(--text-color)}.sba-color-selector .sba-dark-mode-preview .sba-center-cell{fill:var(--sb-yellow)}.sba-color-selector .sba-dark-mode-preview .sba-center-cell text{fill:var(--highlight-text-color)}.sba-color-selector .sba-dark-mode-preview text{font-weight:700;font-size:6px;text-transform:uppercase;dominant-baseline:middle;text-anchor:middle;pointer-events:none}.sba-color-selector .sba-swatches{display:flex;flex-wrap:wrap;list-style:none;justify-content:space-around;padding:0;width:calc(60% - 10px)}.sba-color-selector .sba-swatches li{position:relative;overflow:hidden;width:25%;aspect-ratio:1/1;padding:2px}.sba-color-selector .sba-swatches li:has([for=sbaH360]){width:100%;line-height:50px;aspect-ratio:auto;height:auto}.sba-color-selector .sba-swatches label{border:1px var(--border-color) solid;display:block;overflow:hidden;cursor:pointer;text-align:center;height:100%}.sba-color-selector .sba-swatches label[for=sbaH360]{color:var(--highlight-text-color)}.sba-color-selector .sba-swatches input{position:absolute;left:-100px}.sba-color-selector .sba-swatches input:checked~label:not([for=sbaH360]){border-color:var(--sb-yellow)}.sba-googlified .sb-anagram{cursor:pointer}.sba-googlified .sb-anagram:hover{text-decoration:underline;color:var(--link-hover-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *{color:var(--text-color);border-color:var(--border-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) *::selection{background-color:var(--body-bg-color)}:is(#portal-game-toolbar,#js-mobile-toolbar) .pz-dropdown__arrow{border-top-color:var(--text-color);border-bottom-color:var(--text-color);border-right-color:rgba(0,0,0,0);border-left-color:rgba(0,0,0,0)}.pz-mobile .pz-toolbar-button__sba{color:var(--text-color)}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]){background-color:var(--body-bg-color) !important}:is(.pz-dropdown,.pz-mobile-dropdown) :is(button[class*=pz-dropdown__],a[class*=pz-dropdown__]):hover{background:var(--menu-hover-color)}[data-sba-theme=dark] #portal-game-toolbar i,[data-sba-theme=dark] #js-mobile-toolbar i{filter:invert(1);background-color:rgba(0,0,0,0)}[data-sba-theme=dark] .conversion-banner__icon{filter:invert(1)}[data-sba-theme=dark] :is(.sb-stats-bar-rank__word-count,.sb-stats-bar-rank__text){filter:contrast(99%);color:#999}[data-sba-theme] .sb-modal-wordlist-items li .check.checked{border:none;height:auto;transform:none}[data-sba-theme] .sb-modal-wordlist-items li .check.checked::after{position:relative;content:\"✔\";color:var(--sb-yellow);top:4px;font-size:16px}[data-sba-theme] .sb-modal-header .sb-modal-letters{position:relative;top:-5px}.pz-toolbar-button:hover,[data-ui=submenu] li:hover{background:var(--menu-hover-color);color:var(--text-color)}.pz-toolbar-button::selection,[data-ui=submenu] li::selection{background-color:rgba(0,0,0,0)}[data-ui=menu].sba-open{background:var(--menu-hover-color);color:var(--text-color)}[data-ui=shortcuts] tbody tr th{text-align:start}[data-ui=shortcuts] tbody tr td:last-child{font-size:16px;cursor:pointer}[data-ui=shortcuts] tbody tr td:last-child::selection{color:currentColor;background-color:rgba(0,0,0,0)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=true]{color:var(--sba-success-color)}[data-ui=shortcuts] tbody tr td:last-child[data-enabled=false]{color:var(--sba-error-color)}[data-ui=grid] table{width:100%}[data-ui=grid] tbody tr:last-child td{background-color:var(--head-row-bg-color)}[data-ui=grid] tbody tr td{padding:5px 0 !important}[data-ui=grid] tbody tr td:last-of-type{background-color:var(--head-row-bg-color)}.sba details[open] summary:before{transform:rotate(-90deg);left:10px;top:1px}.sba summary{list-style:none;padding:1px 15px 0 21px}.sba summary::marker{display:none}.sba summary:before{content:\"❯\";font-size:9px;position:absolute;display:inline-block;transform:rotate(90deg);transform-origin:center;left:7px;top:0}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li{position:relative}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li.sba-pangram{font-weight:700;border-bottom:2px var(--sb-yellow) solid}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks{position:absolute;right:0;bottom:3px}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items)>li .sba-marks mark{display:none}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-s-active .sba-mark-s{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-p-active .sba-mark-p{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-d-active .sba-mark-d{display:inline-block}[data-sba-theme] :is(.sb-wordlist-items-pag,.sb-modal-wordlist-items).sba-mark-c-active .sba-mark-c{display:inline-block}[data-sba-theme] mark{background:rgba(0,0,0,0);font-size:11px;pointer-events:none;text-transform:uppercase}[data-sba-theme] mark::after{content:\" \"}[data-sba-theme] mark:last-of-type::after{content:normal}[data-sba-theme] mark::selection{background-color:rgba(0,0,0,0)}[data-sba-theme] .sba-pop-up.sb-modal-frame .sb-modal-content .sba-modal-footer{text-align:right;font-size:13px;border-top:1px solid var(--border-color);padding:10px 10px 0 10px}.sb-modal-frame .sb-modal-content{scrollbar-color:var(--invalid-color) var(--body-bg-color)}.sb-modal-frame .sb-modal-content::after{background:linear-gradient(180deg, transparent 0%, var(--modal-bg-color) 56.65%, var(--body-bg-color) 100%)}.sba-container{display:none}.sba{margin:var(--sba-app-margin);width:var(--sba-app-width);padding:var(--sba-app-padding);box-sizing:border-box}.sba *,.sba *:before,.sba *:after{box-sizing:border-box}.pz-mobile [data-ui=menu]{display:flex;align-items:center;height:100%;padding:0 6px;top:2px}[data-sba-active=true]{--sba-app-width: 100px;--sba-app-padding: 0;--sba-app-margin: 0;--sba-game-offset: 12px;--sba-game-width: 1256px;--sba-mobile-threshold: 900px}[data-sba-active=true] .sba-container{display:block;position:absolute;inset-block:0;height:fit-content;max-height:100%;margin-block:auto;overflow-y:auto;right:var(--sba-game-offset);z-index:1}[data-sba-active=true] .sba{border-color:rgba(0,0,0,0)}[data-sba-active=true] [data-ui=header]{display:none}[data-sba-active=true] .sb-expanded .sba-container{visibility:hidden;pointer-events:none}[data-sba-active=true] .sb-content-box{max-width:var(--sba-game-width);justify-content:space-between;position:relative}[data-sba-active=true] .sb-controls-box{max-width:calc(100vw - var(--sba-app-width))}@media(max-width: 370px){[data-sba-active=true] .sb-hive{width:70%}[data-sba-active=true].pz-spelling-bee-wordlist .hive-action:not(.hive-action__shuffle){font-size:.9em;margin:0 4px 8px;padding:23px 0}[data-sba-active=true] .hive-action:not(.hive-action__shuffle){width:71px;min-width:auto}[data-sba-active=true] [data-ui=milestones] .sb-modal-body{padding-inline:calc(var(--flex-gap)/2)}[data-sba-active=true] [data-ui=milestones] .sba-queen-bee.sba-preeminent th::before{content:normal}}@media(max-width: 450px){[data-ui=grid] table{table-layout:auto}[data-ui=grid] table.sba-data-pane tbody th{width:28px !important}[data-ui=grid] table.sba-data-pane thead th:first-of-type{width:28px !important}[data-ui=grid] table.sba-data-pane :is(thead,tbody) tr :is(th,td){width:auto;font-size:90%}}[data-sba-active] .pz-game-toolbar .pz-row{padding:0}@media(min-width: 516px){[data-sba-active] .pz-game-toolbar .pz-row{padding:0 12px}[data-sba-active].pz-desktop .sba{left:-175px}[data-ui=overview] .sba-data-pane tbody th{text-transform:none;width:31%}[data-ui=overview] .sba-data-pane tbody td{width:23%}[data-ui=overview] .sba-data-pane tbody tr:nth-child(1) th::after{content:\"ords\"}[data-ui=overview] .sba-data-pane tbody tr:nth-child(2) th::after{content:\"oints\"}[data-ui=overview] .sba-data-pane thead th{width:23%}[data-ui=overview] .sba-data-pane thead th:first-of-type{width:31%}[data-sba-active=true]{--sba-app-width: 138px;--sba-app-padding: 0 5px 5px}[data-sba-active=true] .sba{border-color:var(--border-color)}[data-sba-active=true] [data-ui=header]{display:flex}}@media(min-width: 900px){[data-sba-active=true]{--sba-app-width: 160px;--sba-app-padding: 0 8px 8px;--sba-app-margin: 66px 0 0 0}[data-sba-active=true] .sb-content-box{padding:0 var(--sba-game-offset)}[data-sba-active=true] .sb-controls-box{max-width:none}[data-sba-active=true] .sba-container{position:static;height:auto;max-height:none;margin-block:0;overflow-y:visible}[data-sba-active=true] .sb-expanded .sba-container{z-index:1}[data-sba-active=true].pz-desktop .sba{left:-191px}}.sba-popover{border:0;padding:0;background:rgba(0,0,0,0);color:var(--text-color);overflow:visible;inset:0;margin:auto;width:min(664px,100vw - 24px);height:fit-content;max-height:calc(100dvh - 48px)}.sba-popover::backdrop{background:hsla(0,0%,100%,.85);background:var(--modal-bg-color, hsla(0, 0%, 100%, 0.85))}.sba-popover.sba-pinned{inset:auto;margin:0;width:min(420px,100vw - 16px);box-shadow:0 4px 24px rgba(0,0,0,.2)}.sba-popover.sba-pinned::backdrop{display:none}.sba-popover.sba-pinned .sb-modal-top{cursor:move;touch-action:none}.sba-popover.sba-pinned .sb-modal-content{padding-inline:16px}.sba-popover.sba-dragging{user-select:none;opacity:.9}:where(.sba-popover) :where(.sb-modal-frame){display:flex;flex-direction:column;max-height:inherit;border:1px solid var(--border-color);border-radius:6px;background:var(--body-bg-color);color:var(--text-color);font-family:nyt-franklin,sans-serif}:where(.sba-popover) :where(.sb-modal-top){display:flex;justify-content:flex-end;align-items:center;gap:4px;padding:8px 8px 0;flex-shrink:0}:where(.sba-popover) :where(.sb-modal-close,.sba-pin){appearance:none;background:none;border:0;padding:0 6px;color:var(--text-color);cursor:pointer;line-height:1}:where(.sba-popover) :where(.sb-modal-close){font-size:32px;font-weight:300}:where(.sba-popover) :where(.sba-pin){font-size:15px;opacity:.45;filter:grayscale(1)}:where(.sba-popover) :where(.sba-pin):hover,:where(.sba-popover) :where(.sba-pin)[aria-pressed=true]{opacity:1;filter:none}:where(.sba-popover) :where(.sb-modal-content){overflow-y:auto;padding:0 24px 16px}:where(.sba-popover) :where(.sb-modal-header){margin-block-end:16px}:where(.sba-popover) :where(.sb-modal-title){font-family:nyt-karnakcondensed,georgia,serif;font-weight:700;font-size:34px;line-height:1.1;margin:0 0 8px}:where(.sba-popover) :where(.sb-modal-message){font-size:16px;line-height:1.4;margin:0}:where(.sba-popover) :where(.sb-modal-body){font-size:16px}:where(.sba-popover) :where(figure){margin:0}:where(.sba-popover) :where(.sba-modal-footer){margin-block-start:16px;padding-block-start:10px;border-top:1px solid var(--border-color);text-align:right;font-size:13px}:where(.sba-popover) :where(.sba-modal-footer) a{color:var(--link-color, inherit)}:where(.sba-popover) :where(.sb-modal-letters){font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-block-end:12px}:where(.sba-popover) :where(.sb-modal-wordlist-items){list-style:none;padding:0;margin:0;columns:3 140px}:where(.sba-popover) :where(.sb-modal-wordlist-items) li{display:flex;gap:6px;align-items:baseline;break-inside:avoid;padding:2px 0}:where(.sba-popover) :where(.sb-modal-wordlist-items) .pangram{font-weight:700}@media(max-width: 515px){.sba-popover{width:calc(100vw - 16px)}:where(.sba-popover) :where(.sb-modal-content){padding-inline:12px}}\n";
 
     class Styles extends Plugin {
         constructor(app) {
@@ -2092,7 +2310,7 @@
     var iconBee = "<svg width=\"442pt\" height=\"348pt\" version=\"1.1\" viewBox=\"0 0 442 348\" xmlns=\"http://www.w3.org/2000/svg\">\n <path d=\"m271 207c-0.645 0-1.3-0.0703-1.95-0.223l-19.2-4.38c-4.71-1.07-7.66-5.76-6.59-10.5 1.07-4.71 5.75-7.68 10.5-6.59l19.2 4.38c4.71 1.07 7.66 5.76 6.59 10.5-0.926 4.06-4.53 6.82-8.53 6.82zm-166-67.5c-11.9-6.34-22.9-13.4-31.4-20.4-33-26.9-43.7-64.6-24.9-87.7 18.8-23.1 57.9-20.2 90.9 6.73 11.1 9.05 24.1 23 35.3 38.2 4.02-13.2 9.17-25.9 14.6-35.7 19-33.9 51.3-49.5 75.1-36.1 23.9 13.3 27.5 49 8.57 82.9-8.34 14.9-22.3 32-36.7 45.5 53.7 15.9 91 56.7 111 84.7l85.7-4e-3c4.83 0 8.75 3.92 8.75 8.75s-3.92 8.75-8.75 8.75h-74.1c3.58 5.89 5.62 9.81 6.04 10.6 1.21 2.38 1.27 5.19 0.152 7.61-1.77 3.84-44.7 94.2-175 94.2-130 0-187-102-190-106-1.15-2.08-1.39-4.53-0.691-6.8 0.898-2.91 21.6-66.7 105-94.9zm21.9 181c-37.1-77.5-34-132-27.7-160-7.62 3.16-14.6 6.6-20.9 10.3-2.48 8.36-16.5 64.3 23.1 139 7.94 3.92 16.4 7.48 25.6 10.5zm1.62-268c-14.7-12-31-18.3-44.3-18.3-9.14 0-16.9 2.97-21.9 9.1-12.3 15.1-2.48 42.8 22.4 63 11.3 9.19 28 19 44.8 26.4 28.8 12.6 48.8 13.8 53 8.66 1.13-1.38 1.34-3.7 1.33-5.4-0.0625-8.34-5.06-20.2-12.6-32.7-0.0547-0.0859-0.105-0.176-0.16-0.258-11.2-18.5-27.9-38.4-42.6-50.5zm129 27.2c13.9-24.8 13.1-50.8-1.84-59.1-14.9-8.32-37.4 4.58-51.3 29.4-6.85 12.2-13.2 29.9-17 46.8 6.15 10.7 10.7 21.3 12.6 30.6 5.1 0.301 10.1 0.824 15 1.57 15.9-12.7 33.4-32.8 42.6-49.3zm80.5 156h-18.2c-4.83 0-8.75-3.92-8.75-8.75s3.92-8.75 8.75-8.75h5.21c-23.5-29.3-63.7-66.6-119-72.9-0.168 0.68-0.406 1.35-0.723 2.01-13.2 27.6-15.9 97.9 30.3 179 27.4-5.6 48.9-15.8 65.4-27.1-12.2-1.87-27-7.99-43.3-22.9-3.55-3.26-3.79-8.8-0.531-12.4 3.26-3.55 8.8-3.81 12.4-0.531 32.4 29.7 54.8 15.9 56.1 15.1 11.3-11.7 18-22.3 21.1-27.7-1.87-3.25-4.98-8.41-9.25-14.7zm-142 94.7c-42.2-76-41.1-137-35.4-170-7.43-1.16-15-3.23-22.1-5.64-5.32 12.5-23.6 70.2 34.2 175 5.75 0.477 11.7 0.762 17.7 0.762 1.92 0 3.67-0.168 5.55-0.207zm-142-52.3c-10.9-30.8-13.7-57-13.2-76.9-13.5 15.1-20.1 29-22.7 35.4 4.41 6.93 16.2 23.9 35.9 41.5z\"/>\n <g transform=\"translate(-267 -474)\">\n  <path d=\"m395 526c-14.7-12-31-18.3-44.3-18.3-9.14 0-16.9 2.97-21.9 9.1-12.3 15.1-2.48 42.8 22.4 63 11.3 9.19 28 19 44.8 26.4 28.8 12.6 48.8 13.8 53 8.66 1.13-1.38 1.34-3.7 1.33-5.4-0.0624-8.34-5.06-20.2-12.6-32.7-0.0547-0.0859-0.105-0.176-0.16-0.258-11.2-18.5-27.9-38.4-42.6-50.5zm129 27.2c13.9-24.8 13.1-50.8-1.84-59.1-14.9-8.32-37.4 4.58-51.3 29.4-6.85 12.2-13.2 29.9-17 46.8 6.15 10.7 10.7 21.3 12.6 30.6 5.1 0.301 10.1 0.824 15 1.57 15.9-12.7 33.4-32.8 42.6-49.3z\" fill=\"#fff\"/>\n  <path d=\"m394 794c-37.1-77.5-34-132-27.7-160-7.62 3.16-14.6 6.6-20.9 10.3-2.48 8.36-16.5 64.3 23.1 139 7.94 3.92 16.4 7.48 25.6 10.5zm80-175c-0.168 0.68-0.407 1.35-0.724 2.01-13.2 27.6-15.9 97.9 30.3 179 27.4-5.6 48.9-15.8 65.4-27.1-12.3-1.87-27-7.99-43.3-22.9-3.55-3.26-3.79-8.8-0.53-12.4 3.26-3.55 8.8-3.81 12.4-0.532 32.4 29.7 54.8 15.9 56.1 15.1 11.3-11.7 18-22.3 21.1-27.7-1.87-3.25-4.98-8.41-9.25-14.7v6e-3h-18.2c-4.83 0-8.75-3.92-8.75-8.75s3.92-8.75 8.75-8.75h5.21c-23.5-29.3-63.7-66.6-119-72.9zm44.3 40.3c0.723-0.0198 1.46 0.0516 2.2 0.221l19.3 4.38c4.71 1.07 7.66 5.76 6.59 10.5-0.926 4.06-4.53 6.82-8.53 6.82h-1e-3c-0.645 0-1.3-0.07-1.95-0.223l-19.2-4.38c-4.71-1.07-7.66-5.76-6.59-10.5 0.903-3.97 4.37-6.71 8.27-6.81zm-54.8 145c-42.2-76-41.1-137-35.4-170-7.43-1.16-15-3.23-22.1-5.64-5.32 12.5-23.6 70.2 34.2 175 5.75 0.477 11.7 0.762 17.7 0.762 1.92 0 3.67-0.168 5.55-0.207zm-142-52.3c-10.9-30.8-13.7-57-13.2-76.9-13.5 15.1-20.1 29-22.7 35.4 4.41 6.93 16.2 23.9 35.9 41.5z\" fill=\"#f8cd05\"/>\n </g>\n</svg>\n";
 
     const versionToString = (version) => version.split(".").slice(0, 2).join("-");
-    const currentVersion = settings.get('options.version') || '0';
+    const currentVersion = settings.get("version") || "0";
     const versionKey = `newItems-${versionToString(currentVersion)}`;
     const maxDays = 4;
     const isActive = true;
@@ -2116,7 +2334,7 @@
     };
     const ensureInstallDate = () => {
         const existing = settings.get(`options.${versionKey}.installDate`);
-        if (typeof existing !== "string") {
+        if (typeof existing !== "number") {
             settings.set(`options.${versionKey}.installDate`, Date.now());
         }
     };
@@ -2137,35 +2355,28 @@
     if (!newItems.shouldHighlightNewItems()) {
         delete svgIcons.new;
     }
+    const paneOffset = 6;
     class Menu extends Plugin {
-        getTarget() {
-            return this.app.envIs("mobile")
-                ? fn.$("#js-mobile-toolbar")
-                : fn.$(".pz-toolbar-right");
-        }
         add() {
             if (!this.app.envIs("mobile")) {
                 return super.add();
             }
-            const navContainer = fn.$("#js-global-nav");
-            if (navContainer.classList.contains("show-mobile-toolbar")) {
+            const navContainer = nyt.getGlobalNav();
+            if (!navContainer || nyt.isMobileToolbarVisible(navContainer)) {
                 return super.add();
             }
-            const observer = new MutationObserver((mutationList) => {
-                for (let mutation of mutationList) {
-                    if (
-                        mutation.type === "attributes" &&
-                        mutation.attributeName === "class" &&
-                        mutation.target.classList.contains("show-mobile-toolbar")
-                    ) {
-                        observer.disconnect();
-                        return super.add();
-                    }
+            const observer = new MutationObserver(() => {
+                if (nyt.isMobileToolbarVisible(navContainer)) {
+                    observer.disconnect();
+                    this.target = nyt.getToolbar();
+                    super.add();
                 }
             });
             observer.observe(navContainer, {
                 attributes: true,
+                attributeFilter: ["class"],
             });
+            return this;
         }
         getComponent(entry) {
             if (entry.dataset.component === this.app.key) {
@@ -2176,58 +2387,78 @@
             }
             return null;
         }
-        resetSubmenu() {
-            setTimeout(() => {
-                this.app.domSet("submenu", false);
-            }, 300);
+        positionPane() {
+            const rect = this.ui.getBoundingClientRect();
+            this.pane.style.top = `${Math.round(rect.bottom + paneOffset)}px`;
+            this.pane.style.right = `${Math.max(paneOffset, Math.round(window.innerWidth - rect.right))}px`;
+        }
+        handleEntry(evt) {
+            const entry = evt.target.closest("li");
+            if (!entry || evt.target.closest("a")) {
+                this.pane.hidePopover();
+                return;
+            }
+            const component = this.getComponent(entry);
+            this.pane.hidePopover();
+            switch (entry.dataset.action) {
+                case "boolean":
+                    component.toggle();
+                    entry.classList.toggle("checked", component.getState());
+                    break;
+                case "popup":
+                    component.togglePopup();
+                    break;
+            }
+        }
+        buildEntry(plugin, key) {
+            const icon = plugin.menu.icon || null;
+            const data = {
+                component: key,
+                action: plugin.menu.action,
+            };
+            const classNames = [];
+            if (plugin.menu.action === "boolean") {
+                data.icon = "checkmark";
+                if (plugin.getState()) {
+                    classNames.push("checked");
+                }
+            } else if (icon) {
+                data.icon = icon;
+            }
+            return fn.li({
+                classNames,
+                attributes: {
+                    title: fn.toNode(plugin.description).textContent,
+                },
+                data,
+                content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title,
+            });
         }
         constructor(app) {
             super(app, "Menu", "");
-            this.target = this.getTarget();
+            this.target = nyt.getToolbar();
             if (this.app.envIs("mobile")) {
                 this.addMethod = "after";
             }
-            const classNames = [
-                "pz-toolbar-button__sba",
-                this.app.envIs("mobile")
-                    ? "pz-nav__toolbar-item"
-                    : "pz-toolbar-button",
-            ];
-            this.resetSubmenu();
-            const pane = fn.ul({
+            const paneId = prefix("menu-pane", "d");
+            this.paneOpen = false;
+            this.pane = fn.ul({
+                attributes: {
+                    id: paneId,
+                    popover: "auto",
+                },
                 classNames: ["pane"],
                 data: {
                     ui: "submenu",
                 },
                 events: {
-                    pointerup: (evt) => {
-                        if (evt.target.nodeName === "A") {
-                            this.resetSubmenu();
-                            evt.target.click();
-                            return true;
-                        }
-                        const entry = evt.target.closest("li");
-                        if (!entry || evt.button !== 0) {
-                            this.resetSubmenu();
-                            return true;
-                        }
-                        const component = this.getComponent(entry);
-                        switch (entry.dataset.action) {
-                            case "boolean": {
-                                this.resetSubmenu();
-                                component.toggle();
-                                entry.classList.toggle(
-                                    "checked",
-                                    component.getState(),
-                                );
-                                break;
-                            }
-                            case "popup":
-                                this.resetSubmenu();
-                                component.togglePopup();
-                                break;
-                            default:
-                                this.resetSubmenu();
+                    click: (evt) => this.handleEntry(evt),
+                    beforetoggle: (evt) => {
+                        this.paneOpen = evt.newState === "open";
+                        this.ui.classList.toggle(prefix("open", "d"), this.paneOpen);
+                        if (this.paneOpen) {
+                            newItems.markSeen();
+                            this.positionPane();
                         }
                     },
                 },
@@ -2244,82 +2475,39 @@
                     content: `Show ${settings.get("title")}`,
                 }),
             });
-            this.ui = fn.div({
-                events: {
-                    pointerup: (evt) => {
-                        newItems.markSeen();
-                        if (evt.button !== 0) {
-                            return true;
-                        }
-                        if (!evt.target.dataset.action) {
-                            this.app.domSet("submenu", !this.app.domGet("submenu"));
-                        }
-                    },
+            this.ui = fn.button({
+                attributes: {
+                    type: "button",
+                    popovertarget: paneId,
                 },
-                content: [
-                    fn.span({
-                        attributes: {
-                            id: prefix("menu-entry-point", "d"),
-                        },
-                        content: settings.get("title"),
-                    }),
-                    pane,
-                ],
                 aria: {
-                    role: "presentation",
+                    haspopup: "menu",
                 },
-                classNames,
+                classNames: [
+                    "pz-toolbar-button__sba",
+                    this.app.envIs("mobile") ? "pz-nav__toolbar-item" : "pz-toolbar-button",
+                ],
+                content: fn.span({
+                    attributes: {
+                        id: prefix("menu-entry-point", "d"),
+                    },
+                    content: settings.get("title"),
+                }),
             });
-            document.addEventListener("keyup", (evt) => {
-                if (
-                    this.app.domGet("submenu") === true &&
-                    /^(Ent|Esc|Key|Dig)/.test(evt.code)
-                ) {
-                    this.app.domSet("submenu", false);
+            document.body.append(this.pane);
+            this.onKeyUp = (evt) => {
+                if (/^(Ent|Key|Dig)/.test(evt.code) && this.paneOpen) {
+                    this.pane.hidePopover();
                 }
-            });
-            fn.$("#pz-game-root").addEventListener("pointerdown", (evt) => {
-                if (
-                    !evt.target.closest('[data-ui="submenu"]') &&
-                    this.app.domGet("submenu") === true
-                ) {
-                    this.app.domSet("submenu", false);
-                }
-            });
+            };
+            document.addEventListener("keyup", this.onKeyUp);
             app.on(prefix("pluginsReady"), (evt) => {
                 evt.detail.forEach((plugin, key) => {
-                    if (!plugin.menu || !plugin.menu.action) {
-                        return false;
+                    if (plugin.menu?.action) {
+                        this.pane.append(this.buildEntry(plugin, key));
                     }
-                    let icon = plugin.menu.icon || null;
-                    const data = {
-                        component: key,
-                        action: plugin.menu.action,
-                    };
-                    let classNames = [];
-                    if (plugin.menu.action === "boolean") {
-                        data.icon = "checkmark";
-                        if (plugin.getState()) {
-                            classNames = ["checked"];
-                        }
-                    } else if (icon) {
-                        data.icon = icon;
-                    }
-                    pane.append(
-                        fn.li({
-                            classNames,
-                            attributes: {
-                                title: fn.toNode(plugin.description).textContent,
-                            },
-                            data,
-                            content:
-                                icon && svgIcons[icon]
-                                    ? [svgIcons[icon], plugin.title]
-                                    : plugin.title,
-                        }),
-                    );
                 });
-                pane.append(
+                this.pane.append(
                     fn.li({
                         attributes: {
                             title: settings.get("support.text"),
@@ -2338,8 +2526,13 @@
                         }),
                     }),
                 );
+                this.ui.classList.toggle(prefix("has-new", "d"), !!fn.$('[data-icon="new"] svg', this.pane));
             });
-            app.on(prefix("destroy"), () => this.ui.remove());
+            app.on(prefix("destroy"), () => {
+                document.removeEventListener("keyup", this.onKeyUp);
+                this.ui.remove();
+                this.pane.remove();
+            });
         }
     }
 
@@ -2393,46 +2586,45 @@
 
     class Grid extends Plugin {
         togglePopup() {
-            if (this.popup.isOpen) {
-                this.popup.toggle(false);
-                return this;
-            }
-            this.popup.setContent("subtitle", this.description).setContent("body", this.createTable()).toggle(true);
+            this.popup.toggle(!this.popup.isOpen);
             return this;
         }
         createTable() {
-            return (new TableBuilder(buildDataMatrix(), {
+            return new TableBuilder(buildDataMatrix(), {
                 hasHeadRow: true,
                 hasHeadCol: true,
-                classNames: [
-                    "data-pane",
-                    "th-upper",
-                    "equal-cols",
-                    "small-txt"]
+                classNames: ["data-pane", "th-upper", "equal-cols", "small-txt"]
                     .map((name) => prefix(name, "d"))
                     .concat(["pane"]),
-                cellCallbacks: [markCompletedRatioCells]
-            })).ui;
+                cellCallbacks: [markCompletedRatioCells],
+            }).ui;
         }
-        run(env) {
+        run() {
             this.popup.setContent("body", this.createTable());
             return this;
         }
         constructor(app) {
-            super(app, "Grid", "The number of words by length and by first letter.", {runEvt: prefix("refreshUi")});
-            this.popup = new PopupBuilder(this.app, this.key).setContent("title", this.title);
+            super(app, "Grid", "The number of words by length and by first letter.", { runEvt: prefix("refreshUi") });
+            this.popup = new PopupBuilder(this.app, this.key, { pinnable: true })
+                .setContent("title", this.title)
+                .setContent("subtitle", this.description)
+                .setContent("body", this.createTable());
+            this.app.on(prefix("pluginsReady"), () => this.popup.restore());
             this.menu = {
                 action: "popup",
+                icon: "new",
             };
-            this.panelBtn = fn.span({
-                classNames: ['sba-tool-btn'],
-                events: {
-                    pointerup: () => this.togglePopup()
+            this.panelBtn = fn.button({
+                classNames: [prefix("tool-btn", "d")],
+                attributes: {
+                    type: "button",
+                    title: this.title,
+                    popovertarget: this.popup.id,
                 },
-                attributes:{
-                    title: this.title
+                aria: {
+                    label: this.title,
                 },
-                content: gridIcon
+                content: gridIcon,
             });
             this.shortcuts = [
                 {
@@ -2443,32 +2635,32 @@
         }
     }
 
+    const deleteDelay = 50;
     class NytShortcuts extends Plugin {
         toggleYesterday() {
-            this.triggerPopup(".pz-toolbar-button__yesterday");
+            return this.triggerPopup("yesterday");
         }
         toggleStats() {
-            this.triggerPopup(".pz-toolbar-button__stats");
+            return this.triggerPopup("stats");
         }
-        triggerPopup(selector) {
-            let popupCloser = findCloseButton(this.app);
-            if (popupCloser) {
-                setTimeout(hive.deleteLetter, 50);
-                popupCloser.click();
-            } else {
-                fn.$(selector)?.click();
+        triggerPopup(name) {
+            if (nyt.closeModal()) {
+                setTimeout(hive.deleteLetter, deleteDelay);
+            } else if (!PopupBuilder.closeAll()) {
+                nyt.clickToolbarButton(name);
             }
+            return this;
         }
         constructor(app) {
-            super(app, "NYT Shortcuts", "Adds keyboard shortcuts to native NYT popups", { key: "nytShortcuts" });
+            super(app, "NYT Shortcuts", "Adds keyboard shortcuts to native NYT pop-ups", { key: "nytShortcuts" });
             this.shortcuts = [
-                { combo: "Shift+Alt+Y", method: "toggleYesterday", label: `Yesterday's Answers` },
-                { combo: "Shift+Alt+I", method: "toggleStats", label: `Statistics` },
+                { combo: "Shift+Alt+Y", method: "toggleYesterday", label: "Yesterday’s Answers" },
+                { combo: "Shift+Alt+I", method: "toggleStats", label: "Statistics" },
             ].map((shortcut) => ({ ...shortcut, origin: "nyt" }));
         }
     }
 
-    let registry = new Map();
+    const registry = new Map();
     const modifierMap = new Map([
         ["ctrl", { canonical: "Control", human: "Ctrl" }],
         ["control", { canonical: "Control", human: "Ctrl" }],
@@ -2495,14 +2687,17 @@
         return (
             combo
                 .split("+")
-                .map((part) => (modifierMap.has(part) ? modifierMap.get(part).human : part.replace(/^Digit|^Key/, "")))
+                .map((part) => {
+                    const modifier = modifierMap.get(part.toLowerCase());
+                    return modifier ? modifier.human : part.replace(/^Digit|^Key/, "");
+                })
                 .join(" + ")
         );
     };
-    const requiresDeletion = (combo, app) => {
+    const requiresDeletion = (combo) => {
         const key = getCharacterKey(normalizeCombo(combo));
-        let pool = findCloseButton(app) ? characterKeys.sba : characterKeys.sba.join(characterKeys.nyt);
-        return key && pool.includes(key);
+        const pool = nyt.findModalCloser() ? characterKeys.sba : characterKeys.sba.concat(characterKeys.nyt);
+        return !!key && pool.includes(key);
     };
     const isValidShortcut = (obj) =>
         obj && typeof obj === "object" && typeof obj.combo === "string" && typeof obj.callback === "function";
@@ -2559,7 +2754,7 @@
             entry.callback();
             return true;
         }
-        hive.deleteLetter().then(entry.callback());
+        hive.deleteLetter().then(() => entry.callback());
         return true;
     };
     const set = (combo, shortcut) => {
@@ -2567,14 +2762,15 @@
         if (!isValidShortcut(shortcut)) {
             return false;
         }
-        if(!shortcut.human){
+        if (!shortcut.human) {
             shortcut.human = comboToHuman(shortcut.combo);
         }
-        if(typeof shortcut.enabled === 'undefined'){
+        if (typeof shortcut.enabled === "undefined") {
             shortcut.enabled = true;
         }
         registry.set(combo, shortcut);
         settings.set(`options.${shortcut.module}.shortcuts.${shortcut.combo}`, shortcut);
+        return true;
     };
     const add = (shortcut) => {
         if (!isValidShortcut(shortcut)) {
@@ -2625,9 +2821,6 @@
                 checked,
             },
             classNames: [prefix("toggle-switch", "d")],
-            aria: {
-                role: "switch",
-            },
             events: {
                 change: (event) => callback(event),
             },
@@ -2741,7 +2934,7 @@
         const instance = new Plugin(app);
         instance.add();
         plugins.set(instance.key, instance);
-        (instance.shortcuts || []).map((instanceShortcut) => {
+        (instance.shortcuts || []).forEach((instanceShortcut) => {
             const { method, ...remainder } = instanceShortcut;
             const shortcut = {
                 ...remainder,
@@ -2780,56 +2973,70 @@
             }
             return JSON.parse(document.body.dataset[prefix(key)]);
         }
-        getSyncData() {
-            return Array.from(fn.$$("li", this.resultList)).map((li) => {
-                const newWordElem = li.childElementCount > 1 ? li.firstElementChild : li;
-                return newWordElem.textContent.trim();
-            });
-        }
         envIs(env) {
-            return document.body.classList.contains("pz-" + env);
+            return nyt.isEnv(env);
         }
         focusGame() {
-            if (!this.envIs("desktop")) {
+            const titleBar = nyt.find("titleBar", document);
+            const gameHeader = nyt.find("gameHeader", document);
+            if (!this.envIs("desktop") || !titleBar || !gameHeader) {
                 return false;
             }
             window.scrollTo(0, 0);
-            const titlebarRect = fn.$(".pz-game-title-bar").getBoundingClientRect();
-            const targetOffsetTop = titlebarRect.top + titlebarRect.height - fn.$(".pz-game-header").offsetHeight;
-            window.scrollTo(0, targetOffsetTop);
+            const titlebarRect = titleBar.getBoundingClientRect();
+            window.scrollTo(0, titlebarRect.top + titlebarRect.height - gameHeader.offsetHeight);
             return true;
         }
+        checkHealth() {
+            const { ok, problems } = nyt.selfCheck();
+            if (!ok) {
+                console.warn(
+                    `${settings.get("label")}: the NYT page has changed, some features might not work.\n` +
+                        problems.map((p) => `- ${p.selector} not found, affects ${p.impact}`).join("\n"),
+                );
+                this.domSet("health", JSON.stringify(problems.map((p) => p.name)));
+            }
+            return ok;
+        }
         load() {
-            fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
-                this.observer = this.buildObserver();
+            nyt.waitForResultList().then((resultList) => {
                 this.resultList = resultList;
-                data.init(this, this.getSyncData());
-                hive.init(fn.$(".sb-controls-box", this.gameWrapper));
+                this.checkHealth();
+                this.observer = this.buildObserver();
+                data.init(this, nyt.getFoundTerms(resultList));
+                hive.init();
                 this.add();
                 this.domSet("active", true);
                 shortcutRegistry.add(this.shortcut);
                 this.registerPlugins();
                 this.trigger(prefix("refreshUi"), null);
                 document.dispatchEvent(new Event(prefix("ready")));
-                document.addEventListener("keydown", (event) => {
-                    if (!shortcutRegistry.getSbaShortcutEntry(event)) {
-                        return;
-                    }
-                    if (!shortcutRegistry.requiresDeletion(event, this)) {
-                        shortcutRegistry.handleShortcut(event);
-                    } else {
-                        this._lastShortcutEvent = event;
-                    }
-                });
-                this.on(prefix("newInput"), (event) => {
-                    if (this._lastShortcutEvent) {
-                        shortcutRegistry.handleShortcut(this._lastShortcutEvent);
-                        this._lastShortcutEvent = null;
+                document.addEventListener("keydown", this.onKeyDown);
+                document.addEventListener("keyup", this.onKeyUp);
+                this.on(prefix("newInput"), () => {
+                    if (this.pendingShortcut) {
+                        shortcutRegistry.handleShortcut(this.pendingShortcut);
+                        this.pendingShortcut = null;
                     }
                 });
                 this.focusGame();
             });
         }
+        onKeyDown = (event) => {
+            if (!shortcutRegistry.getSbaShortcutEntry(event)) {
+                return;
+            }
+            if (!shortcutRegistry.requiresDeletion(event)) {
+                shortcutRegistry.handleShortcut(event);
+            } else {
+                this.pendingShortcut = event;
+            }
+        };
+        onKeyUp = (event) => {
+            if (event.code === "Escape") {
+                nyt.closeModal();
+            }
+        };
         getState() {
             return this.domGet("active");
         }
@@ -2837,57 +3044,53 @@
             this.domSet("active", !this.getState());
             return this;
         }
+        handleMutation(mutation) {
+            if (mutation.type !== "childList" || !(mutation.target instanceof HTMLElement)) {
+                return;
+            }
+            if (nyt.isHiveInput(mutation.target)) {
+                this.trigger(prefix("newInput"), mutation.target);
+                return;
+            }
+            if (mutation.target === this.resultList) {
+                const item = mutation.addedNodes[0];
+                if (item instanceof HTMLElement && item.textContent.trim()) {
+                    this.trigger(prefix("newWord"), nyt.getTermFromListItem(item));
+                }
+                return;
+            }
+            const yesterday = nyt.findYesterdayModal(mutation.addedNodes);
+            if (yesterday) {
+                this.trigger(prefix("yesterday"), yesterday);
+            }
+        }
         buildObserver() {
             const observer = new MutationObserver((mutationList) => {
-                mutationList.forEach((mutation) => {
-                    if (!(mutation.target instanceof HTMLElement)) {
-                        return false;
-                    }
-                    switch (true) {
-                        case mutation.type === "childList" && mutation.target.classList.contains("sb-modal-wrapper"):
-                            if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
-                                this.trigger(prefix("yesterday"), mutation.target);
-                            }
-                            break;
-                        case mutation.type === "childList" && mutation.target.classList.contains("sb-hive-input-content"):
-                            this.trigger(prefix("newInput"), mutation.target);
-                            break;
-                        case mutation.type === "childList" &&
-                            mutation.target.isSameNode(this.resultList) &&
-                            !!mutation.addedNodes.length &&
-                            !!mutation.addedNodes[0].textContent.trim() &&
-                            mutation.addedNodes[0] instanceof HTMLElement:
-                            const newWordElem = mutation.addedNodes[0].childElementCount > 1 ? mutation.addedNodes[0].firstElementChild : mutation.addedNodes[0];
-                            this.trigger(prefix("newWord"), newWordElem.textContent.trim());
-                            break;
-                    }
-                });
+                mutationList.forEach((mutation) => this.handleMutation(mutation));
             });
-            const args = {
-                target: this.gameWrapper,
-                options: {
-                    childList: true,
-                    subtree: true,
-                    attributes: true,
-                },
-            };
-            observer.observe(args.target, args.options);
+            observer.observe(this.gameWrapper, {
+                childList: true,
+                subtree: true,
+            });
             return observer;
         }
         buildUi() {
             const events = {};
             events[prefix("destroy")] = () => {
-                this.observer.disconnect();
+                this.observer?.disconnect();
+                document.removeEventListener("keydown", this.onKeyDown);
+                document.removeEventListener("keyup", this.onKeyUp);
                 this.container.remove();
                 this.domUnset("theme");
+                this.domUnset("active");
+                this.domUnset("health");
             };
-            const classNames = [settings.get("prefix")];
             return fn.div({
                 data: {
                     id: this.key,
                     version: settings.get("version"),
                 },
-                classNames,
+                classNames: [settings.get("prefix")],
                 events,
             });
         }
@@ -2901,7 +3104,8 @@
         }
         add() {
             this.container.append(this.ui);
-            fn.$(".sb-content-box", this.gameWrapper).prepend(this.container);
+            nyt.find("contentBox").prepend(this.container);
+            return this;
         }
         constructor(gameWrapper) {
             super(settings.get("label"), {
@@ -2916,6 +3120,7 @@
             this.container = fn.div({
                 classNames: [prefix("container", "d")],
             });
+            this.pendingShortcut = null;
             this.shortcut = {
                 combo: "Shift+Alt+A",
                 label: "Assistant Panel",
@@ -2926,6 +3131,11 @@
         }
     }
 
-    new App(fn.$("#js-hook-game-wrapper"));
+    const gameWrapper = nyt.getGameWrapper();
+    if (gameWrapper) {
+        new App(gameWrapper);
+    } else {
+        console.warn(`${settings.get("label")}: ${nyt.selectors.gameWrapper} not found, the NYT page has changed.`);
+    }
 
 })();

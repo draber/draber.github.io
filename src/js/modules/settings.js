@@ -85,10 +85,7 @@ const migrateToVersion5 = () => {
         oldVersion: state.options.version || null
     };
 
-    //console.info(`Migration completed with the following data:`, state.options);
-    //throw new Error("Migration to version 5.0.0 complete. Please reload the page.");
     saveOptions();
-    
 };
 
 // Trigger version-aware migration
