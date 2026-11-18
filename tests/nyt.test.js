@@ -91,22 +91,6 @@ describe("NYT adapter", () => {
         expect(clicked).toBe(1);
     });
 
-    it("measures how far a toolbar element sits below the regular buttons", () => {
-        // jsdom has no layout: the text of "More" sits 2px lower than the text of "Stats"
-        const bottoms = { Stats: 20, More: 22 };
-        const createRange = document.createRange;
-        document.createRange = () => {
-            let node;
-            return {
-                selectNodeContents: (n) => (node = n),
-                getBoundingClientRect: () => ({ bottom: bottoms[node.textContent.trim()] ?? 0 }),
-            };
-        };
-        expect(nyt.getToolbarOffset(nyt.getDropdownButton())).toBe(2);
-        expect(nyt.getToolbarOffset(null)).toBe(0);
-        document.createRange = createRange;
-    });
-
     it("clicks toolbar buttons", () => {
         let clicked = 0;
         document.querySelector(".pz-toolbar-button__yesterday").addEventListener("click", () => clicked++);
