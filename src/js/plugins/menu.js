@@ -80,13 +80,15 @@ class Menu extends Plugin {
 
     /**
      * Put the text of the SBA button and of the NYT's "More" dropdown on the same line as the other toolbar buttons.
-     * Both sit a little lower (Nov 2026). They are measured against "Stats" and corrected separately;
-     * the corrections become 0 once the NYT fixes it.
-     * Measured again once the fonts have loaded (they change the baseline) and when the window is resized
-     * (the NYT switches the toolbar layout by viewport width).
+     * "More" sits a little lower (Nov 2026), the SBA button borrows its class and comes close.
+     * Both are measured against "Stats" and corrected separately; the corrections become 0 once the NYT fixes it.
+     * Measured again once the fonts have loaded, they change the baseline.
      * @returns {Menu}
      */
     alignWithToolbar() {
+        if (this.app.envIs("mobile")) {
+            return this;
+        }
         // on <body>, the NYT may re-render the toolbar and drop inline styles there
         const targets = {
             "--sba-dropdown-offset": () => nyt.getDropdownButton(),
@@ -104,13 +106,6 @@ class Menu extends Plugin {
         };
         requestAnimationFrame(align);
         document.fonts?.ready.then(() => requestAnimationFrame(align));
-
-        let timer;
-        this.onResize = () => {
-            clearTimeout(timer);
-            timer = setTimeout(() => requestAnimationFrame(align), 150);
-        };
-        window.addEventListener("resize", this.onResize);
         return this;
     }
 
@@ -312,7 +307,6 @@ class Menu extends Plugin {
         app.on(prefix("destroy"), () => {
             document.body.style.removeProperty("--sba-dropdown-offset");
             document.body.style.removeProperty("--sba-menu-offset");
-            window.removeEventListener("resize", this.onResize);
             document.removeEventListener("keyup", this.onKeyUp);
             this.ui.remove();
             this.pane.remove();

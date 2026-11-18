@@ -215,41 +215,15 @@ const getTextBottom = (elem) => {
 };
 
 /**
- * Largest misalignment in the toolbar that is corrected, in pixels
- * @type {Number}
- */
-const maxToolbarOffset = 6;
-
-/**
- * Whether an element is rendered. The NYT renders some toolbar parts twice and hides one depending on the width.
- * @param {Element|null} elem
- * @returns {Boolean}
- */
-const isRendered = (elem) => !!elem && elem.getClientRects().length > 0;
-
-/**
- * The first rendered element matching a selector
- * @param {String} selector
- * @returns {HTMLElement|null}
- */
-const findRendered = (selector) => fn.$$(selector).find(isRendered) || null;
-
-/**
- * How far the text of an element in the toolbar sits below the text of the regular toolbar buttons ("Stats"),
- * in pixels, to a tenth. Measured rather than hard coded, so it becomes 0 once the NYT fixes misalignments.
- * Works with both toolbar layouts, the NYT switches between them by viewport width.
+ * How far the text of an element in the desktop toolbar sits below the text of the regular toolbar buttons,
+ * in pixels. Measured rather than hard coded, so it becomes 0 once the NYT fixes misalignments.
  * @param {HTMLElement|null} elem
  * @returns {Number}
  */
 const getToolbarOffset = (elem) => {
-    const reference = findRendered(`${selectors.toolbarButtons.stats}, ${selectors.toolbarButtons.yesterday}`);
-    if (!reference || !isRendered(elem)) {
-        return 0;
-    }
-    // only elements in the same row, a few pixels off; anything else isn't a misalignment
-    const referenceRect = reference.getBoundingClientRect();
-    const elemRect = elem.getBoundingClientRect();
-    if (elemRect.top > referenceRect.bottom || elemRect.bottom < referenceRect.top) {
+    const toolbar = fn.$(selectors.desktopToolbar);
+    const reference = toolbar ? fn.$(selectors.toolbarButtons.stats, toolbar) || fn.$(selectors.toolbarButtons.yesterday, toolbar) : null;
+    if (!reference || !elem) {
         return 0;
     }
     const referenceBottom = getTextBottom(reference);
@@ -257,15 +231,14 @@ const getToolbarOffset = (elem) => {
     if (referenceBottom === null || elemBottom === null) {
         return 0;
     }
-    const offset = Math.round((elemBottom - referenceBottom) * 10) / 10;
-    return Math.abs(offset) <= maxToolbarOffset ? offset : 0;
+    return Math.round(elemBottom - referenceBottom);
 };
 
 /**
- * The NYT's "More" dropdown in the toolbar
+ * The NYT's "More" dropdown in the desktop toolbar
  * @returns {HTMLElement|null}
  */
-const getDropdownButton = () => findRendered(`.pz-dropdown ${selectors.dropdownButton}`);
+const getDropdownButton = () => fn.$(`${selectors.desktopToolbar} .pz-dropdown ${selectors.dropdownButton}`);
 
 /**
  * Hive cells, keyed by their letter

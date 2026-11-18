@@ -93,12 +93,7 @@ describe("NYT adapter", () => {
 
     it("measures how far a toolbar element sits below the regular buttons", () => {
         // jsdom has no layout: the text of "More" sits 2px lower than the text of "Stats"
-        const bottoms = { Stats: 20, More: 21.54 };
-        const getClientRects = Element.prototype.getClientRects;
-        Element.prototype.getClientRects = () => [{}];
-        // all in one row
-        const getBoundingClientRect = Element.prototype.getBoundingClientRect;
-        Element.prototype.getBoundingClientRect = () => ({ top: 0, bottom: 30 });
+        const bottoms = { Stats: 20, More: 22 };
         const createRange = document.createRange;
         document.createRange = () => {
             let node;
@@ -107,20 +102,9 @@ describe("NYT adapter", () => {
                 getBoundingClientRect: () => ({ bottom: bottoms[node.textContent.trim()] ?? 0 }),
             };
         };
-        expect(nyt.getToolbarOffset(nyt.getDropdownButton())).toBe(1.5);
+        expect(nyt.getToolbarOffset(nyt.getDropdownButton())).toBe(2);
         expect(nyt.getToolbarOffset(null)).toBe(0);
-        // not a misalignment, a different row
-        bottoms.More = 152;
-        expect(nyt.getToolbarOffset(nyt.getDropdownButton())).toBe(0);
         document.createRange = createRange;
-        Element.prototype.getClientRects = getClientRects;
-        Element.prototype.getBoundingClientRect = getBoundingClientRect;
-    });
-
-    it("ignores toolbar parts that aren't rendered", () => {
-        // jsdom renders nothing, so nothing is measured
-        expect(nyt.getDropdownButton()).toBeNull();
-        expect(nyt.getToolbarOffset(document.querySelector(".pz-toolbar-button__stats"))).toBe(0);
     });
 
     it("clicks toolbar buttons", () => {
