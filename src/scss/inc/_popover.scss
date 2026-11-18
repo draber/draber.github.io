@@ -289,15 +289,15 @@
         width: calc(100vw - 16px);
     }
 
-    .sba-popover.sba-floating.sba-moved {
-        --sba-cell-block-padding: 2px;
-        --sba-cell-inline-padding: 3px;
-        --sba-grid-cell-padding: 2px 0;
+    // no dragging on small screens, see PopupBuilder.canDrag()
+    .sba-popover.sba-floating {
+        .sb-modal-top {
+            cursor: auto;
+            touch-action: auto;
+        }
 
-        width: auto;
-
-        .sba-data-pane {
-            font-size: 12px;
+        .sba-move-handle {
+            display: none;
         }
     }
 }

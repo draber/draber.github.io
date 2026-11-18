@@ -24,6 +24,13 @@ const instances = new Set();
 const viewportMargin = 8;
 
 /**
+ * Below this width pop-ups take the full width (like NYT modals), dragging makes no sense there.
+ * Keep in sync with the media query in _popover.scss.
+ * @type {String}
+ */
+const smallScreen = "(max-width: 767.98px)";
+
+/**
  * Builder for SBA pop-ups.
  *
  * Pop-ups use the Popover API: they live in the browser's top layer, independent of the NYT's DOM.
@@ -32,9 +39,9 @@ const viewportMargin = 8;
  * and only one of them is open at a time.
  *
  * Floating pop-ups are `popover="manual"`, like a window: no backdrop, the game stays usable,
- * they close only with × or Escape and stay open when other pop-ups open. They can be dragged by their
- * title bar; once moved, they turn into a compact window with a small title. The position is kept
- * until the page is reloaded.
+ * they close only with × or Escape and stay open when other pop-ups open. On screens 768px and wider
+ * they can be dragged by their title bar; once moved, they turn into a compact window with a small title.
+ * The position is kept until the page is reloaded.
  *
  * The markup mimics the pop-ups of Spelling Bee.
  */
@@ -231,6 +238,14 @@ class PopupBuilder {
     }
 
     /**
+     * Dragging only makes sense on screens wide enough to have room next to the pop-up
+     * @returns {Boolean}
+     */
+    canDrag() {
+        return !window.matchMedia?.(smallScreen).matches;
+    }
+
+    /**
      * Whether the pop-up lies over the middle of the viewport
      * @returns {Boolean}
      */
@@ -267,7 +282,7 @@ class PopupBuilder {
         let dragged = false;
 
         handle.addEventListener("pointerdown", (evt) => {
-            if (evt.button !== 0 || evt.target.closest("button")) {
+            if (!this.canDrag() || evt.button !== 0 || evt.target.closest("button")) {
                 return;
             }
             const rect = this.ui.getBoundingClientRect();
@@ -304,7 +319,7 @@ class PopupBuilder {
         handle.addEventListener("pointercancel", stop);
 
         handle.addEventListener("dblclick", (evt) => {
-            if (!evt.target.closest("button")) {
+            if (this.canDrag() && !evt.target.closest("button")) {
                 this.resetPosition();
             }
         });
