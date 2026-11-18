@@ -9,6 +9,7 @@ import settings from "../modules/settings.js";
 import fn from "fancy-node";
 import nyt from "../nyt/nyt.js";
 import moveIcon from "../assets/move.svg";
+import closeIcon from "../assets/close.svg";
 
 /**
  * All pop-ups, used to answer `PopupBuilder.isAnyOpen()` and for `PopupBuilder.closeAll()`
@@ -92,7 +93,8 @@ class PopupBuilder {
                     label: "Close",
                 },
                 classNames: ["sb-modal-close"],
-                content: "×",
+                // floating pop-ups use icons of the same size for moving and closing, so they line up
+                content: this.floating ? closeIcon : "×",
                 events: {
                     click: () => this.toggle(false),
                 },
@@ -229,6 +231,17 @@ class PopupBuilder {
     }
 
     /**
+     * Whether the pop-up lies over the middle of the viewport
+     * @returns {Boolean}
+     */
+    coversViewportCenter() {
+        const rect = this.ui.getBoundingClientRect();
+        const x = window.innerWidth / 2;
+        const y = window.innerHeight / 2;
+        return rect.left <= x && rect.right >= x && rect.top <= y && rect.bottom >= y;
+    }
+
+    /**
      * Back to the centered pop-up with title, description and footer
      * @returns {PopupBuilder}
      */
@@ -243,12 +256,15 @@ class PopupBuilder {
     /**
      * Drag a floating pop-up by its title bar.
      * On the first move, the centered pop-up turns into a compact window at the same place.
-     * A double click on the title bar restores the centered pop-up, like with windows on the desktop.
+     * Restoring the centered pop-up, both undocumented:
+     * - a double click on the title bar, like with windows on the desktop
+     * - dropping the window on the middle of the viewport
      * @returns {PopupBuilder}
      */
     enableDragging() {
         const handle = fn.$(".sb-modal-top", this.ui);
         let start = null;
+        let dragged = false;
 
         handle.addEventListener("pointerdown", (evt) => {
             if (evt.button !== 0 || evt.target.closest("button")) {
@@ -256,6 +272,7 @@ class PopupBuilder {
             }
             const rect = this.ui.getBoundingClientRect();
             start = { pointerX: evt.clientX, pointerY: evt.clientY, x: rect.left, y: rect.top };
+            dragged = false;
             handle.setPointerCapture?.(evt.pointerId);
             this.ui.classList.add(prefix("dragging", "d"));
             evt.preventDefault();
@@ -265,6 +282,7 @@ class PopupBuilder {
             if (!start) {
                 return;
             }
+            dragged = true;
             if (!this.ui.classList.contains(prefix("moved", "d"))) {
                 this.ui.classList.add(prefix("moved", "d"));
             }
@@ -275,7 +293,11 @@ class PopupBuilder {
         });
 
         const stop = () => {
+            if (start && dragged && this.coversViewportCenter()) {
+                this.resetPosition();
+            }
             start = null;
+            dragged = false;
             this.ui.classList.remove(prefix("dragging", "d"));
         };
         handle.addEventListener("pointerup", stop);

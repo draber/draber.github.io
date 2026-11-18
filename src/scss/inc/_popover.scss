@@ -63,18 +63,22 @@
             display: none;
         }
 
+        // the NYT aligns the title bar at the bottom, the icons are centered instead
         .sb-modal-top {
+            align-items: center;
             cursor: move;
             touch-action: none;
         }
 
-        // the NYT aligns the title bar at the bottom, the handle goes next to the middle of the ×
-        .sba-move-handle {
+        // move and close are SVGs of the same size, so they line up
+        :is(.sba-move-handle, .sb-modal-close) {
             display: inline-flex;
-            align-self: center;
-            width: 14px;
-            height: 14px;
-            margin-inline-end: 14px;
+            align-items: center;
+            justify-content: center;
+            width: 15px;
+            height: 15px;
+            padding: 0;
+            line-height: 1;
 
             svg {
                 width: 100%;
@@ -82,10 +86,18 @@
                 fill: var(--text-color);
             }
         }
+
+        .sba-move-handle {
+            margin-inline-end: 16px;
+        }
     }
 
-    // floating and moved: compact window with a small title bar
+    // floating and moved: compact window with a small title bar, as much table as possible
     &.sba-floating.sba-moved {
+        --sba-cell-block-padding: 2px;
+        --sba-cell-inline-padding: 4px;
+        --sba-grid-cell-padding: 2px 0;
+
         inset: auto;
         margin: 0;
         box-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.2);
@@ -93,14 +105,14 @@
 
         // narrower than a modal, beats `.pz-desktop .sb-modal-frame`
         .sb-modal-frame {
-            width: min(480px, calc(100vw - 16px));
+            width: min(420px, calc(100vw - 16px));
+            overflow: hidden;
         }
 
         // title bar, beats the NYT's `.sb-modal-top`
         .sb-modal-top {
             min-height: 0;
-            align-items: center;
-            padding: 6px 8px 6px 16px;
+            padding: 7px 10px 7px 12px;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -110,7 +122,6 @@
         }
 
         .sb-modal-close {
-            font-size: 24px;
             margin: 0;
         }
 
@@ -119,19 +130,33 @@
             display: none;
         }
 
+        // the table runs from edge to edge, the window provides the outer lines
+        .sb-modal-content .sb-modal-body {
+            padding: 0;
+            margin: 0;
+        }
+
+        .sba-data-pane {
+            border: 0;
+            font-size: 13px;
+            line-height: 1.3;
+
+            tr > :first-child {
+                border-left: 0;
+            }
+
+            tr > :last-child {
+                border-right: 0;
+            }
+        }
+
         // branding, small, right below the table
         .sba-modal-footer {
             margin: 0;
-            padding: 0 16px 10px;
+            padding: 4px 10px 6px;
             border: 0;
             font-size: 11px;
             line-height: 1.2;
-        }
-
-        // beats the NYT's wide desktop paddings
-        .sb-modal-content .sb-modal-body {
-            padding: 12px 16px 6px;
-            margin: 0;
         }
     }
 
@@ -271,5 +296,17 @@
 @media (max-width: 767.98px) {
     .sba-popover {
         width: calc(100vw - 16px);
+    }
+
+    .sba-popover.sba-floating.sba-moved {
+        --sba-cell-block-padding: 1px;
+        --sba-cell-inline-padding: 3px;
+        --sba-grid-cell-padding: 1px 0;
+
+        width: auto;
+
+        .sba-data-pane {
+            font-size: 12px;
+        }
     }
 }

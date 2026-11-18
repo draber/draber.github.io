@@ -828,7 +828,8 @@ progress {
             }
 
             td {
-                padding: 5px 0 !important;
+                // smaller in the compact window, see _popover.scss
+                padding: var(--sba-grid-cell-padding, 5px 0) !important;
 
                 &:last-of-type {
                     background-color: var(--head-row-bg-color);

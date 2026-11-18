@@ -193,6 +193,31 @@ describe("app", () => {
             grid().position = before;
         });
 
+        it("goes back to the centered pop-up when dropped on the middle of the viewport", () => {
+            const before = { ...grid().position };
+            const handle = grid().ui.querySelector(".sb-modal-top");
+            const opts = (x, y) => ({ bubbles: true, button: 0, clientX: x, clientY: y });
+            // jsdom has no layout, pretend the window lies over the middle
+            const rect = vi.spyOn(grid().ui, "getBoundingClientRect").mockReturnValue({ left: 500, right: 700, top: 400, bottom: 500, width: 200, height: 100 });
+            handle.dispatchEvent(new MouseEvent("pointerdown", opts(0, 0)));
+            // a click without moving doesn't count
+            handle.dispatchEvent(new MouseEvent("pointerup", opts(0, 0)));
+            expect(grid().isMoved).toBe(true);
+            handle.dispatchEvent(new MouseEvent("pointerdown", opts(0, 0)));
+            handle.dispatchEvent(new MouseEvent("pointermove", opts(5, 5)));
+            handle.dispatchEvent(new MouseEvent("pointerup", opts(5, 5)));
+            expect(grid().isMoved).toBe(false);
+            rect.mockRestore();
+            grid().position = before;
+            grid().ui.classList.add("sba-moved");
+        });
+
+        it("uses icons of the same size for moving and closing", () => {
+            expect(grid().ui.querySelector(".sb-modal-close svg")).not.toBeNull();
+            expect(grid().ui.querySelector(".sba-move-handle svg")).not.toBeNull();
+            expect(plugin("milestones").popup.ui.querySelector(".sb-modal-close").textContent).toBe("×");
+        });
+
         it("doesn't start dragging from the close button", () => {
             const before = { ...grid().position };
             const close = grid().ui.querySelector(".sb-modal-close");
