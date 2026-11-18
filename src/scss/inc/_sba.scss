@@ -433,6 +433,7 @@ progress {
 [data-ui="menu"] {
     position: relative;
     z-index: 1;
+    anchor-name: --sba-menu;
 
     @keyframes pulse-fade {
         0% {
@@ -464,11 +465,16 @@ progress {
 
 }
 
-// menu entries, a popover in the top layer, positioned by JS below the button
+// menu entries, a popover in the top layer, anchored below the menu button:
+// right-aligned with the button, flipped to the other side when there's no room.
+// Browsers without anchor positioning get top/right from menu.js.
 [data-ui="submenu"] {
     position: fixed;
     inset: auto;
-    margin: 0;
+    margin: 6px 0 0;
+    position-anchor: --sba-menu;
+    position-area: block-end span-inline-start;
+    position-try-fallbacks: flip-inline;
     color: var(--text-color);
     background: var(--body-bg-color);
     border: 1px var(--border-color) solid;

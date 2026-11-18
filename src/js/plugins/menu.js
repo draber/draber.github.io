@@ -28,10 +28,17 @@ if (!newItems.shouldHighlightNewItems()) {
 }
 
 /**
- * Distance between menu button and menu pane
+ * Distance between menu button and menu pane, only used without CSS anchor positioning
  * @type {Number}
  */
 const paneOffset = 6;
+
+/**
+ * CSS anchor positioning places the pane, see `[data-ui="submenu"]` in _sba.scss.
+ * Baseline since January 2026, older browsers fall back to `positionPane()`.
+ * @type {Boolean}
+ */
+const supportsAnchors = !!globalThis.CSS?.supports?.("anchor-name: --sba-menu");
 
 /**
  * Menu plugin
@@ -87,7 +94,8 @@ class Menu extends Plugin {
     }
 
     /**
-     * Place the pane below the button, right-aligned, inside the viewport
+     * Place the pane below the button, right-aligned, inside the viewport.
+     * Fallback for browsers without CSS anchor positioning.
      */
     positionPane() {
         const rect = this.ui.getBoundingClientRect();
@@ -183,7 +191,9 @@ class Menu extends Plugin {
                     this.ui.classList.toggle(prefix("open", "d"), this.paneOpen);
                     if (this.paneOpen) {
                         newItems.markSeen();
-                        this.positionPane();
+                        if (!supportsAnchors) {
+                            this.positionPane();
+                        }
                     }
                 },
             },
