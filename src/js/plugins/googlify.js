@@ -8,7 +8,6 @@ import {
     prefix
 } from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
-import { getModalWrapper } from '../widgets/popupBuilder.js';
 
 // noinspection SpellCheckingInspection
 /**
@@ -45,19 +44,20 @@ class Googlify extends Plugin {
     }
 
     /**
-     * Add pangram underlines
+     * Link all terms in the game to Google: result list, SBA pop-ups and NYT modals such as Yesterday's Answers.
+     * NYT modals are rendered on demand, so the listener sits on the static game wrapper (event delegation).
+     * Capture phase, so the NYT's own handlers can't stop the event first.
+     * @see https://github.com/draber/draber.github.io/issues/201
      * @param evt
      * @returns {Googlify}
      */
     // eslint-disable-next-line no-unused-vars
     run(evt = null) {
-        [getModalWrapper(), this.app.resultList.parentElement].forEach(container => {
-            container.addEventListener('pointerup', this.listener);
-            container.classList.add(prefix('googlified', 'd'));
-        });
+        const container = this.app.gameWrapper;
+        container.addEventListener('pointerup', this.listener, true);
+        container.classList.add(prefix('googlified', 'd'));
         return this;
     }
-
 
     /**
      * Googlify constructor
@@ -66,6 +66,11 @@ class Googlify extends Plugin {
     constructor(app) {
 
         super(app, 'Googlify', 'Link all result terms to Google');
+
+        this.app.on(prefix('destroy'), () => {
+            this.app.gameWrapper.removeEventListener('pointerup', this.listener, true);
+            this.app.gameWrapper.classList.remove(prefix('googlified', 'd'));
+        });
 
         this.run();
     }

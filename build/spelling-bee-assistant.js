@@ -2055,14 +2055,17 @@
             }
         }
         run(evt = null) {
-            [getModalWrapper(), this.app.resultList.parentElement].forEach(container => {
-                container.addEventListener('pointerup', this.listener);
-                container.classList.add(prefix('googlified', 'd'));
-            });
+            const container = this.app.gameWrapper;
+            container.addEventListener('pointerup', this.listener, true);
+            container.classList.add(prefix('googlified', 'd'));
             return this;
         }
         constructor(app) {
             super(app, 'Googlify', 'Link all result terms to Google');
+            this.app.on(prefix('destroy'), () => {
+                this.app.gameWrapper.removeEventListener('pointerup', this.listener, true);
+                this.app.gameWrapper.classList.remove(prefix('googlified', 'd'));
+            });
             this.run();
         }
     }
