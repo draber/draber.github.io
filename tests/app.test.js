@@ -182,6 +182,17 @@ describe("app", () => {
             expect(localStorage.getItem("sba-settings")).not.toContain("position");
         });
 
+        it("goes back to the centered pop-up on a double click on the title bar", () => {
+            const before = { ...grid().position };
+            grid().ui.querySelector(".sb-modal-close").dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+            expect(grid().position).toEqual(before);
+            grid().ui.querySelector(".sb-modal-top").dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+            expect(grid().isMoved).toBe(false);
+            expect(grid().ui.classList.contains("sba-moved")).toBe(false);
+            expect(grid().ui.style.left).toBe("");
+            grid().position = before;
+        });
+
         it("doesn't start dragging from the close button", () => {
             const before = { ...grid().position };
             const close = grid().ui.querySelector(".sb-modal-close");

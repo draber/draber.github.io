@@ -67,6 +67,21 @@
             cursor: move;
             touch-action: none;
         }
+
+        // the NYT aligns the title bar at the bottom, the handle goes next to the middle of the ×
+        .sba-move-handle {
+            display: inline-flex;
+            align-self: center;
+            width: 14px;
+            height: 14px;
+            margin-inline-end: 14px;
+
+            svg {
+                width: 100%;
+                height: 100%;
+                fill: var(--text-color);
+            }
+        }
     }
 
     // floating and moved: compact window with a small title bar
@@ -91,6 +106,7 @@
 
         .sba-window-title {
             display: block;
+            font-weight: 700;
         }
 
         .sb-modal-close {
@@ -98,15 +114,23 @@
             margin: 0;
         }
 
-        // title, description and footer give way to the table
-        .sb-modal-header,
-        .sba-modal-footer {
+        // title and description give way to the table
+        .sb-modal-header {
             display: none;
+        }
+
+        // branding, small, right below the table
+        .sba-modal-footer {
+            margin: 0;
+            padding: 0 16px 10px;
+            border: 0;
+            font-size: 11px;
+            line-height: 1.2;
         }
 
         // beats the NYT's wide desktop paddings
         .sb-modal-content .sb-modal-body {
-            padding: 12px 16px 16px;
+            padding: 12px 16px 6px;
             margin: 0;
         }
     }
@@ -158,20 +182,6 @@
         text-align: start;
     }
 
-    :where(.sba-move-handle) {
-        display: inline-flex;
-        width: 14px;
-        height: 14px;
-        margin-inline: 4px;
-        opacity: 0.5;
-
-        svg {
-            width: 100%;
-            height: 100%;
-            fill: var(--text-color);
-        }
-    }
-
     :where(.sb-modal-content) {
         overflow-y: auto;
     }
@@ -207,7 +217,7 @@
     }
 
     :where(.sba-modal-footer) {
-        padding-block-start: 10px;
+        padding: 10px 10px 0;
         border-top: 1px solid var(--border-color);
         text-align: right;
         font-size: 13px;

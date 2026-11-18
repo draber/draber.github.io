@@ -229,8 +229,21 @@ class PopupBuilder {
     }
 
     /**
+     * Back to the centered pop-up with title, description and footer
+     * @returns {PopupBuilder}
+     */
+    resetPosition() {
+        this.position = null;
+        this.ui.classList.remove(prefix("moved", "d"));
+        this.ui.style.removeProperty("left");
+        this.ui.style.removeProperty("top");
+        return this;
+    }
+
+    /**
      * Drag a floating pop-up by its title bar.
      * On the first move, the centered pop-up turns into a compact window at the same place.
+     * A double click on the title bar restores the centered pop-up, like with windows on the desktop.
      * @returns {PopupBuilder}
      */
     enableDragging() {
@@ -267,6 +280,12 @@ class PopupBuilder {
         };
         handle.addEventListener("pointerup", stop);
         handle.addEventListener("pointercancel", stop);
+
+        handle.addEventListener("dblclick", (evt) => {
+            if (!evt.target.closest("button")) {
+                this.resetPosition();
+            }
+        });
 
         return this;
     }
