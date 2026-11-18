@@ -230,10 +230,13 @@ describe("app", () => {
         it("highlights pangrams when the NYT renders the modal", async () => {
             const system = document.createElement("div");
             system.className = "sb-modal-system";
+            // markup as of Nov 2026: class `yesterdayNew`, check mark and screen reader text in each item
             system.innerHTML =
-                '<div class="sb-modal-scrim"><div class="sb-modal-wrapper"><div class="sb-modal-frame yesterday">' +
-                '<ul class="sb-modal-wordlist-items"><li><span class="sb-anagram">artesian</span></li><li><span class="sb-anagram">tint</span></li></ul>' +
-                "</div></div></div>";
+                '<div class="sb-modal-scrim"><div class="sb-modal-wrapper"><div class="sb-modal-frame yesterdayNew">' +
+                '<ul class="sb-modal-wordlist-items">' +
+                '<li><span class="check"></span><span class="sb-anagram" aria-hidden="true">artesian</span><span class="visually-hidden">artesian (pangram)</span></li>' +
+                '<li><span class="check checked"></span><span class="sb-anagram" aria-hidden="true">tint</span><span class="visually-hidden">tint</span></li>' +
+                "</ul></div></div></div>";
             $(".sb-game-moment").append(system);
             await tick();
             const items = system.querySelectorAll("li");

@@ -66,6 +66,20 @@ describe("NYT adapter", () => {
         expect(nyt.findYesterdayModal([document.createElement("div")])).toBeNull();
     });
 
+    it("recognizes the Yesterday's Answers modal by its old and its new class", () => {
+        ["yesterday", "yesterdayNew"].forEach((name) => {
+            const frame = document.createElement("div");
+            frame.className = `sb-modal-frame ${name}`;
+            expect(nyt.findYesterdayModal([frame])).toBe(frame);
+        });
+    });
+
+    it("reads terms from Yesterday's Answers items with check mark and screen reader text", () => {
+        const li = document.createElement("li");
+        li.innerHTML = '<span class="check checked"></span><span class="sb-anagram" aria-hidden="true">hippo</span><span class="visually-hidden">hippo</span>';
+        expect(nyt.getTermFromListItem(li)).toBe("hippo");
+    });
+
     it("closes an open NYT modal", () => {
         expect(nyt.closeModal()).toBe(false);
         const system = document.createElement("div");

@@ -46,7 +46,8 @@ const selectors = {
 
     // NYT modals, rendered on demand below #pz-game-root
     modalWrapper: ".sb-modal-wrapper",
-    yesterdayFrame: ".sb-modal-frame.yesterday",
+    // `yesterdayNew` since Nov 2026
+    yesterdayFrame: ".sb-modal-frame:is(.yesterday, .yesterdayNew)",
     modalClosers: [
         ".pz-moment__frame.on-stage .pz-moment__close",
         ".pz-moment__frame.on-stage .pz-moment__close_text",

@@ -12,6 +12,12 @@
 // Everything here is wrapped in :where() and has zero specificity: it only fills the gaps.
 
 .sba-popover {
+    // NYT widths and paddings are meant for border-box
+    &,
+    * {
+        box-sizing: border-box;
+    }
+
     // reset the browser's default popover styles
     border: 0;
     padding: 0;
@@ -19,12 +25,30 @@
     color: var(--text-color);
     overflow: visible;
 
-    // centered, like the NYT modals
+    // centered, like the NYT modals; the width comes from .sb-modal-frame (NYT: 540px, 667px on large desktops)
     inset: 0;
     margin: auto;
-    width: min(664px, calc(100vw - 24px));
+    width: fit-content;
+    max-width: calc(100vw - 16px);
     height: fit-content;
     max-height: calc(100dvh - 48px);
+
+    // The NYT positions .sb-modal-frame absolutely inside their modal wrapper (top: 30px, bottom: 0).
+    // In a popover that would collapse it, it has to be part of the flow.
+    .sb-modal-frame {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        margin: 0;
+        max-height: calc(100dvh - 48px);
+        text-align: start;
+    }
+
+    .sba-modal-footer {
+        width: auto;
+        align-self: stretch;
+        margin: 0 var(--horizontal-spacing-4, 24px) 16px;
+    }
 
     &::backdrop {
         // ::backdrop doesn't inherit custom properties in older browsers, hence the fallback
@@ -36,8 +60,21 @@
     &.sba-pinned {
         inset: auto;
         margin: 0;
-        width: min(420px, calc(100vw - 16px));
         box-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.2);
+
+        // narrower than a modal, beats `.pz-desktop .sb-modal-frame`
+        .sb-modal-frame {
+            width: min(480px, calc(100vw - 16px));
+        }
+
+        // beats the NYT's wide desktop paddings
+        .sb-modal-content :is(.sb-modal-header, .sb-modal-body) {
+            padding-inline: 16px;
+        }
+
+        .sba-modal-footer {
+            margin-inline: 16px;
+        }
 
         &::backdrop {
             display: none;
@@ -48,9 +85,6 @@
             touch-action: none;
         }
 
-        .sb-modal-content {
-            padding-inline: 16px;
-        }
     }
 
     &.sba-dragging {
@@ -109,7 +143,10 @@
 
     :where(.sb-modal-content) {
         overflow-y: auto;
-        padding: 0 24px 16px;
+    }
+
+    :where(.sb-modal-header, .sb-modal-body) {
+        padding-inline: 24px;
     }
 
     :where(.sb-modal-header) {
@@ -139,7 +176,6 @@
     }
 
     :where(.sba-modal-footer) {
-        margin-block-start: 16px;
         padding-block-start: 10px;
         border-top: 1px solid var(--border-color);
         text-align: right;
@@ -178,12 +214,9 @@
     }
 }
 
-@media (max-width: 515px) {
+// below 768px the NYT frame takes the full width of its container
+@media (max-width: 767.98px) {
     .sba-popover {
         width: calc(100vw - 16px);
-    }
-
-    :where(.sba-popover) :where(.sb-modal-content) {
-        padding-inline: 12px;
     }
 }

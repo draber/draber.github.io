@@ -97,13 +97,14 @@ const isMobileToolbarVisible = (nav) => nav.classList.contains(classNames.mobile
 const waitForResultList = () => fn.waitFor(selectors.resultList, getGameWrapper());
 
 /**
- * Read the term from an item of the result list.
- * Since 2026-06-02 an item can contain two child nodes, both of them containing the term.
+ * Read the term from an item of a word list (result list, Yesterday's Answers).
+ * Items can contain more than the term: since 2026-06-02 the term can be there twice,
+ * Yesterday's Answers adds a check mark and a text for screen readers ("word (pangram)").
  * @param {HTMLElement} item
  * @returns {String}
  */
 const getTermFromListItem = (item) => {
-    const elem = item.childElementCount > 1 ? item.firstElementChild : item;
+    const elem = fn.$(selectors.term, item) || (item.childElementCount > 1 ? item.firstElementChild : item);
     return elem.textContent.trim();
 };
 
