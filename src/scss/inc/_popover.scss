@@ -214,6 +214,18 @@
     }
 }
 
+// On large desktops the NYT gives modals a very wide right padding (a narrow column for text modals)
+// and resets it for its own list modals (.yesterday, .stats, .ranks …). SBA pop-ups are list modals too.
+@media (min-width: 992px) {
+    .pz-desktop .sba-popover:not(.sba-pinned) .sb-modal-content :is(.sb-modal-header, .sb-modal-body) {
+        padding-right: var(--horizontal-spacing-7, 56px);
+    }
+
+    .pz-desktop .sba-popover:not(.sba-pinned) .sba-modal-footer {
+        margin-inline: var(--horizontal-spacing-7, 56px);
+    }
+}
+
 // below 768px the NYT frame takes the full width of its container
 @media (max-width: 767.98px) {
     .sba-popover {
