@@ -59,6 +59,18 @@ const selectors = {
         yesterday: ".pz-toolbar-button__yesterday",
         stats: ".pz-toolbar-button__stats",
     },
+
+    // the "More" dropdown in the desktop toolbar, sits a little lower than the other buttons (Nov 2026)
+    dropdownButton: ".pz-dropdown__button",
+};
+
+/**
+ * Class names SBA borrows from the NYT for its own elements
+ */
+export const borrowedClassNames = {
+    toolbarButton: "pz-toolbar-button",
+    dropdownButton: "pz-dropdown__button",
+    mobileToolbarItem: "pz-nav__toolbar-item",
 };
 
 /**

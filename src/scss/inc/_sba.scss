@@ -445,8 +445,16 @@ progress {
     cursor: pointer;
 }
 
+// The NYT's "More" dropdown sits a little lower than the other toolbar buttons, the SBA button borrows its class.
+// menu.js measures both against "Stats" and sets the corrections; 0 once the NYT fixes it.
+.pz-toolbar-right .pz-dropdown .pz-dropdown__button {
+    position: relative;
+    top: var(--sba-dropdown-offset, 0);
+}
+
 [data-ui="menu"] {
     position: relative;
+    top: var(--sba-menu-offset, 0);
     z-index: 1;
     anchor-name: --sba-menu;
 

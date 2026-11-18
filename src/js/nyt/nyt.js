@@ -5,7 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import fn from "fancy-node";
-import selectors, { classNames, required } from "./selectors.js";
+import selectors, { classNames, required, borrowedClassNames } from "./selectors.js";
 
 /**
  * Adapter between SBA and the NYT page.
@@ -195,6 +195,52 @@ const clickToolbarButton = (name) => {
 };
 
 /**
+ * Bottom edge of the text inside an element, i.e. roughly its baseline.
+ * Measures the first text node, so padding and borders don't matter.
+ * @param {HTMLElement} elem
+ * @returns {Number|null}
+ */
+const getTextBottom = (elem) => {
+    const walker = document.createTreeWalker(elem, NodeFilter.SHOW_TEXT, {
+        acceptNode: (node) => (node.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP),
+    });
+    const textNode = walker.nextNode();
+    if (!textNode) {
+        return null;
+    }
+    const range = document.createRange();
+    range.selectNodeContents(textNode);
+    const rect = typeof range.getBoundingClientRect === "function" ? range.getBoundingClientRect() : elem.getBoundingClientRect();
+    return rect.bottom;
+};
+
+/**
+ * How far the text of an element in the desktop toolbar sits below the text of the regular toolbar buttons,
+ * in pixels. Measured rather than hard coded, so it becomes 0 once the NYT fixes misalignments.
+ * @param {HTMLElement|null} elem
+ * @returns {Number}
+ */
+const getToolbarOffset = (elem) => {
+    const toolbar = fn.$(selectors.desktopToolbar);
+    const reference = toolbar ? fn.$(selectors.toolbarButtons.stats, toolbar) || fn.$(selectors.toolbarButtons.yesterday, toolbar) : null;
+    if (!reference || !elem) {
+        return 0;
+    }
+    const referenceBottom = getTextBottom(reference);
+    const elemBottom = getTextBottom(elem);
+    if (referenceBottom === null || elemBottom === null) {
+        return 0;
+    }
+    return Math.round(elemBottom - referenceBottom);
+};
+
+/**
+ * The NYT's "More" dropdown in the desktop toolbar
+ * @returns {HTMLElement|null}
+ */
+const getDropdownButton = () => fn.$(`${selectors.desktopToolbar} .pz-dropdown ${selectors.dropdownButton}`);
+
+/**
  * Hive cells, keyed by their letter
  * @returns {Object.<String, HTMLElement>}
  */
@@ -248,6 +294,7 @@ const selfCheck = () => {
 
 export default {
     selectors,
+    borrowedClassNames,
     getGameWrapper,
     find,
     findAll,
@@ -266,6 +313,8 @@ export default {
     findModalCloser,
     closeModal,
     clickToolbarButton,
+    getToolbarOffset,
+    getDropdownButton,
     getHiveCells,
     getHiveActionButton,
     getHiveInput,

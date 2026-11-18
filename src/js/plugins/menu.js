@@ -79,6 +79,37 @@ class Menu extends Plugin {
     }
 
     /**
+     * Put the text of the SBA button and of the NYT's "More" dropdown on the same line as the other toolbar buttons.
+     * "More" sits a little lower (Nov 2026), the SBA button borrows its class and comes close.
+     * Both are measured against "Stats" and corrected separately; the corrections become 0 once the NYT fixes it.
+     * Measured again once the fonts have loaded, they change the baseline.
+     * @returns {Menu}
+     */
+    alignWithToolbar() {
+        if (this.app.envIs("mobile")) {
+            return this;
+        }
+        // on <body>, the NYT may re-render the toolbar and drop inline styles there
+        const targets = {
+            "--sba-dropdown-offset": () => nyt.getDropdownButton(),
+            "--sba-menu-offset": () => this.ui,
+        };
+        const align = () => {
+            // reset first, otherwise the measurement includes the previous correction
+            Object.keys(targets).forEach((property) => document.body.style.removeProperty(property));
+            Object.entries(targets).forEach(([property, getElem]) => {
+                const offset = nyt.getToolbarOffset(getElem());
+                if (offset) {
+                    document.body.style.setProperty(property, `${-offset}px`);
+                }
+            });
+        };
+        requestAnimationFrame(align);
+        document.fonts?.ready.then(() => requestAnimationFrame(align));
+        return this;
+    }
+
+    /**
      * Get plugin or app from clicked entry
      * @param {HTMLElement} entry
      * @returns {Plugin|App|null}
@@ -220,10 +251,11 @@ class Menu extends Plugin {
             aria: {
                 haspopup: "menu",
             },
-            classNames: [
-                "pz-toolbar-button__sba",
-                this.app.envIs("mobile") ? "pz-nav__toolbar-item" : "pz-toolbar-button",
-            ],
+            classNames: ["pz-toolbar-button__sba"].concat(
+                this.app.envIs("mobile")
+                    ? [nyt.borrowedClassNames.mobileToolbarItem]
+                    : [nyt.borrowedClassNames.toolbarButton, nyt.borrowedClassNames.dropdownButton],
+            ),
             content: fn.span({
                 attributes: {
                     id: prefix("menu-entry-point", "d"),
@@ -241,6 +273,8 @@ class Menu extends Plugin {
             }
         };
         document.addEventListener("keyup", this.onKeyUp);
+
+        app.on(prefix("pluginsReady"), () => this.alignWithToolbar());
 
         app.on(prefix("pluginsReady"), (evt) => {
             evt.detail.forEach((plugin, key) => {
@@ -271,6 +305,8 @@ class Menu extends Plugin {
         });
 
         app.on(prefix("destroy"), () => {
+            document.body.style.removeProperty("--sba-dropdown-offset");
+            document.body.style.removeProperty("--sba-menu-offset");
             document.removeEventListener("keyup", this.onKeyUp);
             this.ui.remove();
             this.pane.remove();
