@@ -98,7 +98,6 @@ class App extends Widget {
         fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
             // Observe game for various changes
             this.observer = this.buildObserver();
-            this.modalWrapper = fn.$(".sb-modal-wrapper:first-of-type", this.gameWrapper);
             this.resultList = resultList;
             data.init(this, this.getSyncData());
             hive.init(fn.$(".sb-controls-box", this.gameWrapper));
@@ -162,7 +161,7 @@ class App extends Widget {
 
                 switch (true) {
                     // 'yesterday' modal is open
-                    case mutation.type === "childList" && mutation.target.isSameNode(this.modalWrapper):
+                    case mutation.type === "childList" && mutation.target.classList.contains("sb-modal-wrapper"):
                         if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
                             this.trigger(prefix("yesterday"), mutation.target);
                         }

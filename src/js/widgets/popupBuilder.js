@@ -7,38 +7,107 @@
 import { prefix } from "../utils/string.js";
 import settings from "../modules/settings.js";
 import fn from "fancy-node";
-import { findCloseButton } from "../utils/popup.ui.js";
+import { findNytCloseButton, modalHostKey } from "../utils/popup.ui.js";
 
 /**
- * Plugin base class
+ * SBA's own modal scaffold (`.sb-modal-system > .sb-modal-scrim > .sb-modal-wrapper`).
+ * Since Nov 2026 the NYT renders its modal scaffold on demand only, so SBA builds its own.
+ * It is created once, inserted into the DOM while a pop-up is open and removed on close.
+ * SBA never touches the NYT's scaffold.
+ * @see https://github.com/draber/draber.github.io/issues/201
+ * @type {HTMLElement|null}
+ */
+let host = null;
+
+/**
+ * The pop-up that is currently open, if any
+ * @type {PopupBuilder|null}
+ */
+let current = null;
+
+/**
+ * App reference for the document-wide listeners, set by the first pop-up
+ * @type {App|null}
+ */
+let appRef = null;
+
+/**
+ * Close the topmost pop-up with Escape.
+ * A NYT modal can only be opened on top of an SBA pop-up, never below, so it goes first.
+ * @param {KeyboardEvent} evt
+ */
+const onKeyUp = (evt) => {
+    if (evt.code !== "Escape") {
+        return;
+    }
+    const nytCloser = appRef ? findNytCloseButton(appRef) : false;
+    if (nytCloser) {
+        nytCloser.click();
+        return;
+    }
+    if (current) {
+        current.toggle(false);
+    }
+};
+
+/**
+ * Get the `.sb-modal-wrapper` of SBA's own modal scaffold, build the scaffold on first call.
+ * The scaffold is not attached to the DOM here, see `PopupBuilder.toggle()`.
+ * @returns {HTMLElement}
+ */
+export const getModalWrapper = () => {
+    if (!host) {
+        host = fn.div({
+            classNames: ["sb-modal-system", "sb-modal-open"],
+            data: {
+                ui: modalHostKey,
+            },
+            content: fn.div({
+                classNames: ["sb-modal-scrim"],
+                content: fn.div({
+                    classNames: ["sb-modal-wrapper"],
+                }),
+            }),
+        });
+        // Close on click outside the pop-up. Bound once, survives removal and re-insertion of the host.
+        host.addEventListener("pointerup", (evt) => {
+            if (current && !current.ui.contains(evt.target)) {
+                current.toggle(false);
+            }
+        });
+    }
+    return fn.$(".sb-modal-wrapper", host);
+};
+
+/**
+ * Builder for SBA pop-ups, mimics the look of the pop-ups in Spelling Bee
  */
 class PopupBuilder {
     /**
-     * Enable closing the popup by clicking on the x button
-     * @returns {PopupBuilder}
+     * Whether this pop-up is currently displayed
+     * @returns {Boolean}
      */
-    enableKeyClose() {
-        document.addEventListener("keyup", (evt) => {
-            const popupCloser = findCloseButton(this.app);
-            if (popupCloser && evt.code === "Escape") {
-                popupCloser.click();
-            }
-        });
-        return this;
+    get isOpen() {
+        return current === this && !!host && host.isConnected;
     }
 
     /**
-     * Enable closing the popup by clicking on the x button
-     * @returns {PopupBuilder}
+     * Register the document-wide listeners, once for all pop-ups
+     * @param {App} app
      */
-    enableCanvasClose() {
-        this.app.modalWrapper.addEventListener("pointerup", (evt) => {
-            const inner = fn.$(".sb-modal-frame", this.app.modalWrapper);
-            if (inner && !inner.contains(evt.target)) {
-                findCloseButton(this.app).click();
+    static init(app) {
+        if (appRef) {
+            return;
+        }
+        appRef = app;
+        document.addEventListener("keyup", onKeyUp);
+        app.on(prefix("destroy"), () => {
+            document.removeEventListener("keyup", onKeyUp);
+            if (host) {
+                host.remove();
             }
+            current = null;
         });
-        return this;
     }
 
     /**
@@ -125,50 +194,51 @@ class PopupBuilder {
     }
 
     /**
-     * Open/close popup
-     * @param state
+     * Open/close pop-up
+     * @param {Boolean} state
      * @returns {PopupBuilder}
      */
     toggle(state) {
-        const closer = findCloseButton(this.app);
-
-        // some other popup
-        if(!this.isOpen && closer) {
-            closer.click();
-        }
-
-        // force close self
-        if (!state && closer) {
-            closer.click();
-        }
-
-
         if (state) {
-            this.app.modalWrapper.append(this.ui);
-            this.modalSystem.classList.add("sb-modal-open");
-            this.isOpen = true;
-        } else {
+            // another SBA pop-up is open: swap content, keep the scaffold
+            if (current && current !== this) {
+                current.getTarget().append(current.ui);
+            }
+            // a NYT modal is open: close it
+            const nytCloser = findNytCloseButton(this.app);
+            if (nytCloser) {
+                nytCloser.click();
+            }
+            // fill the wrapper before attaching the scaffold, so the observer sees one mutation only
+            getModalWrapper().append(this.ui);
+            if (!host.isConnected) {
+                const contentBox = fn.$(".sb-content-box", this.app.gameWrapper);
+                if (contentBox) {
+                    contentBox.after(host);
+                } else {
+                    this.app.gameWrapper.append(host);
+                }
+            }
+            current = this;
+        } else if (current === this) {
             this.getTarget().append(this.ui);
-            this.modalSystem.classList.remove("sb-modal-open");
-            this.isOpen = false;
+            host.remove();
+            current = null;
         }
-
         return this;
     }
 
     /**
      * Build an instance
-     * @param app
-     * @param key
+     * @param {App} app
+     * @param {String} key
      */
     constructor(app, key) {
         this.key = key;
 
         this.app = app;
 
-        this.isOpen = false;
-
-        this.modalSystem = this.app.modalWrapper.closest(".sb-modal-system");
+        PopupBuilder.init(app);
 
         this.parts = {
             title: fn.h3({
@@ -198,8 +268,6 @@ class PopupBuilder {
         };
 
         this.ui = this.create();
-
-        this.enableKeyClose().enableCanvasClose();
 
         this.getTarget().append(this.ui);
     }

@@ -8,6 +8,7 @@ import {
     prefix
 } from '../utils/string.js';
 import Plugin from '../modules/plugin.js';
+import { getModalWrapper } from '../widgets/popupBuilder.js';
 
 // noinspection SpellCheckingInspection
 /**
@@ -50,7 +51,7 @@ class Googlify extends Plugin {
      */
     // eslint-disable-next-line no-unused-vars
     run(evt = null) {
-        [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
+        [getModalWrapper(), this.app.resultList.parentElement].forEach(container => {
             container.addEventListener('pointerup', this.listener);
             container.classList.add(prefix('googlified', 'd'));
         });

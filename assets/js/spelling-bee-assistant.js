@@ -556,12 +556,14 @@
         }
     }
 
+    const modalHostKey = prefix("modal-host", "d");
+    const closerSelectors = [
+        ".pz-moment__frame.on-stage .pz-moment__close",
+        ".pz-moment__frame.on-stage .pz-moment__close_text",
+        ".sb-modal-close",
+    ];
     const findCloseButton = (app) => {
-        for (let selector of [
-            ".pz-moment__frame.on-stage .pz-moment__close",
-            ".pz-moment__frame.on-stage .pz-moment__close_text",
-            ".sb-modal-close",
-        ]) {
+        for (let selector of closerSelectors) {
             const closer = fn.$(selector, app.gameWrapper);
             if (closer) {
                 return closer;
@@ -569,25 +571,73 @@
         }
         return false;
     };
-
-    class PopupBuilder {
-        enableKeyClose() {
-            document.addEventListener("keyup", (evt) => {
-                const popupCloser = findCloseButton(this.app);
-                if (popupCloser && evt.code === "Escape") {
-                    popupCloser.click();
-                }
-            });
-            return this;
+    const findNytCloseButton = (app) => {
+        for (let selector of closerSelectors) {
+            const closer = Array.from(fn.$$(selector, app.gameWrapper)).find(
+                (elem) => !elem.closest(`[data-ui="${modalHostKey}"]`),
+            );
+            if (closer) {
+                return closer;
+            }
         }
-        enableCanvasClose() {
-            this.app.modalWrapper.addEventListener("pointerup", (evt) => {
-                const inner = fn.$(".sb-modal-frame", this.app.modalWrapper);
-                if (inner && !inner.contains(evt.target)) {
-                    findCloseButton(this.app).click();
+        return false;
+    };
+
+    let host = null;
+    let current = null;
+    let appRef = null;
+    const onKeyUp = (evt) => {
+        if (evt.code !== "Escape") {
+            return;
+        }
+        const nytCloser = appRef ? findNytCloseButton(appRef) : false;
+        if (nytCloser) {
+            nytCloser.click();
+            return;
+        }
+        if (current) {
+            current.toggle(false);
+        }
+    };
+    const getModalWrapper = () => {
+        if (!host) {
+            host = fn.div({
+                classNames: ["sb-modal-system", "sb-modal-open"],
+                data: {
+                    ui: modalHostKey,
+                },
+                content: fn.div({
+                    classNames: ["sb-modal-scrim"],
+                    content: fn.div({
+                        classNames: ["sb-modal-wrapper"],
+                    }),
+                }),
+            });
+            host.addEventListener("pointerup", (evt) => {
+                if (current && !current.ui.contains(evt.target)) {
+                    current.toggle(false);
                 }
             });
-            return this;
+        }
+        return fn.$(".sb-modal-wrapper", host);
+    };
+    class PopupBuilder {
+        get isOpen() {
+            return current === this && !!host && host.isConnected;
+        }
+        static init(app) {
+            if (appRef) {
+                return;
+            }
+            appRef = app;
+            document.addEventListener("keyup", onKeyUp);
+            app.on(prefix("destroy"), () => {
+                document.removeEventListener("keyup", onKeyUp);
+                if (host) {
+                    host.remove();
+                }
+                current = null;
+            });
         }
         getTarget() {
             const dataUi = prefix("popup-container", "d");
@@ -656,29 +706,35 @@
             return this;
         }
         toggle(state) {
-            const closer = findCloseButton(this.app);
-            if(!this.isOpen && closer) {
-                closer.click();
-            }
-            if (!state && closer) {
-                closer.click();
-            }
             if (state) {
-                this.app.modalWrapper.append(this.ui);
-                this.modalSystem.classList.add("sb-modal-open");
-                this.isOpen = true;
-            } else {
+                if (current && current !== this) {
+                    current.getTarget().append(current.ui);
+                }
+                const nytCloser = findNytCloseButton(this.app);
+                if (nytCloser) {
+                    nytCloser.click();
+                }
+                getModalWrapper().append(this.ui);
+                if (!host.isConnected) {
+                    const contentBox = fn.$(".sb-content-box", this.app.gameWrapper);
+                    if (contentBox) {
+                        contentBox.after(host);
+                    } else {
+                        this.app.gameWrapper.append(host);
+                    }
+                }
+                current = this;
+            } else if (current === this) {
                 this.getTarget().append(this.ui);
-                this.modalSystem.classList.remove("sb-modal-open");
-                this.isOpen = false;
+                host.remove();
+                current = null;
             }
             return this;
         }
         constructor(app, key) {
             this.key = key;
             this.app = app;
-            this.isOpen = false;
-            this.modalSystem = this.app.modalWrapper.closest(".sb-modal-system");
+            PopupBuilder.init(app);
             this.parts = {
                 title: fn.h3({
                     classNames: ["sb-modal-title"],
@@ -703,7 +759,6 @@
                 }),
             };
             this.ui = this.create();
-            this.enableKeyClose().enableCanvasClose();
             this.getTarget().append(this.ui);
         }
     }
@@ -2000,7 +2055,7 @@
             }
         }
         run(evt = null) {
-            [this.app.modalWrapper, this.app.resultList.parentElement].forEach(container => {
+            [getModalWrapper(), this.app.resultList.parentElement].forEach(container => {
                 container.addEventListener('pointerup', this.listener);
                 container.classList.add(prefix('googlified', 'd'));
             });
@@ -2744,7 +2799,6 @@
         load() {
             fn.waitFor(".sb-wordlist-items-pag", this.gameWrapper).then((resultList) => {
                 this.observer = this.buildObserver();
-                this.modalWrapper = fn.$(".sb-modal-wrapper:first-of-type", this.gameWrapper);
                 this.resultList = resultList;
                 data.init(this, this.getSyncData());
                 hive.init(fn.$(".sb-controls-box", this.gameWrapper));
@@ -2787,7 +2841,7 @@
                         return false;
                     }
                     switch (true) {
-                        case mutation.type === "childList" && mutation.target.isSameNode(this.modalWrapper):
+                        case mutation.type === "childList" && mutation.target.classList.contains("sb-modal-wrapper"):
                             if (fn.$(".sb-modal-frame.yesterday", mutation.target)) {
                                 this.trigger(prefix("yesterday"), mutation.target);
                             }
