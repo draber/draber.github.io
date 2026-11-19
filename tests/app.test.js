@@ -229,11 +229,35 @@ describe("app", () => {
 
     describe("menu", () => {
         it("puts the button into the NYT toolbar and the list into the top layer", () => {
-            const button = $(".pz-toolbar-right .pz-toolbar-button__sba");
-            expect(button).not.toBeNull();
+            const toolbar = $("#portal-game-toolbar .pz-toolbar-right");
+            const button = toolbar.lastElementChild;
+            expect(button.classList.contains("pz-toolbar-button__sba")).toBe(true);
+            // looks like its neighbours
+            expect(button.classList.contains("pz-toolbar-button")).toBe(true);
+            expect(button.dataset.ui).toBe("menu");
             const pane = document.getElementById(button.getAttribute("popovertarget"));
             expect(pane.parentElement).toBe(document.body);
             expect(pane.getAttribute("popover")).toBe("auto");
+        });
+
+        it("comes back when the NYT re-renders the toolbar", async () => {
+            const host = $("#portal-game-toolbar");
+            const old = host.querySelector(".pz-toolbar-right");
+            const rerendered = old.cloneNode(true);
+            rerendered.querySelector(".pz-toolbar-button__sba").remove();
+            old.replaceWith(rerendered);
+            await tick();
+            expect(rerendered.lastElementChild.classList.contains("pz-toolbar-button__sba")).toBe(true);
+            expect($$(".pz-toolbar-button__sba")).toHaveLength(1);
+        });
+
+        it("stays the last item when the NYT adds a button", async () => {
+            const toolbar = $("#portal-game-toolbar .pz-toolbar-right");
+            const extra = document.createElement("button");
+            toolbar.append(extra);
+            await tick();
+            expect(toolbar.lastElementChild.classList.contains("pz-toolbar-button__sba")).toBe(true);
+            extra.remove();
         });
 
         it("opens a pop-up from an entry and closes itself", () => {
@@ -332,7 +356,7 @@ describe("app", () => {
 
         it("opens Yesterday's Answers, or closes an open SBA pop-up first", () => {
             const yesterday = vi.fn();
-            $(".pz-toolbar-button__yesterday").addEventListener("click", yesterday);
+            $("#portal-game-toolbar .pz-toolbar-button__yesterday").addEventListener("click", yesterday);
             plugin("community").togglePopup();
             plugin("nytShortcuts").toggleYesterday();
             expect(plugin("community").popup.isOpen).toBe(false);

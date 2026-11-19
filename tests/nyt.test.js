@@ -37,12 +37,12 @@ describe("NYT adapter", () => {
     it("detects the environment", () => {
         expect(nyt.isEnv("desktop")).toBe(true);
         expect(nyt.isEnv("mobile")).toBe(false);
-        expect(nyt.getToolbar()).toBe(document.querySelector(".pz-toolbar-right"));
+        expect(nyt.getToolbar()).toBe(document.querySelector("#portal-game-toolbar .pz-toolbar-right"));
     });
 
     it("uses the mobile toolbar on mobile", () => {
         loadGame({ env: "mobile" });
-        expect(nyt.getToolbar()).toBe(document.querySelector("#js-mobile-toolbar"));
+        expect(nyt.getToolbar()).toBe(document.querySelector("#js-mobile-toolbar .pz-toolbar-right"));
     });
 
     it("maps hive cells by letter and finds the action buttons", () => {
@@ -93,7 +93,7 @@ describe("NYT adapter", () => {
 
     it("clicks toolbar buttons", () => {
         let clicked = 0;
-        document.querySelector(".pz-toolbar-button__yesterday").addEventListener("click", () => clicked++);
+        document.querySelector("#portal-game-toolbar .pz-toolbar-button__yesterday").addEventListener("click", () => clicked++);
         expect(nyt.clickToolbarButton("yesterday")).toBe(true);
         expect(clicked).toBe(1);
     });

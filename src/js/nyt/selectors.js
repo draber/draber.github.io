@@ -27,9 +27,11 @@ const selectors = {
     gameRoot: "#pz-game-root",
     titleBar: ".pz-game-title-bar",
     gameHeader: ".pz-game-header",
-    desktopToolbar: ".pz-toolbar-right",
-    mobileToolbar: "#js-mobile-toolbar",
-    globalNav: "#js-global-nav",
+    // The toolbar with Stats, Yesterday and More. The NYT renders it twice, in the game and in the navigation,
+    // and shows one of them depending on the viewport width. Desktop first, mobile second.
+    toolbars: ["#portal-game-toolbar .pz-toolbar-right", "#js-mobile-toolbar .pz-toolbar-right"],
+    // static containers of the toolbars, they survive when React re-renders the toolbars
+    toolbarHosts: ["#portal-game-toolbar", "#js-global-nav"],
 
     // game area, all inside #pz-game-root
     contentBox: ".sb-content-box",
@@ -67,7 +69,6 @@ const selectors = {
 export const classNames = {
     desktop: "pz-desktop",
     mobile: "pz-mobile",
-    mobileToolbarVisible: "show-mobile-toolbar",
     hiveInput: "sb-hive-input-content",
     hiveInputNonEmpty: "non-empty",
     modalWrapper: "sb-modal-wrapper",

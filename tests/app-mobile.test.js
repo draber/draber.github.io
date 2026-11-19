@@ -9,14 +9,21 @@ describe("app on mobile", () => {
         app = await startApp({ env: "mobile" });
     });
 
-    it("waits for the mobile toolbar, then adds the menu button", async () => {
-        const nav = document.querySelector("#js-global-nav");
-        expect(document.querySelector(".pz-toolbar-button__sba")).toBeNull();
-        nav.classList.add("show-mobile-toolbar");
+    it("adds the menu button to the mobile toolbar, after More", () => {
+        const toolbar = document.querySelector("#js-mobile-toolbar .pz-toolbar-right");
+        const button = toolbar.lastElementChild;
+        expect(button.classList.contains("pz-toolbar-button__sba")).toBe(true);
+        expect(button.classList.contains("pz-toolbar-button")).toBe(true);
+        expect(button.previousElementSibling.classList.contains("pz-dropdown")).toBe(true);
+    });
+
+    it("comes back after the NYT re-renders the mobile toolbar", async () => {
+        const mobileToolbar = document.querySelector("#js-mobile-toolbar");
+        mobileToolbar.innerHTML = mobileToolbar.innerHTML.replace(/<button[^>]*pz-toolbar-button__sba[\s\S]*?<\/button>/, "");
+        expect(mobileToolbar.querySelector(".pz-toolbar-button__sba")).toBeNull();
         await new Promise((resolve) => setTimeout(resolve));
-        const button = document.querySelector("#js-mobile-toolbar + .pz-toolbar-button__sba");
-        expect(button).not.toBeNull();
-        expect(button.classList.contains("pz-nav__toolbar-item")).toBe(true);
+        expect(mobileToolbar.querySelector(".pz-toolbar-right").lastElementChild.classList.contains("pz-toolbar-button__sba")).toBe(true);
+        expect(document.querySelectorAll(".pz-toolbar-button__sba")).toHaveLength(1);
     });
 
     it("has a floating grid that can't be dragged on small screens", () => {

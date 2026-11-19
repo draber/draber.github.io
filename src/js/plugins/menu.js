@@ -43,38 +43,56 @@ const supportsAnchors = !!globalThis.CSS?.supports?.("anchor-name: --sba-menu");
 /**
  * Menu plugin
  *
- * The button lives in the NYT toolbar, the list of entries is a popover in the browser's top layer.
- * This way the list can't be covered by the assistant or anything else on the page.
+ * The button joins the NYT toolbar, right after "More", and looks like the other toolbar buttons.
+ * The list of entries is a popover in the browser's top layer, it can't be covered by anything on the page.
  *
  * @param {App} app
  * @returns {Plugin} Menu
  */
 class Menu extends Plugin {
     /**
-     * Attach the button to the toolbar. On mobile the toolbar is only rendered when the navigation shows it.
+     * Make sure the button is the last item of the toolbar on screen.
+     * The NYT re-renders its toolbars (on almost every click on mobile) and switches between the desktop and the
+     * mobile toolbar by viewport width. Moving the button only when necessary keeps this from looping.
+     * @returns {Menu}
+     */
+    ensure() {
+        // copies without listeners, e.g. from a toolbar re-rendered via innerHTML
+        fn.$$(".pz-toolbar-button__sba").forEach((elem) => {
+            if (elem !== this.ui) {
+                elem.remove();
+            }
+        });
+        const toolbar = nyt.getToolbar();
+        if (toolbar && toolbar.lastElementChild !== this.ui) {
+            toolbar.append(this.ui);
+        }
+        return this;
+    }
+
+    /**
+     * Attach the button to the toolbar and keep it there.
+     * Replaces waiting for the mobile toolbar, which was prone to timing issues.
      * @returns {Menu}
      */
     add() {
-        if (!this.app.envIs("mobile")) {
-            return super.add();
-        }
-
-        const navContainer = nyt.getGlobalNav();
-        if (!navContainer || nyt.isMobileToolbarVisible(navContainer)) {
-            return super.add();
-        }
-
-        const observer = new MutationObserver(() => {
-            if (nyt.isMobileToolbarVisible(navContainer)) {
-                observer.disconnect();
-                this.target = nyt.getToolbar();
-                super.add();
-            }
+        this.ensure();
+        this.observer = new MutationObserver(() => this.ensure());
+        nyt.getToolbarHosts().forEach((host) => {
+            this.observer.observe(host, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ["class"],
+            });
         });
-        observer.observe(navContainer, {
-            attributes: true,
-            attributeFilter: ["class"],
-        });
+        // switching between desktop and mobile toolbar can be CSS only, without DOM changes
+        let timer;
+        this.onResize = () => {
+            clearTimeout(timer);
+            timer = setTimeout(() => this.ensure(), 150);
+        };
+        window.addEventListener("resize", this.onResize);
         return this;
     }
 
@@ -164,11 +182,6 @@ class Menu extends Plugin {
      */
     constructor(app) {
         super(app, "Menu", "");
-        this.target = nyt.getToolbar();
-        // has to be `after` rather than `append` because the NYT rebuilds the mobile toolbar on almost every click
-        if (this.app.envIs("mobile")) {
-            this.addMethod = "after";
-        }
         const paneId = prefix("menu-pane", "d");
         this.paneOpen = false;
 
@@ -220,10 +233,11 @@ class Menu extends Plugin {
             aria: {
                 haspopup: "menu",
             },
-            classNames: [
-                "pz-toolbar-button__sba",
-                this.app.envIs("mobile") ? "pz-nav__toolbar-item" : "pz-toolbar-button",
-            ],
+            data: {
+                ui: this.key,
+            },
+            // same class as Stats and Yesterday, so it looks and sits like them
+            classNames: ["pz-toolbar-button", "pz-toolbar-button__sba"],
             content: fn.span({
                 attributes: {
                     id: prefix("menu-entry-point", "d"),
@@ -271,6 +285,8 @@ class Menu extends Plugin {
         });
 
         app.on(prefix("destroy"), () => {
+            this.observer?.disconnect();
+            window.removeEventListener("resize", this.onResize);
             document.removeEventListener("keyup", this.onKeyUp);
             this.ui.remove();
             this.pane.remove();

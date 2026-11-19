@@ -71,23 +71,28 @@ const getGameData = () => {
 const isEnv = (env) => document.body.classList.contains(classNames[env]);
 
 /**
- * The toolbar the SBA menu button is attached to, depends on the environment
- * @returns {HTMLElement|null}
- */
-const getToolbar = () => (isEnv("mobile") ? fn.$(selectors.mobileToolbar) : fn.$(selectors.desktopToolbar));
-
-/**
- * The global navigation, on mobile it hosts the toolbar
- * @returns {HTMLElement|null}
- */
-const getGlobalNav = () => fn.$(selectors.globalNav);
-
-/**
- * Whether the mobile toolbar is visible
- * @param {HTMLElement} nav
+ * Whether an element is rendered
+ * @param {Element|null} elem
  * @returns {Boolean}
  */
-const isMobileToolbarVisible = (nav) => nav.classList.contains(classNames.mobileToolbarVisible);
+const isRendered = (elem) => !!elem && elem.getClientRects().length > 0;
+
+/**
+ * The toolbar with Stats, Yesterday and More, the SBA menu button joins it.
+ * The NYT renders two of them and shows one depending on the viewport width; this is the one on screen.
+ * Without layout information (e.g. before the first paint) the environment decides.
+ * @returns {HTMLElement|null}
+ */
+const getToolbar = () => {
+    const [desktop, mobile] = selectors.toolbars.map((selector) => fn.$(selector));
+    return [desktop, mobile].find(isRendered) || (isEnv("mobile") ? mobile || desktop : desktop || mobile) || null;
+};
+
+/**
+ * Static containers of the toolbars. Watch these to notice when React re-renders a toolbar.
+ * @returns {HTMLElement[]}
+ */
+const getToolbarHosts = () => selectors.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
 
 /**
  * Wait for the result list, it is rendered once the NYT has loaded the user's progress.
@@ -187,7 +192,8 @@ const closeModal = () => {
  * @returns {Boolean} true if the button was found
  */
 const clickToolbarButton = (name) => {
-    const button = fn.$(selectors.toolbarButtons[name]);
+    // there are two toolbars, use the one on screen
+    const button = fn.$(selectors.toolbarButtons[name], getToolbar()) || fn.$(selectors.toolbarButtons[name]);
     if (button) {
         button.click();
     }
@@ -254,8 +260,7 @@ export default {
     getGameData,
     isEnv,
     getToolbar,
-    getGlobalNav,
-    isMobileToolbarVisible,
+    getToolbarHosts,
     waitForResultList,
     getTermFromListItem,
     getFoundTerms,
