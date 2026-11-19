@@ -218,6 +218,30 @@ describe("app", () => {
             expect(plugin("milestones").popup.ui.querySelector(".sb-modal-close").textContent).toBe("×");
         });
 
+        it("turns into a regular pop-up below 768px, an open one when it closes", () => {
+            const matchMedia = window.matchMedia;
+            const small = (matches) => {
+                window.matchMedia = () => ({ matches, addEventListener() {}, removeEventListener() {} });
+            };
+            small(true);
+            grid().applyMode();
+            expect(grid().ui.getAttribute("popover")).toBe("auto");
+            small(false);
+            grid().applyMode();
+            expect(grid().ui.getAttribute("popover")).toBe("manual");
+
+            grid().toggle(true);
+            small(true);
+            grid().applyMode();
+            expect(grid().ui.getAttribute("popover")).toBe("manual");
+            grid().toggle(false);
+            expect(grid().ui.getAttribute("popover")).toBe("auto");
+
+            small(false);
+            grid().applyMode();
+            window.matchMedia = matchMedia;
+        });
+
         it("doesn't start dragging from the close button", () => {
             const before = { ...grid().position };
             const close = grid().ui.querySelector(".sb-modal-close");

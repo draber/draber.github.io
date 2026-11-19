@@ -59,7 +59,8 @@
     // floating (Grid): a window rather than a modal, no backdrop, the game stays usable,
     // can be dragged by its title bar
     &.sba-floating {
-        &::backdrop {
+        // only as window; on small screens floating pop-ups are regular pop-ups with a backdrop
+        &[popover="manual"]::backdrop {
             display: none;
         }
 

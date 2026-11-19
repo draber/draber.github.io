@@ -5,6 +5,12 @@ describe("app on mobile", () => {
     let app;
 
     beforeAll(async () => {
+        // a narrow viewport, below 768px
+        window.matchMedia = (query) => ({
+            matches: query.includes("max-width: 767"),
+            addEventListener() {},
+            removeEventListener() {},
+        });
         document.body.className = "pz-page pz-mobile";
         app = await startApp({ env: "mobile" });
     });
@@ -26,11 +32,28 @@ describe("app on mobile", () => {
         expect(document.querySelectorAll(".pz-toolbar-button__sba")).toHaveLength(1);
     });
 
-    it("has a floating grid that can't be dragged on small screens", () => {
+    it("shows the grid as a regular pop-up: a click outside or Escape closes it", () => {
         const grid = app.plugins.get("grid").popup;
-        expect(grid.ui.getAttribute("popover")).toBe("manual");
-        const matchMedia = window.matchMedia;
-        window.matchMedia = (query) => ({ matches: query.includes("max-width: 767"), addEventListener() {}, removeEventListener() {} });
+        expect(grid.ui.getAttribute("popover")).toBe("auto");
+        expect(grid.isFloating).toBe(false);
+
+        grid.toggle(true);
+        pointerClick(document.querySelector(".sb-hive"));
+        expect(grid.isOpen).toBe(false);
+
+        grid.toggle(true);
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", bubbles: true }));
+        expect(grid.isOpen).toBe(false);
+
+        // one regular pop-up at a time, the grid included
+        grid.toggle(true);
+        app.plugins.get("community").togglePopup();
+        expect(grid.isOpen).toBe(false);
+        app.plugins.get("community").popup.toggle(false);
+    });
+
+    it("can't drag the grid", () => {
+        const grid = app.plugins.get("grid").popup;
         grid.toggle(true);
         const handle = grid.ui.querySelector(".sb-modal-top");
         const opts = (x, y) => ({ bubbles: true, button: 0, clientX: x, clientY: y });
@@ -38,9 +61,7 @@ describe("app on mobile", () => {
         handle.dispatchEvent(new MouseEvent("pointermove", opts(110, 60)));
         handle.dispatchEvent(new MouseEvent("pointerup", opts(110, 60)));
         expect(grid.isMoved).toBe(false);
-        expect(grid.ui.classList.contains("sba-moved")).toBe(false);
         grid.toggle(false);
-        window.matchMedia = matchMedia;
     });
 
     it("opens pop-ups from the menu", () => {

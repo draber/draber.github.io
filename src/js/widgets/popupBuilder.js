@@ -39,9 +39,10 @@ const smallScreen = "(max-width: 767.98px)";
  * and only one of them is open at a time.
  *
  * Floating pop-ups are `popover="manual"`, like a window: no backdrop, the game stays usable,
- * they close only with × or Escape and stay open when other pop-ups open. On screens 768px and wider
- * they can be dragged by their title bar; once moved, they turn into a compact window with a small title.
- * The position is kept until the page is reloaded.
+ * they close only with × or Escape and stay open when other pop-ups open. They can be dragged by their
+ * title bar; once moved, they turn into a compact window with a small title. The position is kept
+ * until the page is reloaded.
+ * On screens narrower than 768px there's no room for a window: floating pop-ups behave like regular ones there.
  *
  * The markup mimics the pop-ups of Spelling Bee.
  */
@@ -61,7 +62,7 @@ class PopupBuilder {
     static closeAll() {
         let closed = false;
         instances.forEach((popup) => {
-            if (popup.isOpen && !popup.floating) {
+            if (popup.isOpen && !popup.isFloating) {
                 popup.toggle(false);
                 closed = true;
             }
@@ -75,6 +76,30 @@ class PopupBuilder {
      */
     get isOpen() {
         return this.state === "open" && this.ui.isConnected;
+    }
+
+    /**
+     * Whether this pop-up currently behaves as a window: floating pop-ups on screens 768px and wider
+     * @returns {Boolean}
+     */
+    get isFloating() {
+        return this.ui.getAttribute("popover") === "manual";
+    }
+
+    /**
+     * Floating pop-ups are windows on large screens and regular pop-ups on small ones.
+     * The type of popover can only be changed while it is hidden; an open pop-up switches when it closes.
+     * @returns {PopupBuilder}
+     */
+    applyMode() {
+        if (!this.floating || this.isOpen) {
+            return this;
+        }
+        const type = this.canDrag() ? "manual" : "auto";
+        if (this.ui.getAttribute("popover") !== type) {
+            this.ui.setAttribute("popover", type);
+        }
+        return this;
     }
 
     /**
@@ -140,6 +165,8 @@ class PopupBuilder {
             },
             events: {
                 beforetoggle: (evt) => this.onBeforeToggle(evt),
+                // a pending switch between window and regular pop-up, see applyMode()
+                toggle: (evt) => evt.newState === "closed" && this.applyMode(),
             },
             content: fn.div({
                 classNames: ["sb-modal-frame", prefix("pop-up", "d")],
@@ -334,10 +361,10 @@ class PopupBuilder {
      * @param {KeyboardEvent} evt
      */
     onKeyDown = (evt) => {
-        if (evt.key !== "Escape" || !this.isOpen) {
+        if (evt.key !== "Escape" || !this.isOpen || !this.isFloating) {
             return;
         }
-        const regularOpen = [...instances].some((popup) => !popup.floating && popup.isOpen);
+        const regularOpen = [...instances].some((popup) => !popup.isFloating && popup.isOpen);
         const menuOpen = !!fn.$('[data-ui="submenu"][data-sba-open="true"]');
         if (!regularOpen && !menuOpen && !nyt.findModalCloser()) {
             this.toggle(false);
@@ -404,6 +431,10 @@ class PopupBuilder {
         if (this.floating) {
             this.enableDragging();
             document.addEventListener("keydown", this.onKeyDown, true);
+            this.applyMode();
+            this.smallScreenQuery = window.matchMedia?.(smallScreen);
+            this.onScreenChange = () => this.applyMode();
+            this.smallScreenQuery?.addEventListener?.("change", this.onScreenChange);
         }
 
         document.body.append(this.ui);
@@ -411,6 +442,7 @@ class PopupBuilder {
 
         app.on(prefix("destroy"), () => {
             document.removeEventListener("keydown", this.onKeyDown, true);
+            this.smallScreenQuery?.removeEventListener?.("change", this.onScreenChange);
             this.ui.remove();
             instances.delete(this);
         });
