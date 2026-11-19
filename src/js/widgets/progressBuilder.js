@@ -4,8 +4,11 @@
  * Encapsulates a reusable <progress> element with updatable value logic.
  */
 
-import fn from 'fancy-node';
+import fn from "fancy-node";
 
+/**
+ * Builds a `<progress>` element showing a value relative to a maximum in percent
+ */
 export default class ProgressBuilder {
 
     /**
@@ -37,6 +40,7 @@ export default class ProgressBuilder {
 
     /**
      * Returns the rendered element, creating it if needed.
+     * @returns {HTMLElement}
      */
     get ui() {
         return this.element || this.render();
@@ -65,6 +69,9 @@ export default class ProgressBuilder {
      * @returns {number} value in percent (0–100)
      */
     toPercent(value) {
+        if (!this.maxAsNumber) {
+            return 0;
+        }
         return Math.min(Math.round((value * 100) / this.maxAsNumber), 100);
     }
 }

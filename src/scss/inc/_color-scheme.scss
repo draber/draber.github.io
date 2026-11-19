@@ -215,7 +215,7 @@ body {
     background: var(--body-bg-color);
 }
 
-.sb-modal-wrapper {
+:is(.sb-modal-wrapper, .sba-popover) {
     .sb-modal-frame {
         border: 1px solid var(--border-color);
         background: var(--body-bg-color);

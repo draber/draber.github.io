@@ -10,7 +10,7 @@ import {
 } from '../utils/string.js';
 
 /**
- * Plugin base class
+ * Base class for the app and its plugins: a title, a key and an optional UI that dispatches events
  */
 class Widget {
 
@@ -37,7 +37,7 @@ class Widget {
 
     /**
      * Fire an event from the ui
-     * @param {String } type
+     * @param {String} type
      * @param {*} data
      * @returns {Widget}
      */
@@ -53,7 +53,8 @@ class Widget {
     /**
      * Build an instance of the widget
      * @param {String} title
-     * @param {String} key
+     * @param {Object} [options]
+     * @param {String} [options.key] defaults to the title in camelCase
      */
     constructor(title, {
         key

@@ -16,8 +16,10 @@ import TableBuilder from "../widgets/tableBuilder.js";
 /**
  * ShortcutScreen plugin
  *
+ * Lists all shortcuts and lets the user disable them
+ *
  * @param {App} app
- * @returns {Plugin} Grid
+ * @returns {Plugin} ShortcutScreen
  */
 export default class ShortcutScreen extends Plugin {
     /**
@@ -67,7 +69,7 @@ export default class ShortcutScreen extends Plugin {
     }
 
     /**
-     * Grid constructor
+     * ShortcutScreen constructor
      * @param {App} app
      */
     constructor(app) {

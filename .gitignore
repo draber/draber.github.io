@@ -2,3 +2,6 @@
 /node_modules
 .vscode
 .zed
+
+# local NYT page snapshot for development
+nyt-snapshot.txt

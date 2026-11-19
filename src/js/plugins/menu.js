@@ -12,7 +12,7 @@ import iconCoffee from "../assets/kofi.svg";
 import iconNew from "../assets/new.svg";
 import iconBee from "../assets/sba-bee.svg";
 import fn from "fancy-node";
-
+import nyt from "../nyt/nyt.js";
 import newItems from "../utils/newItems.js";
 
 const svgIcons = {
@@ -28,55 +28,78 @@ if (!newItems.shouldHighlightNewItems()) {
 }
 
 /**
+ * Distance between menu button and menu pane, only used without CSS anchor positioning
+ * @type {Number}
+ */
+const paneOffset = 6;
+
+/**
+ * CSS anchor positioning places the pane, see `[data-ui="submenu"]` in _sba.scss.
+ * Baseline since January 2026, older browsers fall back to `positionPane()`.
+ * @type {Boolean}
+ */
+const supportsAnchors = !!globalThis.CSS?.supports?.("anchor-name: --sba-menu");
+
+/**
  * Menu plugin
+ *
+ * The button joins the NYT toolbar, right after "More", and looks like the other toolbar buttons.
+ * The list of entries is a popover in the browser's top layer, it can't be covered by anything on the page.
  *
  * @param {App} app
  * @returns {Plugin} Menu
  */
 class Menu extends Plugin {
     /**
-     * Retrieve the element the launcher will be attached to
-     * @returns {HTMLElement}
+     * Make sure the button is the last item of the toolbar on screen.
+     * The NYT re-renders its toolbars (on almost every click on mobile) and switches between the desktop and the
+     * mobile toolbar by viewport width. Moving the button only when necessary keeps this from looping.
+     * @returns {Menu}
      */
-    getTarget() {
-        return this.app.envIs("mobile")
-            ? fn.$("#js-mobile-toolbar")
-            : fn.$(".pz-toolbar-right");
-    }
-
-    add() {
-        if (!this.app.envIs("mobile")) {
-            return super.add();
-        }
-
-        const navContainer = fn.$("#js-global-nav");
-        if (navContainer.classList.contains("show-mobile-toolbar")) {
-            return super.add();
-        }
-
-        const observer = new MutationObserver((mutationList) => {
-            for (let mutation of mutationList) {
-                if (
-                    mutation.type === "attributes" &&
-                    mutation.attributeName === "class" &&
-                    mutation.target.classList.contains("show-mobile-toolbar")
-                ) {
-                    observer.disconnect();
-
-                    // @todo breaks chainability of add method
-                    return super.add();
-                }
+    ensure() {
+        // copies without listeners, e.g. from a toolbar re-rendered via innerHTML
+        fn.$$(".pz-toolbar-button__sba").forEach((elem) => {
+            if (elem !== this.ui) {
+                elem.remove();
             }
         });
-        observer.observe(navContainer, {
-            attributes: true,
+        const toolbar = nyt.getToolbar();
+        if (toolbar && toolbar.lastElementChild !== this.ui) {
+            toolbar.append(this.ui);
+        }
+        return this;
+    }
+
+    /**
+     * Attach the button to the toolbar and keep it there.
+     * Replaces waiting for the mobile toolbar, which was prone to timing issues.
+     * @returns {Menu}
+     */
+    add() {
+        this.ensure();
+        this.observer = new MutationObserver(() => this.ensure());
+        nyt.getToolbarHosts().forEach((host) => {
+            this.observer.observe(host, {
+                childList: true,
+                subtree: true,
+                attributes: true,
+                attributeFilter: ["class"],
+            });
         });
+        // switching between desktop and mobile toolbar can be CSS only, without DOM changes
+        let timer;
+        this.onResize = () => {
+            clearTimeout(timer);
+            timer = setTimeout(() => this.ensure(), 150);
+        };
+        window.addEventListener("resize", this.onResize);
+        return this;
     }
 
     /**
      * Get plugin or app from clicked entry
-     * @param entry
-     * @returns {Menu|App|null}
+     * @param {HTMLElement} entry
+     * @returns {Plugin|App|null}
      */
     getComponent(entry) {
         if (entry.dataset.component === this.app.key) {
@@ -88,10 +111,69 @@ class Menu extends Plugin {
         return null;
     }
 
-    resetSubmenu() {
-        setTimeout(() => {
-            this.app.domSet("submenu", false);
-        }, 300);
+    /**
+     * Place the pane below the button, right-aligned, inside the viewport.
+     * Fallback for browsers without CSS anchor positioning.
+     */
+    positionPane() {
+        const rect = this.ui.getBoundingClientRect();
+        this.pane.style.top = `${Math.round(rect.bottom + paneOffset)}px`;
+        this.pane.style.right = `${Math.max(paneOffset, Math.round(window.innerWidth - rect.right))}px`;
+    }
+
+    /**
+     * Run the action of a menu entry
+     * @param {MouseEvent} evt
+     */
+    handleEntry(evt) {
+        const entry = evt.target.closest("li");
+        // links take care of themselves
+        if (!entry || evt.target.closest("a")) {
+            this.pane.hidePopover();
+            return;
+        }
+        const component = this.getComponent(entry);
+        this.pane.hidePopover();
+        switch (entry.dataset.action) {
+            case "boolean":
+                component.toggle();
+                entry.classList.toggle("checked", component.getState());
+                break;
+            case "popup":
+                component.togglePopup();
+                break;
+        }
+    }
+
+    /**
+     * Build a menu entry for a plugin
+     * @param {Plugin} plugin
+     * @param {String} key
+     * @returns {HTMLElement}
+     */
+    buildEntry(plugin, key) {
+        const icon = plugin.menu.icon || null;
+        const data = {
+            component: key,
+            action: plugin.menu.action,
+        };
+        const classNames = [];
+        if (plugin.menu.action === "boolean") {
+            data.icon = "checkmark";
+            if (plugin.getState()) {
+                classNames.push("checked");
+            }
+        } else if (icon) {
+            data.icon = icon;
+        }
+        return fn.li({
+            classNames,
+            attributes: {
+                title: fn.toNode(plugin.description).textContent,
+            },
+            data,
+            content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title,
+        });
     }
 
     /**
@@ -100,56 +182,32 @@ class Menu extends Plugin {
      */
     constructor(app) {
         super(app, "Menu", "");
-        this.target = this.getTarget();
-        // has to be `after` rather than `append` because the SB menu is rebuild on almost every click
-        if (this.app.envIs("mobile")) {
-            this.addMethod = "after";
-        }
-        const classNames = [
-            "pz-toolbar-button__sba",
-            this.app.envIs("mobile")
-                ? "pz-nav__toolbar-item"
-                : "pz-toolbar-button",
-        ];
-        this.resetSubmenu();
+        const paneId = prefix("menu-pane", "d");
+        this.paneOpen = false;
 
         /**
          * List of options
          */
-        const pane = fn.ul({
+        this.pane = fn.ul({
+            attributes: {
+                id: paneId,
+                popover: "auto",
+            },
             classNames: ["pane"],
             data: {
                 ui: "submenu",
             },
             events: {
-                pointerup: (evt) => {
-                    if (evt.target.nodeName === "A") {
-                        this.resetSubmenu();
-                        evt.target.click();
-                        return true;
-                    }
-                    const entry = evt.target.closest("li");
-                    if (!entry || evt.button !== 0) {
-                        this.resetSubmenu();
-                        return true;
-                    }
-                    const component = this.getComponent(entry);
-                    switch (entry.dataset.action) {
-                        case "boolean": {
-                            this.resetSubmenu();
-                            component.toggle();
-                            entry.classList.toggle(
-                                "checked",
-                                component.getState(),
-                            );
-                            break;
+                click: (evt) => this.handleEntry(evt),
+                beforetoggle: (evt) => {
+                    this.paneOpen = evt.newState === "open";
+                    this.pane.dataset[prefix("open")] = this.paneOpen;
+                    this.ui.classList.toggle(prefix("open", "d"), this.paneOpen);
+                    if (this.paneOpen) {
+                        newItems.markSeen();
+                        if (!supportsAnchors) {
+                            this.positionPane();
                         }
-                        case "popup":
-                            this.resetSubmenu();
-                            component.togglePopup();
-                            break;
-                        default:
-                            this.resetSubmenu();
                     }
                 },
             },
@@ -167,85 +225,44 @@ class Menu extends Plugin {
             }),
         });
 
-        this.ui = fn.div({
-            events: {
-                pointerup: (evt) => {
-                    newItems.markSeen();
-                    if (evt.button !== 0) {
-                        return true;
-                    }
-                    if (!evt.target.dataset.action) {
-                        this.app.domSet("submenu", !this.app.domGet("submenu"));
-                    }
-                },
+        this.ui = fn.button({
+            attributes: {
+                type: "button",
+                popovertarget: paneId,
             },
-            content: [
-                fn.span({
-                    attributes: {
-                        id: prefix("menu-entry-point", "d"),
-                    },
-                    content: settings.get("title"),
-                }),
-                pane,
-            ],
             aria: {
-                role: "presentation",
+                haspopup: "menu",
             },
-            classNames,
+            data: {
+                ui: this.key,
+            },
+            // same class as Stats and Yesterday, so it looks and sits like them
+            classNames: ["pz-toolbar-button", "pz-toolbar-button__sba"],
+            content: fn.span({
+                attributes: {
+                    id: prefix("menu-entry-point", "d"),
+                },
+                content: settings.get("title"),
+            }),
         });
 
-        document.addEventListener("keyup", (evt) => {
-            if (
-                this.app.domGet("submenu") === true &&
-                /^(Ent|Esc|Key|Dig)/.test(evt.code)
-            ) {
-                this.app.domSet("submenu", false);
-            }
-        });
+        document.body.append(this.pane);
 
-        fn.$("#pz-game-root").addEventListener("pointerdown", (evt) => {
-            if (
-                !evt.target.closest('[data-ui="submenu"]') &&
-                this.app.domGet("submenu") === true
-            ) {
-                this.app.domSet("submenu", false);
+        // letters, digits and Enter go to the game, the menu is in the way then
+        this.onKeyUp = (evt) => {
+            if (/^(Ent|Key|Dig)/.test(evt.code) && this.paneOpen) {
+                this.pane.hidePopover();
             }
-        });
+        };
+        document.addEventListener("keyup", this.onKeyUp);
 
         app.on(prefix("pluginsReady"), (evt) => {
             evt.detail.forEach((plugin, key) => {
-                if (!plugin.menu || !plugin.menu.action) {
-                    return false;
+                if (plugin.menu?.action) {
+                    this.pane.append(this.buildEntry(plugin, key));
                 }
-                let icon = plugin.menu.icon || null;
-                const data = {
-                    component: key,
-                    action: plugin.menu.action,
-                };
-                let classNames = [];
-                if (plugin.menu.action === "boolean") {
-                    data.icon = "checkmark";
-                    if (plugin.getState()) {
-                        classNames = ["checked"];
-                    }
-                } else if (icon) {
-                    data.icon = icon;
-                }
-                pane.append(
-                    fn.li({
-                        classNames,
-                        attributes: {
-                            title: fn.toNode(plugin.description).textContent,
-                        },
-                        data,
-                        content:
-                            icon && svgIcons[icon]
-                                ? [svgIcons[icon], plugin.title]
-                                : plugin.title,
-                    }),
-                );
             });
-            pane.append(
+            this.pane.append(
                 fn.li({
                     attributes: {
                         title: settings.get("support.text"),
@@ -264,9 +281,16 @@ class Menu extends Plugin {
                     }),
                 }),
             );
+            this.ui.classList.toggle(prefix("has-new", "d"), !!fn.$('[data-icon="new"] svg', this.pane));
         });
 
-        app.on(prefix("destroy"), () => this.ui.remove());
+        app.on(prefix("destroy"), () => {
+            this.observer?.disconnect();
+            window.removeEventListener("resize", this.onResize);
+            document.removeEventListener("keyup", this.onKeyUp);
+            this.ui.remove();
+            this.pane.remove();
+        });
     }
 }
 

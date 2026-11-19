@@ -3,58 +3,73 @@
  *
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
- *
  */
-import { findCloseButton } from "../utils/popup.ui.js";
 import Plugin from "../modules/plugin.js";
-import fn from "fancy-node";
 import hive from "../modules/hive.js";
+import nyt from "../nyt/nyt.js";
+import PopupBuilder from "../widgets/popupBuilder.js";
+
 /**
- * NYT Shortcuts Plugin
+ * Time to wait for the NYT to process the typed character before deleting it
+ * @type {Number}
+ */
+const deleteDelay = 50;
+
+/**
+ * NYT Shortcuts plugin
  *
- * Adds keyboard shortcuts to native NYT popups
+ * Adds keyboard shortcuts to native NYT pop-ups
  *
  * @param {App} app
  * @returns {Plugin} NytShortcuts
  */
 class NytShortcuts extends Plugin {
-
-    
+    /**
+     * Open or close Yesterday's Answers
+     * @returns {NytShortcuts}
+     */
     toggleYesterday() {
-        this.triggerPopup(".pz-toolbar-button__yesterday");
-    }
-
-    toggleStats() {
-        this.triggerPopup(".pz-toolbar-button__stats");
+        return this.triggerPopup("yesterday");
     }
 
     /**
-     * Triggers a popup by attempting to close any active modal first, then clicking the provided selector.
-     *
-     * If a modal closer is found, it will click it and use a `setTimeout` to manually delete
-     * the last letter from the input field (as a workaround for NYT's DOM timing issues).
-     * Otherwise, it simply clicks the target element directly.
-     *
-     * @param {string} selector - A CSS selector string pointing to the element to click after closing the modal.
-     *
-     * @todo Replace `setTimeout(deleteLastLetter, 50)` with a more robust event-driven solution or DOM observer.
+     * Open or close the statistics
+     * @returns {NytShortcuts}
      */
-    triggerPopup(selector) {
-        let popupCloser = findCloseButton(this.app);
-        if (popupCloser) {
-            setTimeout(hive.deleteLetter, 50);
-            popupCloser.click();
-        } else {
-            fn.$(selector)?.click();
-        }
+    toggleStats() {
+        return this.triggerPopup("stats");
     }
 
+    /**
+     * Toggle a NYT pop-up: close whatever modal is open, otherwise open the requested one.
+     *
+     * While a NYT modal is open, the character of the shortcut isn't caught by `shortcutRegistry.requiresDeletion()`,
+     * it reaches the input field after the modal has closed and is deleted here.
+     *
+     * @param {String} name key in `nyt.selectors.toolbarButtons`
+     * @returns {NytShortcuts}
+     *
+     * @todo Replace the delay with an event-driven solution
+     */
+    triggerPopup(name) {
+        if (nyt.closeModal()) {
+            setTimeout(hive.deleteLetter, deleteDelay);
+        } else if (!PopupBuilder.closeAll()) {
+            nyt.clickToolbarButton(name);
+        }
+        return this;
+    }
+
+    /**
+     * NytShortcuts constructor
+     * @param {App} app
+     */
     constructor(app) {
-        super(app, "NYT Shortcuts", "Adds keyboard shortcuts to native NYT popups", { key: "nytShortcuts" });
+        super(app, "NYT Shortcuts", "Adds keyboard shortcuts to native NYT pop-ups", { key: "nytShortcuts" });
 
         this.shortcuts = [
-            { combo: "Shift+Alt+Y", method: "toggleYesterday", label: `Yesterday's Answers` },
-            { combo: "Shift+Alt+I", method: "toggleStats", label: `Statistics` },
+            { combo: "Shift+Alt+Y", method: "toggleYesterday", label: "Yesterday’s Answers" },
+            { combo: "Shift+Alt+I", method: "toggleStats", label: "Statistics" },
         ].map((shortcut) => ({ ...shortcut, origin: "nyt" }));
     }
 }

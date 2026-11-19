@@ -29,7 +29,7 @@ class Header extends Plugin {
         });
 
         app.on(prefix("pluginsReady"), (evt) => {
-            evt.detail.forEach((plugin, key) => {
+            evt.detail.forEach((plugin) => {
                 if (plugin.panelBtn) {
                     toolbar.append(plugin.panelBtn);
                 }

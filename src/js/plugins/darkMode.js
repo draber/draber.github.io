@@ -29,16 +29,13 @@ class DarkMode extends Plugin {
             return this;
         }
         this.popup.toggle(true);
-        
-        const currentSwatch = fn.$("input:checked", this.popup.ui);
-        setTimeout(()=> {
-            currentSwatch.focus();
-        }, 1000);
+        // keyboard users can pick a color with the arrow keys right away
+        fn.$("input:checked", this.popup.ui)?.focus();
         return this;
     }
 
     /**
-     * Toggle dark mode
+     * Apply a color scheme and store it
      * @param {Object} scheme {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
      * @returns {DarkMode}
      */
@@ -58,7 +55,7 @@ class DarkMode extends Plugin {
 
     /**
      * Toggle between dark and light mode
-     * @returns DarkMode
+     * @returns {DarkMode}
      */
     toggleColorScheme() {
         const scheme = this.ensureValidColorScheme();
@@ -119,8 +116,7 @@ class DarkMode extends Plugin {
                 "subtitle",
                 fn.toNode([
                     fn.p({
-                        content: `Spelling Bee Assistant’s dark mode has been turned off because 
-                    another dark theme (likely from the NYT) was detected.`,
+                        content: `Spelling Bee Assistant’s dark mode has been turned off because another dark theme (likely from the NYT) was detected.`,
                     }),
                     fn.p({
                         content: `If you prefer SBA’s dark mode, consider disabling the other one.`,
@@ -129,16 +125,6 @@ class DarkMode extends Plugin {
             );
         }
 
-        // this.popup = new PopupBuilder(this.app, this.key)
-        //     .setContent("title", this.title)
-        //     .setContent("subtitle", this.description)
-        //     .setContent(
-        //         "body",
-        //         fn.div({
-        //             classNames: [prefix("color-selector", "d")],
-        //             content: [this.getSwatches(), this.getHive()],
-        //         })
-        //     );
     }
 }
 

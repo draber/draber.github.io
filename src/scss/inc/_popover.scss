@@ -1,0 +1,316 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ *
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+
+// SBA pop-ups, see widgets/popupBuilder.js
+//
+// Pop-ups live in the browser's top layer, outside the NYT's modal system. They keep the NYT's class names
+// (.sb-modal-frame, .sb-modal-title etc.), so wherever the NYT styles those globally, the NYT wins.
+// Everything here is wrapped in :where() and has zero specificity: it only fills the gaps.
+
+.sba-popover {
+    // NYT widths and paddings are meant for border-box
+    &,
+    * {
+        box-sizing: border-box;
+    }
+
+    // reset the browser's default popover styles
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--text-color);
+    overflow: visible;
+
+    // centered, like the NYT modals; the width comes from .sb-modal-frame (NYT: 540px, 667px on large desktops)
+    inset: 0;
+    margin: auto;
+    width: fit-content;
+    max-width: calc(100vw - 16px);
+    height: fit-content;
+    max-height: calc(100dvh - 48px);
+
+    // The NYT positions .sb-modal-frame absolutely inside their modal wrapper (top: 30px, bottom: 0).
+    // In a popover that would collapse it, it has to be part of the flow.
+    .sb-modal-frame {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        margin: 0;
+        max-height: calc(100dvh - 48px);
+        text-align: start;
+    }
+
+    .sba-modal-footer {
+        width: auto;
+        align-self: stretch;
+        margin: 0 var(--horizontal-spacing-4, 24px) 16px;
+    }
+
+    &::backdrop {
+        // ::backdrop doesn't inherit custom properties in older browsers, hence the fallback
+        background: hsla(0, 0%, 100%, 0.85);
+        background: var(--modal-bg-color, hsla(0, 0%, 100%, 0.85));
+    }
+
+    // floating (Grid): a window rather than a modal, no backdrop, the game stays usable,
+    // can be dragged by its title bar
+    &.sba-floating {
+        // only as window; on small screens floating pop-ups are regular pop-ups with a backdrop
+        &[popover="manual"]::backdrop {
+            display: none;
+        }
+
+        // the NYT aligns the title bar at the bottom, the icons are centered instead
+        .sb-modal-top {
+            align-items: center;
+            cursor: move;
+            touch-action: none;
+        }
+
+        // move and close are drawn on a 16px grid and shown at 16px, so every edge is a pixel edge,
+        // see PopupBuilder.snapIcons() for the position
+        :is(.sba-move-handle, .sb-modal-close) {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            padding: 0;
+            line-height: 1;
+
+            svg {
+                width: 100%;
+                height: 100%;
+                fill: var(--text-color);
+            }
+        }
+
+        .sba-move-handle {
+            margin-inline-end: 16px;
+        }
+
+        // until the first move, see PopupBuilder.dismissMoveHint()
+        .sba-move-hint {
+            margin-inline-end: 10px;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: var(--games-yellow, #f7da21);
+            color: #000;
+            font: 600 12px/1.3 nyt-franklin, sans-serif;
+            white-space: nowrap;
+        }
+    }
+
+    // floating and moved: compact window with a small title bar, as much table as possible
+    &.sba-floating.sba-moved {
+        --sba-cell-block-padding: 3px;
+        --sba-cell-inline-padding: 4px;
+        --sba-grid-cell-padding: 3px 0;
+
+        inset: auto;
+        margin: 0;
+        box-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.2);
+        border-radius: 6px;
+
+        // narrower than a modal, beats `.pz-desktop .sb-modal-frame`
+        .sb-modal-frame {
+            width: min(420px, calc(100vw - 16px));
+            overflow: hidden;
+        }
+
+        // title bar, beats the NYT's `.sb-modal-top`
+        .sb-modal-top {
+            min-height: 0;
+            padding: 7px 10px 7px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sba-window-title {
+            display: block;
+            font-weight: 700;
+        }
+
+        .sb-modal-close {
+            margin: 0;
+        }
+
+        // title and description give way to the table
+        .sb-modal-header {
+            display: none;
+        }
+
+        // just a narrow margin around the table
+        .sb-modal-content .sb-modal-body {
+            padding: 2px;
+            margin: 0;
+        }
+
+        .sba-data-pane {
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        // branding, small, right below the table
+        .sba-modal-footer {
+            margin: 0;
+            padding: 2px 10px 6px;
+            border: 0;
+            font-size: 11px;
+            line-height: 1.2;
+        }
+    }
+
+    &.sba-dragging {
+        user-select: none;
+        opacity: 0.9;
+    }
+}
+
+:where(.sba-popover) {
+    :where(.sb-modal-frame) {
+        display: flex;
+        flex-direction: column;
+        max-height: inherit;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: var(--body-bg-color);
+        color: var(--text-color);
+        font-family: nyt-franklin, sans-serif;
+    }
+
+    :where(.sb-modal-top) {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 8px 0;
+        flex-shrink: 0;
+    }
+
+    :where(.sb-modal-close) {
+        appearance: none;
+        background: none;
+        border: 0;
+        padding: 0 6px;
+        color: var(--text-color);
+        cursor: pointer;
+        line-height: 1;
+        font-size: 32px;
+        font-weight: 300;
+    }
+
+    // title of the compact window, see .sba-moved
+    :where(.sba-window-title) {
+        display: none;
+        flex-grow: 1;
+        font: 700 14px/1.2 nyt-franklin, sans-serif;
+        text-align: start;
+    }
+
+    :where(.sb-modal-content) {
+        overflow-y: auto;
+    }
+
+    :where(.sb-modal-header, .sb-modal-body) {
+        padding-inline: 24px;
+    }
+
+    :where(.sb-modal-header) {
+        margin-block-end: 16px;
+    }
+
+    :where(.sb-modal-title) {
+        font-family: nyt-karnakcondensed, georgia, serif;
+        font-weight: 700;
+        font-size: 34px;
+        line-height: 1.1;
+        margin: 0 0 8px;
+    }
+
+    :where(.sb-modal-message) {
+        font-size: 16px;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    :where(.sb-modal-body) {
+        font-size: 16px;
+    }
+
+    :where(figure) {
+        margin: 0;
+    }
+
+    :where(.sba-modal-footer) {
+        padding: 10px 10px 0;
+        border-top: 1px solid var(--border-color);
+        text-align: right;
+        font-size: 13px;
+
+        a {
+            color: var(--link-color, inherit);
+        }
+    }
+
+    // Today's Answers, mimics Yesterday's Answers
+    :where(.sb-modal-letters) {
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-block-end: 12px;
+    }
+
+    :where(.sb-modal-wordlist-items) {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        columns: 3 140px;
+
+        li {
+            display: flex;
+            gap: 6px;
+            align-items: baseline;
+            break-inside: avoid;
+            padding: 2px 0;
+        }
+
+        .pangram {
+            font-weight: 700;
+        }
+    }
+}
+
+// On large desktops the NYT gives modals a very wide right padding (a narrow column for text modals)
+// and resets it for its own list modals (.yesterday, .stats, .ranks …). SBA pop-ups are list modals too.
+@media (min-width: 992px) {
+    .pz-desktop .sba-popover:not(.sba-moved) .sb-modal-content :is(.sb-modal-header, .sb-modal-body) {
+        padding-right: var(--horizontal-spacing-7, 56px);
+    }
+
+    .pz-desktop .sba-popover:not(.sba-moved) .sba-modal-footer {
+        margin-inline: var(--horizontal-spacing-7, 56px);
+    }
+}
+
+// below 768px the NYT frame takes the full width of its container
+@media (max-width: 767.98px) {
+    .sba-popover {
+        width: calc(100vw - 16px);
+    }
+
+    // no dragging on small screens, see PopupBuilder.canDrag()
+    .sba-popover.sba-floating {
+        .sb-modal-top {
+            cursor: auto;
+            touch-action: auto;
+        }
+
+        :is(.sba-move-handle, .sba-move-hint) {
+            display: none;
+        }
+    }
+}

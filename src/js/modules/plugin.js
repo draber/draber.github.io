@@ -12,7 +12,7 @@ import Widget from "./widget.js";
 class Plugin extends Widget {
     /**
      * Attaches plugins to DOM, creates slot in app if needed
-     * @returns {Widget}
+     * @returns {Plugin}
      */
     attach() {
         if (!this.hasUi()) {
@@ -24,8 +24,8 @@ class Plugin extends Widget {
     }
 
     /**
-     * Adds plugin to DOM and registers state in local storage
-     * @returns {Widget}
+     * Adds plugin to DOM
+     * @returns {Plugin}
      */
     add() {
         return this.attach();
@@ -34,7 +34,7 @@ class Plugin extends Widget {
     /**
      * Catch-all for run events
      * @param {Event} evt
-     * @returns
+     * @returns {Plugin}
      */
     // eslint-disable-next-line no-unused-vars
     run(evt) {
@@ -50,7 +50,7 @@ class Plugin extends Widget {
      * @param {Object} [options={}] - Optional configuration.
      * @param {string} [options.key] - Internal plugin identifier (used in registry, localStorage keys, etc.).
      * @param {string} [options.runEvt] - Event name that triggers this plugin’s `run()` method (e.g., "refreshUi").
-     * @param {string} [options.addMethod] - If provided, calls `app.addMethod(this)` to expose plugin-specific methods.
+     * @param {string} [options.addMethod="append"] - DOM method used to insert the UI relative to `this.target`, e.g. `prepend` or `before`.
      */
     constructor(app, title, description, { key, runEvt, addMethod } = {}) {
         super(title, {

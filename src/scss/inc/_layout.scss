@@ -24,54 +24,6 @@ $gameWidth: 1280;
     }
 }
 
-[data-ui="menu"] {
-    .pane {
-        display: none;
-    }
-}
-
-.pz-mobile {
-    [data-ui="menu"] {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        padding: 0 6px;
-        top: 2px;
-    }
-}
-
-[data-sba-submenu="true"] {
-    //overflow-y: hidden;
-    .pz-mobile-dropdown {
-        &.show {
-            .pz-dropdown__list {
-                display: none;
-            }
-        }
-    }
-
-    .pz-game-toolbar {
-        position: relative;
-        z-index: 4;
-    }
-
-    [data-ui="menu"] {
-        .pane {
-            display: block;
-            position: absolute;
-            right: -16px;
-            top: 45px;
-        }
-    }
-
-    &.pz-desktop {
-        .pane {
-            right: -16px;
-            top: 55px;
-        }
-    }
-}
-
 [data-sba-active="true"] {
     --sba-app-width: 100px;
     --sba-app-padding: 0;
@@ -80,11 +32,16 @@ $gameWidth: 1280;
     --sba-game-width: #{$gameWidth - (2 * $gameOffset) * 1px};
     --sba-mobile-threshold: 900px;
 
+    // vertically centered next to the hive; when it's taller than the game area, e.g. with many open panes
+    // on a small screen, it scrolls instead of growing out of the box and under the NYT header
     .sba-container {
         display: block;
         position: absolute;
-        top: 50%;
-        transform: translate(0, -50%);
+        inset-block: 0;
+        height: fit-content;
+        max-height: 100%;
+        margin-block: auto;
+        overflow-y: auto;
         right: var(--sba-game-offset);
         z-index: 1;
     }
@@ -270,17 +227,6 @@ $gameWidth: 1280;
 }
 
 @media (min-width: 900px) {
-    [data-sba-submenu="true"] {
-        &.pz-desktop {
-            [data-ui="menu"] {
-                .pane {
-                    right: 0;
-                    top: 55px;
-                }
-            }
-        }
-    }
-
     [data-sba-active="true"] {
         --sba-app-width: 160px;
         --sba-app-padding: 0 8px 8px;
@@ -296,7 +242,10 @@ $gameWidth: 1280;
 
         .sba-container {
             position: static;
-            transform: none;
+            height: auto;
+            max-height: none;
+            margin-block: 0;
+            overflow-y: visible;
         }
 
         .sb-expanded {
@@ -308,35 +257,6 @@ $gameWidth: 1280;
         &.pz-desktop {
             .sba {
                 left: -191px;
-            }
-        }
-    }
-}
-
-// result list on the right
-@media (min-width: 768px) {
-    [data-sba-theme] {
-        &.pz-page {
-            .sba-pop-up {
-                &.sb-modal-frame {
-                    .sb-modal-content {
-                        .sb-modal-body {
-                            padding-right: 56px;
-                        }
-
-                        .sb-modal-header {
-                            padding-right: 56px;
-                        }
-
-                        .sba-modal-footer {
-                            text-align: right;
-                            border-top: 1px solid var(--border-color);
-                            padding-top: 10px;
-                            width: calc(100% - 112px);
-                            margin: -8px auto 15px;
-                        }
-                    }
-                }
             }
         }
     }

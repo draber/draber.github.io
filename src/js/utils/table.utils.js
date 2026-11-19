@@ -15,6 +15,7 @@ import data from "../modules/data.js";
  * @param {boolean} [options.hasHeadRow=true] - Whether the first row should go into <thead>.
  * @param {boolean} [options.hasHeadCol=true] - Whether the first column of each row should be <th>.
  * @param {Array<Function>} [options.rowCallbacks=[]] - Functions applied to each row object. Signature: (rowData, rowIdx, currentRow, skeleton) => void
+ * @param {Array<Function>} [options.cellCallbacks=[]] - Functions applied to each cell object. Signature: ({cellData, rowIdx, cellIdx, rowData, rowObj, cellObj, tableData}) => void
  * @param {string|Node} [options.caption=""] - Optional table caption.
  * @param {Array<String>} [options.classNames=[]] - CSS class names to be used on <table>
  * @returns {{tag: string, content: Array}} A complete table object.
@@ -38,7 +39,7 @@ const dataToObj = (
         const rowObj = {
             tag: "tr",
             content: [],
-            classNames: [], // not to be mixed up with classNames from the signature which aplly to the <table>
+            classNames: [], // not to be mixed up with classNames from the signature which apply to the <table>
             attributes: {},
         };
 
@@ -86,7 +87,7 @@ const dataToObj = (
  * Note: does not include the <table> element itself.
  *
  * @returns {Object<string, {tag: string, content: Array}>}
- *   An object with keys "caption", "thead", "tbody", each containing an empty section.
+ *   An object with keys "caption", "thead", "tbody" and "tfoot", each containing an empty section.
  */
 const getTableSkeleton = () => {
     const skeleton = {};
@@ -148,14 +149,14 @@ const insertAfterCurrentRow = (skeleton, currentRow, newRow, section = "tbody") 
 /**
  * Builds table-friendly data grouped by the first N letters of each answer.
  *
- * Returns a 2D array suitable for use with `DynamicTable`, with rows like:
+ * Returns a 2D array suitable for use with `TableBuilder`, with rows like:
  *   ["cha", 2, 1, 3] → first 3 letters, 2 found, 1 remaining, 3 total
  *
  * @param {number} n - Number of initial letters to group by (e.g. 1, 2, 3).
  * @returns {Array<Array<string|number>>} 2D table data with header.
  */
 const buildFirstLetterTableData = (n) => {
-    const answers = data.getList("answers").sort();
+    const answers = [...data.getList("answers")].sort();
     const remainders = data.getList("remainders");
     const stats = {};
     const tpl = { found: 0, missing: 0, total: 0 };
@@ -182,7 +183,7 @@ const buildFirstLetterTableData = (n) => {
 /**
  * Builds table data grouped by word length.
  *
- * Returns a 2D array suitable for use with DynamicTable, with rows like:
+ * Returns a 2D array suitable for use with `TableBuilder`, with rows like:
  *   [5, 2, 1, 3] → length 5, 2 found, 1 missing, 3 total
  *
  * @returns {Array<Array<string|number>>}

@@ -5,7 +5,6 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-// Tier thresholds in percent based on the actual game code
 import data from "../modules/data.js";
 import fn from "fancy-node";
 import {prefix} from "./string.js";
@@ -13,6 +12,10 @@ import {prefix} from "./string.js";
 import tableUtils from './table.utils.js';
 import ProgressBuilder from "../widgets/progressBuilder.js";
 
+/**
+ * Tier thresholds in percent of the maximum points, based on the actual game code
+ * @type {Array<[String, Number]>}
+ */
 const tiers = [
     ["Beginner", 0],
     ["Good Start", 2],
@@ -26,6 +29,11 @@ const tiers = [
     ["Queen Bee", 100]
 ];
 
+/**
+ * Table data for one of the summaries: found, missing and total
+ * @param {String} fieldName `points`, `terms` or `pangrams`
+ * @returns {Array[]}
+ */
 export const getSummaryTableData = (fieldName) => {
     const achievements = data.getFoundAndTotal(fieldName);
     return [
@@ -51,7 +59,7 @@ export const getMilestoneData = (reversed = true) => {
 
 /**
  * Get the current tier the user has reached.
- * @param {{found: number, max: number}} pointObj
+ * @param {{found: number, total: number}} pointObj
  * @returns {{name: string, value: number, additionalPoints: number}} The matching tier.
  */
 export const getCurrentTier = (pointObj) => {
@@ -67,7 +75,7 @@ export const getCurrentTier = (pointObj) => {
 
 /**
  * Get the next upcoming tier based on current score.
- * @param {{found: number, max: number}} pointObj
+ * @param {{found: number, total: number}} pointObj
  * @returns {{name?: string, value?: number, missingPoints: number}} Next tier info or missingPoints = 0 if none.
  */
 export const getNextTier = (pointObj) => {
@@ -114,7 +122,10 @@ export const getDescription = () => {
         ]
         : `You’ve completed today’s puzzle. Here’s a recap.`;
 }
-//rowData, rowIdx, rowObj, skeleton
+/**
+ * Row callbacks for the tier table: mark completed and current tiers, add a progress bar below the current one
+ * @returns {Array<Function>} callbacks with the signature (rowData, rowIdx, rowObj, skeleton)
+ */
 export const getMilestoneTableRowCallbacks = () => {
     return [
         (rowData, rowIdx, rowObj, skeleton) => {
@@ -143,6 +154,10 @@ export const getMilestoneTableRowCallbacks = () => {
     ];
 }
 
+/**
+ * Row callbacks for the summary tables: add a progress bar below the numbers
+ * @returns {Array<Function>} callbacks with the signature (rowData, rowIdx, rowObj, skeleton)
+ */
 export const getSummaryTableRowCallbacks = () => {
     return [
         (rowData, rowIdx, rowObj, skeleton) => {
@@ -159,8 +174,14 @@ export const getSummaryTableRowCallbacks = () => {
     ];
 }
 
+/**
+ * Insert a row with a progress bar after the current row
+ * @param {Number} points
+ * @param {Number} max
+ * @param {Object} rowObj
+ * @param {Object} skeleton
+ */
 const getProgressbarInjectionCallback = (points, max, rowObj, skeleton) => {
-
     const tableRow = {
         tag: "tr",
         content: [

@@ -7,6 +7,15 @@
 import fn from "fancy-node";
 import { prefix } from "./string.js";
 
+/**
+ * Build a toggle switch, optionally with a label
+ * @param {String} id
+ * @param {Boolean} checked
+ * @param {Function} callback called on change with the event
+ * @param {String} [labelText=""]
+ * @param {String} [labelPosition="before"] `before`, `after` or `wrap`
+ * @returns {HTMLElement}
+ */
 export const getToggleButton = (id, checked, callback, labelText = "", labelPosition = "before") => {
     const toggleBtn = fn.input({
         attributes: {
@@ -16,9 +25,6 @@ export const getToggleButton = (id, checked, callback, labelText = "", labelPosi
             checked,
         },
         classNames: [prefix("toggle-switch", "d")],
-        aria: {
-            role: "switch",
-        },
         events: {
             change: (event) => callback(event),
         },

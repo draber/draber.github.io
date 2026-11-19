@@ -64,7 +64,7 @@ class Community extends Plugin {
 
     /**
      * Link to the Reddit forum
-     * @returns {*}
+     * @returns {HTMLElement}
      */
     redditCommunity() {
         return fn.a({
@@ -77,7 +77,7 @@ class Community extends Plugin {
     }
     /**
      * Link to Tomtit & Baobab: A Bee-Inspired Podcast
-     * @returns {*}
+     * @returns {HTMLElement}
      */
     tomtitBaobab() {
         return fn.a({
@@ -169,9 +169,9 @@ class Community extends Plugin {
                                     case 0:
                                         return `No, not today.`;
                                     case 1:
-                                        return `Yes - there's one perfect pangram today.`;
+                                        return `Yes - there’s one perfect pangram today.`;
                                     default:
-                                        // there have never been more then three pangrams, so this should be good enough
+                                        // there have never been more than three pangrams, so this should be good enough
                                         return `Yes - there are ${pp} perfect pangrams today.`;
                                 }
                             })(),

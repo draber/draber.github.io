@@ -17,6 +17,7 @@ const pf = settings.get('prefix');
  * Convert a string to camelCase
  * @see https://stackoverflow.com/a/2970667 with some modifications
  * @param {String} term
+ * @returns {String}
  */
 export const camel = term => {
     return term.replace(/[_-]+/, ' ').replace(/(?:^[\w]|[A-Z]|\b\w|\s+)/g, function (match, index) {

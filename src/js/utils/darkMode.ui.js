@@ -14,7 +14,7 @@ export const ui = (self) => ({
      * Build a single swatch
      * @param {Object} scheme {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
      * @param {String} content
-     * @returns
+     * @returns {HTMLElement}
      */
     getSwatch(scheme, content = "") {
         let isCurrent = self.colorSchemesAreEqual(scheme, self.ensureValidColorScheme());

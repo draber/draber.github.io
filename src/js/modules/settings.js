@@ -10,6 +10,110 @@ import * as pkg from "../../../package.json" with { type: "json" };
 const storageKey = `${config.prefix}-settings`;
 
 /**
+ * Version of the structure in `options`, unrelated to the app version.
+ * Raise it when the structure changes and add a migration below.
+ */
+const schema = 1;
+
+/**
+ * Migrations, keyed by the schema they lead to. Each one receives the options of the previous schema
+ * and returns the new ones. They run in order, each one exactly once.
+ * @example
+ * 2: (options) => {
+ *     options.grid = { ...options.grid, pinned: false };
+ *     return options;
+ * },
+ */
+const migrations = {};
+
+/**
+ * Wrapper around localStorage, which can be unavailable (privacy settings) or full.
+ * Settings must never stop the assistant from starting, the worst case is a session with defaults.
+ */
+const storage = {
+    read() {
+        try {
+            return localStorage.getItem(storageKey);
+        } catch (err) {
+            console.warn(`${config.label}: can't read the settings, using defaults`, err);
+            return null;
+        }
+    },
+    write(value) {
+        try {
+            localStorage.setItem(storageKey, value);
+        } catch (err) {
+            console.warn(`${config.label}: can't save the settings`, err);
+        }
+    },
+    /**
+     * Keep a copy of unusable settings for a bug report instead of throwing them away
+     * @param {String} raw
+     */
+    backup(raw) {
+        try {
+            localStorage.setItem(`${storageKey}-broken`, raw);
+        } catch (err) {
+            // nothing else to be done
+        }
+    },
+};
+
+/**
+ * @param {*} value
+ * @returns {Boolean} true for `{}`, false for arrays, null and anything else
+ */
+const isPlainObject = (value) => !!value && typeof value === "object" && !Array.isArray(value);
+
+/**
+ * Read the stored options, repair what can't be used and bring them to the current schema.
+ * @returns {Object}
+ */
+const loadOptions = () => {
+    const raw = storage.read();
+    if (raw === null) {
+        return { schema };
+    }
+
+    let options;
+    try {
+        options = JSON.parse(raw);
+    } catch (err) {
+        options = null;
+    }
+    if (!isPlainObject(options)) {
+        console.warn(`${config.label}: the stored settings are unusable, starting with defaults. A copy is in ${storageKey}-broken`);
+        storage.backup(raw);
+        return { schema };
+    }
+
+    // 5.x had no schema but `version` (always "5.0.0") and `oldVersion`
+    if (typeof options.schema !== "number") {
+        delete options.version;
+        delete options.oldVersion;
+        options.schema = 1;
+    }
+
+    // written by a newer version, e.g. after going back from a beta: don't touch
+    if (options.schema > schema) {
+        return options;
+    }
+
+    while (options.schema < schema) {
+        const next = options.schema + 1;
+        try {
+            options = migrations[next] ? migrations[next](options) : options;
+        } catch (err) {
+            console.warn(`${config.label}: migration to settings schema ${next} failed, starting with defaults`, err);
+            storage.backup(raw);
+            return { schema };
+        }
+        options.schema = next;
+    }
+    return options;
+};
+
+/**
  * Core settings state containing metadata and user-defined options.
  */
 const state = {
@@ -19,80 +123,17 @@ const state = {
     url: config.url,
     prefix: config.prefix,
     support: config.support,
+    issues: config.issues,
     targetUrl: config.targetUrl,
-    options: JSON.parse(localStorage.getItem(storageKey) || "{}"),
+    options: loadOptions(),
 };
 
 /**
  * Persist the current settings options to localStorage.
  */
 const saveOptions = () => {
-    localStorage.setItem(storageKey, JSON.stringify(state.options));
+    storage.write(JSON.stringify(state.options));
 };
-
-/**
- * Perform one-time migration from legacy settings structure to 5.0.0 format.
- * 
- * - Preserves objects like "darkModeColors" as-is
- * - Records oldVersion and updates to new version
- * 
- * This function is safe to leave in place. It will only run if legacy format is detected.
- */
-const migrateToVersion5 = () => {
-    if (typeof state.options.darkMode !== "boolean") return; // Only run once on old format
-
-    console.warn(`⚠️ ${state.label} detected legacy settings format. Performing migration to 5.0.0...`);
-
-    const migrated = {};
-    const obsoleteKeys = ["darkModeColors", "yourProgress", "version", "oldVersion", "score", "community"];
-    const removeSubkeys = ["enabled", "shortcuts"];
-    
-    for (const [key, value] of Object.entries(state.options)) {
-        if (obsoleteKeys.includes(key)) continue;
-    
-        // darkMode comes later
-        if (key === "darkMode") continue;
-    
-        if (typeof value === "object") {
-            const cleaned = { ...value };
-            removeSubkeys.forEach(k => delete cleaned[k]);
-            migrated[key] = cleaned;
-        }
-    }
-    
-    // special case darkMode
-    if ("darkMode" in state.options) {        
-        const scheme = {
-            mode: !!state.options.darkMode ? "dark" : "light",
-            // @see _colors.scss [data-sba-theme] --dhue, --dsat and --dlig
-            hsl: {
-                hue: 0,
-                sat: 0,
-                lig: 7,
-            },
-        };
-    
-        if (typeof state.options.darkModeColors === "object") {
-            scheme.hsl = Object.assign(scheme.hsl, state.options.darkModeColors)
-        }
-    
-        migrated.darkMode = scheme;
-    }
-    
-    state.options = {
-        ...migrated,
-        version: "5.0.0",
-        oldVersion: state.options.version || null
-    };
-
-    //console.info(`Migration completed with the following data:`, state.options);
-    //throw new Error("Migration to version 5.0.0 complete. Please reload the page.");
-    saveOptions();
-    
-};
-
-// Trigger version-aware migration
-migrateToVersion5();
 
 /**
  * Retrieve a value from the settings object using dot notation.
@@ -125,10 +166,10 @@ const set = (path, value) => {
     const last = parts.pop();
     let current = state;
     for (const part of parts) {
-        if (typeof current[part] !== "object") {
+        // missing or left over from an older structure, e.g. `true` where an object is expected now
+        if (!isPlainObject(current[part])) {
             if (typeof current[part] !== "undefined") {
-                console.error(`${part} is not an object`);
-                return false;
+                console.warn(`${config.label}: replacing the outdated value of ${part} in the settings`);
             }
             current[part] = {};
         }

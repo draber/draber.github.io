@@ -6,25 +6,31 @@
  */
 
 import settings from "../modules/settings.js";
-// noinspection ES6PreferShortImport
-import { isEmptyObject } from "../utils/utils.js";
+import { isEmptyObject } from "./utils.js";
 
 export const utils = (self) => ({
 
+    /**
+     * Check if hue, saturation and lightness are all numeric
+     * @param {Object} hsl
+     * @returns {Boolean}
+     */
     isValidHsl(hsl) {
-        return hsl && !isEmptyObject(hsl) && !isNaN(hsl.hue) && !isNaN(hsl.sat) && !isNaN(hsl.lig);
+        return !!hsl && !isEmptyObject(hsl) && !isNaN(hsl.hue) && !isNaN(hsl.sat) && !isNaN(hsl.lig);
     },
 
     /**
+     * Return the hsl values if valid, otherwise the stored ones or the defaults
      * @see _colors.scss [data-sba-theme] --dhue, --dsat and --dlig
+     * @param {Object} hsl
      * @returns {Object} {hue: number, sat: number, lig: number}
      */
-    ensureValidHsl(hsl) {        
-        if(self.isValidHsl(hsl)) {
+    ensureValidHsl(hsl) {
+        if (self.isValidHsl(hsl)) {
             return hsl;
         }
-        let scheme = settings.get(`options.${self.key}`);
-        if(scheme?.hsl && self.isValidHsl(scheme.hsl)) {
+        const scheme = settings.get(`options.${self.key}`);
+        if (scheme?.hsl && self.isValidHsl(scheme.hsl)) {
             return scheme.hsl;
         }
         return {
@@ -34,16 +40,26 @@ export const utils = (self) => ({
         };
     },
 
-    isValidMode(mode){
-        return mode && ['dark', 'light'].includes(mode);
+    /**
+     * Check if the mode is `dark` or `light`
+     * @param {String} mode
+     * @returns {Boolean}
+     */
+    isValidMode(mode) {
+        return ["dark", "light"].includes(mode);
     },
 
-    ensureValidMode(mode){      
-        if(self.isValidMode(mode)) {
+    /**
+     * Return the mode if valid, otherwise the one matching the system settings
+     * @param {String} mode
+     * @returns {String}
+     */
+    ensureValidMode(mode) {
+        if (self.isValidMode(mode)) {
             return mode;
         }
-        return (self.usesSystemDarkMode() ? "dark" : "light");
-    },    
+        return self.usesSystemDarkMode() ? "dark" : "light";
+    },
 
 
     /**
@@ -51,7 +67,8 @@ export const utils = (self) => ({
      * @returns {Object} {{ mode: 'light' | 'dark', hsl: { hue: number, sat: number, lig: number }}}
      */
     ensureValidColorScheme(requestedScheme = null) {
-        let scheme = requestedScheme || settings.get(`options.${self.key}`) || {};
+        // copy, so that neither the argument nor the stored settings are changed
+        const scheme = { ...(requestedScheme || settings.get(`options.${self.key}`) || {}) };
         scheme.mode = self.ensureValidMode(scheme.mode);
         scheme.hsl = self.ensureValidHsl(scheme.hsl);
         return scheme;
@@ -61,10 +78,10 @@ export const utils = (self) => ({
     /**
      * Check if a scheme is what it's meant to be
      * @param {{mode: string, hsl: Object}|null} scheme
-     * @returns
+     * @returns {Boolean}
      */
     isValidColorScheme(scheme = null) {
-        return scheme && !isEmptyObject(scheme) && self.isValidHsl(scheme.hsl) && isValidMode(scheme.mode);
+        return !!scheme && !isEmptyObject(scheme) && self.isValidHsl(scheme.hsl) && self.isValidMode(scheme.mode);
     },
 
     /**
