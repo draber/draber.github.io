@@ -71,13 +71,14 @@
             touch-action: none;
         }
 
-        // move and close are SVGs of the same size, so they line up
+        // move and close are drawn on a 16px grid and shown at 16px, so every edge is a pixel edge,
+        // see PopupBuilder.snapIcons() for the position
         :is(.sba-move-handle, .sb-modal-close) {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 15px;
-            height: 15px;
+            width: 16px;
+            height: 16px;
             padding: 0;
             line-height: 1;
 

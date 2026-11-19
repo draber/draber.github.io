@@ -174,7 +174,8 @@ class PopupBuilder {
             events: {
                 beforetoggle: (evt) => this.onBeforeToggle(evt),
                 // a pending switch between window and regular pop-up, see applyMode()
-                toggle: (evt) => evt.newState === "closed" && this.applyMode(),
+                // on open: crisp icons, see snapIcons()
+                toggle: (evt) => (evt.newState === "closed" ? this.applyMode() : this.snapIcons()),
             },
             content: fn.div({
                 classNames: ["sb-modal-frame", prefix("pop-up", "d")],
@@ -269,7 +270,31 @@ class PopupBuilder {
         };
         this.ui.style.left = `${this.position.x}px`;
         this.ui.style.top = `${this.position.y}px`;
+        this.snapIcons();
         return this.position;
+    }
+
+    /**
+     * Shift the title bar icons onto whole device pixels.
+     * The icons are drawn on a 16px grid, but a centered pop-up or the text before them
+     * easily puts them at x.5, which blurs every edge.
+     * @returns {PopupBuilder}
+     */
+    snapIcons() {
+        const ratio = window.devicePixelRatio || 1;
+        this.ui.querySelectorAll(".sb-modal-top svg").forEach((svg) => {
+            svg.style.removeProperty("translate");
+            const rect = svg.getBoundingClientRect();
+            if (!rect.width) {
+                return;
+            }
+            const dx = Math.round(rect.left * ratio) / ratio - rect.left;
+            const dy = Math.round(rect.top * ratio) / ratio - rect.top;
+            if (dx || dy) {
+                svg.style.translate = `${dx.toFixed(3)}px ${dy.toFixed(3)}px`;
+            }
+        });
+        return this;
     }
 
     /**
@@ -300,6 +325,7 @@ class PopupBuilder {
         this.ui.classList.remove(prefix("moved", "d"));
         this.ui.style.removeProperty("left");
         this.ui.style.removeProperty("top");
+        this.snapIcons();
         return this;
     }
 
@@ -466,8 +492,13 @@ class PopupBuilder {
         document.body.append(this.ui);
         instances.add(this);
 
+        // a centered pop-up moves with the viewport, so do its icons
+        this.onResize = () => this.isOpen && this.snapIcons();
+        window.addEventListener("resize", this.onResize);
+
         app.on(prefix("destroy"), () => {
             document.removeEventListener("keydown", this.onKeyDown, true);
+            window.removeEventListener("resize", this.onResize);
             this.smallScreenQuery?.removeEventListener?.("change", this.onScreenChange);
             this.ui.remove();
             instances.delete(this);
