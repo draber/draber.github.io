@@ -21,7 +21,8 @@ import shortcutRegistry from "./shortcutRegistry.js";
  */
 class App extends Widget {
     /**
-     * How long to wait for the result list and the toolbar before giving up, in milliseconds
+     * How long to wait for the result list and the toolbar before giving up, in milliseconds,
+     * counted from the first click or key press (the welcome screen comes before the game)
      * @type {Number}
      */
     static resultListTimeout = 10000;

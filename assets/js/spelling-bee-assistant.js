@@ -440,6 +440,15 @@
         return preferred || toolbars[0] || null;
     };
     const getToolbarHosts = () => sel.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
+    const firstInteraction = () =>
+        new Promise((resolve) => {
+            const events = ["pointerdown", "keydown"];
+            const done = () => {
+                events.forEach((type) => document.removeEventListener(type, done, true));
+                resolve();
+            };
+            events.forEach((type) => document.addEventListener(type, done, true));
+        });
     const waitForElement = (lookup, description, timeout) => {
         return new Promise((resolve, reject) => {
             const found = lookup();
@@ -447,19 +456,28 @@
                 resolve(found);
                 return;
             }
+            let timer = null;
+            let settled = false;
             const observer = new MutationObserver(() => {
                 const elem = lookup();
                 if (elem) {
+                    settled = true;
                     observer.disconnect();
                     clearTimeout(timer);
                     resolve(elem);
                 }
             });
-            const timer = setTimeout(() => {
-                observer.disconnect();
-                reject(new Error(`${description} not found within ${timeout / 1000}s`));
-            }, timeout);
             observer.observe(document.body, { childList: true, subtree: true });
+            firstInteraction().then(() => {
+                if (settled) {
+                    return;
+                }
+                timer = setTimeout(() => {
+                    settled = true;
+                    observer.disconnect();
+                    reject(new Error(`${description} not found within ${timeout / 1000}s`));
+                }, timeout);
+            });
         });
     };
     const waitForResultList = (timeout = 10000) => {

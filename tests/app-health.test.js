@@ -28,6 +28,11 @@ describe("app on a changed NYT page", () => {
     };
 
     /**
+     * The player clicks somewhere, e.g. "Continue" on the welcome screen. The timeout counts from here.
+     */
+    const interact = () => document.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+
+    /**
      * Nothing of SBA is left on the page, apart from the notice
      */
     const expectNothingOfSba = () => {
@@ -39,6 +44,8 @@ describe("app on a changed NYT page", () => {
 
     beforeEach(() => {
         loadGame();
+        // loadGame() replaces the content of body, not its attributes
+        delete document.body.dataset.sbaOutage;
         warn = vi.spyOn(console, "warn").mockImplementation(() => {});
         vi.spyOn(console, "error").mockImplementation(() => {});
     });
@@ -75,7 +82,9 @@ describe("app on a changed NYT page", () => {
     it("gives up when the result list doesn't show up", async () => {
         $(".sb-wordlist-items-pag").remove();
         const { App } = await start({ timeout: 50 });
-        await new App($("#js-hook-game-wrapper")).ready;
+        const app = new App($("#js-hook-game-wrapper"));
+        interact();
+        await app.ready;
 
         expectNothingOfSba();
         expect(document.body.dataset.sbaOutage).toContain(".sb-wordlist-items-pag not found within");
@@ -94,10 +103,42 @@ describe("app on a changed NYT page", () => {
         expect(notice()).toBeNull();
     });
 
+    it("waits on the welcome screen as long as it takes, the game comes after 'Continue'", async () => {
+        const list = $(".sb-wordlist-items-pag");
+        const parent = list.parentElement;
+        list.remove();
+        const { App } = await start({ timeout: 30 });
+        const app = new App($("#js-hook-game-wrapper"));
+        // way past the timeout, but nobody has clicked yet
+        await tick(120);
+        expect(notice()).toBeNull();
+        expect(document.body.dataset.sbaOutage).toBeUndefined();
+
+        // "Continue": the game is rendered
+        interact();
+        parent.append(list);
+        await app.ready;
+        expect($("[data-id='sbaApp']")).not.toBeNull();
+        expect(notice()).toBeNull();
+    });
+
+    it("counts the timeout from the first click", async () => {
+        $(".sb-wordlist-items-pag").remove();
+        const { App } = await start({ timeout: 50 });
+        const app = new App($("#js-hook-game-wrapper"));
+        await tick(100);
+        expect(notice()).toBeNull();
+        interact();
+        await app.ready;
+        expect(notice()).not.toBeNull();
+    });
+
     it("gives up when there's no toolbar, the menu would be unreachable", async () => {
         $$(".pz-toolbar-right").forEach((toolbar) => toolbar.remove());
         const { App } = await start({ timeout: 50 });
-        await new App($("#js-hook-game-wrapper")).ready;
+        const app = new App($("#js-hook-game-wrapper"));
+        interact();
+        await app.ready;
 
         expectNothingOfSba();
         expect(document.body.dataset.sbaOutage).toContain(".pz-toolbar-right not found within");

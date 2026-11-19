@@ -147,10 +147,28 @@ const getToolbar = () => {
 const getToolbarHosts = () => sel.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
 
 /**
- * Wait for an element to show up anywhere on the page
+ * Resolves on the first click, tap or key press on the page.
+ * The game is only rendered once the player has left the welcome screen ("Continue", "Play"),
+ * so there's no point in counting the time before that.
+ * @returns {Promise<void>}
+ */
+const firstInteraction = () =>
+    new Promise((resolve) => {
+        const events = ["pointerdown", "keydown"];
+        const done = () => {
+            events.forEach((type) => document.removeEventListener(type, done, true));
+            resolve();
+        };
+        events.forEach((type) => document.addEventListener(type, done, true));
+    });
+
+/**
+ * Wait for an element to show up anywhere on the page.
+ * The clock starts with the player's first interaction, see firstInteraction():
+ * on the welcome screen nothing is missing yet, the game simply isn't there.
  * @param {Function} lookup returns the element or null
  * @param {String} description for the error message
- * @param {Number} timeout milliseconds
+ * @param {Number} timeout milliseconds after the first interaction
  * @returns {Promise<HTMLElement>} rejects with an Error naming what's missing
  */
 const waitForElement = (lookup, description, timeout) => {
@@ -160,26 +178,35 @@ const waitForElement = (lookup, description, timeout) => {
             resolve(found);
             return;
         }
+        let timer = null;
+        let settled = false;
         const observer = new MutationObserver(() => {
             const elem = lookup();
             if (elem) {
+                settled = true;
                 observer.disconnect();
                 clearTimeout(timer);
                 resolve(elem);
             }
         });
-        const timer = setTimeout(() => {
-            observer.disconnect();
-            reject(new Error(`${description} not found within ${timeout / 1000}s`));
-        }, timeout);
         observer.observe(document.body, { childList: true, subtree: true });
+        firstInteraction().then(() => {
+            if (settled) {
+                return;
+            }
+            timer = setTimeout(() => {
+                settled = true;
+                observer.disconnect();
+                reject(new Error(`${description} not found within ${timeout / 1000}s`));
+            }, timeout);
+        });
     });
 };
 
 /**
- * Wait for the result list, it is rendered once the NYT has loaded the user's progress.
- * Everything in the game can be assumed to be ready by then.
- * Gives up after `timeout`, the page has changed then.
+ * Wait for the result list, it is rendered once the player has left the welcome screen
+ * and the NYT has loaded the user's progress. Everything in the game can be assumed to be ready by then.
+ * Gives up `timeout` after the first interaction, the page has changed then.
  * @param {Number} [timeout=10000] milliseconds
  * @returns {Promise<HTMLElement>} rejects with an Error naming the selector
  */
