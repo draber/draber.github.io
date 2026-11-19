@@ -353,21 +353,48 @@
         wordlistHeading: "the progress bar",
     };
 
+    const simulatedMissing = (() => {
+        try {
+            const names = (localStorage.getItem("sba-simulate-missing") || "").split(",").map((name) => name.trim()).filter(Boolean);
+            if (names.length) {
+                console.warn(`Spelling Bee Assistant: simulating a broken NYT page, not found: ${names.join(", ")}`);
+            }
+            return new Set(names);
+        } catch (e) {
+            return new Set();
+        }
+    })();
+    const matchesNothing = "#sba-simulated-missing";
+    const sel = new Proxy(selectors, {
+        get(target, name) {
+            const value = target[name];
+            if (!simulatedMissing.has(name)) {
+                return value;
+            }
+            if (Array.isArray(value)) {
+                return value.map(() => matchesNothing);
+            }
+            if (value && typeof value === "object") {
+                return Object.fromEntries(Object.keys(value).map((key) => [key, matchesNothing]));
+            }
+            return matchesNothing;
+        },
+    });
     let gameWrapper$1 = null;
     const getGameWrapper = () => {
         if (!gameWrapper$1 || !gameWrapper$1.isConnected) {
-            gameWrapper$1 = fn.$(selectors.gameWrapper);
+            gameWrapper$1 = fn.$(sel.gameWrapper);
         }
         return gameWrapper$1;
     };
     const find = (name, container = getGameWrapper()) => {
-        return container ? fn.$(selectors[name], container) : null;
+        return container ? fn.$(sel[name], container) : null;
     };
     const findAll = (name, container = getGameWrapper()) => {
-        return container ? fn.$$(selectors[name], container) : [];
+        return container ? fn.$$(sel[name], container) : [];
     };
     const getGameData = () => {
-        const today = window.gameData?.today;
+        const today = simulatedMissing.has("gameData") ? undefined : window.gameData?.today;
         if (!today || !Array.isArray(today.answers) || !Array.isArray(today.pangrams) || !Array.isArray(today.validLetters)) {
             throw new Error("window.gameData.today is missing or incomplete");
         }
@@ -376,31 +403,31 @@
     const isEnv = (env) => document.body.classList.contains(classNames[env]);
     const isRendered = (elem) => !!elem && elem.getClientRects().length > 0;
     const getToolbar = () => {
-        const toolbars = fn.$$(selectors.toolbar);
+        const toolbars = fn.$$(sel.toolbar);
         const rendered = toolbars.find(isRendered);
         if (rendered) {
             return rendered;
         }
-        const inNav = (toolbar) => !!toolbar.closest(selectors.globalNav);
+        const inNav = (toolbar) => !!toolbar.closest(sel.globalNav);
         const preferred = toolbars.find((toolbar) => inNav(toolbar) === isEnv("mobile"));
         return preferred || toolbars[0] || null;
     };
-    const getToolbarHosts = () => selectors.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
-    const waitForResultList = () => fn.waitFor(selectors.resultList, getGameWrapper());
+    const getToolbarHosts = () => sel.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
+    const waitForResultList = () => fn.waitFor(sel.resultList, getGameWrapper());
     const getTermFromListItem = (item) => {
-        const elem = fn.$(selectors.term, item) || (item.childElementCount > 1 ? item.firstElementChild : item);
+        const elem = fn.$(sel.term, item) || (item.childElementCount > 1 ? item.firstElementChild : item);
         return elem.textContent.trim();
     };
     const getFoundTerms = (resultList) => fn.$$("li", resultList).map(getTermFromListItem);
-    const isMarkedAsPangram = (item) => !!fn.$(selectors.pangram, item);
-    const isTerm = (elem) => elem instanceof Element && elem.matches(selectors.term);
+    const isMarkedAsPangram = (item) => !!fn.$(sel.pangram, item);
+    const isTerm = (elem) => elem instanceof Element && elem.matches(sel.term);
     const isHiveInput = (node) => node instanceof Element && node.classList.contains(classNames.hiveInput);
     const findYesterdayModal = (nodes) => {
         for (const node of nodes) {
             if (!(node instanceof Element)) {
                 continue;
             }
-            const frame = node.matches(selectors.yesterdayFrame) ? node : fn.$(selectors.yesterdayFrame, node);
+            const frame = node.matches(sel.yesterdayFrame) ? node : fn.$(sel.yesterdayFrame, node);
             if (frame) {
                 return frame;
             }
@@ -408,7 +435,7 @@
         return null;
     };
     const findModalCloser = () => {
-        for (const selector of selectors.modalClosers) {
+        for (const selector of sel.modalClosers) {
             const closer = fn.$(selector, getGameWrapper());
             if (closer) {
                 return closer;
@@ -424,7 +451,7 @@
         return !!closer;
     };
     const clickToolbarButton = (name) => {
-        const button = fn.$(selectors.toolbarButtons[name], getToolbar()) || fn.$(selectors.toolbarButtons[name]);
+        const button = fn.$(sel.toolbarButtons[name], getToolbar()) || fn.$(sel.toolbarButtons[name]);
         if (button) {
             button.click();
         }

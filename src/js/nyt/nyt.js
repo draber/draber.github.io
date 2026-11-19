@@ -14,6 +14,52 @@ import selectors, { classNames, required } from "./selectors.js";
  */
 
 /**
+ * Simulate a broken NYT page, to see how SBA behaves when the NYT changes its markup.
+ * Selector names (keys of `selectors.js`, plus `gameData`) listed in localStorage are treated as not found:
+ *     localStorage.setItem("sba-simulate-missing", "contentBox, resultList")
+ * then reload the page. Remove the entry to go back to normal. Does nothing without the entry.
+ * @type {Set<String>}
+ */
+const simulatedMissing = (() => {
+    try {
+        const names = (localStorage.getItem("sba-simulate-missing") || "").split(",").map((name) => name.trim()).filter(Boolean);
+        if (names.length) {
+            console.warn(`Spelling Bee Assistant: simulating a broken NYT page, not found: ${names.join(", ")}`);
+        }
+        return new Set(names);
+    } catch (e) {
+        return new Set();
+    }
+})();
+
+/**
+ * A selector that matches nothing
+ * @type {String}
+ */
+const matchesNothing = "#sba-simulated-missing";
+
+/**
+ * `selectors`, with the simulated missing ones replaced by selectors that match nothing.
+ * Use this everywhere in this module instead of `selectors`.
+ * @type {Object}
+ */
+const sel = new Proxy(selectors, {
+    get(target, name) {
+        const value = target[name];
+        if (!simulatedMissing.has(name)) {
+            return value;
+        }
+        if (Array.isArray(value)) {
+            return value.map(() => matchesNothing);
+        }
+        if (value && typeof value === "object") {
+            return Object.fromEntries(Object.keys(value).map((key) => [key, matchesNothing]));
+        }
+        return matchesNothing;
+    },
+});
+
+/**
  * Cached game wrapper, it is part of the static markup and never replaced
  * @type {HTMLElement|null}
  */
@@ -25,7 +71,7 @@ let gameWrapper = null;
  */
 const getGameWrapper = () => {
     if (!gameWrapper || !gameWrapper.isConnected) {
-        gameWrapper = fn.$(selectors.gameWrapper);
+        gameWrapper = fn.$(sel.gameWrapper);
     }
     return gameWrapper;
 };
@@ -37,7 +83,7 @@ const getGameWrapper = () => {
  * @returns {HTMLElement|null}
  */
 const find = (name, container = getGameWrapper()) => {
-    return container ? fn.$(selectors[name], container) : null;
+    return container ? fn.$(sel[name], container) : null;
 };
 
 /**
@@ -47,7 +93,7 @@ const find = (name, container = getGameWrapper()) => {
  * @returns {HTMLElement[]}
  */
 const findAll = (name, container = getGameWrapper()) => {
-    return container ? fn.$$(selectors[name], container) : [];
+    return container ? fn.$$(sel[name], container) : [];
 };
 
 /**
@@ -56,7 +102,7 @@ const findAll = (name, container = getGameWrapper()) => {
  * @throws {Error} if the data is missing or incomplete
  */
 const getGameData = () => {
-    const today = window.gameData?.today;
+    const today = simulatedMissing.has("gameData") ? undefined : window.gameData?.today;
     if (!today || !Array.isArray(today.answers) || !Array.isArray(today.pangrams) || !Array.isArray(today.validLetters)) {
         throw new Error("window.gameData.today is missing or incomplete");
     }
@@ -84,12 +130,12 @@ const isRendered = (elem) => !!elem && elem.getClientRects().length > 0;
  * @returns {HTMLElement|null}
  */
 const getToolbar = () => {
-    const toolbars = fn.$$(selectors.toolbar);
+    const toolbars = fn.$$(sel.toolbar);
     const rendered = toolbars.find(isRendered);
     if (rendered) {
         return rendered;
     }
-    const inNav = (toolbar) => !!toolbar.closest(selectors.globalNav);
+    const inNav = (toolbar) => !!toolbar.closest(sel.globalNav);
     const preferred = toolbars.find((toolbar) => inNav(toolbar) === isEnv("mobile"));
     return preferred || toolbars[0] || null;
 };
@@ -98,14 +144,14 @@ const getToolbar = () => {
  * Static containers of the toolbars. Watch these to notice when React re-renders a toolbar.
  * @returns {HTMLElement[]}
  */
-const getToolbarHosts = () => selectors.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
+const getToolbarHosts = () => sel.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
 
 /**
  * Wait for the result list, it is rendered once the NYT has loaded the user's progress.
  * Everything else in the game can be assumed to be ready by then.
  * @returns {Promise<HTMLElement>}
  */
-const waitForResultList = () => fn.waitFor(selectors.resultList, getGameWrapper());
+const waitForResultList = () => fn.waitFor(sel.resultList, getGameWrapper());
 
 /**
  * Read the term from an item of a word list (result list, Yesterday's Answers).
@@ -115,7 +161,7 @@ const waitForResultList = () => fn.waitFor(selectors.resultList, getGameWrapper(
  * @returns {String}
  */
 const getTermFromListItem = (item) => {
-    const elem = fn.$(selectors.term, item) || (item.childElementCount > 1 ? item.firstElementChild : item);
+    const elem = fn.$(sel.term, item) || (item.childElementCount > 1 ? item.firstElementChild : item);
     return elem.textContent.trim();
 };
 
@@ -131,14 +177,14 @@ const getFoundTerms = (resultList) => fn.$$("li", resultList).map(getTermFromLis
  * @param {HTMLElement} item
  * @returns {Boolean}
  */
-const isMarkedAsPangram = (item) => !!fn.$(selectors.pangram, item);
+const isMarkedAsPangram = (item) => !!fn.$(sel.pangram, item);
 
 /**
  * Whether an element is a term that can be linked, e.g. to Google
  * @param {EventTarget} elem
  * @returns {Boolean}
  */
-const isTerm = (elem) => elem instanceof Element && elem.matches(selectors.term);
+const isTerm = (elem) => elem instanceof Element && elem.matches(sel.term);
 
 /**
  * Whether a node is the hive input, i.e. the letters typed so far
@@ -158,7 +204,7 @@ const findYesterdayModal = (nodes) => {
         if (!(node instanceof Element)) {
             continue;
         }
-        const frame = node.matches(selectors.yesterdayFrame) ? node : fn.$(selectors.yesterdayFrame, node);
+        const frame = node.matches(sel.yesterdayFrame) ? node : fn.$(sel.yesterdayFrame, node);
         if (frame) {
             return frame;
         }
@@ -171,7 +217,7 @@ const findYesterdayModal = (nodes) => {
  * @returns {HTMLElement|null}
  */
 const findModalCloser = () => {
-    for (const selector of selectors.modalClosers) {
+    for (const selector of sel.modalClosers) {
         const closer = fn.$(selector, getGameWrapper());
         if (closer) {
             return closer;
@@ -194,12 +240,12 @@ const closeModal = () => {
 
 /**
  * Click a button in the NYT toolbar, e.g. to open Yesterday's Answers
- * @param {String} name key in `selectors.toolbarButtons`
+ * @param {String} name key in `sel.toolbarButtons`
  * @returns {Boolean} true if the button was found
  */
 const clickToolbarButton = (name) => {
     // there are two toolbars, use the one on screen
-    const button = fn.$(selectors.toolbarButtons[name], getToolbar()) || fn.$(selectors.toolbarButtons[name]);
+    const button = fn.$(sel.toolbarButtons[name], getToolbar()) || fn.$(sel.toolbarButtons[name]);
     if (button) {
         button.click();
     }
