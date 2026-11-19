@@ -119,7 +119,7 @@ const show = (problems) => {
             }),
             fn.p({
                 content:
-                    "can’t run right now. The New York Times has changed the Spelling Bee page and the assistant needs an update. A fix is on the way!",
+                    "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update. A fix is on the way!",
                 style: { margin: "0 0 8px" },
             }),
             fn.p({
