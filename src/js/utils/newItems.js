@@ -16,7 +16,7 @@ import settings from "../modules/settings.js";
 // also we're only interested in major.feature, not in .bug
 const versionToString = (version) => version.split(".").slice(0, 2).join("-");
 
-// the app version, `options.version` only records the settings format
+// the app version, `options.schema` records the settings format
 const currentVersion = settings.get("version") || "0";
 const versionKey = `newItems-${versionToString(currentVersion)}`;
 const maxDays = 4;

@@ -221,7 +221,8 @@ const set = (combo, shortcut) => {
         shortcut.enabled = true;
     }
     registry.set(combo, shortcut);
-    settings.set(`options.${shortcut.module}.shortcuts.${shortcut.combo}`, shortcut);
+    // only the user's choice is stored, label, method etc. come from the code
+    settings.set(`options.${shortcut.module}.shortcuts.${shortcut.combo}`, { enabled: shortcut.enabled });
     return true;
 };
 
@@ -236,8 +237,11 @@ const add = (shortcut) => {
     }
 
     shortcut.combo = normalizeCombo(shortcut);
-    const overrides = settings.get(`options.${shortcut.module}.shortcuts.${shortcut.combo}`) || {};
-    Object.assign(shortcut, { enabled: true }, overrides, {
+    // 5.x stored the whole shortcut, only `enabled` is taken from there,
+    // otherwise an outdated label or method would override the current one
+    const stored = settings.get(`options.${shortcut.module}.shortcuts.${shortcut.combo}`);
+    Object.assign(shortcut, {
+        enabled: typeof stored?.enabled === "boolean" ? stored.enabled : true,
         human: comboToHuman(shortcut.combo),
     });
 

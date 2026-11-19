@@ -15,6 +15,69 @@
     var version = "6.0.0";
 
     const storageKey = `${prefix$1}-settings`;
+    const schema = 1;
+    const migrations = {};
+    const storage = {
+        read() {
+            try {
+                return localStorage.getItem(storageKey);
+            } catch (err) {
+                console.warn(`${label}: can't read the settings, using defaults`, err);
+                return null;
+            }
+        },
+        write(value) {
+            try {
+                localStorage.setItem(storageKey, value);
+            } catch (err) {
+                console.warn(`${label}: can't save the settings`, err);
+            }
+        },
+        backup(raw) {
+            try {
+                localStorage.setItem(`${storageKey}-broken`, raw);
+            } catch (err) {
+            }
+        },
+    };
+    const isPlainObject = (value) => !!value && typeof value === "object" && !Array.isArray(value);
+    const loadOptions = () => {
+        const raw = storage.read();
+        if (raw === null) {
+            return { schema };
+        }
+        let options;
+        try {
+            options = JSON.parse(raw);
+        } catch (err) {
+            options = null;
+        }
+        if (!isPlainObject(options)) {
+            console.warn(`${label}: the stored settings are unusable, starting with defaults. A copy is in ${storageKey}-broken`);
+            storage.backup(raw);
+            return { schema };
+        }
+        if (typeof options.schema !== "number") {
+            delete options.version;
+            delete options.oldVersion;
+            options.schema = 1;
+        }
+        if (options.schema > schema) {
+            return options;
+        }
+        while (options.schema < schema) {
+            const next = options.schema + 1;
+            try {
+                options = migrations[next] ? migrations[next](options) : options;
+            } catch (err) {
+                console.warn(`${label}: migration to settings schema ${next} failed, starting with defaults`, err);
+                storage.backup(raw);
+                return { schema };
+            }
+            options.schema = next;
+        }
+        return options;
+    };
     const state = {
         version: version,
         label: label,
@@ -24,48 +87,11 @@
         support: support,
         issues: issues,
         targetUrl: targetUrl,
-        options: JSON.parse(localStorage.getItem(storageKey) || "{}"),
+        options: loadOptions(),
     };
     const saveOptions = () => {
-        localStorage.setItem(storageKey, JSON.stringify(state.options));
+        storage.write(JSON.stringify(state.options));
     };
-    const migrateToVersion5 = () => {
-        if (typeof state.options.darkMode !== "boolean") return;
-        console.warn(`⚠️ ${state.label} detected legacy settings format. Performing migration to 5.0.0...`);
-        const migrated = {};
-        const obsoleteKeys = ["darkModeColors", "yourProgress", "version", "oldVersion", "score", "community"];
-        const removeSubkeys = ["enabled", "shortcuts"];
-        for (const [key, value] of Object.entries(state.options)) {
-            if (obsoleteKeys.includes(key)) continue;
-            if (key === "darkMode") continue;
-            if (typeof value === "object") {
-                const cleaned = { ...value };
-                removeSubkeys.forEach(k => delete cleaned[k]);
-                migrated[key] = cleaned;
-            }
-        }
-        if ("darkMode" in state.options) {
-            const scheme = {
-                mode: !!state.options.darkMode ? "dark" : "light",
-                hsl: {
-                    hue: 0,
-                    sat: 0,
-                    lig: 7,
-                },
-            };
-            if (typeof state.options.darkModeColors === "object") {
-                scheme.hsl = Object.assign(scheme.hsl, state.options.darkModeColors);
-            }
-            migrated.darkMode = scheme;
-        }
-        state.options = {
-            ...migrated,
-            version: "5.0.0",
-            oldVersion: state.options.version || null
-        };
-        saveOptions();
-    };
-    migrateToVersion5();
     const get$1 = (path) => {
         const parts = path.split(".");
         let current = state;
@@ -82,10 +108,9 @@
         const last = parts.pop();
         let current = state;
         for (const part of parts) {
-            if (typeof current[part] !== "object") {
+            if (!isPlainObject(current[part])) {
                 if (typeof current[part] !== "undefined") {
-                    console.error(`${part} is not an object`);
-                    return false;
+                    console.warn(`${label}: replacing the outdated value of ${part} in the settings`);
                 }
                 current[part] = {};
             }
@@ -2862,7 +2887,7 @@
             shortcut.enabled = true;
         }
         registry.set(combo, shortcut);
-        settings.set(`options.${shortcut.module}.shortcuts.${shortcut.combo}`, shortcut);
+        settings.set(`options.${shortcut.module}.shortcuts.${shortcut.combo}`, { enabled: shortcut.enabled });
         return true;
     };
     const add = (shortcut) => {
@@ -2870,8 +2895,9 @@
             throw new Error("Invalid shortcut");
         }
         shortcut.combo = normalizeCombo(shortcut);
-        const overrides = settings.get(`options.${shortcut.module}.shortcuts.${shortcut.combo}`) || {};
-        Object.assign(shortcut, { enabled: true }, overrides, {
+        const stored = settings.get(`options.${shortcut.module}.shortcuts.${shortcut.combo}`);
+        Object.assign(shortcut, {
+            enabled: typeof stored?.enabled === "boolean" ? stored.enabled : true,
             human: comboToHuman(shortcut.combo),
         });
         if (registry.has(shortcut.combo)) {
