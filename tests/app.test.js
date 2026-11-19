@@ -253,7 +253,7 @@ describe("app", () => {
 
     describe("menu", () => {
         it("puts the button into the NYT toolbar and the list into the top layer", () => {
-            const toolbar = $("#portal-game-toolbar .pz-toolbar-right");
+            const toolbar = $("#pz-game-root .pz-toolbar-right");
             const button = toolbar.lastElementChild;
             expect(button.classList.contains("pz-toolbar-button__sba")).toBe(true);
             // looks like its neighbours
@@ -265,8 +265,7 @@ describe("app", () => {
         });
 
         it("comes back when the NYT re-renders the toolbar", async () => {
-            const host = $("#portal-game-toolbar");
-            const old = host.querySelector(".pz-toolbar-right");
+            const old = $("#pz-game-root .pz-toolbar-right");
             const rerendered = old.cloneNode(true);
             rerendered.querySelector(".pz-toolbar-button__sba").remove();
             old.replaceWith(rerendered);
@@ -276,7 +275,7 @@ describe("app", () => {
         });
 
         it("stays the last item when the NYT adds a button", async () => {
-            const toolbar = $("#portal-game-toolbar .pz-toolbar-right");
+            const toolbar = $("#pz-game-root .pz-toolbar-right");
             const extra = document.createElement("button");
             toolbar.append(extra);
             await tick();
@@ -380,7 +379,7 @@ describe("app", () => {
 
         it("opens Yesterday's Answers, or closes an open SBA pop-up first", () => {
             const yesterday = vi.fn();
-            $("#portal-game-toolbar .pz-toolbar-button__yesterday").addEventListener("click", yesterday);
+            $("#pz-game-root .pz-toolbar-button__yesterday").addEventListener("click", yesterday);
             plugin("community").togglePopup();
             plugin("nytShortcuts").toggleYesterday();
             expect(plugin("community").popup.isOpen).toBe(false);

@@ -37,7 +37,7 @@ describe("NYT adapter", () => {
     it("detects the environment", () => {
         expect(nyt.isEnv("desktop")).toBe(true);
         expect(nyt.isEnv("mobile")).toBe(false);
-        expect(nyt.getToolbar()).toBe(document.querySelector("#portal-game-toolbar .pz-toolbar-right"));
+        expect(nyt.getToolbar()).toBe(document.querySelector("#pz-game-root .pz-toolbar-right"));
     });
 
     it("uses the mobile toolbar on mobile", () => {
@@ -93,7 +93,7 @@ describe("NYT adapter", () => {
 
     it("clicks toolbar buttons", () => {
         let clicked = 0;
-        document.querySelector("#portal-game-toolbar .pz-toolbar-button__yesterday").addEventListener("click", () => clicked++);
+        document.querySelector("#pz-game-root .pz-toolbar-button__yesterday").addEventListener("click", () => clicked++);
         expect(nyt.clickToolbarButton("yesterday")).toBe(true);
         expect(clicked).toBe(1);
     });

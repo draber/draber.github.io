@@ -702,7 +702,8 @@ progress {
     }
 }
 
-:is(#portal-game-toolbar, #js-mobile-toolbar) {
+// the desktop toolbar is rendered inside the game (.pz-toolbar-right), not in #portal-game-toolbar
+:is(#portal-game-toolbar, #js-mobile-toolbar, .pz-toolbar-right) {
     * {
         color: var(--text-color);
         border-color: var(--border-color);
@@ -736,7 +737,8 @@ progress {
 
 [data-sba-theme="dark"] {
     #portal-game-toolbar,
-    #js-mobile-toolbar {
+    #js-mobile-toolbar,
+    .pz-toolbar-right {
         i {
             filter: invert(1);
             background-color: transparent;

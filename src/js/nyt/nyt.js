@@ -79,13 +79,19 @@ const isRendered = (elem) => !!elem && elem.getClientRects().length > 0;
 
 /**
  * The toolbar with Stats, Yesterday and More, the SBA menu button joins it.
- * The NYT renders two of them and shows one depending on the viewport width; this is the one on screen.
- * Without layout information (e.g. before the first paint) the environment decides.
+ * Depending on the viewport width the NYT renders it in the game or in the navigation; this is the one on screen.
+ * Without layout information (e.g. before the first paint) its location and the environment decide.
  * @returns {HTMLElement|null}
  */
 const getToolbar = () => {
-    const [desktop, mobile] = selectors.toolbars.map((selector) => fn.$(selector));
-    return [desktop, mobile].find(isRendered) || (isEnv("mobile") ? mobile || desktop : desktop || mobile) || null;
+    const toolbars = fn.$$(selectors.toolbar);
+    const rendered = toolbars.find(isRendered);
+    if (rendered) {
+        return rendered;
+    }
+    const inNav = (toolbar) => !!toolbar.closest(selectors.globalNav);
+    const preferred = toolbars.find((toolbar) => inNav(toolbar) === isEnv("mobile"));
+    return preferred || toolbars[0] || null;
 };
 
 /**
