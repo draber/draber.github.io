@@ -159,6 +159,7 @@ describe("app", () => {
             expect(grid().isMoved).toBe(false);
             expect(grid().ui.classList.contains("sba-moved")).toBe(false);
             expect(grid().ui.querySelector(".sba-window-title").textContent).toBe("Grid");
+            expect(grid().ui.querySelector(".sba-move-hint").textContent).toBe("New: you can now move the grid");
         });
 
         it("turns into a compact window when dragged and remembers the position until reload", () => {
@@ -172,6 +173,9 @@ describe("app", () => {
             handle.dispatchEvent(new MouseEvent("pointerup", opts(110, 60)));
             expect(grid().ui.classList.contains("sba-moved")).toBe(true);
             expect(grid().position).toEqual({ x: 100, y: 50 });
+            // the hint has done its job
+            expect(grid().ui.querySelector(".sba-move-hint")).toBeNull();
+            expect(JSON.parse(localStorage.getItem("sba-settings")).grid.moveHintSeen).toBe(true);
 
             grid().toggle(false);
             grid().ui.style.left = "";

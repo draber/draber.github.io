@@ -62,7 +62,10 @@ export default class Grid extends Plugin {
     constructor(app) {
         super(app, "Grid", "The number of words by length and by first letter.", { runEvt: prefix("refreshUi") });
 
-        this.popup = new PopupBuilder(this.app, this.key, { floating: true })
+        this.popup = new PopupBuilder(this.app, this.key, {
+            floating: true,
+            moveHint: "New: you can now move the grid",
+        })
             .setContent("title", this.title)
             .setContent("subtitle", this.description)
             .setContent("body", this.createTable());

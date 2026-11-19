@@ -138,6 +138,14 @@ class PopupBuilder {
                 fn.span({
                     classNames: [prefix("window-title", "d")],
                 }),
+                ...(this.moveHint
+                    ? [
+                          fn.span({
+                              classNames: [prefix("move-hint", "d")],
+                              content: this.moveHint,
+                          }),
+                      ]
+                    : []),
                 fn.span({
                     attributes: {
                         title: "Drag to move",
@@ -296,6 +304,19 @@ class PopupBuilder {
     }
 
     /**
+     * The user has found out about moving, the hint is gone for good
+     * @returns {PopupBuilder}
+     */
+    dismissMoveHint() {
+        if (this.moveHint) {
+            this.moveHint = "";
+            fn.$(`.${prefix("move-hint", "d")}`, this.ui)?.remove();
+            settings.set(`options.${this.key}.moveHintSeen`, true);
+        }
+        return this;
+    }
+
+    /**
      * Drag a floating pop-up by its title bar.
      * On the first move, the centered pop-up turns into a compact window at the same place.
      * Restoring the centered pop-up, both undocumented:
@@ -325,6 +346,7 @@ class PopupBuilder {
                 return;
             }
             dragged = true;
+            this.dismissMoveHint();
             if (!this.ui.classList.contains(prefix("moved", "d"))) {
                 this.ui.classList.add(prefix("moved", "d"));
             }
@@ -377,8 +399,10 @@ class PopupBuilder {
      * @param {String} key
      * @param {Object} [options]
      * @param {Boolean} [options.floating=false] A window rather than a modal, see class description
+     * @param {String} [options.moveHint] Floating only: label next to the move handle,
+     *                                    shown on wide screens until the pop-up has been moved once
      */
-    constructor(app, key, { floating = false } = {}) {
+    constructor(app, key, { floating = false, moveHint = "" } = {}) {
         this.key = key;
 
         /**
@@ -392,6 +416,8 @@ class PopupBuilder {
         this.state = "closed";
 
         this.floating = floating;
+
+        this.moveHint = floating && !settings.get(`options.${key}.moveHintSeen`) ? moveHint : "";
 
         /**
          * Position of a moved floating pop-up, kept until the page is reloaded

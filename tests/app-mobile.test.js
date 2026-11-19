@@ -61,6 +61,8 @@ describe("app on mobile", () => {
         handle.dispatchEvent(new MouseEvent("pointermove", opts(110, 60)));
         handle.dispatchEvent(new MouseEvent("pointerup", opts(110, 60)));
         expect(grid.isMoved).toBe(false);
+        // hidden by CSS on small screens, but not dismissed: it shows up on desktop
+        expect(grid.ui.querySelector(".sba-move-hint")).not.toBeNull();
         grid.toggle(false);
     });
 
