@@ -8,6 +8,7 @@
         "url": "https://ko-fi.com/sbassistant",
         "text": "Tip Jar"
     },
+    "issues": "https://github.com/draber/draber.github.io/issues",
     "targetUrl": "https://www.nytimes.com/puzzles/spelling-bee",
     "buildPath": "build",
     "bmlPath": "assets/js"

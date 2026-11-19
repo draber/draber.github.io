@@ -19,6 +19,7 @@ const state = {
     url: config.url,
     prefix: config.prefix,
     support: config.support,
+    issues: config.issues,
     targetUrl: config.targetUrl,
     options: JSON.parse(localStorage.getItem(storageKey) || "{}"),
 };

@@ -9,6 +9,7 @@
     	url: "https://ko-fi.com/sbassistant",
     	text: "Tip Jar"
     };
+    var issues = "https://github.com/draber/draber.github.io/issues";
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
     var version = "6.0.0";
@@ -21,6 +22,7 @@
         url: url,
         prefix: prefix$1,
         support: support,
+        issues: issues,
         targetUrl: targetUrl,
         options: JSON.parse(localStorage.getItem(storageKey) || "{}"),
     };
@@ -413,7 +415,35 @@
         return preferred || toolbars[0] || null;
     };
     const getToolbarHosts = () => sel.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
-    const waitForResultList = () => fn.waitFor(sel.resultList, getGameWrapper());
+    const waitForElement = (lookup, description, timeout) => {
+        return new Promise((resolve, reject) => {
+            const found = lookup();
+            if (found) {
+                resolve(found);
+                return;
+            }
+            const observer = new MutationObserver(() => {
+                const elem = lookup();
+                if (elem) {
+                    observer.disconnect();
+                    clearTimeout(timer);
+                    resolve(elem);
+                }
+            });
+            const timer = setTimeout(() => {
+                observer.disconnect();
+                reject(new Error(`${description} not found within ${timeout / 1000}s`));
+            }, timeout);
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    };
+    const waitForResultList = (timeout = 10000) => {
+        if (!getGameWrapper()) {
+            return Promise.reject(new Error(`${selectors.gameWrapper} not found`));
+        }
+        return waitForElement(() => find("resultList"), selectors.resultList, timeout);
+    };
+    const waitForToolbar = (timeout = 10000) => waitForElement(() => getToolbar(), selectors.toolbar, timeout);
     const getTermFromListItem = (item) => {
         const elem = fn.$(sel.term, item) || (item.childElementCount > 1 ? item.firstElementChild : item);
         return elem.textContent.trim();
@@ -497,6 +527,7 @@
         getToolbar,
         getToolbarHosts,
         waitForResultList,
+        waitForToolbar,
         getTermFromListItem,
         getFoundTerms,
         isMarkedAsPangram,
@@ -2991,6 +3022,114 @@
         };
     };
 
+    const dismissKey = `${settings.get("prefix")}-outage-dismissed`;
+    const today = () => new Date().toISOString().slice(0, 10);
+    const isDismissed = () => {
+        try {
+            return localStorage.getItem(dismissKey) === today();
+        } catch (e) {
+            return false;
+        }
+    };
+    const dismiss = () => {
+        try {
+            localStorage.setItem(dismissKey, today());
+        } catch (e) {
+        }
+    };
+    const reportUrl = (problems) => {
+        const title = `SBA ${settings.get("version")} doesn't start`;
+        const body = [
+            `Version: ${settings.get("version")}`,
+            `Date: ${today()}`,
+            `Browser: ${navigator.userAgent}`,
+            `Viewport: ${window.innerWidth}px`,
+            "",
+            "Not found or failed:",
+            ...problems.map((problem) => `- ${problem}`),
+        ].join("\n");
+        return `${settings.get("issues")}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    };
+    const show = (problems) => {
+        console.warn(
+            `${settings.get("label")} ${settings.get("version")} can't run on this version of the NYT page:\n` +
+                problems.map((problem) => `- ${problem}`).join("\n"),
+        );
+        document.body.dataset[`${settings.get("prefix")}Outage`] = JSON.stringify(problems);
+        if (isDismissed() || document.querySelector(`[data-ui="${settings.get("prefix")}-outage"]`)) {
+            return null;
+        }
+        const link = (href, text) =>
+            fn.a({
+                content: text,
+                attributes: { href, target: "_blank", rel: "noopener" },
+                style: { color: "inherit", textDecoration: "underline", marginRight: "16px" },
+            });
+        const notice = fn.div({
+            attributes: { popover: "manual", role: "status" },
+            data: { ui: `${settings.get("prefix")}-outage` },
+            style: {
+                position: "fixed",
+                inset: "auto 16px auto auto",
+                top: "16px",
+                margin: "0",
+                maxWidth: "min(420px, calc(100vw - 32px))",
+                padding: "14px 40px 14px 16px",
+                border: "1px solid #ccc",
+                borderLeft: "6px solid #f7da21",
+                borderRadius: "6px",
+                background: "#fff",
+                color: "#121212",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)",
+                font: "15px/1.4 nyt-franklin, Helvetica, Arial, sans-serif",
+                textAlign: "left",
+            },
+            content: [
+                fn.strong({
+                    content: settings.get("label"),
+                    style: { display: "block", marginBottom: "4px" },
+                }),
+                fn.p({
+                    content:
+                        "can’t run right now. The New York Times has changed the Spelling Bee page and the assistant needs an update. A fix is on the way!",
+                    style: { margin: "0 0 8px" },
+                }),
+                fn.p({
+                    content: [link(settings.get("url"), "News and updates"), link(reportUrl(problems), "Report the problem")],
+                    style: { margin: "0", fontSize: "13px" },
+                }),
+                fn.button({
+                    content: "×",
+                    attributes: { type: "button", title: "Close" },
+                    aria: { label: "Close" },
+                    style: {
+                        position: "absolute",
+                        top: "6px",
+                        right: "8px",
+                        border: "0",
+                        background: "none",
+                        color: "inherit",
+                        font: "300 26px/1 Helvetica, Arial, sans-serif",
+                        cursor: "pointer",
+                        padding: "0 4px",
+                    },
+                    events: {
+                        click: () => {
+                            dismiss();
+                            notice.remove();
+                        },
+                    },
+                }),
+            ],
+        });
+        document.body.append(notice);
+        notice.showPopover?.();
+        return notice;
+    };
+    var outageNotice = {
+        show,
+    };
+
     const plugins = new Map();
     const register = (Plugin, app) => {
         const instance = new Plugin(app);
@@ -3021,6 +3160,7 @@
     };
 
     class App extends Widget {
+        static resultListTimeout = 10000;
         domSet(key, value) {
             document.body.dataset[prefix(key)] = value;
             return this;
@@ -3049,40 +3189,49 @@
             window.scrollTo(0, titlebarRect.top + titlebarRect.height - gameHeader.offsetHeight);
             return true;
         }
-        checkHealth() {
-            const { ok, problems } = nyt.selfCheck();
-            if (!ok) {
-                console.warn(
-                    `${settings.get("label")}: the NYT page has changed, some features might not work.\n` +
-                        problems.map((p) => `- ${p.selector} not found, affects ${p.impact}`).join("\n"),
-                );
-                this.domSet("health", JSON.stringify(problems.map((p) => p.name)));
-            }
-            return ok;
+        fail(problems) {
+            this.failed = true;
+            this.ui.dispatchEvent(new Event(prefix("destroy")));
+            outageNotice.show(problems);
+            return this;
         }
         load() {
-            nyt.waitForResultList().then((resultList) => {
-                this.resultList = resultList;
-                this.checkHealth();
-                this.observer = this.buildObserver();
-                data.init(this, nyt.getFoundTerms(resultList));
-                hive.init();
-                this.add();
-                this.domSet("active", true);
-                shortcutRegistry.add(this.shortcut);
-                this.registerPlugins();
-                this.trigger(prefix("refreshUi"), null);
-                document.dispatchEvent(new Event(prefix("ready")));
-                document.addEventListener("keydown", this.onKeyDown);
-                document.addEventListener("keyup", this.onKeyUp);
-                this.on(prefix("newInput"), () => {
-                    if (this.pendingShortcut) {
-                        shortcutRegistry.handleShortcut(this.pendingShortcut);
-                        this.pendingShortcut = null;
+            return Promise.all([nyt.waitForResultList(App.resultListTimeout), nyt.waitForToolbar(App.resultListTimeout)])
+                .then(([resultList]) => {
+                    const { ok, problems } = nyt.selfCheck();
+                    if (!ok) {
+                        this.fail(problems.map((problem) => `${problem.selector} not found (${problem.impact})`));
+                        return;
                     }
-                });
-                this.focusGame();
+                    try {
+                        this.start(resultList);
+                    } catch (error) {
+                        console.error(error);
+                        this.fail([`start failed: ${error.message}`]);
+                    }
+                })
+                .catch((error) => this.fail([error.message]));
+        }
+        start(resultList) {
+            this.resultList = resultList;
+            this.observer = this.buildObserver();
+            data.init(this, nyt.getFoundTerms(resultList));
+            hive.init();
+            this.add();
+            this.domSet("active", true);
+            shortcutRegistry.add(this.shortcut);
+            this.registerPlugins();
+            this.trigger(prefix("refreshUi"), null);
+            document.dispatchEvent(new Event(prefix("ready")));
+            document.addEventListener("keydown", this.onKeyDown);
+            document.addEventListener("keyup", this.onKeyUp);
+            this.on(prefix("newInput"), () => {
+                if (this.pendingShortcut) {
+                    shortcutRegistry.handleShortcut(this.pendingShortcut);
+                    this.pendingShortcut = null;
+                }
             });
+            this.focusGame();
         }
         onKeyDown = (event) => {
             if (!shortcutRegistry.getSbaShortcutEntry(event)) {
@@ -3189,7 +3338,7 @@
                 module: this.key,
                 callback: () => this.toggle(),
             };
-            this.load();
+            this.ready = this.load();
         }
     }
 
@@ -3197,7 +3346,7 @@
     if (gameWrapper) {
         new App(gameWrapper);
     } else {
-        console.warn(`${settings.get("label")}: ${nyt.selectors.gameWrapper} not found, the NYT page has changed.`);
+        outageNotice.show([`${nyt.selectors.gameWrapper} not found`]);
     }
 
 })();

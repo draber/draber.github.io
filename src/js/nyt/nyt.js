@@ -147,11 +147,55 @@ const getToolbar = () => {
 const getToolbarHosts = () => sel.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
 
 /**
- * Wait for the result list, it is rendered once the NYT has loaded the user's progress.
- * Everything else in the game can be assumed to be ready by then.
- * @returns {Promise<HTMLElement>}
+ * Wait for an element to show up anywhere on the page
+ * @param {Function} lookup returns the element or null
+ * @param {String} description for the error message
+ * @param {Number} timeout milliseconds
+ * @returns {Promise<HTMLElement>} rejects with an Error naming what's missing
  */
-const waitForResultList = () => fn.waitFor(sel.resultList, getGameWrapper());
+const waitForElement = (lookup, description, timeout) => {
+    return new Promise((resolve, reject) => {
+        const found = lookup();
+        if (found) {
+            resolve(found);
+            return;
+        }
+        const observer = new MutationObserver(() => {
+            const elem = lookup();
+            if (elem) {
+                observer.disconnect();
+                clearTimeout(timer);
+                resolve(elem);
+            }
+        });
+        const timer = setTimeout(() => {
+            observer.disconnect();
+            reject(new Error(`${description} not found within ${timeout / 1000}s`));
+        }, timeout);
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+};
+
+/**
+ * Wait for the result list, it is rendered once the NYT has loaded the user's progress.
+ * Everything in the game can be assumed to be ready by then.
+ * Gives up after `timeout`, the page has changed then.
+ * @param {Number} [timeout=10000] milliseconds
+ * @returns {Promise<HTMLElement>} rejects with an Error naming the selector
+ */
+const waitForResultList = (timeout = 10000) => {
+    if (!getGameWrapper()) {
+        return Promise.reject(new Error(`${selectors.gameWrapper} not found`));
+    }
+    return waitForElement(() => find("resultList"), selectors.resultList, timeout);
+};
+
+/**
+ * Wait for the toolbar, on mobile it can show up after the game
+ * @param {Number} [timeout=10000] milliseconds
+ * @returns {Promise<HTMLElement>} rejects with an Error naming the selector
+ */
+const waitForToolbar = (timeout = 10000) => waitForElement(() => getToolbar(), selectors.toolbar, timeout);
 
 /**
  * Read the term from an item of a word list (result list, Yesterday's Answers).
@@ -314,6 +358,7 @@ export default {
     getToolbar,
     getToolbarHosts,
     waitForResultList,
+    waitForToolbar,
     getTermFromListItem,
     getFoundTerms,
     isMarkedAsPangram,

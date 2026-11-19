@@ -6,12 +6,12 @@
  */
 import App from "./modules/app.js";
 import nyt from "./nyt/nyt.js";
-import settings from "./modules/settings.js";
+import outageNotice from "./widgets/outageNotice.js";
 
 const gameWrapper = nyt.getGameWrapper();
 
 if (gameWrapper) {
     new App(gameWrapper);
 } else {
-    console.warn(`${settings.get("label")}: ${nyt.selectors.gameWrapper} not found, the NYT page has changed.`);
+    outageNotice.show([`${nyt.selectors.gameWrapper} not found`]);
 }

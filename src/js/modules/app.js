@@ -12,6 +12,7 @@ import Widget from "./widget.js";
 import { prefix } from "../utils/string.js";
 import fn from "fancy-node";
 import nyt from "../nyt/nyt.js";
+import outageNotice from "../widgets/outageNotice.js";
 import pluginRegistry from "./pluginRegistry.js";
 import shortcutRegistry from "./shortcutRegistry.js";
 
@@ -19,6 +20,12 @@ import shortcutRegistry from "./shortcutRegistry.js";
  * App container
  */
 class App extends Widget {
+    /**
+     * How long to wait for the result list and the toolbar before giving up, in milliseconds
+     * @type {Number}
+     */
+    static resultListTimeout = 10000;
+
     /**
      * Set a `data` value on `<body>`
      * @param {String} key
@@ -78,51 +85,69 @@ class App extends Widget {
     }
 
     /**
-     * Report missing parts of the NYT page. Doesn't stop the app, most features work without some of them.
-     * @returns {Boolean} true if everything is in place
+     * The NYT page has changed in a way SBA can't handle: all or nothing.
+     * Remove whatever has been added already and show a notice instead of a half-working assistant.
+     * @param {String[]} problems
+     * @returns {App}
      */
-    checkHealth() {
-        const { ok, problems } = nyt.selfCheck();
-        if (!ok) {
-            console.warn(
-                `${settings.get("label")}: the NYT page has changed, some features might not work.\n` +
-                    problems.map((p) => `- ${p.selector} not found, affects ${p.impact}`).join("\n"),
-            );
-            this.domSet("health", JSON.stringify(problems.map((p) => p.name)));
-        }
-        return ok;
+    fail(problems) {
+        this.failed = true;
+        this.ui.dispatchEvent(new Event(prefix("destroy")));
+        outageNotice.show(problems);
+        return this;
     }
 
     /**
      * Start the application once the result list has been generated.
      * The result list depends on sync data from the server, so it can be assumed that everything is ready.
+     * If anything SBA depends on is missing or the start fails, SBA doesn't start at all, see `fail()`.
+     * @returns {Promise<void>}
      */
     load() {
-        nyt.waitForResultList().then((resultList) => {
-            this.resultList = resultList;
-            this.checkHealth();
-            this.observer = this.buildObserver();
-            data.init(this, nyt.getFoundTerms(resultList));
-            hive.init();
-
-            this.add();
-            this.domSet("active", true);
-            shortcutRegistry.add(this.shortcut);
-            this.registerPlugins();
-            this.trigger(prefix("refreshUi"), null);
-            document.dispatchEvent(new Event(prefix("ready")));
-
-            document.addEventListener("keydown", this.onKeyDown);
-            document.addEventListener("keyup", this.onKeyUp);
-
-            this.on(prefix("newInput"), () => {
-                if (this.pendingShortcut) {
-                    shortcutRegistry.handleShortcut(this.pendingShortcut);
-                    this.pendingShortcut = null;
+        return Promise.all([nyt.waitForResultList(App.resultListTimeout), nyt.waitForToolbar(App.resultListTimeout)])
+            .then(([resultList]) => {
+                const { ok, problems } = nyt.selfCheck();
+                if (!ok) {
+                    this.fail(problems.map((problem) => `${problem.selector} not found (${problem.impact})`));
+                    return;
                 }
-            });
-            this.focusGame();
+                try {
+                    this.start(resultList);
+                } catch (error) {
+                    console.error(error);
+                    this.fail([`start failed: ${error.message}`]);
+                }
+            })
+            .catch((error) => this.fail([error.message]));
+    }
+
+    /**
+     * Build the assistant
+     * @param {HTMLElement} resultList
+     */
+    start(resultList) {
+        this.resultList = resultList;
+        this.observer = this.buildObserver();
+        data.init(this, nyt.getFoundTerms(resultList));
+        hive.init();
+
+        this.add();
+        this.domSet("active", true);
+        shortcutRegistry.add(this.shortcut);
+        this.registerPlugins();
+        this.trigger(prefix("refreshUi"), null);
+        document.dispatchEvent(new Event(prefix("ready")));
+
+        document.addEventListener("keydown", this.onKeyDown);
+        document.addEventListener("keyup", this.onKeyUp);
+
+        this.on(prefix("newInput"), () => {
+            if (this.pendingShortcut) {
+                shortcutRegistry.handleShortcut(this.pendingShortcut);
+                this.pendingShortcut = null;
+            }
         });
+        this.focusGame();
     }
 
     /**
@@ -304,7 +329,11 @@ class App extends Widget {
             callback: () => this.toggle(),
         };
 
-        this.load();
+        /**
+         * Resolves once the app has started, or failed to start (see `fail()`)
+         * @type {Promise<void>}
+         */
+        this.ready = this.load();
     }
 }
 
