@@ -85,7 +85,8 @@ ol {
     scroll-margin-top: 12rem;
     background: var(--highlight-bg-color);
 }
-img {
+img,
+video {
     height: auto;
     box-sizing: content-box;
 }
@@ -112,7 +113,8 @@ a:visited {
 main.wrapper {
     padding: 12rem 0 3rem 0;
 }
-main img {
+main img,
+main video {
     max-width: 100%;
     display: block;
     background-color: var(--body-bg-color);
@@ -170,8 +172,12 @@ main .hive-box svg {
 .card.row img {
     max-width: none;
 }
-.card img {
+.card img,
+.card video {
     margin-bottom: var(--card-gap);
+}
+.card video {
+    cursor: pointer;
 }
 .card article {
     padding: 0 0.5rem;
