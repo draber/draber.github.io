@@ -12,15 +12,15 @@
     var issues = "https://github.com/draber/draber.github.io/issues";
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "6.0.0";
+    var version = "6.0.1";
 
-    const storageKey = `${prefix$1}-settings`;
+    const storageKey$1 = `${prefix$1}-settings`;
     const schema = 1;
     const migrations = {};
     const storage = {
         read() {
             try {
-                return localStorage.getItem(storageKey);
+                return localStorage.getItem(storageKey$1);
             } catch (err) {
                 console.warn(`${label}: can't read the settings, using defaults`, err);
                 return null;
@@ -28,14 +28,14 @@
         },
         write(value) {
             try {
-                localStorage.setItem(storageKey, value);
+                localStorage.setItem(storageKey$1, value);
             } catch (err) {
                 console.warn(`${label}: can't save the settings`, err);
             }
         },
         backup(raw) {
             try {
-                localStorage.setItem(`${storageKey}-broken`, raw);
+                localStorage.setItem(`${storageKey$1}-broken`, raw);
             } catch (err) {
             }
         },
@@ -53,7 +53,7 @@
             options = null;
         }
         if (!isPlainObject(options)) {
-            console.warn(`${label}: the stored settings are unusable, starting with defaults. A copy is in ${storageKey}-broken`);
+            console.warn(`${label}: the stored settings are unusable, starting with defaults. A copy is in ${storageKey$1}-broken`);
             storage.backup(raw);
             return { schema };
         }
@@ -3108,21 +3108,103 @@
         };
     };
 
-    const dismissKey = `${settings.get("prefix")}-outage-dismissed`;
-    const today = () => new Date().toISOString().slice(0, 10);
-    const isDismissed = () => {
+    const isoDate = (days = 0) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
+    const storageKey = (key) => `${settings.get("prefix")}-${key}-dismissed`;
+    const isDismissed = (key) => {
         try {
-            return localStorage.getItem(dismissKey) === today();
+            const until = localStorage.getItem(storageKey(key));
+            return !!until && until >= isoDate();
         } catch (e) {
             return false;
         }
     };
-    const dismiss = () => {
+    const dismiss = (key, days) => {
         try {
-            localStorage.setItem(dismissKey, today());
+            localStorage.setItem(storageKey(key), isoDate(days - 1));
         } catch (e) {
         }
     };
+    const show$1 = ({ key, text, links = [], dismissDays = 1 }) => {
+        const ui = `${settings.get("prefix")}-${key}`;
+        if (isDismissed(key) || document.querySelector(`[data-ui="${ui}"]`)) {
+            return null;
+        }
+        const link = ({ href, text }) =>
+            fn.a({
+                content: text,
+                attributes: { href, target: "_blank", rel: "noopener" },
+                style: { color: "inherit", textDecoration: "underline", marginRight: "16px" },
+            });
+        const notice = fn.div({
+            attributes: { popover: "manual", role: "status" },
+            data: { ui },
+            style: {
+                position: "fixed",
+                inset: "auto 16px auto auto",
+                top: "16px",
+                margin: "0",
+                boxSizing: "border-box",
+                maxWidth: "min(420px, calc(100vw - 32px))",
+                padding: "14px 40px 14px 16px",
+                border: "1px solid #ccc",
+                borderLeft: "6px solid #f7da21",
+                borderRadius: "6px",
+                background: "#fff",
+                color: "#121212",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)",
+                font: "15px/1.4 nyt-franklin, Helvetica, Arial, sans-serif",
+                textAlign: "left",
+            },
+            content: [
+                fn.strong({
+                    content: settings.get("label"),
+                    style: { display: "block", marginBottom: "4px" },
+                }),
+                fn.p({
+                    content: text,
+                    style: { margin: links.length ? "0 0 8px" : "0" },
+                }),
+                ...(links.length
+                    ? [
+                          fn.p({
+                              content: links.map(link),
+                              style: { margin: "0", fontSize: "13px" },
+                          }),
+                      ]
+                    : []),
+                fn.button({
+                    content: "×",
+                    attributes: { type: "button", title: "Close" },
+                    aria: { label: "Close" },
+                    style: {
+                        position: "absolute",
+                        top: "6px",
+                        right: "8px",
+                        border: "0",
+                        background: "none",
+                        color: "inherit",
+                        font: "300 26px/1 Helvetica, Arial, sans-serif",
+                        cursor: "pointer",
+                        padding: "0 4px",
+                    },
+                    events: {
+                        click: () => {
+                            dismiss(key, dismissDays);
+                            notice.remove();
+                        },
+                    },
+                }),
+            ],
+        });
+        document.body.append(notice);
+        notice.showPopover?.();
+        return notice;
+    };
+    var notice = {
+        show: show$1,
+    };
+
+    const today = () => new Date().toISOString().slice(0, 10);
     const reportUrl = (problems) => {
         const title = `SBA ${settings.get("version")} doesn't start`;
         const body = [
@@ -3142,75 +3224,14 @@
                 problems.map((problem) => `- ${problem}`).join("\n"),
         );
         document.body.dataset[`${settings.get("prefix")}Outage`] = JSON.stringify(problems);
-        if (isDismissed() || document.querySelector(`[data-ui="${settings.get("prefix")}-outage"]`)) {
-            return null;
-        }
-        const link = (href, text) =>
-            fn.a({
-                content: text,
-                attributes: { href, target: "_blank", rel: "noopener" },
-                style: { color: "inherit", textDecoration: "underline", marginRight: "16px" },
-            });
-        const notice = fn.div({
-            attributes: { popover: "manual", role: "status" },
-            data: { ui: `${settings.get("prefix")}-outage` },
-            style: {
-                position: "fixed",
-                inset: "auto 16px auto auto",
-                top: "16px",
-                margin: "0",
-                maxWidth: "min(420px, calc(100vw - 32px))",
-                padding: "14px 40px 14px 16px",
-                border: "1px solid #ccc",
-                borderLeft: "6px solid #f7da21",
-                borderRadius: "6px",
-                background: "#fff",
-                color: "#121212",
-                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)",
-                font: "15px/1.4 nyt-franklin, Helvetica, Arial, sans-serif",
-                textAlign: "left",
-            },
-            content: [
-                fn.strong({
-                    content: settings.get("label"),
-                    style: { display: "block", marginBottom: "4px" },
-                }),
-                fn.p({
-                    content:
-                        "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update. A fix is on the way!",
-                    style: { margin: "0 0 8px" },
-                }),
-                fn.p({
-                    content: [link(settings.get("url"), "News and updates"), link(reportUrl(problems), "Report the problem")],
-                    style: { margin: "0", fontSize: "13px" },
-                }),
-                fn.button({
-                    content: "×",
-                    attributes: { type: "button", title: "Close" },
-                    aria: { label: "Close" },
-                    style: {
-                        position: "absolute",
-                        top: "6px",
-                        right: "8px",
-                        border: "0",
-                        background: "none",
-                        color: "inherit",
-                        font: "300 26px/1 Helvetica, Arial, sans-serif",
-                        cursor: "pointer",
-                        padding: "0 4px",
-                    },
-                    events: {
-                        click: () => {
-                            dismiss();
-                            notice.remove();
-                        },
-                    },
-                }),
+        return notice.show({
+            key: "outage",
+            text: "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update. A fix is on the way!",
+            links: [
+                { href: settings.get("url"), text: "News and updates" },
+                { href: reportUrl(problems), text: "Report the problem" },
             ],
         });
-        document.body.append(notice);
-        notice.showPopover?.();
-        return notice;
     };
     var outageNotice = {
         show,
@@ -3428,11 +3449,29 @@
         }
     }
 
+    const isKiwi = (userAgent = navigator.userAgent) => /\bKiwi\b/.test(userAgent);
+    const check = (userAgent = navigator.userAgent) => {
+        if (!isKiwi(userAgent)) {
+            return null;
+        }
+        return notice.show({
+            key: "kiwi",
+            text: "Kiwi Browser is no longer maintained, and parts of the assistant don’t work in it. Vivaldi for Android runs the assistant without problems.",
+            links: [{ href: `${settings.get("url")}#mobile-installation`, text: "How to switch" }],
+            dismissDays: 30,
+        });
+    };
+    var browserNotice = {
+        isKiwi,
+        check,
+    };
+
     const gameWrapper = nyt.getGameWrapper();
     if (gameWrapper) {
         new App(gameWrapper);
     } else {
         outageNotice.show([`${nyt.selectors.gameWrapper} not found`]);
     }
+    browserNotice.check();
 
 })();
