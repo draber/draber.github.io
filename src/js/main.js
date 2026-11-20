@@ -7,6 +7,7 @@
 import App from "./modules/app.js";
 import nyt from "./nyt/nyt.js";
 import outageNotice from "./widgets/outageNotice.js";
+import browserNotice from "./widgets/browserNotice.js";
 
 const gameWrapper = nyt.getGameWrapper();
 
@@ -15,3 +16,6 @@ if (gameWrapper) {
 } else {
     outageNotice.show([`${nyt.selectors.gameWrapper} not found`]);
 }
+
+// e.g. Kiwi, which is no longer maintained: the assistant runs, but not all of it works
+browserNotice.check();

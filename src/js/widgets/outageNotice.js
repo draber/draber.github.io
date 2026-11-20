@@ -4,52 +4,19 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-import fn from "fancy-node";
 import settings from "../modules/settings.js";
+import notice from "./notice.js";
 
 /**
- * Notice shown instead of the assistant when the NYT page has changed in a way SBA can't handle.
- *
- * Everything here must work on a page SBA doesn't understand anymore:
- * - it lives in the top layer (popover), not in the NYT DOM, which may have changed or be re-rendered
- * - the styles are inline, SBA's stylesheet isn't loaded in this case
- * - it only uses `document.body`
+ * Notice shown instead of the assistant when the Spelling Bee page has changed in a way SBA can't handle,
+ * see widgets/notice.js. Closed, it stays away for the rest of the day.
  */
-
-/**
- * Key in localStorage, the notice is dismissed for the day
- * @type {String}
- */
-const dismissKey = `${settings.get("prefix")}-outage-dismissed`;
 
 /**
  * Today as YYYY-MM-DD
  * @returns {String}
  */
 const today = () => new Date().toISOString().slice(0, 10);
-
-/**
- * Whether the user has closed the notice today
- * @returns {Boolean}
- */
-const isDismissed = () => {
-    try {
-        return localStorage.getItem(dismissKey) === today();
-    } catch (e) {
-        return false;
-    }
-};
-
-/**
- * Remember that the user has closed the notice today
- */
-const dismiss = () => {
-    try {
-        localStorage.setItem(dismissKey, today());
-    } catch (e) {
-        // private mode or storage disabled, the notice will show again on reload
-    }
-};
 
 /**
  * Link to a new GitHub issue with the details a fix needs
@@ -82,78 +49,14 @@ const show = (problems) => {
     );
     document.body.dataset[`${settings.get("prefix")}Outage`] = JSON.stringify(problems);
 
-    if (isDismissed() || document.querySelector(`[data-ui="${settings.get("prefix")}-outage"]`)) {
-        return null;
-    }
-
-    const link = (href, text) =>
-        fn.a({
-            content: text,
-            attributes: { href, target: "_blank", rel: "noopener" },
-            style: { color: "inherit", textDecoration: "underline", marginRight: "16px" },
-        });
-
-    const notice = fn.div({
-        attributes: { popover: "manual", role: "status" },
-        data: { ui: `${settings.get("prefix")}-outage` },
-        style: {
-            position: "fixed",
-            inset: "auto 16px auto auto",
-            top: "16px",
-            margin: "0",
-            maxWidth: "min(420px, calc(100vw - 32px))",
-            padding: "14px 40px 14px 16px",
-            border: "1px solid #ccc",
-            borderLeft: "6px solid #f7da21",
-            borderRadius: "6px",
-            background: "#fff",
-            color: "#121212",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.15)",
-            font: "15px/1.4 nyt-franklin, Helvetica, Arial, sans-serif",
-            textAlign: "left",
-        },
-        content: [
-            fn.strong({
-                content: settings.get("label"),
-                style: { display: "block", marginBottom: "4px" },
-            }),
-            fn.p({
-                content:
-                    "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update. A fix is on the way!",
-                style: { margin: "0 0 8px" },
-            }),
-            fn.p({
-                content: [link(settings.get("url"), "News and updates"), link(reportUrl(problems), "Report the problem")],
-                style: { margin: "0", fontSize: "13px" },
-            }),
-            fn.button({
-                content: "×",
-                attributes: { type: "button", title: "Close" },
-                aria: { label: "Close" },
-                style: {
-                    position: "absolute",
-                    top: "6px",
-                    right: "8px",
-                    border: "0",
-                    background: "none",
-                    color: "inherit",
-                    font: "300 26px/1 Helvetica, Arial, sans-serif",
-                    cursor: "pointer",
-                    padding: "0 4px",
-                },
-                events: {
-                    click: () => {
-                        dismiss();
-                        notice.remove();
-                    },
-                },
-            }),
+    return notice.show({
+        key: "outage",
+        text: "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update. A fix is on the way!",
+        links: [
+            { href: settings.get("url"), text: "News and updates" },
+            { href: reportUrl(problems), text: "Report the problem" },
         ],
     });
-
-    document.body.append(notice);
-    notice.showPopover?.();
-    return notice;
 };
 
 export default {
