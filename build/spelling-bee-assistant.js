@@ -352,10 +352,11 @@
         pangram: ".pangram",
         modalWrapper: ".sb-modal-wrapper",
         yesterdayFrame: ".sb-modal-frame:is(.yesterday, .yesterdayNew)",
+        moment: ".pz-moment",
         modalClosers: [
-            ".pz-moment__frame.on-stage .pz-moment__close",
-            ".pz-moment__frame.on-stage .pz-moment__close_text",
-            ".sb-modal-close",
+            ".pz-moment__close_text",
+            ".sb-modal-close, [data-testid='sb-modal-close']",
+            "button:has(> .pz-icon-close)",
         ],
         toolbarButtons: {
             yesterday: ".pz-toolbar-button__yesterday",
@@ -440,6 +441,16 @@
         return preferred || toolbars[0] || null;
     };
     const getToolbarHosts = () => sel.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
+    const isVisible = (elem) => {
+        if (!elem?.isConnected) {
+            return false;
+        }
+        if (typeof elem.checkVisibility !== "function") {
+            return true;
+        }
+        return elem.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+    };
+    const isMomentShowing = () => findAll("moment").some(isVisible);
     const firstInteraction = () =>
         new Promise((resolve) => {
             const events = ["pointerdown", "keydown"];
@@ -472,11 +483,16 @@
                 if (settled) {
                     return;
                 }
-                timer = setTimeout(() => {
+                const expire = () => {
+                    if (isMomentShowing()) {
+                        timer = setTimeout(expire, timeout);
+                        return;
+                    }
                     settled = true;
                     observer.disconnect();
                     reject(new Error(`${description} not found within ${timeout / 1000}s`));
-                }, timeout);
+                };
+                timer = setTimeout(expire, timeout);
             });
         });
     };
@@ -508,8 +524,12 @@
         return null;
     };
     const findModalCloser = () => {
+        const wrapper = getGameWrapper();
+        if (!wrapper) {
+            return null;
+        }
         for (const selector of sel.modalClosers) {
-            const closer = fn.$(selector, getGameWrapper());
+            const closer = fn.$$(selector, wrapper).find(isVisible);
             if (closer) {
                 return closer;
             }
@@ -578,6 +598,7 @@
         isHiveInput,
         findYesterdayModal,
         findModalCloser,
+        isMomentShowing,
         closeModal,
         clickToolbarButton,
         getHiveCells,
@@ -3331,7 +3352,6 @@
             this.trigger(prefix("refreshUi"), null);
             document.dispatchEvent(new Event(prefix("ready")));
             document.addEventListener("keydown", this.onKeyDown);
-            document.addEventListener("keyup", this.onKeyUp);
             this.on(prefix("newInput"), () => {
                 if (this.pendingShortcut) {
                     shortcutRegistry.handleShortcut(this.pendingShortcut);
@@ -3445,6 +3465,7 @@
                 module: this.key,
                 callback: () => this.toggle(),
             };
+            document.addEventListener("keyup", this.onKeyUp);
             this.ready = this.load();
         }
     }

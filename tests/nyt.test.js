@@ -91,6 +91,46 @@ describe("NYT adapter", () => {
         expect(clicked).toBe(1);
     });
 
+    it("closes the Genius screen with 'Keep playing', but never a moment that is done", () => {
+        const root = document.querySelector("#pz-game-root");
+        // a moment that is done: still in the DOM, hidden
+        const done = document.createElement("div");
+        done.className = "pz-moment pz-moment__welcome";
+        done.innerHTML = '<button type="button" class="pz-moment__close_text">Close</button>';
+        done.querySelector("button").checkVisibility = () => false;
+        let clickedDone = 0;
+        done.querySelector("button").addEventListener("click", () => clickedDone++);
+        root.append(done);
+        expect(nyt.closeModal()).toBe(false);
+
+        const genius = document.createElement("div");
+        genius.className = "pz-moment pz-moment__congrats";
+        genius.innerHTML =
+            '<div class="pz-moment__container"><button type="button" class="pz-moment__close_text"><span class="inner-text">Keep playing</span></button></div>';
+        let clicked = 0;
+        genius.querySelector("button").addEventListener("click", () => clicked++);
+        root.append(genius);
+
+        expect(nyt.isMomentShowing()).toBe(true);
+        expect(nyt.closeModal()).toBe(true);
+        expect(clicked).toBe(1);
+        expect(clickedDone).toBe(0);
+    });
+
+    it("finds modal closers by test id and by the close icon, if the class names change", () => {
+        const root = document.querySelector("#pz-game-root");
+        const byTestId = document.createElement("div");
+        byTestId.innerHTML = '<button type="button" data-testid="sb-modal-close" aria-label="Close modal">×</button>';
+        root.append(byTestId);
+        expect(nyt.findModalCloser()).toBe(byTestId.querySelector("button"));
+        byTestId.remove();
+
+        const byIcon = document.createElement("div");
+        byIcon.innerHTML = '<button type="button"><span>Close</span><i class="pz-icon pz-icon-close"></i></button>';
+        root.append(byIcon);
+        expect(nyt.findModalCloser()).toBe(byIcon.querySelector("button"));
+    });
+
     it("clicks toolbar buttons", () => {
         let clicked = 0;
         document.querySelector("#pz-game-root .pz-toolbar-button__yesterday").addEventListener("click", () => clicked++);

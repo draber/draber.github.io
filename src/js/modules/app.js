@@ -140,7 +140,6 @@ class App extends Widget {
         document.dispatchEvent(new Event(prefix("ready")));
 
         document.addEventListener("keydown", this.onKeyDown);
-        document.addEventListener("keyup", this.onKeyUp);
 
         this.on(prefix("newInput"), () => {
             if (this.pendingShortcut) {
@@ -329,6 +328,10 @@ class App extends Widget {
             module: this.key,
             callback: () => this.toggle(),
         };
+
+        // Escape closes NYT modals and moments right away, not only once the game is there:
+        // the Genius screen, for instance, is shown before the game is rendered, while the app still waits
+        document.addEventListener("keyup", this.onKeyUp);
 
         /**
          * Resolves once the app has started, or failed to start (see `fail()`)

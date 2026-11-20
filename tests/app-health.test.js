@@ -122,6 +122,51 @@ describe("app on a changed NYT page", () => {
         expect(notice()).toBeNull();
     });
 
+    it("keeps waiting while a moment like the Genius screen is shown, clicks or not", async () => {
+        const list = $(".sb-wordlist-items-pag");
+        const parent = list.parentElement;
+        list.remove();
+        const moment = document.createElement("div");
+        moment.className = "pz-moment pz-moment__congrats";
+        $("#pz-game-root").append(moment);
+        const { App } = await start({ timeout: 30 });
+        const app = new App($("#js-hook-game-wrapper"));
+        interact();
+        // several timeouts long, on the moment
+        await tick(150);
+        expect(notice()).toBeNull();
+        expect(document.body.dataset.sbaOutage).toBeUndefined();
+
+        // "Keep playing": the moment goes, the game is rendered
+        moment.remove();
+        parent.append(list);
+        await app.ready;
+        expect($("[data-id='sbaApp']")).not.toBeNull();
+        expect(notice()).toBeNull();
+    });
+
+    it("closes the Genius screen with Escape while still waiting for the game", async () => {
+        const list = $(".sb-wordlist-items-pag");
+        const parent = list.parentElement;
+        list.remove();
+        const genius = document.createElement("div");
+        genius.className = "pz-moment pz-moment__congrats";
+        genius.innerHTML = '<button type="button" class="pz-moment__close_text">Keep playing</button>';
+        // like the NYT: "Keep playing" removes the moment and renders the game
+        genius.querySelector("button").addEventListener("click", () => {
+            genius.remove();
+            parent.append(list);
+        });
+        $("#pz-game-root").append(genius);
+        const { App } = await start({ timeout: 30 });
+        const app = new App($("#js-hook-game-wrapper"));
+
+        document.dispatchEvent(new KeyboardEvent("keyup", { code: "Escape", key: "Escape", bubbles: true }));
+        await app.ready;
+        expect($(".pz-moment__congrats")).toBeNull();
+        expect($("[data-id='sbaApp']")).not.toBeNull();
+    });
+
     it("counts the timeout from the first click", async () => {
         $(".sb-wordlist-items-pag").remove();
         const { App } = await start({ timeout: 50 });

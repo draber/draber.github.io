@@ -147,6 +147,28 @@ const getToolbar = () => {
 const getToolbarHosts = () => sel.toolbarHosts.map((selector) => fn.$(selector)).filter(Boolean);
 
 /**
+ * Whether an element is actually shown. Moments that are done stay in the DOM, hidden by a hashed class.
+ * Browsers without `checkVisibility()` (Chrome < 105) count everything as visible.
+ * @param {HTMLElement} elem
+ * @returns {Boolean}
+ */
+const isVisible = (elem) => {
+    if (!elem?.isConnected) {
+        return false;
+    }
+    if (typeof elem.checkVisibility !== "function") {
+        return true;
+    }
+    return elem.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+};
+
+/**
+ * Whether a full-screen moment (welcome, Genius …) is shown, the game isn't rendered then
+ * @returns {Boolean}
+ */
+const isMomentShowing = () => findAll("moment").some(isVisible);
+
+/**
  * Resolves on the first click, tap or key press on the page.
  * The game is only rendered once the player has left the welcome screen ("Continue", "Play"),
  * so there's no point in counting the time before that.
@@ -164,8 +186,8 @@ const firstInteraction = () =>
 
 /**
  * Wait for an element to show up anywhere on the page.
- * The clock starts with the player's first interaction, see firstInteraction():
- * on the welcome screen nothing is missing yet, the game simply isn't there.
+ * The clock starts with the player's first interaction, see firstInteraction(),
+ * and starts over as long as a moment (welcome, Genius …) is shown: the game simply isn't there yet.
  * @param {Function} lookup returns the element or null
  * @param {String} description for the error message
  * @param {Number} timeout milliseconds after the first interaction
@@ -194,11 +216,17 @@ const waitForElement = (lookup, description, timeout) => {
             if (settled) {
                 return;
             }
-            timer = setTimeout(() => {
+            const expire = () => {
+                // still on a moment (welcome, Genius …): the game isn't there yet, nothing is broken
+                if (isMomentShowing()) {
+                    timer = setTimeout(expire, timeout);
+                    return;
+                }
                 settled = true;
                 observer.disconnect();
                 reject(new Error(`${description} not found within ${timeout / 1000}s`));
-            }, timeout);
+            };
+            timer = setTimeout(expire, timeout);
         });
     });
 };
@@ -288,8 +316,13 @@ const findYesterdayModal = (nodes) => {
  * @returns {HTMLElement|null}
  */
 const findModalCloser = () => {
+    const wrapper = getGameWrapper();
+    if (!wrapper) {
+        return null;
+    }
     for (const selector of sel.modalClosers) {
-        const closer = fn.$(selector, getGameWrapper());
+        // moments that are done stay in the DOM, their buttons must not be clicked
+        const closer = fn.$$(selector, wrapper).find(isVisible);
         if (closer) {
             return closer;
         }
@@ -393,6 +426,7 @@ export default {
     isHiveInput,
     findYesterdayModal,
     findModalCloser,
+    isMomentShowing,
     closeModal,
     clickToolbarButton,
     getHiveCells,

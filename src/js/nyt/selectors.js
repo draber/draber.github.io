@@ -52,10 +52,19 @@ const selectors = {
     modalWrapper: ".sb-modal-wrapper",
     // `yesterdayNew` since Nov 2026
     yesterdayFrame: ".sb-modal-frame:is(.yesterday, .yesterdayNew)",
+    // full-screen "moments" in front of the game: welcome, congratulations (Genius, Queen Bee) …
+    // The game itself isn't rendered while one is shown. Moments that are done stay in the DOM, hidden.
+    moment: ".pz-moment",
+    // only visible ones count, see nyt.findModalCloser()
+    // Two families as of Nov 2026: moments (Genius) and modals (Stats, Yesterday's Answers, How to play).
+    // `data-testid` attributes are for the NYT's own tests and tend to outlive class names.
     modalClosers: [
-        ".pz-moment__frame.on-stage .pz-moment__close",
-        ".pz-moment__frame.on-stage .pz-moment__close_text",
-        ".sb-modal-close",
+        // "Keep playing ×" on moments like the Genius screen
+        ".pz-moment__close_text",
+        // × on modals like Stats, Yesterday's Answers, How to play
+        ".sb-modal-close, [data-testid='sb-modal-close']",
+        // net for anything else that closes with the NYT's close icon
+        "button:has(> .pz-icon-close)",
     ],
 
     // toolbar buttons that open NYT modals
