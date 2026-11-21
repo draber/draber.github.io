@@ -131,6 +131,16 @@ describe("NYT adapter", () => {
         expect(nyt.findModalCloser()).toBe(byIcon.querySelector("button"));
     });
 
+    it("counts the loading spinner as a screen in front of the game", () => {
+        expect(nyt.isMomentShowing()).toBe(false);
+        const loader = document.createElement("div");
+        loader.className = "pz-loader-container";
+        document.querySelector("#pz-game-root").append(loader);
+        expect(nyt.isMomentShowing()).toBe(true);
+        loader.checkVisibility = () => false;
+        expect(nyt.isMomentShowing()).toBe(false);
+    });
+
     it("clicks toolbar buttons", () => {
         let clicked = 0;
         document.querySelector("#pz-game-root .pz-toolbar-button__yesterday").addEventListener("click", () => clicked++);

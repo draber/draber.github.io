@@ -22,10 +22,12 @@ import shortcutRegistry from "./shortcutRegistry.js";
 class App extends Widget {
     /**
      * How long to wait for the result list and the toolbar before giving up, in milliseconds,
-     * counted from the first click or key press (the welcome screen comes before the game)
+     * counted from the first click or key press (the welcome screen comes before the game).
+     * After "Continue" the game loads the player's progress first, which took about 8s on 21.11.2026;
+     * there's no point in being strict here, a broken page shows the notice a little later, that's all.
      * @type {Number}
      */
-    static resultListTimeout = 10000;
+    static resultListTimeout = 30000;
 
     /**
      * Set a `data` value on `<body>`

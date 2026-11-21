@@ -54,7 +54,8 @@ const selectors = {
     yesterdayFrame: ".sb-modal-frame:is(.yesterday, .yesterdayNew)",
     // full-screen "moments" in front of the game: welcome, congratulations (Genius, Queen Bee) …
     // The game itself isn't rendered while one is shown. Moments that are done stay in the DOM, hidden.
-    moment: ".pz-moment",
+    // also the loading spinner, shown between "Continue" and the game
+    moment: ".pz-moment, .pz-loader-container",
     // only visible ones count, see nyt.findModalCloser()
     // Two families as of Nov 2026: moments (Genius) and modals (Stats, Yesterday's Answers, How to play).
     // `data-testid` attributes are for the NYT's own tests and tend to outlive class names.

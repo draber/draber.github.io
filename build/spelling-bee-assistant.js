@@ -352,7 +352,7 @@
         pangram: ".pangram",
         modalWrapper: ".sb-modal-wrapper",
         yesterdayFrame: ".sb-modal-frame:is(.yesterday, .yesterdayNew)",
-        moment: ".pz-moment",
+        moment: ".pz-moment, .pz-loader-container",
         modalClosers: [
             ".pz-moment__close_text",
             ".sb-modal-close, [data-testid='sb-modal-close']",
@@ -3288,7 +3288,7 @@
     };
 
     class App extends Widget {
-        static resultListTimeout = 10000;
+        static resultListTimeout = 30000;
         domSet(key, value) {
             document.body.dataset[prefix(key)] = value;
             return this;
