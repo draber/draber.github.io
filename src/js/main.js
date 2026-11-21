@@ -10,6 +10,11 @@ import App from "./modules/app.js";
 import nyt from "./nyt/nyt.js";
 import outageNotice from "./widgets/outageNotice.js";
 import browserNotice from "./widgets/browserNotice.js";
+import diagnostics from "./modules/diagnostics.js";
+
+// Diagnostics, available as soon as the code runs and independent of the app:
+// the cases that need them are those in which the app doesn't run, or the menu doesn't open.
+diagnostics.listen();
 
 const gameWrapper = nyt.getGameWrapper();
 

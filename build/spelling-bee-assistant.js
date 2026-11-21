@@ -3325,9 +3325,30 @@
             () => done(false),
         );
     };
+    const listen = () => {
+        const name = `${settings.get("prefix")}Diagnostics`;
+        if (window[name]?.stop) {
+            window[name].stop();
+        }
+        const onKeyDown = (event) => {
+            if (event.code === "KeyB" && event.shiftKey && event.altKey && !event.ctrlKey && !event.metaKey) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                copy();
+            }
+        };
+        document.addEventListener("keydown", onKeyDown, true);
+        const run = () => {
+            copy();
+            return report();
+        };
+        run.stop = () => document.removeEventListener("keydown", onKeyDown, true);
+        window[name] = run;
+    };
     var diagnostics = {
         report,
         copy,
+        listen,
     };
 
     class Diagnostics extends Plugin {
@@ -3340,12 +3361,6 @@
             this.menu = {
                 action: "popup",
             };
-            this.shortcuts = [
-                {
-                    combo: "Shift+Alt+B",
-                    method: "togglePopup",
-                },
-            ];
         }
     }
 
@@ -3644,6 +3659,7 @@
         check,
     };
 
+    diagnostics.listen();
     const gameWrapper = nyt.getGameWrapper();
     if (gameWrapper) {
         new App(gameWrapper);

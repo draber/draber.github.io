@@ -78,4 +78,32 @@ describe("diagnostics", () => {
         expect(decodeURIComponent(issue)).toContain("Diagnostics:");
         expect(decodeURIComponent(issue)).toContain("Self check");
     });
+
+    it("works without the app: Shift+Alt+B and sbaDiagnostics() from the start", async () => {
+        const { diagnostics } = await load();
+        const writeText = vi.fn(() => Promise.resolve());
+        Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+        diagnostics.listen();
+
+        let reachedTheGame = false;
+        const spy = () => (reachedTheGame = true);
+        document.addEventListener("keydown", spy);
+        const event = new KeyboardEvent("keydown", { code: "KeyB", key: "B", shiftKey: true, altKey: true, bubbles: true, cancelable: true });
+        document.body.dispatchEvent(event);
+        await Promise.resolve();
+        expect(writeText).toHaveBeenCalledTimes(1);
+        expect(event.defaultPrevented).toBe(true);
+        expect(reachedTheGame).toBe(false);
+        document.removeEventListener("keydown", spy);
+
+        expect(window.sbaDiagnostics()).toContain("Self check");
+
+        // a second start (bookmarklet over extension) doesn't copy twice
+        diagnostics.listen();
+        writeText.mockClear();
+        document.body.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyB", shiftKey: true, altKey: true, bubbles: true }));
+        await Promise.resolve();
+        expect(writeText).toHaveBeenCalledTimes(1);
+        window.sbaDiagnostics.stop();
+    });
 });

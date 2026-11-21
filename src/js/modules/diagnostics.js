@@ -142,7 +142,40 @@ const copy = () => {
     );
 };
 
+/**
+ * Shift+Alt+B and `sbaDiagnostics()` in the console, both independent of the app.
+ * The shortcut is caught before anyone else sees it, so no letter ends up in the game.
+ * Adding it twice (extension and bookmarklet) replaces the first one.
+ */
+const listen = () => {
+    const name = `${settings.get("prefix")}Diagnostics`;
+    if (window[name]?.stop) {
+        window[name].stop();
+    }
+    const onKeyDown = (event) => {
+        if (event.code === "KeyB" && event.shiftKey && event.altKey && !event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            copy();
+        }
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+
+    /**
+     * In the console: prints the report and tries to copy it as well
+     * (from the console the page usually isn't focused, then the clipboard refuses)
+     * @returns {String}
+     */
+    const run = () => {
+        copy();
+        return report();
+    };
+    run.stop = () => document.removeEventListener("keydown", onKeyDown, true);
+    window[name] = run;
+};
+
 export default {
     report,
     copy,
+    listen,
 };

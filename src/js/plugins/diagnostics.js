@@ -8,11 +8,11 @@ import Plugin from "../modules/plugin.js";
 import diagnostics from "../modules/diagnostics.js";
 
 /**
- * Menu entry and shortcut to copy the diagnostics, see modules/diagnostics.js
+ * Menu entry to copy the diagnostics, see modules/diagnostics.js
  */
 class Diagnostics extends Plugin {
     /**
-     * Called by the menu (action "popup") and the shortcut
+     * Called by the menu (action "popup")
      * @returns {Diagnostics}
      */
     togglePopup() {
@@ -30,12 +30,7 @@ class Diagnostics extends Plugin {
             action: "popup",
         };
 
-        this.shortcuts = [
-            {
-                combo: "Shift+Alt+B",
-                method: "togglePopup",
-            },
-        ];
+        // Shift+Alt+B is handled outside the app, see diagnostics.listen()
     }
 }
 
