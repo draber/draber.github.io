@@ -117,7 +117,7 @@ describe("diagnostics", () => {
         vi.spyOn(console, "warn").mockImplementation(() => {});
         const notice = outageNotice.show([".sb-controls not found"]);
         const links = [...notice.querySelectorAll("a")].map((a) => a.textContent);
-        expect(links).toEqual(["News and updates", "Report the problem"]);
+        expect(links).toEqual(["Report the problem"]);
         const url = [...notice.querySelectorAll("a")].find((a) => a.textContent === "Report the problem").href;
         expect(decodeURIComponent(new URL(url).searchParams.get("title"))).toMatch(/doesn't start$/);
         expect(bodyOf(url)).toContain("didn't start: .sb-controls not found");

@@ -27,11 +27,9 @@ const show = (problems) => {
 
     return notice.show({
         key: "outage",
-        text: "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update. A fix is on the way!",
-        links: [
-            { href: settings.get("url"), text: "News and updates" },
-            { href: diagnostics.issueUrl(), text: "Report the problem" },
-        ],
+        // no promises: when this shows, nobody knows about the problem yet
+        text: "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update.",
+        links: [{ href: diagnostics.issueUrl(), text: "Report the problem" }],
     });
 };
 
