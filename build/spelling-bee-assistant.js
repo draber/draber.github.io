@@ -36,7 +36,7 @@
     var issues = "https://github.com/draber/draber.github.io/issues";
     var targetUrl = "https://www.nytimes.com/puzzles/spelling-bee";
 
-    var version = "6.0.1";
+    var version = "6.0.2";
 
     const storageKey$1 = `${prefix$1}-settings`;
     const schema = 1;
