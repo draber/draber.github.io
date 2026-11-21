@@ -3382,7 +3382,7 @@
         document.body.dataset[`${settings.get("prefix")}Outage`] = JSON.stringify(problems);
         return notice.show({
             key: "outage",
-            text: "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update.",
+            text: "can’t run right now.",
             links: [{ href: diagnostics.issueUrl(), text: "Report the problem" }],
         });
     };
@@ -3420,7 +3420,7 @@
     };
 
     class App extends Widget {
-        static resultListTimeout = 30000;
+        static resultListTimeout = 15000;
         domSet(key, value) {
             document.body.dataset[prefix(key)] = value;
             return this;

@@ -54,9 +54,9 @@ describe("diagnostics", () => {
 
     it("reports an outage and a late start", async () => {
         const { diagnostics, timing } = await load();
-        document.body.dataset.sbaOutage = JSON.stringify([".sb-wordlist-items-pag not found within 30s"]);
+        document.body.dataset.sbaOutage = JSON.stringify([".sb-wordlist-items-pag not found within 15s"]);
         timing.mark("failed");
-        expect(diagnostics.problems()).toContain("didn't start: .sb-wordlist-items-pag not found within 30s");
+        expect(diagnostics.problems()).toContain("didn't start: .sb-wordlist-items-pag not found within 15s");
         expect(decodeURIComponent(new URL(diagnostics.issueUrl()).searchParams.get("title"))).toMatch(/doesn't start$/);
 
         delete document.body.dataset.sbaOutage;

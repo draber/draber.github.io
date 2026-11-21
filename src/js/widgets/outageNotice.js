@@ -27,8 +27,9 @@ const show = (problems) => {
 
     return notice.show({
         key: "outage",
-        // no promises: when this shows, nobody knows about the problem yet
-        text: "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update.",
+        // No promises (nobody knows about the problem yet) and no guesses about the cause
+        // (it can be the page, the browser, another extension …), the report tells.
+        text: "can’t run right now.",
         links: [{ href: diagnostics.issueUrl(), text: "Report the problem" }],
     });
 };
