@@ -2,6 +2,7 @@
 /node_modules
 .vscode
 .zed
+.ai
 
 # local NYT page snapshot for development
 nyt-snapshot.txt
