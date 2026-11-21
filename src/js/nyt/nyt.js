@@ -5,6 +5,7 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import fn from "fancy-node";
+import timing from "../utils/timing.js";
 import selectors, { classNames, required } from "./selectors.js";
 
 /**
@@ -179,6 +180,7 @@ const firstInteraction = () =>
         const events = ["pointerdown", "keydown"];
         const done = () => {
             events.forEach((type) => document.removeEventListener(type, done, true));
+            timing.mark("click");
             resolve();
         };
         events.forEach((type) => document.addEventListener(type, done, true));
@@ -242,7 +244,10 @@ const waitForResultList = (timeout = 10000) => {
     if (!getGameWrapper()) {
         return Promise.reject(new Error(`${selectors.gameWrapper} not found`));
     }
-    return waitForElement(() => find("resultList"), selectors.resultList, timeout);
+    return waitForElement(() => find("resultList"), selectors.resultList, timeout).then((resultList) => {
+        timing.mark("game");
+        return resultList;
+    });
 };
 
 /**

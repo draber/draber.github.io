@@ -4,6 +4,8 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
+// first, so the diagnostics know when the code started to run
+import "./utils/timing.js";
 import App from "./modules/app.js";
 import nyt from "./nyt/nyt.js";
 import outageNotice from "./widgets/outageNotice.js";

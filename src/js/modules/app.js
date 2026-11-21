@@ -4,6 +4,7 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
+import timing from "../utils/timing.js";
 import settings from "./settings.js";
 import data from "./data.js";
 import hive from "./hive.js";
@@ -95,6 +96,7 @@ class App extends Widget {
      */
     fail(problems) {
         this.failed = true;
+        timing.mark("failed");
         this.ui.dispatchEvent(new Event(prefix("destroy")));
         outageNotice.show(problems);
         return this;
@@ -140,6 +142,7 @@ class App extends Widget {
         this.registerPlugins();
         this.trigger(prefix("refreshUi"), null);
         document.dispatchEvent(new Event(prefix("ready")));
+        timing.mark("ready");
 
         document.addEventListener("keydown", this.onKeyDown);
 

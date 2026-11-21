@@ -6,6 +6,7 @@
  */
 import settings from "../modules/settings.js";
 import notice from "./notice.js";
+import diagnostics from "../modules/diagnostics.js";
 
 /**
  * Notice shown instead of the assistant when the Spelling Bee page has changed in a way SBA can't handle,
@@ -33,6 +34,11 @@ const reportUrl = (problems) => {
         "",
         "Not found or failed:",
         ...problems.map((problem) => `- ${problem}`),
+        "",
+        "Diagnostics:",
+        "```",
+        diagnostics.report(),
+        "```",
     ].join("\n");
     return `${settings.get("issues")}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
 };
@@ -55,6 +61,7 @@ const show = (problems) => {
         links: [
             { href: settings.get("url"), text: "News and updates" },
             { href: reportUrl(problems), text: "Report the problem" },
+            { onClick: () => diagnostics.copy(), text: "Copy diagnostics" },
         ],
     });
 };
