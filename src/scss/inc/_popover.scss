@@ -302,6 +302,14 @@
         width: calc(100vw - 16px);
     }
 
+    // The grid table needs about 450px (more with two-digit numbers), so on small screens it reaches
+    // into the side padding of the pop-up, as it did in 5.x. Title and text keep their indent.
+    .sba-popover[data-ui="grid"]:not(.sba-moved) .sb-modal-body table {
+        margin-inline: -20px;
+        width: calc(100% + 40px);
+        max-width: none;
+    }
+
     // no dragging on small screens, see PopupBuilder.canDrag()
     .sba-popover.sba-floating {
         .sb-modal-top {
