@@ -296,10 +296,17 @@
     }
 }
 
-// below 768px the NYT frame takes the full width of its container
+// below 768px pop-ups take the full width, without rounded corners and side borders:
+// on a phone every pixel counts
 @media (max-width: 767.98px) {
     .sba-popover {
-        width: calc(100vw - 16px);
+        width: 100%;
+        max-width: none;
+    }
+
+    .sba-popover .sb-modal-frame {
+        border-radius: 0;
+        border-inline: 0;
     }
 
     // The grid table needs about 450px (more with two-digit numbers), so on small screens it reaches
