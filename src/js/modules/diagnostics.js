@@ -7,14 +7,20 @@
 import nyt from "../nyt/nyt.js";
 import settings from "./settings.js";
 import timing from "../utils/timing.js";
-import notice from "../widgets/notice.js";
 
 /**
- * Diagnostics: a plain text report for bug reports.
+ * Diagnostics for bug reports: "Report a problem" opens a new GitHub issue with a report attached.
  *
- * Only harmless facts: versions, what was found, when, and counts.
- * Never words of the game, user ids, cookies or storage contents, people paste this into public issues.
+ * The report starts with what doesn't work, then a little context.
+ * Only harmless facts: versions, what's missing, when, and counts.
+ * Never words of the game, ids, cookies or storage contents, the issue is public.
  */
+
+/**
+ * The assistant is considered late when it is ready this much later than the game, in milliseconds
+ * @type {Number}
+ */
+const lateAfter = 3000;
 
 /**
  * Seconds with one decimal, or a dash
@@ -22,12 +28,6 @@ import notice from "../widgets/notice.js";
  * @returns {String}
  */
 const seconds = (ms) => (typeof ms === "number" && ms > 0 ? `${(ms / 1000).toFixed(1)}s` : "–");
-
-/**
- * @param {Boolean} value
- * @returns {String}
- */
-const check = (value) => (value ? "✓" : "✗");
 
 /**
  * Browser name and version, platform
@@ -41,37 +41,61 @@ const describeBrowser = () => {
         browser = "Kiwi";
     } else if (!browser) {
         const match = ua.match(/(Edg|Firefox|Chrome|Version)\/(\d+)/);
-        browser = match ? `${{ Edg: "Edge", Version: "Safari" }[match[1]] || match[1]} ${match[2]}` : "unknown";
+        browser = match ? `${{ Edg: "Edge", Version: "Safari" }[match[1]] || match[1]} ${match[2]}` : "unknown browser";
     }
-    const platform = navigator.userAgentData?.platform || (ua.match(/Android|iPhone|iPad|Windows|Mac OS X|Linux/) || ["unknown"])[0];
+    const platform = navigator.userAgentData?.platform || (ua.match(/Android|iPhone|iPad|Windows|Mac OS X|Linux/) || ["unknown platform"])[0];
     return `${browser} · ${platform}`;
 };
 
 /**
- * Where the toolbar and the menu button are
- * @returns {String}
+ * Browser features the assistant relies on
+ * @returns {Object<String, Boolean>}
  */
-const describeToolbar = () => {
-    const toolbar = nyt.getToolbar();
-    const where = !toolbar ? "missing" : toolbar.closest(nyt.selectors.globalNav) ? "in the navigation" : "in the game";
-    const button = document.querySelector(`button[data-ui="menu"]`);
-    const buttonWhere = !button ? "missing" : toolbar?.contains(button) ? "in the toolbar" : "elsewhere";
-    return `Toolbar: ${where} · Menu button: ${buttonWhere}`;
-};
+const features = () => ({
+    popover: "showPopover" in HTMLElement.prototype,
+    "anchor positioning": !!globalThis.CSS?.supports?.("anchor-name: --a") && !!CSS.supports("position-area: block-end"),
+    checkVisibility: "checkVisibility" in Element.prototype,
+    ":has()": !!globalThis.CSS?.supports?.("selector(:has(a))"),
+});
 
 /**
- * Game date and how many words have been found, numbers only
- * @returns {String}
+ * Everything that doesn't work or looks odd, empty if nothing does
+ * @returns {String[]}
  */
-const describeGame = () => {
-    try {
-        const game = nyt.getGameData();
-        const resultList = nyt.find("resultList");
-        const found = resultList ? nyt.getFoundTerms(resultList).length : "?";
-        return `Game: ${game.printDate} · found ${found} of ${game.answers.length}`;
-    } catch (e) {
-        return "Game: no data";
+const problems = () => {
+    const found = [];
+    const { marks } = timing;
+    const outage = document.body.dataset[`${settings.get("prefix")}Outage`];
+
+    if (outage) {
+        JSON.parse(outage).forEach((problem) => found.push(`didn't start: ${problem}`));
+    } else {
+        nyt.selfCheck().problems.forEach(({ selector, impact }) => found.push(`${selector} not found (${impact})`));
     }
+
+    const toolbar = nyt.getToolbar();
+    if (!toolbar) {
+        found.push(`toolbar not found (${nyt.selectors.toolbar})`);
+    }
+    if (marks.ready) {
+        const button = document.querySelector(`button[data-ui="menu"]`);
+        if (!button) {
+            found.push("menu button missing");
+        } else if (toolbar && !toolbar.contains(button)) {
+            found.push("menu button not in the toolbar");
+        }
+        if (marks.game && marks.ready - marks.game > lateAfter) {
+            found.push(`assistant ready ${seconds(marks.ready - marks.game)} after the game`);
+        }
+    } else if (!marks.failed) {
+        found.push(nyt.isMomentShowing() ? "assistant still waiting, a screen is in front of the game" : "assistant hasn't started");
+    }
+
+    Object.entries(features())
+        .filter(([, supported]) => !supported)
+        .forEach(([feature]) => found.push(`browser doesn't support ${feature}`));
+
+    return found;
 };
 
 /**
@@ -81,101 +105,80 @@ const describeGame = () => {
 const report = () => {
     const navigation = performance.getEntriesByType?.("navigation")?.[0];
     const { marks } = timing;
-    const { ok, problems } = nyt.selfCheck();
-    const outage = document.body.dataset[`${settings.get("prefix")}Outage`];
-    let schema = "?";
+    const list = problems();
+    let game = "no data";
     try {
-        schema = settings.get("options.schema") ?? "?";
+        const data = nyt.getGameData();
+        const resultList = nyt.find("resultList");
+        game = `${data.printDate}, ${resultList ? nyt.getFoundTerms(resultList).length : "?"} of ${data.answers.length} found`;
     } catch (e) {
-        // keep "?"
+        // keep "no data"
     }
 
     return [
-        `${settings.get("label")} ${settings.get("version")} (${timing.source}) · ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC`,
+        `${settings.get("label")} ${settings.get("version")} (${timing.source})`,
         `${describeBrowser()} · ${window.innerWidth}×${window.innerHeight} @${window.devicePixelRatio || 1}x · ${nyt.isEnv("mobile") ? "mobile" : "desktop"} layout`,
         "",
-        "Start (seconds since the page was opened)",
-        `  page: html ${seconds(navigation?.domContentLoadedEventEnd)} · loaded ${seconds(navigation?.loadEventEnd)}`,
-        `  assistant: code ${seconds(marks.script)} · first click ${seconds(marks.click)} · game ${seconds(marks.game)} · ${marks.failed ? `gave up ${seconds(marks.failed)}` : `ready ${seconds(marks.ready)}`}`,
+        list.length ? "Problems:" : "Problems: none detected",
+        ...list.map((problem) => `- ${problem}`),
         "",
-        ok ? "Self check: all found ✓" : `Self check: ${problems.length} missing ✗`,
-        ...problems.map(({ name, selector }) => `  ✗ ${name}: ${selector}`),
-        describeToolbar(),
-        `Screen in front of the game: ${nyt.isMomentShowing() ? "yes" : "no"} · Close button visible: ${nyt.findModalCloser() ? "yes" : "no"}`,
-        `Browser: popover ${check("showPopover" in HTMLElement.prototype)} · anchor positioning ${check(
-            !!globalThis.CSS?.supports?.("anchor-name: --a") && !!CSS.supports("position-area: block-end"),
-        )} · checkVisibility ${check("checkVisibility" in Element.prototype)} · :has ${check(!!globalThis.CSS?.supports?.("selector(:has(a))"))}`,
-        `Settings: schema ${schema} · dark mode ${document.body.dataset[`${settings.get("prefix")}Theme`] === "dark" ? "on" : "off"}`,
-        describeGame(),
-        `Outage: ${outage ? JSON.parse(outage).join("; ") : "–"}`,
-        "",
-        `User agent: ${navigator.userAgent}`,
+        `Times: game ${seconds(marks.game)} · assistant ${marks.failed ? `gave up ${seconds(marks.failed)}` : `ready ${seconds(marks.ready)}`} · page loaded ${seconds(navigation?.loadEventEnd)}`,
+        `Game: ${game} · dark mode ${document.body.dataset[`${settings.get("prefix")}Theme`] === "dark" ? "on" : "off"}`,
+        `${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC · ${navigator.userAgent}`,
     ].join("\n");
 };
 
 /**
- * Copy the report to the clipboard and say so. Without clipboard access the report goes to the console.
- * @returns {Promise<Boolean>} whether it could be copied
+ * Title of the issue: given by the user, unless the assistant didn't start
+ * @returns {String}
  */
-const copy = () => {
-    const text = report();
-    const done = (copied) => {
-        document.querySelector(`[data-ui="${settings.get("prefix")}-diagnostics"]`)?.remove();
-        if (!copied) {
-            console.info(text);
-        }
-        notice.show({
-            key: "diagnostics",
-            text: copied
-                ? "The diagnostics have been copied to the clipboard. Paste them into your message or issue."
-                : "The clipboard isn’t accessible, the diagnostics are in the browser console (F12).",
-            dismissDays: 0,
-        });
-        return copied;
-    };
-    if (!navigator.clipboard?.writeText) {
-        return Promise.resolve(done(false));
-    }
-    return navigator.clipboard.writeText(text).then(
-        () => done(true),
-        () => done(false),
-    );
+const defaultTitle = () =>
+    document.body.dataset[`${settings.get("prefix")}Outage`] ? `SBA ${settings.get("version")} doesn't start` : "";
+
+/**
+ * Link to a new GitHub issue: room for the description at the top, the report below
+ * @param {String} [title]
+ * @returns {String}
+ */
+const issueUrl = (title = defaultTitle()) => {
+    const body = ["**What happened?**", "", "", "", "---", "Diagnostics (please leave as is):", "```", report(), "```"].join("\n");
+    return `${settings.get("issues")}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
 };
 
 /**
- * Shift+Alt+B and `sbaDiagnostics()` in the console, both independent of the app.
- * The shortcut is caught before anyone else sees it, so no letter ends up in the game.
+ * Open a new GitHub issue with the report
+ * @param {String} [title]
+ */
+const openIssue = (title = defaultTitle()) => {
+    window.open(issueUrl(title), "_blank", "noopener");
+};
+
+/**
+ * Shift+Alt+B opens a new issue, and `sbaDiagnostics()` in the console prints the report.
+ * Both are independent of the app and available as soon as the code runs: diagnostics are needed
+ * when the assistant doesn't work. The shortcut is caught before anyone else sees it, no letter ends up in the game.
  * Adding it twice (extension and bookmarklet) replaces the first one.
  */
 const listen = () => {
     const name = `${settings.get("prefix")}Diagnostics`;
-    if (window[name]?.stop) {
-        window[name].stop();
-    }
+    window[name]?.stop?.();
     const onKeyDown = (event) => {
         if (event.code === "KeyB" && event.shiftKey && event.altKey && !event.ctrlKey && !event.metaKey) {
             event.preventDefault();
             event.stopImmediatePropagation();
-            copy();
+            openIssue();
         }
     };
     document.addEventListener("keydown", onKeyDown, true);
-
-    /**
-     * In the console: prints the report and tries to copy it as well
-     * (from the console the page usually isn't focused, then the clipboard refuses)
-     * @returns {String}
-     */
-    const run = () => {
-        copy();
-        return report();
-    };
+    const run = () => report();
     run.stop = () => document.removeEventListener("keydown", onKeyDown, true);
     window[name] = run;
 };
 
 export default {
+    problems,
     report,
-    copy,
+    issueUrl,
+    openIssue,
     listen,
 };

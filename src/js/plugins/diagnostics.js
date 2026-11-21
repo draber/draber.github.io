@@ -8,7 +8,8 @@ import Plugin from "../modules/plugin.js";
 import diagnostics from "../modules/diagnostics.js";
 
 /**
- * Menu entry to copy the diagnostics, see modules/diagnostics.js
+ * Menu entry "Report a problem": a new GitHub issue with diagnostics, see modules/diagnostics.js.
+ * Shift+Alt+B does the same, independent of the app, see diagnostics.listen().
  */
 class Diagnostics extends Plugin {
     /**
@@ -16,7 +17,7 @@ class Diagnostics extends Plugin {
      * @returns {Diagnostics}
      */
     togglePopup() {
-        diagnostics.copy();
+        diagnostics.openIssue();
         return this;
     }
 
@@ -24,13 +25,11 @@ class Diagnostics extends Plugin {
      * @param {App} app
      */
     constructor(app) {
-        super(app, "Copy diagnostics", "Copies technical details for a bug report to the clipboard. No words of the game, nothing personal.");
+        super(app, "Report a problem", "Opens a new issue on GitHub with technical details attached. No words of the game, nothing personal.");
 
         this.menu = {
             action: "popup",
         };
-
-        // Shift+Alt+B is handled outside the app, see diagnostics.listen()
     }
 }
 

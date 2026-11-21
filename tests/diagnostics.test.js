@@ -1,5 +1,6 @@
 /**
- * Diagnostics: harmless facts for bug reports, never words of the game
+ * Diagnostics: "Report a problem" opens a GitHub issue with a report of what doesn't work.
+ * Harmless facts only, never words of the game.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { loadGame } from "./support/game.js";
@@ -12,77 +13,81 @@ const load = async () => {
     };
 };
 
+/**
+ * The report part of an issue URL
+ * @param {String} url
+ * @returns {String}
+ */
+const bodyOf = (url) => decodeURIComponent(new URL(url).searchParams.get("body"));
+
 describe("diagnostics", () => {
     beforeEach(() => {
         loadGame();
         delete document.body.dataset.sbaOutage;
     });
 
-    it("reports version, self check, toolbar and counts", async () => {
+    it("starts with what doesn't work, nothing when all is well", async () => {
+        // jsdom has no checkVisibility(), browsers do
+        Element.prototype.checkVisibility ??= function () {
+            return true;
+        };
         const { diagnostics, timing } = await load();
         timing.mark("game");
         timing.mark("ready");
+        document.body.insertAdjacentHTML("beforeend", '<button data-ui="menu"></button>');
+        document.querySelector("#pz-game-root .pz-toolbar-right").append(document.querySelector('button[data-ui="menu"]'));
         const report = diagnostics.report();
         expect(report).toMatch(/^Spelling Bee Assistant \d+\.\d+\.\d+ \(\w+\)/);
-        expect(report).toContain("Self check: all found ✓");
-        expect(report).toMatch(/Toolbar: in the (game|navigation)/);
-        expect(report).toMatch(/Game: \d{4}-\d{2}-\d{2} · found \d+ of \d+/);
-        expect(report).toMatch(/assistant: code [\d.]+s · first click – · game [\d.]+s · ready [\d.]+s/);
-        expect(report).toContain("Outage: –");
+        expect(report).toContain("Problems: none detected");
+        expect(report).not.toContain("✓");
+        expect(report).toMatch(/Game: \d{4}-\d{2}-\d{2}, \d+ of \d+ found/);
+    });
+
+    it("lists missing elements, a missing menu button and an assistant that hasn't started", async () => {
+        document.querySelector(".sb-controls").remove();
+        const { diagnostics } = await load();
+        const problems = diagnostics.problems();
+        expect(problems).toContain(".sb-controls not found (Spill the Beans)");
+        expect(problems).toContain("assistant hasn't started");
+        expect(diagnostics.report()).toContain("Problems:\n- ");
+    });
+
+    it("reports an outage and a late start", async () => {
+        const { diagnostics, timing } = await load();
+        document.body.dataset.sbaOutage = JSON.stringify([".sb-wordlist-items-pag not found within 30s"]);
+        timing.mark("failed");
+        expect(diagnostics.problems()).toContain("didn't start: .sb-wordlist-items-pag not found within 30s");
+        expect(decodeURIComponent(new URL(diagnostics.issueUrl()).searchParams.get("title"))).toMatch(/doesn't start$/);
+
+        delete document.body.dataset.sbaOutage;
+        const late = await load();
+        late.timing.marks.game = 9000;
+        late.timing.marks.ready = 19000;
+        expect(late.diagnostics.problems()).toContain("assistant ready 10.0s after the game");
     });
 
     it("never contains words of the game", async () => {
         const { diagnostics } = await load();
-        const report = diagnostics.report().toLowerCase();
-        const words = window.gameData.today.answers;
-        // whole words only, short answers like "deck" could be part of other text
-        const leaked = words.filter((word) => new RegExp(`\\b${word}\\b`).test(report.replace(/user agent:.*$/m, "")));
+        const report = diagnostics.report().toLowerCase().replace(/mozilla\/.*$/m, "");
+        const leaked = window.gameData.today.answers.filter((word) => new RegExp(`\\b${word}\\b`).test(report));
         expect(leaked).toEqual([]);
     });
 
-    it("lists what's missing and the outage", async () => {
-        document.querySelector(".sb-controls").remove();
-        document.body.dataset.sbaOutage = JSON.stringify([".sb-controls not found"]);
+    it("opens a GitHub issue with room for a description and the report", async () => {
         const { diagnostics } = await load();
-        const report = diagnostics.report();
-        expect(report).toMatch(/Self check: \d+ missing ✗/);
-        expect(report).toContain("✗ controls: .sb-controls");
-        expect(report).toContain("Outage: .sb-controls not found");
+        const open = vi.spyOn(window, "open").mockImplementation(() => null);
+        diagnostics.openIssue();
+        const url = open.mock.calls[0][0];
+        expect(url).toMatch(/^https:\/\/github\.com\/draber\/draber\.github\.io\/issues\/new\?/);
+        expect(bodyOf(url)).toMatch(/^\*\*What happened\?\*\*/);
+        expect(bodyOf(url)).toContain("Diagnostics (please leave as is):");
+        expect(bodyOf(url)).toContain("Problems:");
+        open.mockRestore();
     });
 
-    it("copies to the clipboard and says so, or falls back to the console", async () => {
+    it("Shift+Alt+B and sbaDiagnostics() work without the app, from the start", async () => {
         const { diagnostics } = await load();
-        const writeText = vi.fn(() => Promise.resolve());
-        Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
-        expect(await diagnostics.copy()).toBe(true);
-        expect(writeText.mock.calls[0][0]).toContain("Self check");
-        expect(document.querySelector('[data-ui="sba-diagnostics"]').textContent).toContain("copied to the clipboard");
-
-        const info = vi.spyOn(console, "info").mockImplementation(() => {});
-        Object.defineProperty(navigator, "clipboard", { value: { writeText: () => Promise.reject(new Error("denied")) }, configurable: true });
-        expect(await diagnostics.copy()).toBe(false);
-        expect(info).toHaveBeenCalled();
-        expect(document.querySelectorAll('[data-ui="sba-diagnostics"]')).toHaveLength(1);
-        expect(document.querySelector('[data-ui="sba-diagnostics"]').textContent).toContain("console");
-        info.mockRestore();
-    });
-
-    it("is part of the outage notice: a copy link and in the prefilled issue", async () => {
-        vi.resetModules();
-        const outageNotice = (await import("../src/js/widgets/outageNotice.js")).default;
-        vi.spyOn(console, "warn").mockImplementation(() => {});
-        const notice = outageNotice.show([".sb-controls not found"]);
-        const links = [...notice.querySelectorAll("a")];
-        expect(links.map((a) => a.textContent)).toContain("Copy diagnostics");
-        const issue = links.find((a) => a.textContent === "Report the problem").href;
-        expect(decodeURIComponent(issue)).toContain("Diagnostics:");
-        expect(decodeURIComponent(issue)).toContain("Self check");
-    });
-
-    it("works without the app: Shift+Alt+B and sbaDiagnostics() from the start", async () => {
-        const { diagnostics } = await load();
-        const writeText = vi.fn(() => Promise.resolve());
-        Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+        const open = vi.spyOn(window, "open").mockImplementation(() => null);
         diagnostics.listen();
 
         let reachedTheGame = false;
@@ -90,20 +95,31 @@ describe("diagnostics", () => {
         document.addEventListener("keydown", spy);
         const event = new KeyboardEvent("keydown", { code: "KeyB", key: "B", shiftKey: true, altKey: true, bubbles: true, cancelable: true });
         document.body.dispatchEvent(event);
-        await Promise.resolve();
-        expect(writeText).toHaveBeenCalledTimes(1);
+        expect(open).toHaveBeenCalledTimes(1);
         expect(event.defaultPrevented).toBe(true);
         expect(reachedTheGame).toBe(false);
         document.removeEventListener("keydown", spy);
 
-        expect(window.sbaDiagnostics()).toContain("Self check");
+        expect(window.sbaDiagnostics()).toContain("Problems");
 
-        // a second start (bookmarklet over extension) doesn't copy twice
+        // a second start (bookmarklet over extension) doesn't open twice
         diagnostics.listen();
-        writeText.mockClear();
+        open.mockClear();
         document.body.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyB", shiftKey: true, altKey: true, bubbles: true }));
-        await Promise.resolve();
-        expect(writeText).toHaveBeenCalledTimes(1);
+        expect(open).toHaveBeenCalledTimes(1);
         window.sbaDiagnostics.stop();
+        open.mockRestore();
+    });
+
+    it("is behind 'Report the problem' in the outage notice", async () => {
+        vi.resetModules();
+        const outageNotice = (await import("../src/js/widgets/outageNotice.js")).default;
+        vi.spyOn(console, "warn").mockImplementation(() => {});
+        const notice = outageNotice.show([".sb-controls not found"]);
+        const links = [...notice.querySelectorAll("a")].map((a) => a.textContent);
+        expect(links).toEqual(["News and updates", "Report the problem"]);
+        const url = [...notice.querySelectorAll("a")].find((a) => a.textContent === "Report the problem").href;
+        expect(decodeURIComponent(new URL(url).searchParams.get("title"))).toMatch(/doesn't start$/);
+        expect(bodyOf(url)).toContain("didn't start: .sb-controls not found");
     });
 });

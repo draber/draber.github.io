@@ -3133,6 +3133,151 @@
         }
     }
 
+    const lateAfter = 3000;
+    const seconds = (ms) => (typeof ms === "number" && ms > 0 ? `${(ms / 1000).toFixed(1)}s` : "–");
+    const describeBrowser = () => {
+        const ua = navigator.userAgent;
+        const brands = (navigator.userAgentData?.brands || []).filter(({ brand }) => !/not.?a.?brand|chromium/i.test(brand));
+        let browser = brands.length ? `${brands[0].brand} ${brands[0].version}` : "";
+        if (/\bKiwi\b/.test(ua)) {
+            browser = "Kiwi";
+        } else if (!browser) {
+            const match = ua.match(/(Edg|Firefox|Chrome|Version)\/(\d+)/);
+            browser = match ? `${{ Edg: "Edge", Version: "Safari" }[match[1]] || match[1]} ${match[2]}` : "unknown browser";
+        }
+        const platform = navigator.userAgentData?.platform || (ua.match(/Android|iPhone|iPad|Windows|Mac OS X|Linux/) || ["unknown platform"])[0];
+        return `${browser} · ${platform}`;
+    };
+    const features = () => ({
+        popover: "showPopover" in HTMLElement.prototype,
+        "anchor positioning": !!globalThis.CSS?.supports?.("anchor-name: --a") && !!CSS.supports("position-area: block-end"),
+        checkVisibility: "checkVisibility" in Element.prototype,
+        ":has()": !!globalThis.CSS?.supports?.("selector(:has(a))"),
+    });
+    const problems = () => {
+        const found = [];
+        const { marks } = timing;
+        const outage = document.body.dataset[`${settings.get("prefix")}Outage`];
+        if (outage) {
+            JSON.parse(outage).forEach((problem) => found.push(`didn't start: ${problem}`));
+        } else {
+            nyt.selfCheck().problems.forEach(({ selector, impact }) => found.push(`${selector} not found (${impact})`));
+        }
+        const toolbar = nyt.getToolbar();
+        if (!toolbar) {
+            found.push(`toolbar not found (${nyt.selectors.toolbar})`);
+        }
+        if (marks.ready) {
+            const button = document.querySelector(`button[data-ui="menu"]`);
+            if (!button) {
+                found.push("menu button missing");
+            } else if (toolbar && !toolbar.contains(button)) {
+                found.push("menu button not in the toolbar");
+            }
+            if (marks.game && marks.ready - marks.game > lateAfter) {
+                found.push(`assistant ready ${seconds(marks.ready - marks.game)} after the game`);
+            }
+        } else if (!marks.failed) {
+            found.push(nyt.isMomentShowing() ? "assistant still waiting, a screen is in front of the game" : "assistant hasn't started");
+        }
+        Object.entries(features())
+            .filter(([, supported]) => !supported)
+            .forEach(([feature]) => found.push(`browser doesn't support ${feature}`));
+        return found;
+    };
+    const report = () => {
+        const navigation = performance.getEntriesByType?.("navigation")?.[0];
+        const { marks } = timing;
+        const list = problems();
+        let game = "no data";
+        try {
+            const data = nyt.getGameData();
+            const resultList = nyt.find("resultList");
+            game = `${data.printDate}, ${resultList ? nyt.getFoundTerms(resultList).length : "?"} of ${data.answers.length} found`;
+        } catch (e) {
+        }
+        return [
+            `${settings.get("label")} ${settings.get("version")} (${timing.source})`,
+            `${describeBrowser()} · ${window.innerWidth}×${window.innerHeight} @${window.devicePixelRatio || 1}x · ${nyt.isEnv("mobile") ? "mobile" : "desktop"} layout`,
+            "",
+            list.length ? "Problems:" : "Problems: none detected",
+            ...list.map((problem) => `- ${problem}`),
+            "",
+            `Times: game ${seconds(marks.game)} · assistant ${marks.failed ? `gave up ${seconds(marks.failed)}` : `ready ${seconds(marks.ready)}`} · page loaded ${seconds(navigation?.loadEventEnd)}`,
+            `Game: ${game} · dark mode ${document.body.dataset[`${settings.get("prefix")}Theme`] === "dark" ? "on" : "off"}`,
+            `${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC · ${navigator.userAgent}`,
+        ].join("\n");
+    };
+    const defaultTitle = () =>
+        document.body.dataset[`${settings.get("prefix")}Outage`] ? `SBA ${settings.get("version")} doesn't start` : "";
+    const issueUrl = (title = defaultTitle()) => {
+        const body = ["**What happened?**", "", "", "", "---", "Diagnostics (please leave as is):", "```", report(), "```"].join("\n");
+        return `${settings.get("issues")}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    };
+    const openIssue = (title = defaultTitle()) => {
+        window.open(issueUrl(title), "_blank", "noopener");
+    };
+    const listen = () => {
+        const name = `${settings.get("prefix")}Diagnostics`;
+        window[name]?.stop?.();
+        const onKeyDown = (event) => {
+            if (event.code === "KeyB" && event.shiftKey && event.altKey && !event.ctrlKey && !event.metaKey) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                openIssue();
+            }
+        };
+        document.addEventListener("keydown", onKeyDown, true);
+        const run = () => report();
+        run.stop = () => document.removeEventListener("keydown", onKeyDown, true);
+        window[name] = run;
+    };
+    var diagnostics = {
+        problems,
+        report,
+        issueUrl,
+        openIssue,
+        listen,
+    };
+
+    class Diagnostics extends Plugin {
+        togglePopup() {
+            diagnostics.openIssue();
+            return this;
+        }
+        constructor(app) {
+            super(app, "Report a problem", "Opens a new issue on GitHub with technical details attached. No words of the game, nothing personal.");
+            this.menu = {
+                action: "popup",
+            };
+        }
+    }
+
+    const getPlugins$1 = () => {
+        return {
+            Header,
+            Overview,
+            LetterCount,
+            FirstLetter,
+            FirstTwoLetters,
+            Pangrams,
+            ProgressBar,
+            SpillTheBeans,
+            Grid,
+            DarkMode,
+            PangramHighlighter,
+            Googlify,
+            Styles,
+            Menu,
+            Milestones,
+            Community,
+            ShortcutScreen,
+            TodaysAnswers,
+            NytShortcuts,
+            Diagnostics,
+        };
+    };
+
     const isoDate = (days = 0) => new Date(Date.now() + days * 86400000).toISOString().slice(0, 10);
     const storageKey = (key) => `${settings.get("prefix")}-${key}-dismissed`;
     const isDismissed = (key) => {
@@ -3154,19 +3299,11 @@
         if (isDismissed(key) || document.querySelector(`[data-ui="${ui}"]`)) {
             return null;
         }
-        const link = ({ href, onClick, text }) =>
+        const link = ({ href, text }) =>
             fn.a({
                 content: text,
-                attributes: onClick ? { href: "#", role: "button" } : { href, target: "_blank", rel: "noopener" },
+                attributes: { href, target: "_blank", rel: "noopener" },
                 style: { color: "inherit", textDecoration: "underline", marginRight: "16px" },
-                events: onClick
-                    ? {
-                          click: (evt) => {
-                              evt.preventDefault();
-                              onClick();
-                          },
-                      }
-                    : {},
             });
         const notice = fn.div({
             attributes: { popover: "manual", role: "status" },
@@ -3237,177 +3374,6 @@
         show: show$1,
     };
 
-    const seconds = (ms) => (typeof ms === "number" && ms > 0 ? `${(ms / 1000).toFixed(1)}s` : "–");
-    const check$1 = (value) => (value ? "✓" : "✗");
-    const describeBrowser = () => {
-        const ua = navigator.userAgent;
-        const brands = (navigator.userAgentData?.brands || []).filter(({ brand }) => !/not.?a.?brand|chromium/i.test(brand));
-        let browser = brands.length ? `${brands[0].brand} ${brands[0].version}` : "";
-        if (/\bKiwi\b/.test(ua)) {
-            browser = "Kiwi";
-        } else if (!browser) {
-            const match = ua.match(/(Edg|Firefox|Chrome|Version)\/(\d+)/);
-            browser = match ? `${{ Edg: "Edge", Version: "Safari" }[match[1]] || match[1]} ${match[2]}` : "unknown";
-        }
-        const platform = navigator.userAgentData?.platform || (ua.match(/Android|iPhone|iPad|Windows|Mac OS X|Linux/) || ["unknown"])[0];
-        return `${browser} · ${platform}`;
-    };
-    const describeToolbar = () => {
-        const toolbar = nyt.getToolbar();
-        const where = !toolbar ? "missing" : toolbar.closest(nyt.selectors.globalNav) ? "in the navigation" : "in the game";
-        const button = document.querySelector(`button[data-ui="menu"]`);
-        const buttonWhere = !button ? "missing" : toolbar?.contains(button) ? "in the toolbar" : "elsewhere";
-        return `Toolbar: ${where} · Menu button: ${buttonWhere}`;
-    };
-    const describeGame = () => {
-        try {
-            const game = nyt.getGameData();
-            const resultList = nyt.find("resultList");
-            const found = resultList ? nyt.getFoundTerms(resultList).length : "?";
-            return `Game: ${game.printDate} · found ${found} of ${game.answers.length}`;
-        } catch (e) {
-            return "Game: no data";
-        }
-    };
-    const report = () => {
-        const navigation = performance.getEntriesByType?.("navigation")?.[0];
-        const { marks } = timing;
-        const { ok, problems } = nyt.selfCheck();
-        const outage = document.body.dataset[`${settings.get("prefix")}Outage`];
-        let schema = "?";
-        try {
-            schema = settings.get("options.schema") ?? "?";
-        } catch (e) {
-        }
-        return [
-            `${settings.get("label")} ${settings.get("version")} (${timing.source}) · ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC`,
-            `${describeBrowser()} · ${window.innerWidth}×${window.innerHeight} @${window.devicePixelRatio || 1}x · ${nyt.isEnv("mobile") ? "mobile" : "desktop"} layout`,
-            "",
-            "Start (seconds since the page was opened)",
-            `  page: html ${seconds(navigation?.domContentLoadedEventEnd)} · loaded ${seconds(navigation?.loadEventEnd)}`,
-            `  assistant: code ${seconds(marks.script)} · first click ${seconds(marks.click)} · game ${seconds(marks.game)} · ${marks.failed ? `gave up ${seconds(marks.failed)}` : `ready ${seconds(marks.ready)}`}`,
-            "",
-            ok ? "Self check: all found ✓" : `Self check: ${problems.length} missing ✗`,
-            ...problems.map(({ name, selector }) => `  ✗ ${name}: ${selector}`),
-            describeToolbar(),
-            `Screen in front of the game: ${nyt.isMomentShowing() ? "yes" : "no"} · Close button visible: ${nyt.findModalCloser() ? "yes" : "no"}`,
-            `Browser: popover ${check$1("showPopover" in HTMLElement.prototype)} · anchor positioning ${check$1(
-            !!globalThis.CSS?.supports?.("anchor-name: --a") && !!CSS.supports("position-area: block-end"),
-        )} · checkVisibility ${check$1("checkVisibility" in Element.prototype)} · :has ${check$1(!!globalThis.CSS?.supports?.("selector(:has(a))"))}`,
-            `Settings: schema ${schema} · dark mode ${document.body.dataset[`${settings.get("prefix")}Theme`] === "dark" ? "on" : "off"}`,
-            describeGame(),
-            `Outage: ${outage ? JSON.parse(outage).join("; ") : "–"}`,
-            "",
-            `User agent: ${navigator.userAgent}`,
-        ].join("\n");
-    };
-    const copy = () => {
-        const text = report();
-        const done = (copied) => {
-            document.querySelector(`[data-ui="${settings.get("prefix")}-diagnostics"]`)?.remove();
-            if (!copied) {
-                console.info(text);
-            }
-            notice.show({
-                key: "diagnostics",
-                text: copied
-                    ? "The diagnostics have been copied to the clipboard. Paste them into your message or issue."
-                    : "The clipboard isn’t accessible, the diagnostics are in the browser console (F12).",
-                dismissDays: 0,
-            });
-            return copied;
-        };
-        if (!navigator.clipboard?.writeText) {
-            return Promise.resolve(done(false));
-        }
-        return navigator.clipboard.writeText(text).then(
-            () => done(true),
-            () => done(false),
-        );
-    };
-    const listen = () => {
-        const name = `${settings.get("prefix")}Diagnostics`;
-        if (window[name]?.stop) {
-            window[name].stop();
-        }
-        const onKeyDown = (event) => {
-            if (event.code === "KeyB" && event.shiftKey && event.altKey && !event.ctrlKey && !event.metaKey) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                copy();
-            }
-        };
-        document.addEventListener("keydown", onKeyDown, true);
-        const run = () => {
-            copy();
-            return report();
-        };
-        run.stop = () => document.removeEventListener("keydown", onKeyDown, true);
-        window[name] = run;
-    };
-    var diagnostics = {
-        report,
-        copy,
-        listen,
-    };
-
-    class Diagnostics extends Plugin {
-        togglePopup() {
-            diagnostics.copy();
-            return this;
-        }
-        constructor(app) {
-            super(app, "Copy diagnostics", "Copies technical details for a bug report to the clipboard. No words of the game, nothing personal.");
-            this.menu = {
-                action: "popup",
-            };
-        }
-    }
-
-    const getPlugins$1 = () => {
-        return {
-            Header,
-            Overview,
-            LetterCount,
-            FirstLetter,
-            FirstTwoLetters,
-            Pangrams,
-            ProgressBar,
-            SpillTheBeans,
-            Grid,
-            DarkMode,
-            PangramHighlighter,
-            Googlify,
-            Styles,
-            Menu,
-            Milestones,
-            Community,
-            ShortcutScreen,
-            TodaysAnswers,
-            NytShortcuts,
-            Diagnostics,
-        };
-    };
-
-    const today = () => new Date().toISOString().slice(0, 10);
-    const reportUrl = (problems) => {
-        const title = `SBA ${settings.get("version")} doesn't start`;
-        const body = [
-            `Version: ${settings.get("version")}`,
-            `Date: ${today()}`,
-            `Browser: ${navigator.userAgent}`,
-            `Viewport: ${window.innerWidth}px`,
-            "",
-            "Not found or failed:",
-            ...problems.map((problem) => `- ${problem}`),
-            "",
-            "Diagnostics:",
-            "```",
-            diagnostics.report(),
-            "```",
-        ].join("\n");
-        return `${settings.get("issues")}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
-    };
     const show = (problems) => {
         console.warn(
             `${settings.get("label")} ${settings.get("version")} can't run on this version of the NYT page:\n` +
@@ -3419,8 +3385,7 @@
             text: "can’t run right now. There have been changes to the Spelling Bee page and the assistant needs an update. A fix is on the way!",
             links: [
                 { href: settings.get("url"), text: "News and updates" },
-                { href: reportUrl(problems), text: "Report the problem" },
-                { onClick: () => diagnostics.copy(), text: "Copy diagnostics" },
+                { href: diagnostics.issueUrl(), text: "Report the problem" },
             ],
         });
     };

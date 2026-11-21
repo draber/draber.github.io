@@ -62,7 +62,7 @@ const dismiss = (key, days) => {
  * @param {Object} options
  * @param {String} options.key identifies the notice, e.g. "outage"
  * @param {String} options.text what the notice says, after the assistant's name
- * @param {Array<{href?: String, onClick?: Function, text: String}>} [options.links] a link or an action
+ * @param {Array<{href: String, text: String}>} [options.links]
  * @param {Number} [options.dismissDays=1] how long a closed notice stays away, 1 is the rest of today
  * @returns {HTMLElement|null} the notice, null if it has been dismissed or is already there
  */
@@ -72,19 +72,11 @@ const show = ({ key, text, links = [], dismissDays = 1 }) => {
         return null;
     }
 
-    const link = ({ href, onClick, text }) =>
+    const link = ({ href, text }) =>
         fn.a({
             content: text,
-            attributes: onClick ? { href: "#", role: "button" } : { href, target: "_blank", rel: "noopener" },
+            attributes: { href, target: "_blank", rel: "noopener" },
             style: { color: "inherit", textDecoration: "underline", marginRight: "16px" },
-            events: onClick
-                ? {
-                      click: (evt) => {
-                          evt.preventDefault();
-                          onClick();
-                      },
-                  }
-                : {},
         });
 
     const notice = fn.div({

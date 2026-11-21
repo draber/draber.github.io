@@ -76,7 +76,7 @@ describe("app on a changed NYT page", () => {
         const url = new URL(report.href);
         expect(url.origin + url.pathname).toBe("https://github.com/draber/draber.github.io/issues/new");
         expect(url.searchParams.get("body")).toContain(".sb-controls not found");
-        expect(url.searchParams.get("body")).toMatch(/Version: \d+\.\d+\.\d+/);
+        expect(url.searchParams.get("body")).toMatch(/Spelling Bee Assistant \d+\.\d+\.\d+/);
     });
 
     it("gives up when the result list doesn't show up", async () => {
