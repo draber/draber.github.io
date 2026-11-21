@@ -905,6 +905,40 @@
                 ).observe(video);
             })();
         </script>
+        <script>
+            // Open issues labelled "broken" are shown on top of What's new, closing the issue removes the notice.
+            // Without an answer from GitHub (offline, rate limit) nothing is shown.
+            (() => {
+                const card = document.querySelector('#whats-new .card');
+                if (!card || !window.fetch) {
+                    return;
+                }
+                fetch('https://api.github.com/repos/draber/draber.github.io/issues?state=open&labels=broken&per_page=5', {
+                    headers: { Accept: 'application/vnd.github+json' },
+                })
+                    .then((response) => (response.ok ? response.json() : []))
+                    .then((issues) => {
+                        issues
+                            .filter((issue) => !issue.pull_request)
+                            .reverse()
+                            .forEach((issue) => {
+                                const notice = document.createElement('p');
+                                notice.className = 'broken-notice';
+                                notice.style.color = 'firebrick';
+                                const title = document.createElement('em');
+                                title.textContent = issue.title;
+                                const link = document.createElement('a');
+                                link.href = issue.html_url;
+                                link.target = '_blank';
+                                link.rel = 'noopener';
+                                link.textContent = 'Follow it on GitHub';
+                                notice.append('Spelling Bee Assistant isn’t working properly right now: ', title, '. ', link);
+                                card.prepend(notice);
+                            });
+                    })
+                    .catch(() => {});
+            })();
+        </script>
         <script type="application/ld+json">
             {
                 "@context": "https://schema.org",
