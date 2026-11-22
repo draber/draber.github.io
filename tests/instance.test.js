@@ -20,8 +20,8 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 describe("one assistant per page", () => {
     beforeEach(() => {
         loadGame();
-        // loadGame() replaces the content of body, not its attributes: a fresh page
-        delete document.documentElement.dataset.sbaRunning;
+        // a fresh page: loadGame() replaces the content of body, not its attributes, and keeps window
+        delete window.sbaRunning;
         delete document.body.dataset.sbaActive;
     });
 
@@ -29,11 +29,12 @@ describe("one assistant per page", () => {
         vi.restoreAllMocks();
     });
 
-    it("marks the page with the version of the copy that runs", async () => {
+    it("marks the page with the version of the copy that runs, in window, not in the DOM", async () => {
         const ready = new Promise((resolve) => document.addEventListener("sbaReady", resolve, { once: true }));
         await runCopy();
         await ready;
-        expect(document.documentElement.dataset.sbaRunning).toBe(pkg.version);
+        expect(window.sbaRunning).toBe(pkg.version);
+        expect(document.documentElement.dataset.sbaRunning).toBeUndefined();
     });
 
     it("doesn't start a second copy, the first one stays untouched", async () => {
@@ -59,21 +60,24 @@ describe("one assistant per page", () => {
         );
     });
 
-    it("doesn't start next to a version from before 6.1.0, which doesn't set the mark", async () => {
-        // what an older copy leaves on the page
-        document.body.dataset.sbaActive = "true";
-        const info = vi.spyOn(console, "info").mockImplementation(() => {});
+    it("removes a version from before 6.1.0, which doesn't set the mark, and starts", async () => {
+        // an older copy: its app element listens for the destroy event and removes itself
+        const older = document.createElement("div");
+        older.dataset.id = "sbaApp";
+        const destroyed = vi.fn(() => older.remove());
+        older.addEventListener("sbaDestroy", destroyed);
+        document.querySelector(".sb-content-box").append(older);
+
+        const ready = new Promise((resolve) => document.addEventListener("sbaReady", resolve, { once: true }));
         await runCopy();
-        await tick(50);
-        expect($$("[data-id='sbaApp']")).toHaveLength(0);
-        expect(document.documentElement.dataset.sbaRunning).toBeUndefined();
-        expect(info).toHaveBeenCalledWith(
-            `Spelling Bee Assistant: an older version is already running, this copy (${pkg.version}) doesn't start.`,
-        );
+        await ready;
+        expect(destroyed).toHaveBeenCalledOnce();
+        expect($$("[data-id='sbaApp']")).toHaveLength(1);
+        expect(window.sbaRunning).toBe(pkg.version);
     });
 
     it("doesn't start either when the first copy gave up", async () => {
-        document.documentElement.dataset.sbaRunning = "6.0.2";
+        window.sbaRunning = "6.1.0";
         const info = vi.spyOn(console, "info").mockImplementation(() => {});
         await runCopy();
         await tick(50);

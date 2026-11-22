@@ -5,23 +5,23 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import settings from "../modules/settings.js";
+import { prefix } from "./string.js";
 
 /**
  * One assistant per page, the first one wins.
  *
- * Extension and bookmarklet, or two copies of the extension, each bring their own bundle. Each of them would
- * build a complete assistant, with two progress bars, two sets of listeners and so on. The first one to start marks
- * the page; every later copy sees the mark and doesn't start at all.
+ * Extension and bookmarklet, or two copies of the extension, each bring their own bundle. The first one to start
+ * sets `window.sbaRunning`; every later copy sees it and doesn't start at all. All copies run in the page's
+ * context (the extension adds its script as a <script> element, like the bookmarklet), so they share `window`.
+ * The mark stays until the page is reloaded, also when the first copy gives up because of an outage.
  *
- * The mark is an attribute on <html>, not a global variable: copies don't share their variables, but they share
- * the page. It stays until the page is reloaded, also when the first copy gives up because of an outage.
- *
- * Versions before 6.1.0 don't set the mark. They are recognised by what they leave on the page; two complete
- * assistants on one page block each other and can make the page unresponsive.
+ * Versions before 6.1.0 don't set the mark. When one of them runs already, it's removed the way all versions
+ * used to do it (last wins). Two complete assistants on one page must not happen: they block each other and
+ * can make the page unresponsive. Kept on purpose, for cached bookmarklets, pinned or local versions.
  */
 
 /**
- * `data-sba-running` on <html>, the version of the copy that runs
+ * `window.sbaRunning`, the version of the copy that runs
  * @returns {String}
  */
 const key = () => `${settings.get("prefix")}Running`;
@@ -30,16 +30,14 @@ const key = () => `${settings.get("prefix")}Running`;
  * Version of the copy that already runs on this page, if any
  * @returns {String|undefined}
  */
-const running = () => document.documentElement.dataset[key()];
+const running = () => window[key()];
 
 /**
- * Traces of an assistant from before 6.1.0, which doesn't set the mark
- * @returns {Boolean}
+ * Remove an assistant from before 6.1.0, which doesn't set the mark: its app element gets the destroy event
  */
-const olderOneRuns = () =>
-    !!document.querySelector(
-        `[data-id="${settings.get("prefix")}App"], .pz-toolbar-button__${settings.get("prefix")}`,
-    ) || typeof document.body?.dataset[`${settings.get("prefix")}Active`] !== "undefined";
+const removeOlderOne = () => {
+    document.querySelector(`[data-id="${prefix("app")}"]`)?.dispatchEvent(new Event(prefix("destroy")));
+};
 
 /**
  * Claim the page for this copy
@@ -53,13 +51,8 @@ const claim = () => {
         );
         return false;
     }
-    if (olderOneRuns()) {
-        console.info(
-            `${settings.get("label")}: an older version is already running, this copy (${settings.get("version")}) doesn't start.`,
-        );
-        return false;
-    }
-    document.documentElement.dataset[key()] = settings.get("version");
+    window[key()] = settings.get("version");
+    removeOlderOne();
     return true;
 };
 
