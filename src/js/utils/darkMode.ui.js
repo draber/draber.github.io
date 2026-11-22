@@ -77,7 +77,7 @@ export const ui = (self) => ({
         const swatches = fn.ul({
             classNames: [prefix("swatches", "d")],
         });
-        // @see src/css/inc/colors.css [data-sba-theme] --dlig
+        // @see src/css/inc/colors.css [data-sba-theme] --sba-dlig
         const lig = 7;
 
         for (let hue = 0; hue < 360; hue += 30) {

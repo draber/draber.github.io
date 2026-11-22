@@ -90,7 +90,7 @@
 
         [data-ui="milestones"] {
             .sb-modal-body {
-                padding-inline: calc(var(--flex-gap) / 2);
+                padding-inline: calc(var(--sba-flex-gap) / 2);
             }
 
             .sba-queen-bee {
@@ -213,7 +213,7 @@
         --sba-app-padding: 0 5px 5px;
 
         .sba {
-            border-color: var(--border-color);
+            border-color: var(--sba-border-color);
         }
 
         [data-ui="header"] {

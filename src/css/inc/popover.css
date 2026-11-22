@@ -22,7 +22,7 @@
     border: 0;
     padding: 0;
     background: transparent;
-    color: var(--text-color);
+    color: var(--sba-text-color);
     overflow: visible;
 
     /* centered, like the NYT modals; the width comes from .sb-modal-frame (NYT: 540px, 667px on large desktops) */
@@ -47,13 +47,13 @@
     .sba-modal-footer {
         width: auto;
         align-self: stretch;
-        margin: 0 var(--horizontal-spacing-4, 24px) 16px;
+        margin: 0 var(--horizontal-spacing-4) 16px; /* --nyt */
     }
 
     &::backdrop {
         /* ::backdrop doesn't inherit custom properties in older browsers, hence the fallback */
         background: hsla(0, 0%, 100%, 0.85);
-        background: var(--modal-bg-color, hsla(0, 0%, 100%, 0.85));
+        background: var(--sba-modal-bg-color, hsla(0, 0%, 100%, 0.85));
     }
 
     /* floating (Grid): a window rather than a modal, no backdrop, the game stays usable,
@@ -85,7 +85,7 @@
             svg {
                 width: 100%;
                 height: 100%;
-                fill: var(--text-color);
+                fill: var(--sba-text-color);
             }
         }
 
@@ -98,7 +98,7 @@
             margin-inline-end: 10px;
             padding: 3px 9px;
             border-radius: 999px;
-            background: var(--sba-yellow);
+            background: var(--sb-yellow); /* --nyt */
             color: #000;
             font: 600 12px/1.3 nyt-franklin, sans-serif;
             white-space: nowrap;
@@ -126,7 +126,7 @@
         .sb-modal-top {
             min-height: 0;
             padding: 7px 10px 7px 12px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--sba-border-color);
         }
 
         .sba-window-title {
@@ -175,10 +175,10 @@
         display: flex;
         flex-direction: column;
         max-height: inherit;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--sba-border-color);
         border-radius: 6px;
-        background: var(--body-bg-color);
-        color: var(--text-color);
+        background: var(--sba-body-bg-color);
+        color: var(--sba-text-color);
         font-family: nyt-franklin, sans-serif;
     }
 
@@ -196,7 +196,7 @@
         background: none;
         border: 0;
         padding: 0 6px;
-        color: var(--text-color);
+        color: var(--sba-text-color);
         cursor: pointer;
         line-height: 1;
         font-size: 32px;
@@ -247,12 +247,12 @@
 
     :where(.sba-modal-footer) {
         padding: 10px 10px 0;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--sba-border-color);
         text-align: right;
         font-size: 13px;
 
         a {
-            color: var(--link-color, inherit);
+            color: var(--sba-link-color, inherit);
         }
     }
 
@@ -288,11 +288,11 @@
    and resets it for its own list modals (.yesterday, .stats, .ranks …). SBA pop-ups are list modals too. */
 @media (min-width: 992px) {
     .pz-desktop .sba-popover:not(.sba-moved) .sb-modal-content :is(.sb-modal-header, .sb-modal-body) {
-        padding-right: var(--horizontal-spacing-7, 56px);
+        padding-right: var(--horizontal-spacing-7); /* --nyt */
     }
 
     .pz-desktop .sba-popover:not(.sba-moved) .sba-modal-footer {
-        margin-inline: var(--horizontal-spacing-7, 56px);
+        margin-inline: var(--horizontal-spacing-7); /* --nyt */
     }
 }
 

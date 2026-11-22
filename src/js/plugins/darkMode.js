@@ -44,9 +44,9 @@ class DarkMode extends Plugin {
         scheme = this.ensureValidColorScheme(scheme);
 
         document.body.dataset[prefix("theme")] = scheme.mode;
-        document.body.style.setProperty("--dhue", scheme.hsl.hue);
-        document.body.style.setProperty("--dsat", scheme.hsl.sat + "%");
-        document.body.style.setProperty("--dlig", scheme.hsl.lig + "%");
+        document.body.style.setProperty("--sba-dhue", scheme.hsl.hue);
+        document.body.style.setProperty("--sba-dsat", scheme.hsl.sat + "%");
+        document.body.style.setProperty("--sba-dlig", scheme.hsl.lig + "%");
         // don't override other keys such as shortcuts
         settings.set(`options.${this.key}.hsl`, scheme.hsl);
         settings.set(`options.${this.key}.mode`, scheme.mode);

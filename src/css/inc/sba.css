@@ -17,7 +17,7 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
 .hive-action {
     &.push-active {
         &.sba-no-feedback {
-            background: var(--body-bg-color) !important;
+            background: var(--sba-body-bg-color) !important;
         }
     }
 }
@@ -29,7 +29,7 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     appearance: none;
     position: relative;
     /* both borders */
-    color: var(--toggle-border-color);
+    color: var(--sba-toggle-border-color);
     font-size: inherit;
     width: 2em;
     height: 1em;
@@ -39,7 +39,7 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     vertical-align: text-bottom;
     margin: auto;
     cursor: pointer;
-    background: var(--toggle-off-bg-color);
+    background: var(--sba-toggle-off-bg-color);
     /* handle */
     &::before {
         content: "";
@@ -53,16 +53,16 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
         margin: 0 0.15em;
         border: 1px solid;
         border-radius: 50%;
-        background: var(--toggle-handle-color);
+        background: var(--sba-toggle-handle-color);
     }
 
     &:checked {
         /* body when checked */
-        background: var(--toggle-on-bg-color);
+        background: var(--sba-toggle-on-bg-color);
 
         &::before {
             left: 1em;
-            background: var(--toggle-handle-color);
+            background: var(--sba-toggle-handle-color);
         }
     }
 
@@ -72,7 +72,7 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
 }
 
 .sba {
-    background: var(--body-bg-color);
+    background: var(--sba-body-bg-color);
 
     border-radius: 6px;
     border-style: solid;
@@ -97,14 +97,14 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
         font-size: 13px;
         line-height: 20px;
         padding: 1px 6px 0 6px;
-        background: var(--area-bg-color);
-        color: var(--text-color);
+        background: var(--sba-area-bg-color);
+        color: var(--sba-text-color);
         cursor: pointer;
         position: relative;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--sba-border-color);
     }
 }
 
@@ -145,7 +145,7 @@ details {
 }
 
 .sba-data-pane {
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--sba-border-color);
     border-collapse: collapse;
 
     &.sba-thead-th-bold {
@@ -224,12 +224,12 @@ details {
 
     .sba-preeminent {
         font-weight: bold;
-        border-bottom: 2px solid var(--sba-yellow) !important;
+        border-bottom: 2px solid var(--sb-yellow) !important; /* --nyt */
     }
 
     .sba-completed td,
     td.sba-completed {
-        color: var(--invalid-color);
+        color: var(--sba-invalid-color);
         font-weight: normal;
     }
 
@@ -245,7 +245,7 @@ details {
     }
 
     :is(th, td) {
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--sba-border-color);
         border-top: none;
         padding: var(--sba-cell-block-padding) var(--sba-cell-inline-padding);
         white-space: nowrap;
@@ -253,7 +253,7 @@ details {
     }
 
     th {
-        background-color: var(--head-row-bg-color);
+        background-color: var(--sba-head-row-bg-color);
     }
 }
 
@@ -292,10 +292,10 @@ details {
                 margin: 0;
 
                 a {
-                    color: var(--link-color);
+                    color: var(--sba-link-color);
 
                     &:hover {
-                        color: var(--link-hover-color);
+                        color: var(--sba-link-hover-color);
                     }
                 }
             }
@@ -304,13 +304,13 @@ details {
 }
 
 [data-ui="milestones"] {
-    --flex-gap: 12px;
+    --sba-flex-gap: 12px;
 
     .sba-milestone-table-wrapper {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        gap: var(--flex-gap);
+        gap: var(--sba-flex-gap);
     }
 
     figcaption {
@@ -327,16 +327,16 @@ details {
     }
 
     .sba-col {
-        width: calc(50% - (var(--flex-gap) / 2));
+        width: calc(50% - (var(--sba-flex-gap) / 2));
         min-width: 145px;
     }
 
     .sba-summaries {
-        width: calc(48% - (var(--flex-gap) / 2));
+        width: calc(48% - (var(--sba-flex-gap) / 2));
         min-width: 139px;
         .sba-data-pane {
             table-layout: fixed;
-            margin-block-end: var(--flex-gap);
+            margin-block-end: var(--sba-flex-gap);
         }
 
         tr {
@@ -347,11 +347,11 @@ details {
     }
 
     .sba-tiers {
-        width: calc(52% - (var(--flex-gap) / 2));
+        width: calc(52% - (var(--sba-flex-gap) / 2));
         min-width: 149px;
         .sba-data-pane {
             .sba-preeminent:not(.sba-queen-bee) {
-                border-bottom: 1px solid var(--border-color) !important;
+                border-bottom: 1px solid var(--sba-border-color) !important;
             }
         }
 
@@ -384,7 +384,7 @@ details {
         tr {
             &.sba-completed {
                 :is(th, td) {
-                    color: var(--invalid-color);
+                    color: var(--sba-invalid-color);
                 }
             }
         }
@@ -412,7 +412,7 @@ details {
     align-items: center;
 
     svg {
-        fill: var(--text-color);
+        fill: var(--sba-text-color);
     }
 
     .sba-tool-btn {
@@ -446,19 +446,19 @@ progress {
     background: transparent;
     display: block;
     height: 10px;
-    border: 1px var(--border-color) solid;
+    border: 1px var(--sba-border-color) solid;
 
     &::-webkit-progress-bar {
         background-color: transparent;
     }
 
     &::-webkit-progress-value {
-        background-color: var(--sba-yellow);
+        background-color: var(--sb-yellow); /* --nyt */
         height: 4px;
     }
 
     &::-moz-progress-bar {
-        background-color: var(--sba-yellow);
+        background-color: var(--sb-yellow); /* --nyt */
     }
 }
 
@@ -536,9 +536,9 @@ progress {
     position-anchor: --sba-menu;
     position-area: block-end span-inline-start;
     position-try-fallbacks: flip-inline;
-    color: var(--text-color);
-    background: var(--body-bg-color);
-    border: 1px var(--border-color) solid;
+    color: var(--sba-text-color);
+    background: var(--sba-body-bg-color);
+    border: 1px var(--sba-border-color) solid;
     padding: 5px;
     width: 179px;
     max-height: calc(100dvh - 60px);
@@ -558,7 +558,7 @@ progress {
         font-size: 18px;
 
         &[data-icon="new"]:has(svg) {
-            background: color-mix(in srgb, var(--sba-yellow) 15%, transparent);
+            background: color-mix(in srgb, var(--sb-yellow) 15%, transparent); /* --nyt */
         }
 
         &::before,
@@ -571,7 +571,7 @@ progress {
             &.checked {
                 &::after {
                     content: "✔";
-                    color: var(--sba-yellow);
+                    color: var(--sb-yellow); /* --nyt */
                     top: 3px;
                     left: 10px;
                     font-size: 20px;
@@ -581,14 +581,14 @@ progress {
 
         &[data-target="darkMode"],
         &[data-icon="sba"] {
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--sba-border-color);
         }
 
         &[data-icon="sba"] {
             color: currentColor;
 
             &:hover {
-                color: var(--link-hover-color);
+                color: var(--sba-link-hover-color);
                 text-decoration: underline;
             }
         }
@@ -601,7 +601,7 @@ progress {
             left: 7px;
             top: 10px;
             /* parts of the icons without their own colour, see icons.svg */
-            fill: var(--text-color);
+            fill: var(--sba-text-color);
         }
     }
 }
@@ -617,7 +617,7 @@ progress {
     .hive-cell {
         position: static;
         margin: auto;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--sba-border-color);
         padding: 20px;
         width: 168px;
         height: 100%;
@@ -655,18 +655,18 @@ progress {
         }
 
         & .sba-cell {
-            fill: var(--area-bg-color);
+            fill: var(--sba-area-bg-color);
 
             & text {
-                fill: var(--text-color);
+                fill: var(--sba-text-color);
             }
         }
 
         & .sba-center-cell {
-            fill: var(--sba-yellow);
+            fill: var(--sb-yellow); /* --nyt */
 
             & text {
-                fill: var(--highlight-text-color);
+                fill: var(--sba-highlight-text-color);
             }
         }
 
@@ -704,7 +704,7 @@ progress {
         }
 
         label {
-            border: 1px var(--border-color) solid;
+            border: 1px var(--sba-border-color) solid;
             display: block;
             overflow: hidden;
             cursor: pointer;
@@ -712,7 +712,7 @@ progress {
             height: 100%;
 
             &[for="sbaH360"] {
-                color: var(--highlight-text-color);
+                color: var(--sba-highlight-text-color);
             }
         }
 
@@ -721,7 +721,7 @@ progress {
             left: -100px;
 
             &:checked ~ label:not([for="sbaH360"]) {
-                border-color: var(--sba-yellow);
+                border-color: var(--sb-yellow); /* --nyt */
             }
         }
     }
@@ -733,7 +733,7 @@ progress {
 
         &:hover {
             text-decoration: underline;
-            color: var(--link-hover-color);
+            color: var(--sba-link-hover-color);
         }
     }
 }
@@ -741,32 +741,32 @@ progress {
 /* the desktop toolbar is rendered inside the game (.pz-toolbar-right), not in #portal-game-toolbar */
 :is(#portal-game-toolbar, #js-mobile-toolbar, .pz-toolbar-right) {
     * {
-        color: var(--text-color);
-        border-color: var(--border-color);
+        color: var(--sba-text-color);
+        border-color: var(--sba-border-color);
 
         &::selection {
-            background-color: var(--body-bg-color);
+            background-color: var(--sba-body-bg-color);
         }
     }
 
     .pz-dropdown__arrow {
-        border-top-color: var(--text-color);
-        border-bottom-color: var(--text-color);
+        border-top-color: var(--sba-text-color);
+        border-bottom-color: var(--sba-text-color);
         border-right-color: transparent;
         border-left-color: transparent;
     }
 }
 
 .pz-mobile .pz-toolbar-button__sba {
-    color: var(--text-color);
+    color: var(--sba-text-color);
 }
 
 :is(.pz-dropdown, .pz-mobile-dropdown) {
     :is(button[class*="pz-dropdown__"], a[class*="pz-dropdown__"]) {
-        background-color: var(--body-bg-color) !important;
+        background-color: var(--sba-body-bg-color) !important;
 
         &:hover {
-            background: var(--menu-hover-color);
+            background: var(--sba-menu-hover-color);
         }
     }
 }
@@ -803,7 +803,7 @@ progress {
                     &::after {
                         position: relative;
                         content: "✔";
-                        color: var(--sba-yellow);
+                        color: var(--sb-yellow); /* --nyt */
                         top: 4px;
                         font-size: 16px;
                     }
@@ -823,8 +823,8 @@ progress {
 .pz-toolbar-button,
 [data-ui="submenu"] li {
     &:hover {
-        background: var(--menu-hover-color);
-        color: var(--text-color);
+        background: var(--sba-menu-hover-color);
+        color: var(--sba-text-color);
     }
 
     &::selection {
@@ -833,8 +833,8 @@ progress {
 }
 
 [data-ui="menu"].sba-open {
-    background: var(--menu-hover-color);
-    color: var(--text-color);
+    background: var(--sba-menu-hover-color);
+    color: var(--sba-text-color);
 }
 
 [data-ui="shortcuts"] {
@@ -876,7 +876,7 @@ progress {
         tr {
             &:last-child {
                 td {
-                    background-color: var(--head-row-bg-color);
+                    background-color: var(--sba-head-row-bg-color);
                 }
             }
 
@@ -885,7 +885,7 @@ progress {
                 padding: var(--sba-grid-cell-padding, 5px 0) !important;
 
                 &:last-of-type {
-                    background-color: var(--head-row-bg-color);
+                    background-color: var(--sba-head-row-bg-color);
                 }
             }
         }
@@ -933,7 +933,7 @@ progress {
 
             &.sba-pangram {
                 font-weight: 700;
-                border-bottom: 2px var(--sba-yellow) solid;
+                border-bottom: 2px var(--sb-yellow) solid; /* --nyt */
             }
 
             .sba-marks {
@@ -997,14 +997,14 @@ progress {
 
 .sb-modal-frame {
     .sb-modal-content {
-        scrollbar-color: var(--invalid-color) var(--body-bg-color);
+        scrollbar-color: var(--sba-invalid-color) var(--sba-body-bg-color);
 
         &::after {
             background: linear-gradient(
                 180deg,
                 transparent 0%,
-                var(--modal-bg-color) 56.65%,
-                var(--body-bg-color) 100%
+                var(--sba-modal-bg-color) 56.65%,
+                var(--sba-body-bg-color) 100%
             );
         }
     }

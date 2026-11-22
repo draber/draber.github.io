@@ -6,58 +6,58 @@
  */
 
 body {
-    background: var(--body-bg-color);
-    color: var(--text-color);
+    background: var(--sba-body-bg-color);
+    color: var(--sba-text-color);
 
     .pz-game-field {
-        background: var(--body-bg-color);
-        color: var(--text-color);
+        background: var(--sba-body-bg-color);
+        color: var(--sba-text-color);
     }
 
     .pz-game-wrapper {
         .sb-modal-message {
             a {
-                color: var(--link-color);
+                color: var(--sba-link-color);
 
                 &:visited {
-                    color: var(--link-visited-color);
+                    color: var(--sba-link-visited-color);
                 }
 
                 &:hover {
-                    color: var(--link-hover-color);
+                    color: var(--sba-link-hover-color);
                 }
             }
         }
 
         .sb-progress-marker .sb-progress-value,
         .hive-cell:first-child .cell-fill {
-            background: var(--sba-yellow);
-            fill: var(--sba-yellow);
-            color: var(--highlight-text-color);
+            background: var(--sb-yellow); /* --nyt */
+            fill: var(--sb-yellow); /* --nyt */
+            color: var(--sba-highlight-text-color);
         }
 
         .sba-color-selector .hive .hive-cell .cell-fill,
         .hive-cell .cell-fill {
-            fill: var(--area-bg-color);
+            fill: var(--sba-area-bg-color);
         }
 
         .sba-color-selector .hive .hive-cell .cell-letter {
-            fill: var(--text-color);
+            fill: var(--sba-text-color);
         }
     }
 
     &[data-sba-theme="dark"] {
-        scrollbar-color: var(--invalid-color) var(--body-bg-color);
+        scrollbar-color: var(--sba-invalid-color) var(--sba-body-bg-color);
 
         .sb-message {
-            color: var(--text-color);
+            color: var(--sba-text-color);
         }
         #conversion-banner {
             background: inherit;
         }
 
         [class*="ToolbarAdapter-module_toolbarContainer"] {
-            --text: var(--text-color);
+            --text: var(--sba-text-color); /* --nyt */
             border-top-color: transparent;
             background: transparent;
             .pz-dropdown * {
@@ -73,26 +73,26 @@ body {
         .pz-moment__frame {
             &:is(.pz-moment__congrats, .pz-moment__welcome) {
                 & .pz-moment__content {
-                    color: var(--text-color);
+                    color: var(--sba-text-color);
                 }
 
                 .pz-moment__button {
                     &.primary {
-                        background: var(--area-bg-color);
-                        color: var(--text-color);
+                        background: var(--sba-area-bg-color);
+                        color: var(--sba-text-color);
 
                         &:hover {
-                            background: var(--invalid-color);
-                            color: var(--body-bg-color);
+                            background: var(--sba-invalid-color);
+                            color: var(--sba-body-bg-color);
                         }
                     }
 
                     &.secondary {
-                        background: var(--head-row-bg-color);
-                        color: var(--text-color);
+                        background: var(--sba-head-row-bg-color);
+                        color: var(--sba-text-color);
 
                         &:hover {
-                            background: var(--area-bg-color);
+                            background: var(--sba-area-bg-color);
                         }
                     }
                 }
@@ -101,18 +101,18 @@ body {
 
         .pz-game-wrapper,
         #js-hook-pz-moment__loading {
-            background: var(--body-bg-color) !important;
-            color: var(--text-color);
+            background: var(--sba-body-bg-color) !important;
+            color: var(--sba-text-color);
         }
 
         .sb-message {
-            background: var(--area-bg-color);
+            background: var(--sba-area-bg-color);
         }
 
         .pangram-message {
             .sb-message {
-                background: var(--sba-yellow);
-                color: var(--highlight-text-color);
+                background: var(--sb-yellow); /* --nyt */
+                color: var(--sba-highlight-text-color);
             }
         }
 
@@ -120,26 +120,26 @@ body {
         .pz-footer,
         .pz-moment,
         .sb-modal-scrim {
-            background: var(--modal-bg-color) !important;
-            color: var(--text-color) !important;
+            background: var(--sba-modal-bg-color) !important;
+            color: var(--sba-text-color) !important;
 
             .pz-moment__button {
                 &.primary {
-                    background: var(--area-bg-color);
-                    color: var(--text-color);
+                    background: var(--sba-area-bg-color);
+                    color: var(--sba-text-color);
 
                     &:hover {
-                        background: var(--invalid-color);
-                        color: var(--body-bg-color);
+                        background: var(--sba-invalid-color);
+                        color: var(--sba-body-bg-color);
                     }
                 }
 
                 &.secondary {
-                    background: var(--head-row-bg-color);
-                    color: var(--text-color);
+                    background: var(--sba-head-row-bg-color);
+                    color: var(--sba-text-color);
 
                     &:hover {
-                        background: var(--area-bg-color);
+                        background: var(--sba-area-bg-color);
                     }
                 }
             }
@@ -169,7 +169,7 @@ body {
             .pz-dropdown__show {
                 & + .pz-dropdown__list {
                     .pz-dropdown__menu-item {
-                        background-color: var(--body-bg-color);
+                        background-color: var(--sba-body-bg-color);
                     }
                 }
             }
@@ -178,7 +178,7 @@ body {
         .pz-moment__frame {
             &.pz-moment__welcome {
                 * {
-                    color: var(--text-color);
+                    color: var(--sba-text-color);
                 }
             }
         }
@@ -210,11 +210,11 @@ body {
 
 #js-logo-nav {
     rect {
-        fill: var(--body-bg-color);
+        fill: var(--sba-body-bg-color);
     }
 
     path {
-        fill: var(--text-color);
+        fill: var(--sba-text-color);
     }
 }
 
@@ -225,28 +225,28 @@ body {
 .pz-nav__hamburger-inner,
 .pz-nav__hamburger-inner::before,
 .pz-nav__hamburger-inner::after {
-    background-color: var(--text-color);
+    background-color: var(--sba-text-color);
 }
 
 .pz-nav {
     width: 100%;
-    background: var(--body-bg-color);
+    background: var(--sba-body-bg-color);
 }
 
 :is(.sb-modal-wrapper, .sba-popover) {
     .sb-modal-frame {
-        border: 1px solid var(--border-color);
-        background: var(--body-bg-color);
-        color: var(--text-color);
+        border: 1px solid var(--sba-border-color);
+        background: var(--sba-body-bg-color);
+        color: var(--sba-text-color);
 
         &.stats {
             & .sb-modal-header {
-                background: var(--body-bg-color);
+                background: var(--sba-body-bg-color);
             }
 
             & .sb-stats-bar {
-                background: var(--body-bg-color);
-                color: var(--text-color);
+                background: var(--sba-body-bg-color);
+                color: var(--sba-text-color);
             }
 
             & .sb-stats-bar__text {
@@ -257,34 +257,34 @@ body {
 
     .sb-modal-ranks__list {
         tr:not(.sb-modal-ranks__current) {
-            color: var(--text-color);
+            color: var(--sba-text-color);
         }
     }
 
     .pz-modal__title,
     .sb-modal-close {
-        color: var(--text-color);
+        color: var(--sba-text-color);
     }
 
     .sb-modal-body {
         .sb-modal-buttons-container {
             button {
                 &.button-primary {
-                    background: var(--area-bg-color);
-                    color: var(--text-color);
+                    background: var(--sba-area-bg-color);
+                    color: var(--sba-text-color);
 
                     &:hover {
-                        background: var(--invalid-color);
-                        color: var(--body-bg-color);
+                        background: var(--sba-invalid-color);
+                        color: var(--sba-body-bg-color);
                     }
                 }
 
                 &.button-secondary {
-                    background: var(--head-row-bg-color);
-                    color: var(--text-color);
+                    background: var(--sba-head-row-bg-color);
+                    color: var(--sba-text-color);
 
                     &:hover {
-                        background: var(--area-bg-color);
+                        background: var(--sba-area-bg-color);
                     }
                 }
             }
@@ -295,7 +295,7 @@ body {
 .pz-moment__close {
     &::before,
     &::after {
-        background: var(--text-color);
+        background: var(--sba-text-color);
     }
 }
 
@@ -304,11 +304,11 @@ body {
 }
 
 .pz-modal__button.white:hover {
-    background: var(--area-bg-color);
+    background: var(--sba-area-bg-color);
 }
 
 .sb-input-invalid {
-    color: var(--invalid-color);
+    color: var(--sba-invalid-color);
 }
 
 .sb-toggle-expand {
@@ -317,31 +317,31 @@ body {
 
 .sb-input-bright,
 .sb-progress-dot.completed::after {
-    color: var(--sba-yellow);
+    color: var(--sb-yellow); /* --nyt */
 }
 
 .hive-cell {
     .cell-fill {
-        stroke: var(--body-bg-color);
+        stroke: var(--sba-body-bg-color);
     }
 
     .cell-letter {
-        fill: var(--text-color);
+        fill: var(--sba-text-color);
     }
 
     &.center {
         .cell-letter {
-            fill: var(--highlight-text-color);
+            fill: var(--sba-highlight-text-color);
         }
     }
 }
 
 .hive-action {
-    background-color: var(--body-bg-color);
-    color: var(--text-color);
+    background-color: var(--sba-body-bg-color);
+    color: var(--sba-text-color);
 
     &.push-active {
-        background: var(--menu-hover-color);
+        background: var(--sba-menu-hover-color);
     }
 }
 
@@ -353,23 +353,23 @@ body {
 .hive-action,
 .sb-wordlist-box,
 .sb-message {
-    border-color: var(--border-color);
+    border-color: var(--sba-border-color);
 }
 
 .sb-toggle-expand {
-    background: var(--body-bg-color);
+    background: var(--sba-body-bg-color);
 }
 
 .sb-progress-line,
 .sb-progress-dot::after,
 .pz-nav::after {
-    background: var(--border-color);
+    background: var(--sba-border-color);
 }
 
 .sb-bob {
-    background-color: var(--border-color);
+    background-color: var(--sba-border-color);
 
     &.active {
-        background-color: var(--text-color);
+        background-color: var(--sba-text-color);
     }
 }
