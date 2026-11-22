@@ -386,6 +386,30 @@ describe("app", () => {
         });
     });
 
+    describe("focus", () => {
+        // a mousedown whose default is prevented doesn't move the focus
+        const mousedown = (elem) => {
+            const event = new MouseEvent("mousedown", { bubbles: true, cancelable: true });
+            elem.dispatchEvent(event);
+            return event.defaultPrevented;
+        };
+
+        it("stays with the game when SBA's buttons and headings are clicked", () => {
+            expect(mousedown($(".sba summary"))).toBe(true);
+            expect(mousedown($(".sba .sba-tool-btn"))).toBe(true);
+            expect(mousedown($(".pz-toolbar-button__sba"))).toBe(true);
+            expect(mousedown(plugin("grid").popup.ui.querySelector(".sb-modal-close"))).toBe(true);
+            // also on what's inside a button, e.g. the icon
+            expect(mousedown($(".sba .sba-tool-btn svg"))).toBe(true);
+        });
+
+        it("leaves form fields, other content and the NYT's own buttons alone", () => {
+            expect(mousedown(plugin("darkMode").popup.ui.querySelector("input"))).toBe(false);
+            expect(mousedown($(".sba .sba-data-pane"))).toBe(false);
+            expect(mousedown($(".hive-action__delete"))).toBe(false);
+        });
+    });
+
     describe("shortcuts", () => {
         it("deletes the typed character, then opens the pop-up", async () => {
             press("KeyG", { shiftKey: true, altKey: true });
