@@ -555,7 +555,7 @@ progress {
         overflow: hidden;
         display: block;
         padding: 5px 9px 5px 36px;
-        font-size: 18px;
+        font-size: 16px;
 
         &[data-icon="new"]:has(svg) {
             background: color-mix(in srgb, var(--sb-yellow) 15%, transparent); /* --nyt */

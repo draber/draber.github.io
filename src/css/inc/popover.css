@@ -44,10 +44,26 @@
         text-align: start;
     }
 
+    /* branding; also has the page's class sb-modal-message, so the size needs this specificity */
     .sba-modal-footer {
         width: auto;
         align-self: stretch;
         margin: 0 var(--horizontal-spacing-4) 16px; /* --nyt */
+        font-size: 14px;
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* the bee, 16px wide next to 14px text */
+        svg {
+            width: 1.15em;
+            height: 0.9em;
+        }
     }
 
     &::backdrop {
@@ -250,10 +266,6 @@
         border-top: 1px solid var(--sba-border-color);
         text-align: right;
         font-size: 13px;
-
-        a {
-            color: var(--sba-link-color, inherit);
-        }
     }
 
     /* Today's Answers, mimics Yesterday's Answers */

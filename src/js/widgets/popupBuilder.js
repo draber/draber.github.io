@@ -468,7 +468,7 @@ class PopupBuilder {
                 classNames: ["sb-modal-message", prefix("modal-footer", "d")],
                 content: [
                     fn.a({
-                        content: settings.get("label"),
+                        content: [icon("bee"), settings.get("label")],
                         attributes: {
                             href: settings.get("url"),
                             target: prefix(),

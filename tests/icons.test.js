@@ -44,7 +44,7 @@ describe("icons", () => {
         const doc = new DOMParser().parseFromString(sprite, "image/svg+xml");
         const symbols = [...doc.querySelectorAll("symbol")];
         expect(symbols.map((symbol) => symbol.id).sort()).toEqual(
-            ["close", "grid", "kofi", "move", "new", "warning"].map((name) => `sba-icon-${name}`),
+            ["bee", "close", "grid", "kofi", "move", "new", "warning"].map((name) => `sba-icon-${name}`),
         );
         symbols.forEach((symbol) => expect(symbol.getAttribute("viewBox"), symbol.id).toMatch(/^0 0 \d+ \d+$/));
         // classes can't be styled from outside the <use>, colours come from `fill` or the --sba-* variables
