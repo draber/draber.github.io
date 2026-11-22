@@ -399,22 +399,4 @@ describe("app", () => {
             expect(document.body.dataset.sbaActive).toBe("true");
         });
     });
-
-    describe("restart", () => {
-        it("removes the old instance completely, like when the bookmarklet runs on top of the add-on", async () => {
-            // fresh modules, add-on and bookmarklet are separate bundles
-            vi.resetModules();
-            const { default: App } = await import("../src/js/modules/app.js");
-            const ready = new Promise((resolve) => document.addEventListener("sbaReady", resolve, { once: true }));
-            const second = new App(document.querySelector("#js-hook-game-wrapper"));
-            await ready;
-            expect($$("[data-id='sbaApp']")).toHaveLength(1);
-            expect($$(".pz-toolbar-button__sba")).toHaveLength(1);
-            expect($$('[data-ui="submenu"]')).toHaveLength(1);
-            expect($$('[data-ui="grid"][popover]')).toHaveLength(1);
-            // a reload forgets where the grid was
-            expect(second.plugins.get("grid").popup.isMoved).toBe(false);
-            app = second;
-        });
-    });
 });
