@@ -23,7 +23,6 @@ import Menu from "../plugins/menu.js";
 import Grid from "../plugins/grid.js";
 import NytShortcuts from "../plugins/nytShortcuts.js";
 import ShortcutScreen from "../plugins/shortcutScreen.js";
-import Diagnostics from "../plugins/diagnostics.js";
 
 /**
  * Plugins
@@ -50,7 +49,6 @@ const getPlugins = () => {
         ShortcutScreen,
         TodaysAnswers,
         NytShortcuts,
-        Diagnostics,
     };
 };
 

@@ -1,5 +1,5 @@
 /**
- * Diagnostics: "Report a problem" opens a GitHub issue with a report of what doesn't work.
+ * Diagnostics: "Report the problem" in the outage notice opens a GitHub issue with a report of what doesn't work.
  * Harmless facts only, never words of the game.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -75,39 +75,29 @@ describe("diagnostics", () => {
 
     it("opens a GitHub issue with room for a description and the report", async () => {
         const { diagnostics } = await load();
-        const open = vi.spyOn(window, "open").mockImplementation(() => null);
-        diagnostics.openIssue();
-        const url = open.mock.calls[0][0];
+        const url = diagnostics.issueUrl();
         expect(url).toMatch(/^https:\/\/github\.com\/draber\/draber\.github\.io\/issues\/new\?/);
         expect(bodyOf(url)).toMatch(/^\*\*What happened\?\*\*/);
         expect(bodyOf(url)).toContain("Diagnostics (please leave as is):");
         expect(bodyOf(url)).toContain("Problems:");
-        open.mockRestore();
     });
 
-    it("Shift+Alt+B and sbaDiagnostics() work without the app, from the start", async () => {
+    it("sbaDiagnostics() works without the app, from the start; no shortcut", async () => {
         const { diagnostics } = await load();
         const open = vi.spyOn(window, "open").mockImplementation(() => null);
         diagnostics.listen();
+        expect(window.sbaDiagnostics()).toContain("Problems");
 
+        // Shift+Alt+B is no longer taken, the key goes to the game as usual
         let reachedTheGame = false;
         const spy = () => (reachedTheGame = true);
         document.addEventListener("keydown", spy);
         const event = new KeyboardEvent("keydown", { code: "KeyB", key: "B", shiftKey: true, altKey: true, bubbles: true, cancelable: true });
         document.body.dispatchEvent(event);
-        expect(open).toHaveBeenCalledTimes(1);
-        expect(event.defaultPrevented).toBe(true);
-        expect(reachedTheGame).toBe(false);
+        expect(open).not.toHaveBeenCalled();
+        expect(event.defaultPrevented).toBe(false);
+        expect(reachedTheGame).toBe(true);
         document.removeEventListener("keydown", spy);
-
-        expect(window.sbaDiagnostics()).toContain("Problems");
-
-        // a second start (bookmarklet over extension) doesn't open twice
-        diagnostics.listen();
-        open.mockClear();
-        document.body.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyB", shiftKey: true, altKey: true, bubbles: true }));
-        expect(open).toHaveBeenCalledTimes(1);
-        window.sbaDiagnostics.stop();
         open.mockRestore();
     });
 
