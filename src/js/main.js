@@ -11,23 +11,18 @@ import nyt from "./nyt/nyt.js";
 import outageNotice from "./widgets/outageNotice.js";
 import browserNotice from "./widgets/browserNotice.js";
 import diagnostics from "./modules/diagnostics.js";
-import instance from "./utils/instance.js";
 
-// One assistant per page: when another copy runs already (extension and bookmarklet, two extensions),
-// this one does nothing at all, see utils/instance.js
-if (instance.claim()) {
-    // Diagnostics, available as soon as the code runs and independent of the app:
-    // the cases that need them are those in which the app doesn't run, or the menu doesn't open.
-    diagnostics.listen();
+// Diagnostics, available as soon as the code runs and independent of the app:
+// the cases that need them are those in which the app doesn't run, or the menu doesn't open.
+diagnostics.listen();
 
-    const gameWrapper = nyt.getGameWrapper();
+const gameWrapper = nyt.getGameWrapper();
 
-    if (gameWrapper) {
-        new App(gameWrapper);
-    } else {
-        outageNotice.show([`${nyt.selectors.gameWrapper} not found`]);
-    }
-
-    // e.g. Kiwi, which is no longer maintained: the assistant runs, but not all of it works
-    browserNotice.check();
+if (gameWrapper) {
+    new App(gameWrapper);
+} else {
+    outageNotice.show([`${nyt.selectors.gameWrapper} not found`]);
 }
+
+// e.g. Kiwi, which is no longer maintained: the assistant runs, but not all of it works
+browserNotice.check();

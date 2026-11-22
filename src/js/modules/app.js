@@ -303,6 +303,13 @@ class App extends Widget {
             key: prefix("app"),
         });
 
+        // Kill existing instance - this could happen on a conflict between bookmarklet and extension
+        // or while debugging
+        const oldInstance = fn.$(`[data-id="${this.key}"]`);
+        if (oldInstance) {
+            oldInstance.dispatchEvent(new Event(prefix("destroy")));
+        }
+
         // Outer container
         this.gameWrapper = gameWrapper;
 

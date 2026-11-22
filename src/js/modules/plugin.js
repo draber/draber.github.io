@@ -5,7 +5,6 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 import Widget from "./widget.js";
-import { prefix } from "../utils/string.js";
 
 /**
  * Plugin base class
@@ -21,11 +20,6 @@ class Plugin extends Widget {
         }
         this.ui.dataset.ui = this.key;
         (this.target || this.app.ui)[this.addMethod](this.ui);
-        // outside the panel, e.g. the progress bar above the word list: removing the panel doesn't take it along
-        if (this.target && !this.removesWithApp) {
-            this.removesWithApp = true;
-            this.app.on(prefix("destroy"), () => this.ui.remove());
-        }
         return this;
     }
 
