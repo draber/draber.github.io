@@ -20,7 +20,9 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 describe("one assistant per page", () => {
     beforeEach(() => {
         loadGame();
+        // loadGame() replaces the content of body, not its attributes: a fresh page
         delete document.documentElement.dataset.sbaRunning;
+        delete document.body.dataset.sbaActive;
     });
 
     afterEach(() => {
@@ -54,6 +56,19 @@ describe("one assistant per page", () => {
         expect($$("[data-ui='progressBar']")).toHaveLength(1);
         expect(info).toHaveBeenCalledWith(
             `Spelling Bee Assistant ${pkg.version} is already running, this copy (${pkg.version}) doesn't start.`,
+        );
+    });
+
+    it("doesn't start next to a version from before 6.1.0, which doesn't set the mark", async () => {
+        // what an older copy leaves on the page
+        document.body.dataset.sbaActive = "true";
+        const info = vi.spyOn(console, "info").mockImplementation(() => {});
+        await runCopy();
+        await tick(50);
+        expect($$("[data-id='sbaApp']")).toHaveLength(0);
+        expect(document.documentElement.dataset.sbaRunning).toBeUndefined();
+        expect(info).toHaveBeenCalledWith(
+            `Spelling Bee Assistant: an older version is already running, this copy (${pkg.version}) doesn't start.`,
         );
     });
 

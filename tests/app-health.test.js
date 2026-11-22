@@ -40,6 +40,7 @@ describe("app on a changed NYT page", () => {
         expect($(".pz-toolbar-button__sba")).toBeNull();
         expect($$("[popover]").filter((elem) => elem !== notice())).toHaveLength(0);
         expect(document.body.dataset.sbaActive).toBeUndefined();
+        expect($('[data-ui="progressBar"]')).toBeNull();
     };
 
     beforeEach(() => {

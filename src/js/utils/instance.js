@@ -15,6 +15,9 @@ import settings from "../modules/settings.js";
  *
  * The mark is an attribute on <html>, not a global variable: copies don't share their variables, but they share
  * the page. It stays until the page is reloaded, also when the first copy gives up because of an outage.
+ *
+ * Versions before 6.1.0 don't set the mark. They are recognised by what they leave on the page; two complete
+ * assistants on one page block each other and can make the page unresponsive.
  */
 
 /**
@@ -30,6 +33,15 @@ const key = () => `${settings.get("prefix")}Running`;
 const running = () => document.documentElement.dataset[key()];
 
 /**
+ * Traces of an assistant from before 6.1.0, which doesn't set the mark
+ * @returns {Boolean}
+ */
+const olderOneRuns = () =>
+    !!document.querySelector(
+        `[data-id="${settings.get("prefix")}App"], .pz-toolbar-button__${settings.get("prefix")}`,
+    ) || typeof document.body?.dataset[`${settings.get("prefix")}Active`] !== "undefined";
+
+/**
  * Claim the page for this copy
  * @returns {Boolean} true if this copy may start, false if another one runs already
  */
@@ -38,6 +50,12 @@ const claim = () => {
     if (typeof other !== "undefined") {
         console.info(
             `${settings.get("label")} ${other} is already running, this copy (${settings.get("version")}) doesn't start.`,
+        );
+        return false;
+    }
+    if (olderOneRuns()) {
+        console.info(
+            `${settings.get("label")}: an older version is already running, this copy (${settings.get("version")}) doesn't start.`,
         );
         return false;
     }
