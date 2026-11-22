@@ -8,8 +8,7 @@ import { prefix } from "../utils/string.js";
 import settings from "../modules/settings.js";
 import fn from "fancy-node";
 import nyt from "../nyt/nyt.js";
-import moveIcon from "../assets/move.svg";
-import closeIcon from "../assets/close.svg";
+import icon from "../utils/icons.js";
 import breakpoints from "../../config/breakpoints.json" with { type: "json" };
 
 /**
@@ -127,7 +126,7 @@ class PopupBuilder {
                 },
                 classNames: ["sb-modal-close"],
                 // floating pop-ups use icons of the same size for moving and closing, so they line up
-                content: this.floating ? closeIcon : "×",
+                content: this.floating ? icon("close") : "×",
                 events: {
                     click: () => this.toggle(false),
                 },
@@ -155,7 +154,7 @@ class PopupBuilder {
                         hidden: "true",
                     },
                     classNames: [prefix("move-handle", "d")],
-                    content: moveIcon,
+                    content: icon("move"),
                 }),
             );
         }

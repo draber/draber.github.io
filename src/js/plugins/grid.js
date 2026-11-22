@@ -9,7 +9,7 @@ import { prefix } from "../utils/string.js";
 import { buildDataMatrix, markCompletedRatioCells } from "../utils/grid.utils.js";
 import Plugin from "../modules/plugin.js";
 import TableBuilder from "../widgets/tableBuilder.js";
-import gridIcon from "../assets/grid.svg";
+import icon from "../utils/icons.js";
 import fn from "fancy-node";
 
 /**
@@ -87,7 +87,7 @@ export default class Grid extends Plugin {
             aria: {
                 label: this.title,
             },
-            content: gridIcon,
+            content: icon("grid"),
         });
 
         this.shortcuts = [

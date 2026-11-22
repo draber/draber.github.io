@@ -421,10 +421,18 @@ details {
         border: 0;
         color: inherit;
         padding: 1px;
-        width: 14px;
+        /* 13px icon plus 1px padding on each side: the 13px grid icon stays on whole pixels */
+        width: 15px;
         aspect-ratio: 1 / 1;
         display: inline-block;
         cursor: pointer;
+
+        /* the size of the grid in icons.svg; display block: not on the text baseline, the button stays square */
+        svg {
+            display: block;
+            width: 13px;
+            height: 13px;
+        }
     }
 }
 
@@ -592,14 +600,8 @@ progress {
             position: absolute;
             left: 7px;
             top: 10px;
-
-            .shape {
-                fill: var(--text-color);
-            }
-
-            .content {
-                fill: var(--sba-yellow);
-            }
+            /* parts of the icons without their own colour, see icons.svg */
+            fill: var(--text-color);
         }
     }
 }

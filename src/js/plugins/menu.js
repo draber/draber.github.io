@@ -7,24 +7,20 @@
 import settings from "../modules/settings.js";
 import { prefix } from "../utils/string.js";
 import Plugin from "../modules/plugin.js";
-import iconWarning from "../assets/warning.svg";
-import iconCoffee from "../assets/kofi.svg";
-import iconNew from "../assets/new.svg";
-import iconBee from "../assets/sba-bee.svg";
+import icon from "../utils/icons.js";
 import fn from "fancy-node";
 import nyt from "../nyt/nyt.js";
 import newItems from "../utils/newItems.js";
 
-const svgIcons = {
-    warning: iconWarning,
-    coffee: iconCoffee,
-    new: iconNew,
-    bee: iconBee,
-};
+/**
+ * Icons a plugin can ask for in its menu entry (`menu.icon`), see icons.svg
+ * @type {Set<String>}
+ */
+const menuIcons = new Set(["warning", "new"]);
 
 newItems.ensureInstallDate();
 if (!newItems.shouldHighlightNewItems()) {
-    delete svgIcons.new;
+    menuIcons.delete("new");
 }
 
 /**
@@ -156,7 +152,7 @@ class Menu extends Plugin {
      * @returns {HTMLElement}
      */
     buildEntry(plugin, key) {
-        const icon = plugin.menu.icon || null;
+        const iconName = plugin.menu.icon || null;
         const data = {
             component: key,
             action: plugin.menu.action,
@@ -167,8 +163,8 @@ class Menu extends Plugin {
             if (plugin.getState()) {
                 classNames.push("checked");
             }
-        } else if (icon) {
-            data.icon = icon;
+        } else if (iconName) {
+            data.icon = iconName;
         }
         return fn.li({
             classNames,
@@ -176,7 +172,7 @@ class Menu extends Plugin {
                 title: fn.toNode(plugin.description).textContent,
             },
             data,
-            content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title,
+            content: menuIcons.has(iconName) ? [icon(iconName), plugin.title] : plugin.title,
         });
     }
 
@@ -279,7 +275,7 @@ class Menu extends Plugin {
                         action: "link",
                     },
                     content: fn.a({
-                        content: [iconCoffee, settings.get("support.text")],
+                        content: [icon("kofi"), settings.get("support.text")],
                         attributes: {
                             href: settings.get("support.url"),
                             target: prefix(),
