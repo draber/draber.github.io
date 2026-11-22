@@ -3137,126 +3137,6 @@
         }
     }
 
-    const lateAfter = 3000;
-    const seconds = (ms) => (typeof ms === "number" && ms > 0 ? `${(ms / 1000).toFixed(1)}s` : "–");
-    const describeBrowser = () => {
-        const ua = navigator.userAgent;
-        const brands = (navigator.userAgentData?.brands || []).filter(({ brand }) => !/not.?a.?brand|chromium/i.test(brand));
-        let browser = brands.length ? `${brands[0].brand} ${brands[0].version}` : "";
-        if (/\bKiwi\b/.test(ua)) {
-            browser = "Kiwi";
-        } else if (!browser) {
-            const match = ua.match(/(Edg|Firefox|Chrome|Version)\/(\d+)/);
-            browser = match ? `${{ Edg: "Edge", Version: "Safari" }[match[1]] || match[1]} ${match[2]}` : "unknown browser";
-        }
-        const platform = navigator.userAgentData?.platform || (ua.match(/Android|iPhone|iPad|Windows|Mac OS X|Linux/) || ["unknown platform"])[0];
-        return `${browser} · ${platform}`;
-    };
-    const features = () => ({
-        popover: "showPopover" in HTMLElement.prototype,
-        "anchor positioning": !!globalThis.CSS?.supports?.("anchor-name: --a") && !!CSS.supports("position-area: block-end"),
-        checkVisibility: "checkVisibility" in Element.prototype,
-        ":has()": !!globalThis.CSS?.supports?.("selector(:has(a))"),
-    });
-    const problems = () => {
-        const found = [];
-        const { marks } = timing;
-        const outage = document.body.dataset[`${settings.get("prefix")}Outage`];
-        if (outage) {
-            JSON.parse(outage).forEach((problem) => found.push(`didn't start: ${problem}`));
-        } else {
-            nyt.selfCheck().problems.forEach(({ selector, impact }) => found.push(`${selector} not found (${impact})`));
-        }
-        const toolbar = nyt.getToolbar();
-        if (!toolbar) {
-            found.push(`toolbar not found (${nyt.selectors.toolbar})`);
-        }
-        if (marks.ready) {
-            const button = document.querySelector(`button[data-ui="menu"]`);
-            if (!button) {
-                found.push("menu button missing");
-            } else if (toolbar && !toolbar.contains(button)) {
-                found.push("menu button not in the toolbar");
-            }
-            if (marks.game && marks.ready - marks.game > lateAfter) {
-                found.push(`assistant ready ${seconds(marks.ready - marks.game)} after the game`);
-            }
-        } else if (!marks.failed) {
-            found.push(nyt.isMomentShowing() ? "assistant still waiting, a screen is in front of the game" : "assistant hasn't started");
-        }
-        Object.entries(features())
-            .filter(([, supported]) => !supported)
-            .forEach(([feature]) => found.push(`browser doesn't support ${feature}`));
-        return found;
-    };
-    const report = () => {
-        const navigation = performance.getEntriesByType?.("navigation")?.[0];
-        const { marks } = timing;
-        const list = problems();
-        let game = "no data";
-        try {
-            const data = nyt.getGameData();
-            const resultList = nyt.find("resultList");
-            game = `${data.printDate}, ${resultList ? nyt.getFoundTerms(resultList).length : "?"} of ${data.answers.length} found`;
-        } catch (e) {
-        }
-        return [
-            `${settings.get("label")} ${settings.get("version")} (${timing.source})`,
-            `${describeBrowser()} · ${window.innerWidth}×${window.innerHeight} @${window.devicePixelRatio || 1}x · ${nyt.isEnv("mobile") ? "mobile" : "desktop"} layout`,
-            "",
-            list.length ? "Problems:" : "Problems: none detected",
-            ...list.map((problem) => `- ${problem}`),
-            "",
-            `Times: game ${seconds(marks.game)} · assistant ${marks.failed ? `gave up ${seconds(marks.failed)}` : `ready ${seconds(marks.ready)}`} · page loaded ${seconds(navigation?.loadEventEnd)}`,
-            `Game: ${game} · dark mode ${document.body.dataset[`${settings.get("prefix")}Theme`] === "dark" ? "on" : "off"}`,
-            `${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC · ${navigator.userAgent}`,
-        ].join("\n");
-    };
-    const defaultTitle = () =>
-        document.body.dataset[`${settings.get("prefix")}Outage`] ? `SBA ${settings.get("version")} doesn't start` : "";
-    const issueUrl = (title = defaultTitle()) => {
-        const body = ["**What happened?**", "", "", "", "---", "Diagnostics (please leave as is):", "```", report(), "```"].join("\n");
-        return `${settings.get("issues")}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
-    };
-    const openIssue = (title = defaultTitle()) => {
-        window.open(issueUrl(title), "_blank", "noopener");
-    };
-    const listen = () => {
-        const name = `${settings.get("prefix")}Diagnostics`;
-        window[name]?.stop?.();
-        const onKeyDown = (event) => {
-            if (event.code === "KeyB" && event.shiftKey && event.altKey && !event.ctrlKey && !event.metaKey) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                openIssue();
-            }
-        };
-        document.addEventListener("keydown", onKeyDown, true);
-        const run = () => report();
-        run.stop = () => document.removeEventListener("keydown", onKeyDown, true);
-        window[name] = run;
-    };
-    var diagnostics = {
-        problems,
-        report,
-        issueUrl,
-        openIssue,
-        listen,
-    };
-
-    class Diagnostics extends Plugin {
-        togglePopup() {
-            diagnostics.openIssue();
-            return this;
-        }
-        constructor(app) {
-            super(app, "Report a problem", "Opens a new issue on GitHub with technical details attached. No words of the game, nothing personal.");
-            this.menu = {
-                action: "popup",
-            };
-        }
-    }
-
     const getPlugins$1 = () => {
         return {
             Header,
@@ -3278,7 +3158,6 @@
             ShortcutScreen,
             TodaysAnswers,
             NytShortcuts,
-            Diagnostics,
         };
     };
 
@@ -3376,6 +3255,97 @@
     };
     var notice = {
         show: show$1,
+    };
+
+    const lateAfter = 3000;
+    const seconds = (ms) => (typeof ms === "number" && ms > 0 ? `${(ms / 1000).toFixed(1)}s` : "–");
+    const describeBrowser = () => {
+        const ua = navigator.userAgent;
+        const brands = (navigator.userAgentData?.brands || []).filter(({ brand }) => !/not.?a.?brand|chromium/i.test(brand));
+        let browser = brands.length ? `${brands[0].brand} ${brands[0].version}` : "";
+        if (/\bKiwi\b/.test(ua)) {
+            browser = "Kiwi";
+        } else if (!browser) {
+            const match = ua.match(/(Edg|Firefox|Chrome|Version)\/(\d+)/);
+            browser = match ? `${{ Edg: "Edge", Version: "Safari" }[match[1]] || match[1]} ${match[2]}` : "unknown browser";
+        }
+        const platform = navigator.userAgentData?.platform || (ua.match(/Android|iPhone|iPad|Windows|Mac OS X|Linux/) || ["unknown platform"])[0];
+        return `${browser} · ${platform}`;
+    };
+    const features = () => ({
+        popover: "showPopover" in HTMLElement.prototype,
+        "anchor positioning": !!globalThis.CSS?.supports?.("anchor-name: --a") && !!CSS.supports("position-area: block-end"),
+        checkVisibility: "checkVisibility" in Element.prototype,
+        ":has()": !!globalThis.CSS?.supports?.("selector(:has(a))"),
+    });
+    const problems = () => {
+        const found = [];
+        const { marks } = timing;
+        const outage = document.body.dataset[`${settings.get("prefix")}Outage`];
+        if (outage) {
+            JSON.parse(outage).forEach((problem) => found.push(`didn't start: ${problem}`));
+        } else {
+            nyt.selfCheck().problems.forEach(({ selector, impact }) => found.push(`${selector} not found (${impact})`));
+        }
+        const toolbar = nyt.getToolbar();
+        if (!toolbar) {
+            found.push(`toolbar not found (${nyt.selectors.toolbar})`);
+        }
+        if (marks.ready) {
+            const button = document.querySelector(`button[data-ui="menu"]`);
+            if (!button) {
+                found.push("menu button missing");
+            } else if (toolbar && !toolbar.contains(button)) {
+                found.push("menu button not in the toolbar");
+            }
+            if (marks.game && marks.ready - marks.game > lateAfter) {
+                found.push(`assistant ready ${seconds(marks.ready - marks.game)} after the game`);
+            }
+        } else if (!marks.failed) {
+            found.push(nyt.isMomentShowing() ? "assistant still waiting, a screen is in front of the game" : "assistant hasn't started");
+        }
+        Object.entries(features())
+            .filter(([, supported]) => !supported)
+            .forEach(([feature]) => found.push(`browser doesn't support ${feature}`));
+        return found;
+    };
+    const report = () => {
+        const navigation = performance.getEntriesByType?.("navigation")?.[0];
+        const { marks } = timing;
+        const list = problems();
+        let game = "no data";
+        try {
+            const data = nyt.getGameData();
+            const resultList = nyt.find("resultList");
+            game = `${data.printDate}, ${resultList ? nyt.getFoundTerms(resultList).length : "?"} of ${data.answers.length} found`;
+        } catch (e) {
+        }
+        return [
+            `${settings.get("label")} ${settings.get("version")} (${timing.source})`,
+            `${describeBrowser()} · ${window.innerWidth}×${window.innerHeight} @${window.devicePixelRatio || 1}x · ${nyt.isEnv("mobile") ? "mobile" : "desktop"} layout`,
+            "",
+            list.length ? "Problems:" : "Problems: none detected",
+            ...list.map((problem) => `- ${problem}`),
+            "",
+            `Times: game ${seconds(marks.game)} · assistant ${marks.failed ? `gave up ${seconds(marks.failed)}` : `ready ${seconds(marks.ready)}`} · page loaded ${seconds(navigation?.loadEventEnd)}`,
+            `Game: ${game} · dark mode ${document.body.dataset[`${settings.get("prefix")}Theme`] === "dark" ? "on" : "off"}`,
+            `${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC · ${navigator.userAgent}`,
+        ].join("\n");
+    };
+    const defaultTitle = () =>
+        document.body.dataset[`${settings.get("prefix")}Outage`] ? `SBA ${settings.get("version")} doesn't start` : "";
+    const issueUrl = (title = defaultTitle()) => {
+        const body = ["**What happened?**", "", "", "", "---", "Diagnostics (please leave as is):", "```", report(), "```"].join("\n");
+        return `${settings.get("issues")}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+    };
+    const listen = () => {
+        window[`${settings.get("prefix")}Diagnostics`] = () => report();
+    };
+    var diagnostics = {
+        problems,
+        report,
+        issueUrl,
+        listen,
     };
 
     const show = (problems) => {
