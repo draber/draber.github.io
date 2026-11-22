@@ -224,7 +224,7 @@ details {
 
     .sba-preeminent {
         font-weight: bold;
-        border-bottom: 2px solid var(--sb-yellow) !important;
+        border-bottom: 2px solid var(--sba-yellow) !important;
     }
 
     .sba-completed td,
@@ -445,12 +445,12 @@ progress {
     }
 
     &::-webkit-progress-value {
-        background-color: var(--sb-yellow);
+        background-color: var(--sba-yellow);
         height: 4px;
     }
 
     &::-moz-progress-bar {
-        background-color: var(--sb-yellow);
+        background-color: var(--sba-yellow);
     }
 }
 
@@ -484,11 +484,11 @@ progress {
 /* the "new" dot on the menu button; at the top level, browsers ignore @keyframes inside a rule */
 @keyframes pulse-fade {
     0% {
-        text-shadow: hsla(0, 100%, 50%, 0.5) 1px 0 0;
+        text-shadow: color-mix(in srgb, var(--sba-red) 50%, transparent) 1px 0 0;
         opacity: 1;
     }
     80% {
-        text-shadow: hsla(0, 100%, 50%, 0) 1px 0 20px;
+        text-shadow: color-mix(in srgb, var(--sba-red) 0%, transparent) 1px 0 20px;
     }
     100% {
         opacity: 0;
@@ -507,7 +507,7 @@ progress {
                 content: "•";
                 animation: pulse-fade 9s ease-out 1 forwards;
                 animation-delay: 3s;
-                color: hsla(0, 100%, 50%, 0.75);
+                color: color-mix(in srgb, var(--sba-red) 75%, transparent);
                 font-size: 1.2em;
                 position: absolute;
                 top: 0;
@@ -550,11 +550,7 @@ progress {
         font-size: 18px;
 
         &[data-icon="new"]:has(svg) {
-            background: color-mix(
-                in srgb,
-                var(--games-yellow) 15%,
-                transparent
-            );
+            background: color-mix(in srgb, var(--sba-yellow) 15%, transparent);
         }
 
         &::before,
@@ -567,7 +563,7 @@ progress {
             &.checked {
                 &::after {
                     content: "✔";
-                    color: var(--sb-yellow);
+                    color: var(--sba-yellow);
                     top: 3px;
                     left: 10px;
                     font-size: 20px;
@@ -602,7 +598,7 @@ progress {
             }
 
             .content {
-                fill: var(--sb-yellow);
+                fill: var(--sba-yellow);
             }
         }
     }
@@ -665,7 +661,7 @@ progress {
         }
 
         & .sba-center-cell {
-            fill: var(--sb-yellow);
+            fill: var(--sba-yellow);
 
             & text {
                 fill: var(--highlight-text-color);
@@ -723,7 +719,7 @@ progress {
             left: -100px;
 
             &:checked ~ label:not([for="sbaH360"]) {
-                border-color: var(--sb-yellow);
+                border-color: var(--sba-yellow);
             }
         }
     }
@@ -805,7 +801,7 @@ progress {
                     &::after {
                         position: relative;
                         content: "✔";
-                        color: var(--sb-yellow);
+                        color: var(--sba-yellow);
                         top: 4px;
                         font-size: 16px;
                     }
@@ -935,7 +931,7 @@ progress {
 
             &.sba-pangram {
                 font-weight: 700;
-                border-bottom: 2px var(--sb-yellow) solid;
+                border-bottom: 2px var(--sba-yellow) solid;
             }
 
             .sba-marks {

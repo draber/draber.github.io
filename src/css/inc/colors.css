@@ -4,6 +4,15 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
+/* The two accent colours, the same in light and dark mode.
+   Yellow follows the game: --sb-yellow is the page's own yellow (hive, progress); the fallback is its value
+   as measured on 22.11.2026, so the colour stays if the page renames or drops the variable.
+   Red: the "new" marks and the heart of the tip jar. */
+:root {
+    --sba-yellow: var(--sb-yellow, #f7da21);
+    --sba-red: #c00;
+}
+
 [data-sba-theme] {
     --dhue: 0;
     --dsat: 0%;

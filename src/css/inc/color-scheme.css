@@ -31,8 +31,8 @@ body {
 
         .sb-progress-marker .sb-progress-value,
         .hive-cell:first-child .cell-fill {
-            background: var(--sb-yellow);
-            fill: var(--sb-yellow);
+            background: var(--sba-yellow);
+            fill: var(--sba-yellow);
             color: var(--highlight-text-color);
         }
 
@@ -111,7 +111,7 @@ body {
 
         .pangram-message {
             .sb-message {
-                background: var(--sb-yellow);
+                background: var(--sba-yellow);
                 color: var(--highlight-text-color);
             }
         }
@@ -317,7 +317,7 @@ body {
 
 .sb-input-bright,
 .sb-progress-dot.completed::after {
-    color: var(--sb-yellow);
+    color: var(--sba-yellow);
 }
 
 .hive-cell {
