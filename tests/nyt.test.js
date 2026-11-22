@@ -117,6 +117,19 @@ describe("NYT adapter", () => {
         expect(clickedDone).toBe(0);
     });
 
+    it("closes the Queen Bee screen with its ×", () => {
+        const root = document.querySelector("#pz-game-root");
+        const queen = document.createElement("div");
+        queen.className = "pz-moment pz-moment__congrats";
+        queen.innerHTML = '<div class="pz-moment__container"><button type="button" class="pz-moment__close" aria-label="Close">×</button></div>';
+        let clicked = 0;
+        queen.querySelector("button").addEventListener("click", () => clicked++);
+        root.append(queen);
+
+        expect(nyt.closeModal()).toBe(true);
+        expect(clicked).toBe(1);
+    });
+
     it("finds modal closers by test id and by the close icon, if the class names change", () => {
         const root = document.querySelector("#pz-game-root");
         const byTestId = document.createElement("div");
