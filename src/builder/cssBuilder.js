@@ -34,6 +34,22 @@ const compactSelectors = () => ({
 compactSelectors.postcss = true;
 
 /**
+ * After nesting has been resolved, no at-rule may be left inside a rule. Browsers ignore e.g. `@keyframes`
+ * there, postcss-nesting leaves it where it is (Sass used to move it to the top level). Fails the build.
+ */
+const noAtRulesInRules = () => ({
+    postcssPlugin: "postcss-sba-no-at-rules-in-rules",
+    OnceExit(root) {
+        root.walkAtRules((atRule) => {
+            if (atRule.parent?.type === "rule") {
+                throw atRule.error(`@${atRule.name} inside "${atRule.parent.selector}", move it to the top level`);
+            }
+        });
+    },
+});
+noAtRulesInRules.postcss = true;
+
+/**
  * Builds src/css/app.css and its imports into a single file.
  * Always minified: dev and prod script embed the same file.
  * @returns {Promise<void>} rejects when the build fails
@@ -48,6 +64,7 @@ export async function build() {
         // change the cascade. Edition 2021 also moves declarations that follow a nested rule before it,
         // which makes no difference in our sources (checked against the former Sass output).
         nesting({ edition: "2021", noIsPseudoSelector: true }),
+        noAtRulesInRules(),
         compactSelectors(),
         // whitespace and comments only: no rewriting of colors, values or rules, the output stays as written
         cssnano({ preset: "lite" }),

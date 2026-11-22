@@ -481,24 +481,26 @@ progress {
     cursor: pointer;
 }
 
+/* the "new" dot on the menu button; at the top level, browsers ignore @keyframes inside a rule */
+@keyframes pulse-fade {
+    0% {
+        text-shadow: hsla(0, 100%, 50%, 0.5) 1px 0 0;
+        opacity: 1;
+    }
+    80% {
+        text-shadow: hsla(0, 100%, 50%, 0) 1px 0 20px;
+    }
+    100% {
+        opacity: 0;
+        text-shadow: none;
+    }
+}
+
 [data-ui="menu"] {
     position: relative;
     z-index: 1;
     anchor-name: --sba-menu;
 
-    @keyframes pulse-fade {
-        0% {
-            text-shadow: hsla(0, 100%, 50%, 0.5) 1px 0 0;
-            opacity: 1;
-        }
-        80% {
-            text-shadow: hsla(0, 100%, 50%, 0) 1px 0 20px;
-        }
-        100% {
-            opacity: 0;
-            text-shadow: none;
-        }
-    }
     &.sba-has-new {
         #sba-menu-entry-point {
             &::after {
