@@ -55,14 +55,19 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            color: inherit;
+            color: var(--sba-link-color);
             text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
         }
 
-        /* the bee, 16px wide next to 14px text */
+        /* the bee, 16px wide next to 14px text, a little above the center */
         svg {
             width: 1.15em;
             height: 0.9em;
+            translate: 0 -1px;
         }
     }
 
