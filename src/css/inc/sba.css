@@ -584,12 +584,13 @@ progress {
             border-top: 1px solid var(--sba-border-color);
         }
 
+        /* tip jar: a real link, but it looks and behaves like the other entries */
         &[data-icon="sba"] {
             color: currentColor;
 
-            &:hover {
-                color: var(--sba-link-hover-color);
-                text-decoration: underline;
+            a {
+                color: inherit;
+                text-decoration: none;
             }
         }
 
