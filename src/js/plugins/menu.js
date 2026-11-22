@@ -34,7 +34,7 @@ if (!newItems.shouldHighlightNewItems()) {
 const paneOffset = 6;
 
 /**
- * CSS anchor positioning places the pane, see `[data-ui="submenu"]` in _sba.scss.
+ * CSS anchor positioning places the pane, see `[data-ui="submenu"]` in src/css/inc/sba.css.
  * Baseline since January 2026, older browsers fall back to `positionPane()`.
  * @type {Boolean}
  */

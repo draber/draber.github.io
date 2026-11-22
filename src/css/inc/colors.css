@@ -1,0 +1,62 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+[data-sba-theme] {
+    --dhue: 0;
+    --dsat: 0%;
+    --dlig: 7%;
+    --link-hue: 206;
+    --shadow-light-color: hsl(49, 96%, 50%, 0.35);
+    --shadow-dark-color: hsl(49, 96%, 50%, 0.7);
+    --highlight-text-color: hsl(0, 0%, 0%);
+}
+
+/* add new themes here
+   you can add any key as long as you do it in all themes
+   CSS variables are named '--' + key + '-color', e.g. --foo-color */
+[data-sba-theme="light"] {
+    --text-color: hsl(0, 0%, 0%);
+    --site-text-color: hsl(0, 0%, 0%, 0.9);
+    --body-bg-color: hsl(0, 0%, 100%);
+    --modal-bg-color: hsl(0, 0%, 100%, 0.85);
+    --border-color: hsl(0, 0%, 86%);
+    --area-bg-color: hsl(0, 0%, 90%);
+    --invalid-color: hsla(0, 0%, 63%, 1);
+    --menu-hover-color: hsl(0, 0%, 96%);
+    --head-row-bg-color: hsl(0, 0%, 96%);
+    --card-color: hsl(52, 93%, 55%, 0.1);
+    --link-color: hsl(var(--link-hue), 45%, 38%);
+    --link-visited-color: hsl(var(--link-hue), 45%, 53%);
+    --link-hover-color: hsl(var(--link-hue), 45%, 53%);
+    --sba-success-color: hsl(112, 93%, 35%);
+    --sba-error-color: hsl(352, 93%, 35%);
+    --toggle-on-bg-color: hsl(90, 62%, 40%);
+    --toggle-off-bg-color: hsl(0, 0%, 65%);
+    --toggle-handle-color: hsl(0, 100%, 100%);
+    --toggle-border-color: hsl(0, 0%, 90%);
+}
+
+[data-sba-theme="dark"] {
+    --text-color: hsl(var(--dhue), var(--dsat), 85%);
+    --site-text-color: hsl(var(--dhue), var(--dsat), 100%, 0.9);
+    --body-bg-color: hsl(var(--dhue), var(--dsat), var(--dlig));
+    --modal-bg-color: hsl(var(--dhue), var(--dsat), var(--dlig), 0.85);
+    --border-color: hsl(var(--dhue), var(--dsat), 20%);
+    --area-bg-color: hsl(var(--dhue), var(--dsat), 22%);
+    --invalid-color: hsl(var(--dhue), var(--dsat), 40%);
+    --menu-hover-color: hsl(var(--dhue), var(--dsat), 22%);
+    --head-row-bg-color: hsl(var(--dhue), var(--dsat), 13%);
+    --card-color: hsl(var(--dhue), var(--dsat), 22%);
+    --link-color: hsl(var(--link-hue), 90%, 64%);
+    --link-visited-color: hsl(var(--link-hue), 90%, 76%);
+    --link-hover-color: hsl(var(--link-hue), 90%, 76%);
+    --sba-success-color: hsl(112, 93%, 55%);
+    --sba-error-color: hsl(352, 93%, 41%);
+    --toggle-on-bg-color: hsl(90, 62%, 50%);
+    --toggle-off-bg-color: hsl(90, 0%, 80%);
+    --toggle-handle-color: hsl(var(--dhue), var(--dsat), 22%);
+    --toggle-border-color: hsl(var(--dhue), var(--dsat), 22%);
+}

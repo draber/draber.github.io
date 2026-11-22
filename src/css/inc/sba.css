@@ -4,7 +4,6 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-@use "sass:math";
 
 :root {
     --sba-cell-inline-padding: 2px;
@@ -23,13 +22,13 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     }
 }
 
-// toggle body, not checked
+/* toggle body, not checked */
 .sba-toggle-switch:where([type="checkbox"][role="switch"]) {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     position: relative;
-    // both borders
+    /* both borders */
     color: var(--toggle-border-color);
     font-size: inherit;
     width: 2em;
@@ -41,7 +40,7 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     margin: auto;
     cursor: pointer;
     background: var(--toggle-off-bg-color);
-    // handle
+    /* handle */
     &::before {
         content: "";
         position: absolute;
@@ -58,7 +57,7 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
     }
 
     &:checked {
-        // body when checked
+        /* body when checked */
         background: var(--toggle-on-bg-color);
 
         &::before {
@@ -75,11 +74,9 @@ body:has(.pz-moment__congrats.on-stage) [data-ui="menu"] {
 .sba {
     background: var(--body-bg-color);
 
-    border: {
-        radius: 6px;
-        style: solid;
-        width: 1px;
-    }
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 1px;
 
     * {
         &:focus {
@@ -175,13 +172,52 @@ details {
     }
 
     &.sba-equal-cols {
-        @for $i from 3 through 10 {
-            $width: math.percentage(math.div(1, $i));
+        /* 100% / number of columns */
+        &[data-cols="3"] {
+            :is(th, td) {
+                width: 33.3333333333%;
+            }
+        }
 
-            &[data-cols="#{$i}"] {
-                :is(th, td) {
-                    width: $width;
-                }
+        &[data-cols="4"] {
+            :is(th, td) {
+                width: 25%;
+            }
+        }
+
+        &[data-cols="5"] {
+            :is(th, td) {
+                width: 20%;
+            }
+        }
+
+        &[data-cols="6"] {
+            :is(th, td) {
+                width: 16.6666666667%;
+            }
+        }
+
+        &[data-cols="7"] {
+            :is(th, td) {
+                width: 14.2857142857%;
+            }
+        }
+
+        &[data-cols="8"] {
+            :is(th, td) {
+                width: 12.5%;
+            }
+        }
+
+        &[data-cols="9"] {
+            :is(th, td) {
+                width: 11.1111111111%;
+            }
+        }
+
+        &[data-cols="10"] {
+            :is(th, td) {
+                width: 10%;
             }
         }
     }
@@ -430,9 +466,9 @@ progress {
     margin-top: -24px;
 }
 
-// The menu entry point is a <button> since 6.0.0. Reset the browser's button styles, the NYT toolbar classes
-// do the rest. :where() keeps this below the NYT's own rules; author styles beat browser styles anyway.
-// font and line-height matter: a button's own font changes the height and baseline of the toolbar row.
+/* The menu entry point is a <button> since 6.0.0. Reset the browser's button styles, the NYT toolbar classes
+   do the rest. :where() keeps this below the NYT's own rules; author styles beat browser styles anyway.
+   font and line-height matter: a button's own font changes the height and baseline of the toolbar row. */
 :where(button.pz-toolbar-button__sba) {
     appearance: none;
     background: none;
@@ -480,9 +516,9 @@ progress {
 
 }
 
-// menu entries, a popover in the top layer, anchored below the menu button:
-// right-aligned with the button, flipped to the other side when there's no room.
-// Browsers without anchor positioning get top/right from menu.js.
+/* menu entries, a popover in the top layer, anchored below the menu button:
+   right-aligned with the button, flipped to the other side when there's no room.
+   Browsers without anchor positioning get top/right from menu.js. */
 [data-ui="submenu"] {
     position: fixed;
     inset: auto;
@@ -702,7 +738,7 @@ progress {
     }
 }
 
-// the desktop toolbar is rendered inside the game (.pz-toolbar-right), not in #portal-game-toolbar
+/* the desktop toolbar is rendered inside the game (.pz-toolbar-right), not in #portal-game-toolbar */
 :is(#portal-game-toolbar, #js-mobile-toolbar, .pz-toolbar-right) {
     * {
         color: var(--text-color);
@@ -845,7 +881,7 @@ progress {
             }
 
             td {
-                // smaller in the compact window, see _popover.scss
+                /* smaller in the compact window, see _popover.scss */
                 padding: var(--sba-grid-cell-padding, 5px 0) !important;
 
                 &:last-of-type {

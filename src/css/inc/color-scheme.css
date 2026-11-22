@@ -5,8 +5,6 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-@use "./_mixins.scss" as *;
-
 body {
     background: var(--body-bg-color);
     color: var(--text-color);
@@ -80,11 +78,22 @@ body {
 
                 .pz-moment__button {
                     &.primary {
-                        @include button-style(primary);
+                        background: var(--area-bg-color);
+                        color: var(--text-color);
+
+                        &:hover {
+                            background: var(--invalid-color);
+                            color: var(--body-bg-color);
+                        }
                     }
 
                     &.secondary {
-                        @include button-style(secondary);
+                        background: var(--head-row-bg-color);
+                        color: var(--text-color);
+
+                        &:hover {
+                            background: var(--area-bg-color);
+                        }
                     }
                 }
             }
@@ -116,11 +125,22 @@ body {
 
             .pz-moment__button {
                 &.primary {
-                    @include button-style(primary);
+                    background: var(--area-bg-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--invalid-color);
+                        color: var(--body-bg-color);
+                    }
                 }
 
                 &.secondary {
-                    @include button-style(secondary);
+                    background: var(--head-row-bg-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--area-bg-color);
+                    }
                 }
             }
         }
@@ -179,12 +199,10 @@ body {
                 z-index: 0;
                 filter: invert(1);
 
-                background: {
-                    image: inherit;
-                    repeat: inherit;
-                    position: center;
-                    size: inherit;
-                }
+                background-image: inherit;
+                background-repeat: inherit;
+                background-position: center;
+                background-size: inherit;
             }
         }
     }
@@ -252,11 +270,22 @@ body {
         .sb-modal-buttons-container {
             button {
                 &.button-primary {
-                    @include button-style(primary);
+                    background: var(--area-bg-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--invalid-color);
+                        color: var(--body-bg-color);
+                    }
                 }
 
                 &.button-secondary {
-                    @include button-style(secondary);
+                    background: var(--head-row-bg-color);
+                    color: var(--text-color);
+
+                    &:hover {
+                        background: var(--area-bg-color);
+                    }
                 }
             }
         }
