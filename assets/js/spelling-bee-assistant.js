@@ -3472,6 +3472,7 @@
             document.dispatchEvent(new Event(prefix("ready")));
             timing.mark("ready");
             document.addEventListener("keydown", this.onKeyDown);
+            document.addEventListener("mousedown", this.onMouseDown);
             this.on(prefix("newInput"), () => {
                 if (this.pendingShortcut) {
                     shortcutRegistry.handleShortcut(this.pendingShortcut);
@@ -3488,6 +3489,13 @@
                 shortcutRegistry.handleShortcut(event);
             } else {
                 this.pendingShortcut = event;
+            }
+        };
+        onMouseDown = (event) => {
+            const pf = settings.get("prefix");
+            const control = event.target instanceof Element ? event.target.closest("button, summary") : null;
+            if (control && control.closest(`.${pf}, .${pf}-popover, .pz-toolbar-button__${pf}`)) {
+                event.preventDefault();
             }
         };
         onKeyUp = (event) => {
@@ -3537,6 +3545,7 @@
             events[prefix("destroy")] = () => {
                 this.observer?.disconnect();
                 document.removeEventListener("keydown", this.onKeyDown);
+                document.removeEventListener("mousedown", this.onMouseDown);
                 document.removeEventListener("keyup", this.onKeyUp);
                 this.container.remove();
                 this.domUnset("theme");
