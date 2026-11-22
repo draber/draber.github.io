@@ -57,12 +57,16 @@ class Menu extends Plugin {
      * @returns {Menu}
      */
     ensure() {
-        // copies without listeners, e.g. from a toolbar re-rendered via innerHTML
-        fn.$$(".pz-toolbar-button__sba").forEach((elem) => {
-            if (elem !== this.ui) {
-                elem.remove();
-            }
-        });
+        const buttons = fn.$$(".pz-toolbar-button__sba");
+        // copies of this button without listeners, e.g. from a toolbar re-rendered via innerHTML
+        buttons
+            .filter((elem) => elem !== this.ui && elem.dataset.sbaInstance === this.ui.dataset.sbaInstance)
+            .forEach((elem) => elem.remove());
+        // the button of another copy of the assistant: leave it alone and step back. Taking turns at being the
+        // last item of the toolbar, two copies would move their buttons back and forth without end.
+        if (buttons.some((elem) => elem.isConnected && elem.dataset.sbaInstance !== this.ui.dataset.sbaInstance)) {
+            return this;
+        }
         const toolbar = nyt.getToolbar();
         if (toolbar && toolbar.lastElementChild !== this.ui) {
             toolbar.append(this.ui);
@@ -235,6 +239,8 @@ class Menu extends Plugin {
             },
             data: {
                 ui: this.key,
+                // tells this button from the one of another copy of the assistant, see ensure()
+                sbaInstance: Math.random().toString(36).slice(2),
             },
             // same class as Stats and Yesterday, so it looks and sits like them
             classNames: ["pz-toolbar-button", "pz-toolbar-button__sba"],

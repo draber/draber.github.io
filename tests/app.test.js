@@ -278,6 +278,30 @@ describe("app", () => {
             expect($$(".pz-toolbar-button__sba")).toHaveLength(1);
         });
 
+        it("removes a copy of its own button, e.g. from a toolbar re-rendered via innerHTML", async () => {
+            const toolbar = $("#pz-game-root .pz-toolbar-right");
+            const copy = $(".pz-toolbar-button__sba").cloneNode(true);
+            toolbar.prepend(copy);
+            await tick();
+            expect(copy.isConnected).toBe(false);
+            expect($$(".pz-toolbar-button__sba")).toHaveLength(1);
+        });
+
+        it("leaves the button of another copy of the assistant alone instead of fighting over the last place", async () => {
+            const toolbar = $("#pz-game-root .pz-toolbar-right");
+            const own = $(".pz-toolbar-button__sba");
+            const other = own.cloneNode(true);
+            other.dataset.sbaInstance = "another-copy";
+            toolbar.append(other);
+            await tick();
+            // no back and forth: the other button stays, this one steps back
+            expect(other.isConnected).toBe(true);
+            expect(toolbar.lastElementChild).toBe(other);
+            other.remove();
+            await tick();
+            expect(toolbar.lastElementChild).toBe(own);
+        });
+
         it("stays the last item when the NYT adds a button", async () => {
             const toolbar = $("#pz-game-root .pz-toolbar-right");
             const extra = document.createElement("button");
