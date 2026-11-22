@@ -19,8 +19,9 @@ import diagnostics from "../modules/diagnostics.js";
  * @returns {HTMLElement|null} the notice, null if it has been dismissed today
  */
 const show = (problems) => {
+    // like the notice: what doesn't work, no guess about the cause
     console.warn(
-        `${settings.get("label")} ${settings.get("version")} can't run on this version of the NYT page:\n` +
+        `${settings.get("label")} ${settings.get("version")} can't run right now:\n` +
             problems.map((problem) => `- ${problem}`).join("\n"),
     );
     document.body.dataset[`${settings.get("prefix")}Outage`] = JSON.stringify(problems);
