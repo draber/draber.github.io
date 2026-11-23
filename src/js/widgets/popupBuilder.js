@@ -8,8 +8,8 @@ import { prefix } from "../utils/string.js";
 import settings from "../modules/settings.js";
 import fn from "fancy-node";
 import nyt from "../nyt/nyt.js";
-import moveIcon from "../assets/move.svg";
-import closeIcon from "../assets/close.svg";
+import icon from "../utils/icons.js";
+import breakpoints from "../../config/breakpoints.json" with { type: "json" };
 
 /**
  * All pop-ups, used to answer `PopupBuilder.isAnyOpen()` and for `PopupBuilder.closeAll()`
@@ -25,10 +25,10 @@ const viewportMargin = 8;
 
 /**
  * Below this width pop-ups take the full width (like NYT modals), dragging makes no sense there.
- * Keep in sync with the media query in _popover.scss.
+ * Shared with the CSS, see src/config/breakpoints.json.
  * @type {String}
  */
-const smallScreen = "(max-width: 767.98px)";
+const smallScreen = breakpoints["--config-small-screen"];
 
 /**
  * Builder for SBA pop-ups.
@@ -126,7 +126,7 @@ class PopupBuilder {
                 },
                 classNames: ["sb-modal-close"],
                 // floating pop-ups use icons of the same size for moving and closing, so they line up
-                content: this.floating ? closeIcon : "×",
+                content: this.floating ? icon("close") : "×",
                 events: {
                     click: () => this.toggle(false),
                 },
@@ -154,7 +154,7 @@ class PopupBuilder {
                         hidden: "true",
                     },
                     classNames: [prefix("move-handle", "d")],
-                    content: moveIcon,
+                    content: icon("move"),
                 }),
             );
         }
@@ -468,7 +468,7 @@ class PopupBuilder {
                 classNames: ["sb-modal-message", prefix("modal-footer", "d")],
                 content: [
                     fn.a({
-                        content: settings.get("label"),
+                        content: [icon("bee"), settings.get("label")],
                         attributes: {
                             href: settings.get("url"),
                             target: prefix(),

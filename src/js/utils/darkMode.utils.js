@@ -21,7 +21,7 @@ export const utils = (self) => ({
 
     /**
      * Return the hsl values if valid, otherwise the stored ones or the defaults
-     * @see _colors.scss [data-sba-theme] --dhue, --dsat and --dlig
+     * @see src/css/inc/colors.css [data-sba-theme] --sba-dhue, --sba-dsat and --sba-dlig
      * @param {Object} hsl
      * @returns {Object} {hue: number, sat: number, lig: number}
      */

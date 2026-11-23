@@ -1,0 +1,68 @@
+/**
+ *  Spelling Bee Assistant is an add-on for Spelling Bee, the New York Times’ popular word puzzle
+ * 
+ *  Copyright (C) 2020  Dieter Raber
+ *  https://www.gnu.org/licenses/gpl-3.0.en.html
+ */
+/* Variables of the page are used as they are, without a fallback, and marked with --nyt.
+   Our own variables all start with --sba-. Red is our own: the "new" marks and the heart of the tip jar. */
+:root {
+    --sba-red: #c00;
+}
+
+[data-sba-theme] {
+    --sba-dhue: 0;
+    --sba-dsat: 0%;
+    --sba-dlig: 7%;
+    --sba-link-hue: 206;
+    --sba-shadow-light-color: hsl(49, 96%, 50%, 0.35);
+    --sba-shadow-dark-color: hsl(49, 96%, 50%, 0.7);
+    --sba-highlight-text-color: hsl(0, 0%, 0%);
+}
+
+/* add new themes here
+   you can add any key as long as you do it in all themes
+   CSS variables are named '--sba-' + key + '-color', e.g. --sba-foo-color */
+[data-sba-theme="light"] {
+    --sba-text-color: hsl(0, 0%, 0%);
+    --sba-site-text-color: hsl(0, 0%, 0%, 0.9);
+    --sba-body-bg-color: hsl(0, 0%, 100%);
+    --sba-modal-bg-color: hsl(0, 0%, 100%, 0.85);
+    --sba-border-color: hsl(0, 0%, 86%);
+    --sba-area-bg-color: hsl(0, 0%, 90%);
+    --sba-invalid-color: hsla(0, 0%, 63%, 1);
+    --sba-menu-hover-color: hsl(0, 0%, 96%);
+    --sba-head-row-bg-color: hsl(0, 0%, 96%);
+    --sba-card-color: hsl(52, 93%, 55%, 0.1);
+    --sba-link-color: hsl(var(--sba-link-hue), 45%, 38%);
+    --sba-link-visited-color: hsl(var(--sba-link-hue), 45%, 53%);
+    --sba-link-hover-color: hsl(var(--sba-link-hue), 45%, 53%);
+    --sba-success-color: hsl(112, 93%, 35%);
+    --sba-error-color: hsl(352, 93%, 35%);
+    --sba-toggle-on-bg-color: hsl(90, 62%, 40%);
+    --sba-toggle-off-bg-color: hsl(0, 0%, 65%);
+    --sba-toggle-handle-color: hsl(0, 100%, 100%);
+    --sba-toggle-border-color: hsl(0, 0%, 90%);
+}
+
+[data-sba-theme="dark"] {
+    --sba-text-color: hsl(var(--sba-dhue), var(--sba-dsat), 85%);
+    --sba-site-text-color: hsl(var(--sba-dhue), var(--sba-dsat), 100%, 0.9);
+    --sba-body-bg-color: hsl(var(--sba-dhue), var(--sba-dsat), var(--sba-dlig));
+    --sba-modal-bg-color: hsl(var(--sba-dhue), var(--sba-dsat), var(--sba-dlig), 0.85);
+    --sba-border-color: hsl(var(--sba-dhue), var(--sba-dsat), 20%);
+    --sba-area-bg-color: hsl(var(--sba-dhue), var(--sba-dsat), 22%);
+    --sba-invalid-color: hsl(var(--sba-dhue), var(--sba-dsat), 40%);
+    --sba-menu-hover-color: hsl(var(--sba-dhue), var(--sba-dsat), 22%);
+    --sba-head-row-bg-color: hsl(var(--sba-dhue), var(--sba-dsat), 13%);
+    --sba-card-color: hsl(var(--sba-dhue), var(--sba-dsat), 22%);
+    --sba-link-color: hsl(var(--sba-link-hue), 90%, 64%);
+    --sba-link-visited-color: hsl(var(--sba-link-hue), 90%, 76%);
+    --sba-link-hover-color: hsl(var(--sba-link-hue), 90%, 76%);
+    --sba-success-color: hsl(112, 93%, 55%);
+    --sba-error-color: hsl(352, 93%, 41%);
+    --sba-toggle-on-bg-color: hsl(90, 62%, 50%);
+    --sba-toggle-off-bg-color: hsl(90, 0%, 80%);
+    --sba-toggle-handle-color: hsl(var(--sba-dhue), var(--sba-dsat), 22%);
+    --sba-toggle-border-color: hsl(var(--sba-dhue), var(--sba-dsat), 22%);
+}

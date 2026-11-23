@@ -7,24 +7,20 @@
 import settings from "../modules/settings.js";
 import { prefix } from "../utils/string.js";
 import Plugin from "../modules/plugin.js";
-import iconWarning from "../assets/warning.svg";
-import iconCoffee from "../assets/kofi.svg";
-import iconNew from "../assets/new.svg";
-import iconBee from "../assets/sba-bee.svg";
+import icon from "../utils/icons.js";
 import fn from "fancy-node";
 import nyt from "../nyt/nyt.js";
 import newItems from "../utils/newItems.js";
 
-const svgIcons = {
-    warning: iconWarning,
-    coffee: iconCoffee,
-    new: iconNew,
-    bee: iconBee,
-};
+/**
+ * Icons a plugin can ask for in its menu entry (`menu.icon`), see icons.svg
+ * @type {Set<String>}
+ */
+const menuIcons = new Set(["warning", "new"]);
 
 newItems.ensureInstallDate();
 if (!newItems.shouldHighlightNewItems()) {
-    delete svgIcons.new;
+    menuIcons.delete("new");
 }
 
 /**
@@ -34,7 +30,7 @@ if (!newItems.shouldHighlightNewItems()) {
 const paneOffset = 6;
 
 /**
- * CSS anchor positioning places the pane, see `[data-ui="submenu"]` in _sba.scss.
+ * CSS anchor positioning places the pane, see `[data-ui="submenu"]` in src/css/inc/sba.css.
  * Baseline since January 2026, older browsers fall back to `positionPane()`.
  * @type {Boolean}
  */
@@ -57,12 +53,16 @@ class Menu extends Plugin {
      * @returns {Menu}
      */
     ensure() {
-        // copies without listeners, e.g. from a toolbar re-rendered via innerHTML
-        fn.$$(".pz-toolbar-button__sba").forEach((elem) => {
-            if (elem !== this.ui) {
-                elem.remove();
-            }
-        });
+        const buttons = fn.$$(".pz-toolbar-button__sba");
+        // copies of this button without listeners, e.g. from a toolbar re-rendered via innerHTML
+        buttons
+            .filter((elem) => elem !== this.ui && elem.dataset.sbaInstance === this.ui.dataset.sbaInstance)
+            .forEach((elem) => elem.remove());
+        // the button of another copy of the assistant: leave it alone and step back. Taking turns at being the
+        // last item of the toolbar, two copies would move their buttons back and forth without end.
+        if (buttons.some((elem) => elem.isConnected && elem.dataset.sbaInstance !== this.ui.dataset.sbaInstance)) {
+            return this;
+        }
         const toolbar = nyt.getToolbar();
         if (toolbar && toolbar.lastElementChild !== this.ui) {
             toolbar.append(this.ui);
@@ -152,7 +152,7 @@ class Menu extends Plugin {
      * @returns {HTMLElement}
      */
     buildEntry(plugin, key) {
-        const icon = plugin.menu.icon || null;
+        const iconName = plugin.menu.icon || null;
         const data = {
             component: key,
             action: plugin.menu.action,
@@ -163,8 +163,8 @@ class Menu extends Plugin {
             if (plugin.getState()) {
                 classNames.push("checked");
             }
-        } else if (icon) {
-            data.icon = icon;
+        } else if (iconName) {
+            data.icon = iconName;
         }
         return fn.li({
             classNames,
@@ -172,7 +172,7 @@ class Menu extends Plugin {
                 title: fn.toNode(plugin.description).textContent,
             },
             data,
-            content: icon && svgIcons[icon] ? [svgIcons[icon], plugin.title] : plugin.title,
+            content: menuIcons.has(iconName) ? [icon(iconName), plugin.title] : plugin.title,
         });
     }
 
@@ -235,6 +235,8 @@ class Menu extends Plugin {
             },
             data: {
                 ui: this.key,
+                // tells this button from the one of another copy of the assistant, see ensure()
+                sbaInstance: Math.random().toString(36).slice(2),
             },
             // same class as Stats and Yesterday, so it looks and sits like them
             classNames: ["pz-toolbar-button", "pz-toolbar-button__sba"],
@@ -273,7 +275,7 @@ class Menu extends Plugin {
                         action: "link",
                     },
                     content: fn.a({
-                        content: [iconCoffee, settings.get("support.text")],
+                        content: [icon("kofi"), settings.get("support.text")],
                         attributes: {
                             href: settings.get("support.url"),
                             target: prefix(),

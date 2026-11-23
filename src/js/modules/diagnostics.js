@@ -9,7 +9,7 @@ import settings from "./settings.js";
 import timing from "../utils/timing.js";
 
 /**
- * Diagnostics for bug reports: "Report a problem" opens a new GitHub issue with a report attached.
+ * Diagnostics for bug reports: "Report the problem" in the outage notice opens a new GitHub issue with a report attached.
  *
  * The report starts with what doesn't work, then a little context.
  * Only harmless facts: versions, what's missing, when, and counts.
@@ -146,39 +146,17 @@ const issueUrl = (title = defaultTitle()) => {
 };
 
 /**
- * Open a new GitHub issue with the report
- * @param {String} [title]
- */
-const openIssue = (title = defaultTitle()) => {
-    window.open(issueUrl(title), "_blank", "noopener");
-};
-
-/**
- * Shift+Alt+B opens a new issue, and `sbaDiagnostics()` in the console prints the report.
- * Both are independent of the app and available as soon as the code runs: diagnostics are needed
- * when the assistant doesn't work. The shortcut is caught before anyone else sees it, no letter ends up in the game.
- * Adding it twice (extension and bookmarklet) replaces the first one.
+ * `sbaDiagnostics()` in the console prints the report.
+ * Independent of the app and available as soon as the code runs: diagnostics are needed
+ * when the assistant doesn't work. Adding it twice (extension and bookmarklet) replaces the first one.
  */
 const listen = () => {
-    const name = `${settings.get("prefix")}Diagnostics`;
-    window[name]?.stop?.();
-    const onKeyDown = (event) => {
-        if (event.code === "KeyB" && event.shiftKey && event.altKey && !event.ctrlKey && !event.metaKey) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            openIssue();
-        }
-    };
-    document.addEventListener("keydown", onKeyDown, true);
-    const run = () => report();
-    run.stop = () => document.removeEventListener("keydown", onKeyDown, true);
-    window[name] = run;
+    window[`${settings.get("prefix")}Diagnostics`] = () => report();
 };
 
 export default {
     problems,
     report,
     issueUrl,
-    openIssue,
     listen,
 };

@@ -278,6 +278,30 @@ describe("app", () => {
             expect($$(".pz-toolbar-button__sba")).toHaveLength(1);
         });
 
+        it("removes a copy of its own button, e.g. from a toolbar re-rendered via innerHTML", async () => {
+            const toolbar = $("#pz-game-root .pz-toolbar-right");
+            const copy = $(".pz-toolbar-button__sba").cloneNode(true);
+            toolbar.prepend(copy);
+            await tick();
+            expect(copy.isConnected).toBe(false);
+            expect($$(".pz-toolbar-button__sba")).toHaveLength(1);
+        });
+
+        it("leaves the button of another copy of the assistant alone instead of fighting over the last place", async () => {
+            const toolbar = $("#pz-game-root .pz-toolbar-right");
+            const own = $(".pz-toolbar-button__sba");
+            const other = own.cloneNode(true);
+            other.dataset.sbaInstance = "another-copy";
+            toolbar.append(other);
+            await tick();
+            // no back and forth: the other button stays, this one steps back
+            expect(other.isConnected).toBe(true);
+            expect(toolbar.lastElementChild).toBe(other);
+            other.remove();
+            await tick();
+            expect(toolbar.lastElementChild).toBe(own);
+        });
+
         it("stays the last item when the NYT adds a button", async () => {
             const toolbar = $("#pz-game-root .pz-toolbar-right");
             const extra = document.createElement("button");
@@ -359,6 +383,30 @@ describe("app", () => {
             expect(items[0].classList.contains("sba-pangram")).toBe(true);
             expect(items[1].classList.contains("sba-pangram")).toBe(false);
             system.remove();
+        });
+    });
+
+    describe("focus", () => {
+        // a mousedown whose default is prevented doesn't move the focus
+        const mousedown = (elem) => {
+            const event = new MouseEvent("mousedown", { bubbles: true, cancelable: true });
+            elem.dispatchEvent(event);
+            return event.defaultPrevented;
+        };
+
+        it("stays with the game when SBA's buttons and headings are clicked", () => {
+            expect(mousedown($(".sba summary"))).toBe(true);
+            expect(mousedown($(".sba .sba-tool-btn"))).toBe(true);
+            expect(mousedown($(".pz-toolbar-button__sba"))).toBe(true);
+            expect(mousedown(plugin("grid").popup.ui.querySelector(".sb-modal-close"))).toBe(true);
+            // also on what's inside a button, e.g. the icon
+            expect(mousedown($(".sba .sba-tool-btn svg"))).toBe(true);
+        });
+
+        it("leaves form fields, other content and the NYT's own buttons alone", () => {
+            expect(mousedown(plugin("darkMode").popup.ui.querySelector("input"))).toBe(false);
+            expect(mousedown($(".sba .sba-data-pane"))).toBe(false);
+            expect(mousedown($(".hive-action__delete"))).toBe(false);
         });
     });
 

@@ -145,6 +145,7 @@ class App extends Widget {
         timing.mark("ready");
 
         document.addEventListener("keydown", this.onKeyDown);
+        document.addEventListener("mousedown", this.onMouseDown);
 
         this.on(prefix("newInput"), () => {
             if (this.pendingShortcut) {
@@ -169,6 +170,22 @@ class App extends Widget {
             shortcutRegistry.handleShortcut(event);
         } else {
             this.pendingShortcut = event;
+        }
+    };
+
+    /**
+     * Keep the keyboard with the game when SBA's buttons are clicked.
+     * The game only takes keys while nothing else has the focus. A click on a button or a <summary> would focus it,
+     * the next letter would then go nowhere. The click still works, Tab still reaches everything.
+     * Form fields are left alone, they need the focus.
+     * @param {MouseEvent} event
+     */
+    onMouseDown = (event) => {
+        const pf = settings.get("prefix");
+        const control = event.target instanceof Element ? event.target.closest("button, summary") : null;
+        // the panel, the pop-ups and the button in the NYT toolbar
+        if (control && control.closest(`.${pf}, .${pf}-popover, .pz-toolbar-button__${pf}`)) {
+            event.preventDefault();
         }
     };
 
@@ -254,6 +271,7 @@ class App extends Widget {
         events[prefix("destroy")] = () => {
             this.observer?.disconnect();
             document.removeEventListener("keydown", this.onKeyDown);
+            document.removeEventListener("mousedown", this.onMouseDown);
             document.removeEventListener("keyup", this.onKeyUp);
             this.container.remove();
             this.domUnset("theme");

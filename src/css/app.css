@@ -4,8 +4,8 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-@use 'inc/colors';
-@use 'inc/color-scheme';
-@use 'inc/sba';
-@use 'inc/layout';
-@use 'inc/popover';
+@import "inc/colors.css";
+@import "inc/color-scheme.css";
+@import "inc/sba.css";
+@import "inc/layout.css";
+@import "inc/popover.css";

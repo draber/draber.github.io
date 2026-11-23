@@ -5,27 +5,27 @@
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-// SBA pop-ups, see widgets/popupBuilder.js
-//
-// Pop-ups live in the browser's top layer, outside the NYT's modal system. They keep the NYT's class names
-// (.sb-modal-frame, .sb-modal-title etc.), so wherever the NYT styles those globally, the NYT wins.
-// Everything here is wrapped in :where() and has zero specificity: it only fills the gaps.
+/* SBA pop-ups, see widgets/popupBuilder.js
+
+   Pop-ups live in the browser's top layer, outside the NYT's modal system. They keep the NYT's class names
+   (.sb-modal-frame, .sb-modal-title etc.), so wherever the NYT styles those globally, the NYT wins.
+   Everything here is wrapped in :where() and has zero specificity: it only fills the gaps. */
 
 .sba-popover {
-    // NYT widths and paddings are meant for border-box
+    /* NYT widths and paddings are meant for border-box */
     &,
     * {
         box-sizing: border-box;
     }
 
-    // reset the browser's default popover styles
+    /* reset the browser's default popover styles */
     border: 0;
     padding: 0;
     background: transparent;
-    color: var(--text-color);
+    color: var(--sba-text-color);
     overflow: visible;
 
-    // centered, like the NYT modals; the width comes from .sb-modal-frame (NYT: 540px, 667px on large desktops)
+    /* centered, like the NYT modals; the width comes from .sb-modal-frame (NYT: 540px, 667px on large desktops) */
     inset: 0;
     margin: auto;
     width: fit-content;
@@ -33,8 +33,8 @@
     height: fit-content;
     max-height: calc(100dvh - 48px);
 
-    // The NYT positions .sb-modal-frame absolutely inside their modal wrapper (top: 30px, bottom: 0).
-    // In a popover that would collapse it, it has to be part of the flow.
+    /* The NYT positions .sb-modal-frame absolutely inside their modal wrapper (top: 30px, bottom: 0).
+       In a popover that would collapse it, it has to be part of the flow. */
     .sb-modal-frame {
         position: relative;
         top: auto;
@@ -44,35 +44,56 @@
         text-align: start;
     }
 
+    /* branding; also has the page's class sb-modal-message, so the size needs this specificity */
     .sba-modal-footer {
         width: auto;
         align-self: stretch;
-        margin: 0 var(--horizontal-spacing-4, 24px) 16px;
+        margin: 0 var(--horizontal-spacing-4) 16px; /* --nyt */
+        font-size: 14px;
+
+        a {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--sba-link-color);
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+
+        /* the bee, 16px wide next to 14px text, a little above the center */
+        svg {
+            width: 1.15em;
+            height: 0.9em;
+            translate: 0 -1px;
+        }
     }
 
     &::backdrop {
-        // ::backdrop doesn't inherit custom properties in older browsers, hence the fallback
+        /* ::backdrop doesn't inherit custom properties in older browsers, hence the fallback */
         background: hsla(0, 0%, 100%, 0.85);
-        background: var(--modal-bg-color, hsla(0, 0%, 100%, 0.85));
+        background: var(--sba-modal-bg-color, hsla(0, 0%, 100%, 0.85));
     }
 
-    // floating (Grid): a window rather than a modal, no backdrop, the game stays usable,
-    // can be dragged by its title bar
+    /* floating (Grid): a window rather than a modal, no backdrop, the game stays usable,
+       can be dragged by its title bar */
     &.sba-floating {
-        // only as window; on small screens floating pop-ups are regular pop-ups with a backdrop
+        /* only as window; on small screens floating pop-ups are regular pop-ups with a backdrop */
         &[popover="manual"]::backdrop {
             display: none;
         }
 
-        // the NYT aligns the title bar at the bottom, the icons are centered instead
+        /* the NYT aligns the title bar at the bottom, the icons are centered instead */
         .sb-modal-top {
             align-items: center;
             cursor: move;
             touch-action: none;
         }
 
-        // move and close are drawn on a 16px grid and shown at 16px, so every edge is a pixel edge,
-        // see PopupBuilder.snapIcons() for the position
+        /* move and close are drawn on a 16px grid and shown at 16px, so every edge is a pixel edge,
+           see PopupBuilder.snapIcons() for the position */
         :is(.sba-move-handle, .sb-modal-close) {
             display: inline-flex;
             align-items: center;
@@ -85,7 +106,7 @@
             svg {
                 width: 100%;
                 height: 100%;
-                fill: var(--text-color);
+                fill: var(--sba-text-color);
             }
         }
 
@@ -93,19 +114,19 @@
             margin-inline-end: 16px;
         }
 
-        // until the first move, see PopupBuilder.dismissMoveHint()
+        /* until the first move, see PopupBuilder.dismissMoveHint() */
         .sba-move-hint {
             margin-inline-end: 10px;
             padding: 3px 9px;
             border-radius: 999px;
-            background: var(--games-yellow, #f7da21);
+            background: var(--sb-yellow); /* --nyt */
             color: #000;
             font: 600 12px/1.3 nyt-franklin, sans-serif;
             white-space: nowrap;
         }
     }
 
-    // floating and moved: compact window with a small title bar, as much table as possible
+    /* floating and moved: compact window with a small title bar, as much table as possible */
     &.sba-floating.sba-moved {
         --sba-cell-block-padding: 3px;
         --sba-cell-inline-padding: 4px;
@@ -116,17 +137,17 @@
         box-shadow: 0 4px 24px hsla(0, 0%, 0%, 0.2);
         border-radius: 6px;
 
-        // narrower than a modal, beats `.pz-desktop .sb-modal-frame`
+        /* narrower than a modal, beats `.pz-desktop .sb-modal-frame` */
         .sb-modal-frame {
             width: min(420px, calc(100vw - 16px));
             overflow: hidden;
         }
 
-        // title bar, beats the NYT's `.sb-modal-top`
+        /* title bar, beats the NYT's `.sb-modal-top` */
         .sb-modal-top {
             min-height: 0;
             padding: 7px 10px 7px 12px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--sba-border-color);
         }
 
         .sba-window-title {
@@ -138,12 +159,12 @@
             margin: 0;
         }
 
-        // title and description give way to the table
+        /* title and description give way to the table */
         .sb-modal-header {
             display: none;
         }
 
-        // just a narrow margin around the table
+        /* just a narrow margin around the table */
         .sb-modal-content .sb-modal-body {
             padding: 2px;
             margin: 0;
@@ -154,7 +175,7 @@
             line-height: 1.3;
         }
 
-        // branding, small, right below the table
+        /* branding, small, right below the table */
         .sba-modal-footer {
             margin: 0;
             padding: 2px 10px 6px;
@@ -175,10 +196,10 @@
         display: flex;
         flex-direction: column;
         max-height: inherit;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--sba-border-color);
         border-radius: 6px;
-        background: var(--body-bg-color);
-        color: var(--text-color);
+        background: var(--sba-body-bg-color);
+        color: var(--sba-text-color);
         font-family: nyt-franklin, sans-serif;
     }
 
@@ -196,14 +217,14 @@
         background: none;
         border: 0;
         padding: 0 6px;
-        color: var(--text-color);
+        color: var(--sba-text-color);
         cursor: pointer;
         line-height: 1;
         font-size: 32px;
         font-weight: 300;
     }
 
-    // title of the compact window, see .sba-moved
+    /* title of the compact window, see .sba-moved */
     :where(.sba-window-title) {
         display: none;
         flex-grow: 1;
@@ -247,16 +268,12 @@
 
     :where(.sba-modal-footer) {
         padding: 10px 10px 0;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--sba-border-color);
         text-align: right;
         font-size: 13px;
-
-        a {
-            color: var(--link-color, inherit);
-        }
     }
 
-    // Today's Answers, mimics Yesterday's Answers
+    /* Today's Answers, mimics Yesterday's Answers */
     :where(.sb-modal-letters) {
         font-weight: 700;
         letter-spacing: 0.1em;
@@ -284,21 +301,21 @@
     }
 }
 
-// On large desktops the NYT gives modals a very wide right padding (a narrow column for text modals)
-// and resets it for its own list modals (.yesterday, .stats, .ranks …). SBA pop-ups are list modals too.
+/* On large desktops the NYT gives modals a very wide right padding (a narrow column for text modals)
+   and resets it for its own list modals (.yesterday, .stats, .ranks …). SBA pop-ups are list modals too. */
 @media (min-width: 992px) {
     .pz-desktop .sba-popover:not(.sba-moved) .sb-modal-content :is(.sb-modal-header, .sb-modal-body) {
-        padding-right: var(--horizontal-spacing-7, 56px);
+        padding-right: var(--horizontal-spacing-7); /* --nyt */
     }
 
     .pz-desktop .sba-popover:not(.sba-moved) .sba-modal-footer {
-        margin-inline: var(--horizontal-spacing-7, 56px);
+        margin-inline: var(--horizontal-spacing-7); /* --nyt */
     }
 }
 
-// below 768px pop-ups take the full width, without rounded corners and side borders:
-// on a phone every pixel counts
-@media (max-width: 767.98px) {
+/* below 768px pop-ups take the full width, without rounded corners and side borders:
+   on a phone every pixel counts */
+@media (--config-small-screen) {
     .sba-popover {
         width: 100%;
         max-width: none;
@@ -309,15 +326,15 @@
         border-inline: 0;
     }
 
-    // The grid table needs about 450px (more with two-digit numbers), so on small screens it reaches
-    // into the side padding of the pop-up, as it did in 5.x. Title and text keep their indent.
+    /* The grid table needs about 450px (more with two-digit numbers), so on small screens it reaches
+       into the side padding of the pop-up, as it did in 5.x. Title and text keep their indent. */
     .sba-popover[data-ui="grid"]:not(.sba-moved) .sb-modal-body table {
         margin-inline: -20px;
         width: calc(100% + 40px);
         max-width: none;
     }
 
-    // no dragging on small screens, see PopupBuilder.canDrag()
+    /* no dragging on small screens, see PopupBuilder.canDrag() */
     .sba-popover.sba-floating {
         .sb-modal-top {
             cursor: auto;

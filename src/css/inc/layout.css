@@ -4,9 +4,6 @@
  *  Copyright (C) 2020  Dieter Raber
  *  https://www.gnu.org/licenses/gpl-3.0.en.html
  */
-$gameOffset: 12;
-$gameWidth: 1280;
-
 .sba-container {
     display: none;
 }
@@ -28,12 +25,13 @@ $gameWidth: 1280;
     --sba-app-width: 100px;
     --sba-app-padding: 0;
     --sba-app-margin: 0;
-    --sba-game-offset: #{$gameOffset * 1px};
-    --sba-game-width: #{$gameWidth - (2 * $gameOffset) * 1px};
+    --sba-game-offset: 12px;
+    /* game width 1280px minus twice the offset */
+    --sba-game-width: 1256px;
     --sba-mobile-threshold: 900px;
 
-    // vertically centered next to the hive; when it's taller than the game area, e.g. with many open panes
-    // on a small screen, it scrolls instead of growing out of the box and under the NYT header
+    /* vertically centered next to the hive; when it's taller than the game area, e.g. with many open panes
+       on a small screen, it scrolls instead of growing out of the box and under the NYT header */
     .sba-container {
         display: block;
         position: absolute;
@@ -72,7 +70,7 @@ $gameWidth: 1280;
     }
 }
 
-// if app
+/* if app */
 @media (max-width: 370px) {
     [data-sba-active="true"] {
         .sb-hive {
@@ -92,7 +90,7 @@ $gameWidth: 1280;
 
         [data-ui="milestones"] {
             .sb-modal-body {
-                padding-inline: calc(var(--flex-gap) / 2);
+                padding-inline: calc(var(--sba-flex-gap) / 2);
             }
 
             .sba-queen-bee {
@@ -140,7 +138,7 @@ $gameWidth: 1280;
     }
 }
 
-//end if app
+/* end if app */
 
 [data-sba-active] {
     .pz-game-toolbar {
@@ -152,7 +150,7 @@ $gameWidth: 1280;
 
 @media (min-width: 516px) {
     [data-sba-active] {
-        // avoid break between yest. and assistant
+        /* avoid break between yest. and assistant */
         .pz-game-toolbar {
             .pz-row {
                 padding: 0 12px;
@@ -166,19 +164,17 @@ $gameWidth: 1280;
         }
     }
 
+    /* three columns of 23%, the first one gets the rest (31%) */
     [data-ui="overview"] {
-        $wCols: 23;
-        $w1stCol: 100 - ($wCols * 3);
-
         .sba-data-pane {
             tbody {
                 th {
                     text-transform: none;
-                    width: $w1stCol * 1%;
+                    width: 31%;
                 }
 
                 td {
-                    width: $wCols * 1%;
+                    width: 23%;
                 }
 
                 tr {
@@ -202,10 +198,10 @@ $gameWidth: 1280;
 
             thead {
                 th {
-                    width: $wCols * 1%;
+                    width: 23%;
 
                     &:first-of-type {
-                        width: $w1stCol * 1%;
+                        width: 31%;
                     }
                 }
             }
@@ -217,7 +213,7 @@ $gameWidth: 1280;
         --sba-app-padding: 0 5px 5px;
 
         .sba {
-            border-color: var(--border-color);
+            border-color: var(--sba-border-color);
         }
 
         [data-ui="header"] {

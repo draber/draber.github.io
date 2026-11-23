@@ -60,8 +60,8 @@ const selectors = {
     // Two families as of Nov 2026: moments (Genius) and modals (Stats, Yesterday's Answers, How to play).
     // `data-testid` attributes are for the NYT's own tests and tend to outlive class names.
     modalClosers: [
-        // "Keep playing ×" on moments like the Genius screen
-        ".pz-moment__close_text",
+        // "Keep playing ×" on moments like the Genius screen, just × on the Queen Bee screen
+        ".pz-moment__close_text, .pz-moment__close",
         // × on modals like Stats, Yesterday's Answers, How to play
         ".sb-modal-close, [data-testid='sb-modal-close']",
         // net for anything else that closes with the NYT's close icon
